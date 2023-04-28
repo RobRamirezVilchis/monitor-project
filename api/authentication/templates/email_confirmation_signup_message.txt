@@ -1,0 +1,4 @@
+Has recibido este correo porque han creado un usuario para el sitio de Créditos con este correo.
+Ingresa al siguiente enlace para terminar tu registro:
+
+{{activation_url}}

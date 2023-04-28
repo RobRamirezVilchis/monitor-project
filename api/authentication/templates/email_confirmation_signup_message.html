@@ -1,0 +1,14 @@
+{% extends "notification_base.html" %}
+
+{% block title%}Confirmar email{% endblock %}
+
+{% block content %}
+<p style="margin: 0;">Has recibido este correo porque han creado un usuario para el sitio de Créditos con este correo.</p>
+<p style="margin: 0;">Ingresa al siguiente enlace para terminar tu registro:</p>
+
+<div style="padding-top:32px;text-align:center">
+    <a href="{{activation_url}}" style="line-height:16px;color:#04A64B;font-weight:500;text-decoration:none;font-size:14px;display:inline-block;padding:12px 16px;border: 1px solid #04A64B;border-radius:16px;min-width:90px; display: inline-block; margin-bottom: 4px;">
+        Terminar registro
+    </a>
+</div>
+{% endblock %}
