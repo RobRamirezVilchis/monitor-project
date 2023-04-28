@@ -180,8 +180,16 @@ REST_AUTH = {
     "PASSWORD_RESET_SERIALIZER": "authentication.serializers.CustomPasswordResetSerializer",
     "SESSION_LOGIN": True
 }
-REST_SESSION_LOGIN = True
-REST_AUTH_TOKEN_MODEL = False
+# REST_SESSION_LOGIN = True
+# REST_AUTH_TOKEN_MODEL = False
+REST_USE_JWT = True
+REST_JWT_AUTH_COOKIE = 'auth_token'
+REST_JWT_AUTH_REFRESH_COOKIE = 'refresh_token'
+REST_JWT_AUTH_SECURE = False
+REST_JWT_AUTH_HTTPONLY = False
+REST_JWT_AUTH_SAMESITE = 'Lax'
+REST_JWT_AUTH_RETURN_EXPIRATION = True
+REST_JWT_AUTH_COOKIE_USE_CSRF = False
 SITE_ID = 1 # This must be setup in the Django admin and must be the frontend url
 
 # Provider specific settings
