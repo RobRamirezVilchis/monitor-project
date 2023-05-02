@@ -25,7 +25,7 @@ const authReducerDefaults: AuthState = {
 export interface AuthContextProps {
   authState: AuthState;
   dispatchAuth: React.Dispatch<AuthAction>;
-  passwordLogin: (loginData: { username?: string, email?: string, password?: string },
+  emailLogin: (loginData: { username?: string, email?: string, password?: string },
     options?: { redirect?: boolean, redirectTo?: string }) => Promise<User | null>;
   logout: (options?: { redirect?: boolean, redirectTo?: string }) => void,
   changeName: (data: { first_name?: string, last_name?: string }) => Promise<boolean>;
@@ -39,7 +39,7 @@ export interface AuthContextProps {
 const authContextDefaults: AuthContextProps = {
   authState: authReducerDefaults,
   dispatchAuth: () => {},
-  passwordLogin: () => Promise.resolve(null),
+  emailLogin: () => Promise.resolve(null),
   logout: () => {},
   changeName: () => Promise.resolve(false),
   forceReconnect: () => {},
@@ -178,7 +178,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({
     return null;
   }, []);
 
-  const passwordLogin = useCallback(async (
+  const emailLogin = useCallback(async (
     loginData: { 
       username?: string, 
       email?: string, 
@@ -280,14 +280,14 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({
   const contextValue: AuthContextProps = useMemo(() => ({
     authState: state,
     dispatchAuth: dispatch,
-    passwordLogin,
+    emailLogin,
     logout,
     changeName,
     forceReconnect,
     defaultRedirectTo: defaultRedirectTo ?? authContextDefaults.defaultRedirectTo,
     defaultSetCallbackUrlParam: defaultSetCallbackUrlParam ?? authContextDefaults.defaultSetCallbackUrlParam,
     defaultCallbackUrlParamName: defaultCallbackUrlParamName ?? authContextDefaults.defaultCallbackUrlParamName,
-  }), [state, dispatch, passwordLogin, logout, changeName, forceReconnect, defaultRedirectTo, defaultSetCallbackUrlParam, defaultCallbackUrlParamName]);
+  }), [state, dispatch, emailLogin, logout, changeName, forceReconnect, defaultRedirectTo, defaultSetCallbackUrlParam, defaultCallbackUrlParamName]);
 
   return (
     <AuthContext.Provider value={contextValue}>

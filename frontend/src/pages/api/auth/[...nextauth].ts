@@ -26,7 +26,7 @@ export const authOptions: NextAuthOptions = {
         token.provider = account.provider;
       }
 
-      return token
+      return token;
     },
     async session({ session, token }) {
       // send the access token in the session object to the client
@@ -36,7 +36,7 @@ export const authOptions: NextAuthOptions = {
         (session.user as any).provider = token.provider;
       }
 
-      return session
+      return session;
     },
   },
 }

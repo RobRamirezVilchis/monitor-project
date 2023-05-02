@@ -3,7 +3,7 @@ import { LiteralUnion, signIn, SignInAuthorizationParams } from "next-auth/react
 import type { BuiltInProviderType, RedirectableProviderType } from "next-auth/providers";
 import Router from "next/router";
 
-import { AuthContext, AuthProvider } from "./AuthProvider";
+import { AuthContext } from "./AuthProvider";
 import { isUserInAuthorizedRoles } from "../../utils/auth/auth.utils";
 import { Role } from "../../utils/auth/auth.types";
 
@@ -70,7 +70,7 @@ export const useAuth = (options?: {
   const {
     authState,
     dispatchAuth,
-    passwordLogin,
+    emailLogin,
     logout,
     changeName,
     forceReconnect,
@@ -182,7 +182,7 @@ export const useAuth = (options?: {
     dispatchAuth({ type: "clearErrors" });
 
     if (data.basicLogin) {
-      return passwordLogin(data.basicLogin, options);
+      return emailLogin(data.basicLogin, options);
     }
     else if (data.socialLogin) {
       sessionStorage.setItem("socialAction", data.socialLogin.type || "login");
@@ -192,7 +192,7 @@ export const useAuth = (options?: {
     else {
       throw new Error("At least one type of login data must be given");
     }
-  }, [dispatchAuth, passwordLogin]);
+  }, [dispatchAuth, emailLogin]);
 
   return {
     user: authState.user,
