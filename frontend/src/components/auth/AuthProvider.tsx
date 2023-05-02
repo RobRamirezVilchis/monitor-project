@@ -200,7 +200,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({
 
     try {
       const resp = await http.post(api.endpoints.auth.login, loginData);
-      if (resp.status === 204) {
+      if (resp.status === 200) {
+        newUser = resp.data.user;
+      }
+      else if (resp.status === 204) {
         newUser = await getMyUser(http);
       }
     }    
