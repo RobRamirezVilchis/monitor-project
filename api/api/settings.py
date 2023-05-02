@@ -10,8 +10,9 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
-from pathlib import Path
 import os
+from pathlib import Path
+from datetime import timedelta
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -144,8 +145,9 @@ AUTH_PASSWORD_VALIDATORS = [
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework.authentication.TokenAuthentication',
         'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.TokenAuthentication',
+        'dj_rest_auth.jwt_auth.JWTCookieAuthentication'
     ], 
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticated',
@@ -164,6 +166,9 @@ AUTHENTICATION_BACKENDS = [
 ]
 
 
+SITE_ID = 1 # This must be setup in the Django admin and must be the frontend url
+
+
 # allauth/dj-rest-auth configuration
 # https://django-allauth.readthedocs.io/en/latest/configuration.html
 # https://dj-rest-auth.readthedocs.io/en/latest/configuration.html
@@ -174,23 +179,29 @@ ACCOUNT_EMAIL_VERIFICATION = "mandatory"
 SOCIALACCOUNT_ADAPTER = "authentication.adapter.SocialAccountAdapter"
 SOCIALACCOUNT_EMAIL_VERIFICATION = "none"
 SOCIALACCOUNT_EMAIL_REQUIRED = True
+
 REST_AUTH = {
     "USER_DETAILS_SERIALIZER": "authentication.serializers.CustomUserDetailsSerializer",
     "REGISTER_SERIALIZER": "authentication.serializers.CustomRegisterSerializer",
     "PASSWORD_RESET_SERIALIZER": "authentication.serializers.CustomPasswordResetSerializer",
-    "SESSION_LOGIN": True
+
+    "SESSION_LOGIN": True,
+    "USE_JWT": True,
+
+    "JWT_AUTH_COOKIE": 'auth',
+    "JWT_AUTH_REFRESH_COOKIE": 'refresh',
+    "JWT_AUTH_SECURE": False,
+    "JWT_AUTH_HTTPONLY": False,
+    "JWT_AUTH_SAMESITE": 'Lax',
+    "JWT_AUTH_RETURN_EXPIRATION": True,
+    "JWT_AUTH_COOKIE_USE_CSRF": True,
 }
-# REST_SESSION_LOGIN = True
-# REST_AUTH_TOKEN_MODEL = False
-REST_USE_JWT = True
-REST_JWT_AUTH_COOKIE = 'auth_token'
-REST_JWT_AUTH_REFRESH_COOKIE = 'refresh_token'
-REST_JWT_AUTH_SECURE = False
-REST_JWT_AUTH_HTTPONLY = False
-REST_JWT_AUTH_SAMESITE = 'Lax'
-REST_JWT_AUTH_RETURN_EXPIRATION = True
-REST_JWT_AUTH_COOKIE_USE_CSRF = False
-SITE_ID = 1 # This must be setup in the Django admin and must be the frontend url
+
+SIMPLE_JWT = {
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=15),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
+    "UPDATE_LAST_LOGIN": True,
+}
 
 # Provider specific settings
 SOCIALACCOUNT_PROVIDERS = {
