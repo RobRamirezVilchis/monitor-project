@@ -175,8 +175,7 @@ SITE_ID = 1 # This must be setup in the Django admin and must be the frontend ur
 
 ACCOUNT_ADAPTER = "authentication.adapter.AccountAdapter"
 ACCOUNT_EMAIL_REQUIRED = True
-ACCOUNT_EMAIL_VERIFICATION = "mandatory"
-SOCIALACCOUNT_ADAPTER = "authentication.adapter.SocialAccountAdapter"
+ACCOUNT_EMAIL_VERIFICATION = "optional"
 SOCIALACCOUNT_EMAIL_VERIFICATION = "none"
 SOCIALACCOUNT_EMAIL_REQUIRED = True
 
