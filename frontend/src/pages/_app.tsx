@@ -35,7 +35,7 @@ export default function App({ Component, pageProps: { session, ...pageProps } }:
       <SessionProvider session={session}>
           <QueryClientProvider client={queryClient}>
             <AuthProvider>
-              <SnackbarProvider maxSnack={5}>
+              <SnackbarProvider maxSnack={5} dense autoHideDuration={10000}>
                 <Component {...pageProps} />
               </SnackbarProvider>
               <ReactQueryDevtools initialIsOpen={false} />
