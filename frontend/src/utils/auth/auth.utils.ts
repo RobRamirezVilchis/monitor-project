@@ -219,6 +219,8 @@ export const getAuthErrorString = (error: AuthError) => {
       return "El email ingresado no ha sido verificado.";
     case AuthError.UsernameAlreadyRegistered:
       return "El usuario ya se encuentra registrado.";
+    case AuthError.EmailAlreadyRegistered:
+      return "El e-mail ya se encuentra registrado.";
     case AuthError.ProviderNotFound:
       return "Error en el proveedor seleccionado.";
     default:
