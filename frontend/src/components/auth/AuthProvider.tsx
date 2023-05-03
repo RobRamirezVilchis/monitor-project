@@ -6,7 +6,7 @@ import { useImmerReducer } from "use-immer";
 
 import api from "../../utils/api";
 import { axiosBase as http, axiosError as httpError } from "../../utils/axios";
-import { getMyUser, updateMyInfo } from "../../utils/auth/auth.utils";
+import { clearJwtStorage, getMyUser, jwtCookie, setAccessToken, setAccessTokenExpiration, setRefreshToken, setRefreshTokenExpiration, updateMyInfo, useJwt } from "../../utils/auth/auth.utils";
 import logger from "@/utils/logger";
 import { AuthError, User, ProviderKey } from "@/utils/auth/auth.types";
 import { AuthAction, AuthState, authReducer } from "./AuthReducer";
@@ -145,7 +145,20 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({
           const resp = await http.post(url, connectData);
 
           if (resp.status === 200) {
-            user = resp.data.user;
+            if (useJwt) {
+              clearJwtStorage();
+              if (!jwtCookie) {
+                setAccessToken(resp.data.access_token);
+                setRefreshToken(resp.data.refresh_token);
+              }
+              setAccessTokenExpiration(resp.data.access_token_expiration);
+              setRefreshTokenExpiration(resp.data.refresh_token_expiration);
+            }
+
+            if (resp.data.user)
+              user = resp.data.user;
+            else
+              user = await getMyUser(http);
           }
         }
         catch (e) {
@@ -198,10 +211,20 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({
     try {
       const resp = await http.post(api.endpoints.auth.login, loginData);
       if (resp.status === 200) {
-        newUser = resp.data.user;
-      }
-      else if (resp.status === 204) {
-        newUser = await getMyUser(http);
+        if (useJwt) {
+          clearJwtStorage();
+          if (!jwtCookie) {
+            setAccessToken(resp.data.access_token);
+            setRefreshToken(resp.data.refresh_token);
+          }
+          setAccessTokenExpiration(resp.data.access_token_expiration);
+          setRefreshTokenExpiration(resp.data.refresh_token_expiration);
+        }
+        
+        if (resp.data.user)
+          newUser = resp.data.user;
+        else
+          newUser = await getMyUser(http);
       }
     }    
     catch (e) {
@@ -240,6 +263,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({
       ...options
     };
 
+    clearJwtStorage();
     queryClient.invalidateQueries();
 
     try {

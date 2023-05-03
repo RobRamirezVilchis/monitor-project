@@ -1,5 +1,7 @@
 import { NextPage } from "next"
+
 import { useAuth } from "../components/auth/useAuth";
+import { getOrRefreshAccessToken } from "@/utils/auth/auth.utils";
 
 const Home: NextPage = () => {
   const { user, logout } = useAuth({
@@ -13,12 +15,21 @@ const Home: NextPage = () => {
       <br />
 
       {user ? (
-        <div className="p-2">
+        <div className="p-2 flex gap-2">
           <button 
             className="p-2 bg-blue-500 text-white rounded-md"
             onClick={() => logout()}
           >
-              Logout
+            Logout
+          </button>
+
+          <button 
+            className="p-2 bg-blue-500 text-white rounded-md"
+            onClick={async () => {
+              console.log(await getOrRefreshAccessToken())
+            }}
+          >
+            Refresh token
           </button>
         </div>
       ) : null}

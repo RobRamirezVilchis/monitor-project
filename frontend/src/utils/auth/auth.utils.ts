@@ -1,5 +1,7 @@
 import { AxiosInstance, AxiosResponse } from "axios";
 import Router from "next/router";
+import { parseISO } from "date-fns";
+import { axiosBase } from "../axios";
 
 import api from "../api";
 import { AuthError, Role, User } from "./auth.types";
@@ -245,3 +247,109 @@ export const providers = {
     name: "Google",
   }
 };
+
+// JWT
+
+export const useJwt = process.env.NEXT_PUBLIC_USE_JWT_AUTH?.toLocaleLowerCase() === "true" ?? false;
+export const jwtStorage = process.env.NEXT_PUBLIC_JWT_STORAGE?.toLocaleLowerCase() ?? "local";
+export const jwtCookie = process.env.NEXT_PUBLIC_JWT_STORAGE?.toLocaleLowerCase() === "cookie";
+export const jwtCookieAccessTokenName = process.env.NEXT_PUBLIC_JWT_COOKIE_ACCESS_TOKEN_NAME ?? "auth";
+export const jwtCookieRefreshTokenName = process.env.NEXT_PUBLIC_JWT_REFRESH_TOKEN_NAME ?? "refresh";
+export const jwtCookieHttpOnly = process.env.NEXT_PUBLIC_JWT_HTTPONLY?.toLocaleLowerCase() === "true" ?? false;
+
+const cookieStorage: Pick<Storage, "getItem" | "setItem" | "removeItem"> = {
+  getItem: (key: string) => null,
+  setItem: (key: string, value: string) => { },
+  removeItem: (key: string) => { },
+}
+
+let storage = cookieStorage;
+let expStorage = cookieStorage;
+if (typeof window !== "undefined") {
+  if (jwtStorage === "cookie") {
+    storage = cookieStorage;
+    expStorage = localStorage;
+  }
+  else if (jwtStorage === "session") {
+    storage = sessionStorage;
+    expStorage = sessionStorage;
+  }
+  else {
+    storage = localStorage;
+    expStorage = localStorage;
+  }
+}
+
+export function getAccessToken() {
+  return storage.getItem("auth");
+}
+
+export function getRefreshToken() {
+  return storage.getItem("refresh");
+}
+
+export function setAccessToken(token: string) {
+  storage.setItem("auth", token);
+}
+
+export function setRefreshToken(token: string) {
+  storage.setItem("refresh", token);
+}
+
+export function getAccessTokenExpiration() {
+  return expStorage.getItem("auth_exp");
+}
+
+export function getRefreshTokenExpiration() {
+  return expStorage.getItem("refresh_exp");
+}
+
+export function setAccessTokenExpiration(exp: string) {
+  expStorage.setItem("auth_exp", exp);
+}
+
+export function setRefreshTokenExpiration(exp: string) {
+  expStorage.setItem("refresh_exp", exp);
+}
+
+export function isAccessTokenExpired() {
+  const exp = getAccessTokenExpiration();
+  if (!exp) return true;
+  return Date.now() >= parseISO(exp).getDate();
+}
+
+export function isRefreshTokenExpired() {
+  const exp = getRefreshTokenExpiration();
+  if (!exp) return true;
+  return Date.now() >= parseISO(exp).getDate();
+}
+
+export async function refreshAccessToken() {
+  try {
+    const resp = await axiosBase.post(
+      api.endpoints.auth.tokenRefresh, 
+      jwtCookie ? undefined : { refresh: getRefreshToken() }
+    );
+    setAccessToken(resp.data.access);
+    setAccessTokenExpiration(resp.data.access_token_expiration);
+    return resp.data.access;
+  }
+  catch (e) {
+    logger.log("Failed to refresh access token.", e);
+  }
+  return null;
+}
+
+export function getOrRefreshAccessToken() {
+  if (isAccessTokenExpired()) {
+    return refreshAccessToken();
+  }
+  return getAccessToken();
+}
+
+export function clearJwtStorage() {
+  storage.removeItem("auth");
+  storage.removeItem("auth_exp");
+  expStorage.removeItem("refresh");
+  expStorage.removeItem("refresh_exp");
+}

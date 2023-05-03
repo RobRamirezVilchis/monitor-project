@@ -3,6 +3,7 @@ import Cookies from "js-cookie";
 import Router from "next/router";
 
 import api from "./api";
+import { getOrRefreshAccessToken, jwtCookie, useJwt } from "./auth/auth.utils";
 
 const csrfTokenName = "csrftoken_django";
 
@@ -26,9 +27,9 @@ axiosBase.interceptors.request.use(async (config) => {
 export const axiosError = axios.create(customAxiosConfig);
 
 axiosError.interceptors.request.use(async (config) => {
-  const newConfig = setCSRFTokenHeader(config);
+  let conf = setCSRFTokenHeader(config);
 
-  if (!hasCSRFToken(newConfig)) {
+  if (!hasCSRFToken(conf)) {
     return Promise.reject({
       response: {
         status: 401,
@@ -37,7 +38,9 @@ axiosError.interceptors.request.use(async (config) => {
     });
   }
 
-  return newConfig;
+  conf = await setJwtAuthorizationHeader(config);
+
+  return conf;
 });
 
 /**
@@ -47,9 +50,9 @@ axiosError.interceptors.request.use(async (config) => {
 export const axiosRedirectOnError = axios.create(customAxiosConfig);
 
 axiosRedirectOnError.interceptors.request.use(async (config) => {
-  const newConfig = setCSRFTokenHeader(config);
+  let conf = setCSRFTokenHeader(config);
 
-  if (!hasCSRFToken(newConfig)) {
+  if (!hasCSRFToken(conf)) {
     Router.push({
       pathname: "/auth/login",
       query: {
@@ -64,7 +67,9 @@ axiosRedirectOnError.interceptors.request.use(async (config) => {
     });
   }
 
-  return newConfig;
+  conf = await setJwtAuthorizationHeader(config);
+
+  return conf;
 });
 
 axiosRedirectOnError.interceptors.response.use(
@@ -103,11 +108,31 @@ function setCSRFTokenHeader(config?: InternalAxiosRequestConfig<any>): InternalA
       conf.headers = {};
     conf.headers["X-CSRFToken"] = csrfToken;
   }
-  conf.withCredentials = true;
+  if (!useJwt) // TODO: Check if this is needed even for jwt
+    conf.withCredentials = true;
 
   return conf as InternalAxiosRequestConfig<any>;
 }
 
 function hasCSRFToken(config: InternalAxiosRequestConfig<any>) {
   return config?.headers && config.headers["X-CSRFToken"];
+}
+
+async function setJwtAuthorizationHeader(config?: InternalAxiosRequestConfig<any>): Promise<InternalAxiosRequestConfig<any>> {
+  let conf = config as any;
+  
+  if (!conf) 
+    conf = {};
+
+  if (!useJwt) return conf;
+  
+  const accessToken = await getOrRefreshAccessToken();
+
+  if (accessToken && !jwtCookie) {
+    if (!conf.headers) 
+      conf.headers = {};
+    conf.headers["Authorization"] = `Bearer ${accessToken}`;
+  }
+
+  return conf as InternalAxiosRequestConfig<any>;
 }
