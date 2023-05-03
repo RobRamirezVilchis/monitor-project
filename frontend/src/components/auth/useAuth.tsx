@@ -1,6 +1,4 @@
 import React, { useCallback, useContext, useEffect, useRef } from "react";
-import { LiteralUnion, signIn, SignInAuthorizationParams } from "next-auth/react";
-import type { BuiltInProviderType, RedirectableProviderType } from "next-auth/providers";
 import Router from "next/router";
 
 import { AuthContext } from "./AuthProvider";
@@ -161,7 +159,7 @@ export const useAuth = (options?: {
    * it returns a Promise based on the documentation found at https://next-auth.js.org/getting-started/client#signin
    * @throws an error if neither basicLogin or socialLogin data was given
    */
-  const login = useCallback(async <P extends RedirectableProviderType | undefined = undefined>(
+  const login = useCallback(async (
     data: {
       basicLogin?: { 
         username?: string, 
@@ -169,8 +167,7 @@ export const useAuth = (options?: {
         password?: string 
       },
       socialLogin?: {
-        provider?: LiteralUnion<P extends RedirectableProviderType ? P | BuiltInProviderType : BuiltInProviderType>, 
-        authorizationParams?: SignInAuthorizationParams,
+        provider?: any, 
         type?: "login" | "connect"
       }
     },

@@ -1,7 +1,6 @@
 import React, { createContext, useCallback, useMemo } from "react";
 import { useQuery, useQueryClient } from "react-query";
 import { AxiosError, isAxiosError } from "axios";
-import { getSession, signOut } from "next-auth/react";
 import Router from "next/router";
 import { useImmerReducer } from "use-immer";
 

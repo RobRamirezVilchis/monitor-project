@@ -1,4 +1,5 @@
-from allauth.socialaccount.providers.google.views import GoogleOAuth2Adapter
+import os
+# from allauth.socialaccount.providers.google.views import GoogleOAuth2Adapter
 from django.utils.translation import gettext_lazy as _
 from django.http import HttpRequest, HttpResponse
 from django.dispatch import receiver
@@ -14,14 +15,17 @@ from dj_rest_auth.registration.views import (
 )
 from dj_rest_auth.views import UserDetailsView
 
-from .serializers import PasswordResetKeyValidSerializer
+from .adapter import GoogleOAuth2Adapter
 from .functions import delete_user
+from .serializers import PasswordResetKeyValidSerializer
+
+GOOGLE_CALLBACK_URL = os.getenv("GOOGLE_CALLBACK_URL")
 
 class GoogleLoginView(SocialLoginView):
     authentication_classes = []
     adapter_class = GoogleOAuth2Adapter
-    # callback_url = os.getenv('FRONTEND_URL')
-    # client_class = OAuth2Client
+    callback_url = GOOGLE_CALLBACK_URL
+    client_class = OAuth2Client
 
 
 class GoogleConnectView(SocialConnectView):

@@ -1,44 +1,39 @@
 import { useState } from "react";
-import type { InferGetServerSidePropsType, NextPage } from "next";
-import { BuiltInProviderType } from "next-auth/providers";
-import { useRouter } from "next/router";
-import { ClientSafeProvider, getProviders, LiteralUnion } from "next-auth/react";
+import type { NextPage } from "next";
+import { NextRouter, useRouter } from "next/router";
 import { FormProvider, useForm } from "react-hook-form";
-import { GetServerSideProps } from "next"
 import Link from "next/link";
 import Button from "@mui/lab/LoadingButton";
 import ButtonBase from "@mui/material/ButtonBase";
 
+import { axiosBase as http } from "@/utils/axios";
 import { useAuth } from "@/components/auth/useAuth";
 import { AuthError } from "@/utils/auth/auth.types";
 import { emailPattern, getAuthErrorString } from "@/utils/auth/auth.utils";
 import { TextInput } from "@/components/shared/inputs";
+import api from "@/utils/api";
 
-import LogoGoogle from "@~/assets/logo-google.svg";
-
-type Providers = Record<LiteralUnion<BuiltInProviderType, string>, ClientSafeProvider>;
+import LogoGoogle from "@/../assets/logo-google.svg";
 
 interface BasicLoginData {
   email: string; 
   password: string; 
 }
 
-export const getServerSideProps: GetServerSideProps = async (context) => {
-  try {
-    const providers = await getProviders();
-
-    return {
-      props: { providers },
-    }
+const providers = {
+  google: {
+    id: "google",
+    name: "Google",
   }
-  catch {
-    return {
-      props: { providers: null },
-    }
-  }
-}
+};
 
-const Login: NextPage = ({ providers }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
+type Providers = typeof providers;
+
+type ProviderKey = keyof Providers;
+
+type Provider = Providers[ProviderKey];
+
+const Login: NextPage = () => {
   const router = useRouter();
   const { callbackUrl } = router.query;
   const [loading, setLoading] = useState(false);
@@ -144,7 +139,7 @@ const Login: NextPage = ({ providers }: InferGetServerSidePropsType<typeof getSe
         <div>
           {providers ? (
             <div className="flex flex-col gap-1 items-center mt-2 border border-1 rounded-xl">
-              {Object.values(providers as Providers).map((provider) => (
+              {Object.entries(providers).map(([key, provider]) => (
                 <ButtonBase
                   key={provider.id}
                   onClick={(_) =>
@@ -155,7 +150,7 @@ const Login: NextPage = ({ providers }: InferGetServerSidePropsType<typeof getSe
                   }
                   className="!bg-white !py-2.5 !px-8 !rounded-2xl !flex !gap-3"
                 >
-                  {getProviderLogo(provider.id)}
+                  {getProviderLogo(key as ProviderKey)}
                   <span>Continuar con {provider.name}</span>
                 </ButtonBase>
               ))}
@@ -172,6 +167,20 @@ const Login: NextPage = ({ providers }: InferGetServerSidePropsType<typeof getSe
                 Crear cuenta
               </Link>
             </div>
+
+            <div>
+              <button onClick={() => redirectToGoogleAuthentication(router)}>
+                Google
+              </button>
+
+              <button onClick={async () => {
+                const resp = await http.post(api.endpoints.auth.social.google.login, {
+                  code: router.query.code
+                });
+              }}>
+                Google 2
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -181,9 +190,22 @@ const Login: NextPage = ({ providers }: InferGetServerSidePropsType<typeof getSe
 
 export default Login;
 
-function getProviderLogo(provider: LiteralUnion<BuiltInProviderType, string>) {
+function getProviderLogo(provider: keyof Providers) {
   switch (provider) {
     case "google": return <LogoGoogle />;
     default: return null;
   }
+}
+
+function redirectToGoogleAuthentication(router: NextRouter) {
+  router.push({
+    pathname: "https://accounts.google.com/o/oauth2/v2/auth",
+    query: {
+      client_id: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID,
+      redirect_uri: "http://localhost:3000/auth/login",
+      response_type: "code",
+      scope: "openid profile email",
+      prompt: "consent",
+    },
+  });
 }

@@ -9,7 +9,6 @@ import {
 } from "react-query";
 import { ReactQueryDevtools } from "react-query/devtools";
 import { Roboto_Flex } from "next/font/google";
-import { SessionProvider } from "next-auth/react";
 import { SnackbarProvider } from "notistack";
 
 import { AuthProvider } from "@/components/auth/AuthProvider";
@@ -32,16 +31,14 @@ export default function App({ Component, pageProps: { session, ...pageProps } }:
     </Head>
     
     <div id="__app" className={roboto.className}>
-      <SessionProvider session={session}>
-          <QueryClientProvider client={queryClient}>
-            <AuthProvider>
-              <SnackbarProvider maxSnack={5} dense autoHideDuration={10000}>
-                <Component {...pageProps} />
-              </SnackbarProvider>
-              <ReactQueryDevtools initialIsOpen={false} />
-            </AuthProvider>
-          </QueryClientProvider>
-        </SessionProvider>
+      <QueryClientProvider client={queryClient}>
+        <AuthProvider>
+          <SnackbarProvider maxSnack={5} dense autoHideDuration={10000}>
+            <Component {...pageProps} />
+          </SnackbarProvider>
+          <ReactQueryDevtools initialIsOpen={false} />
+        </AuthProvider>
+      </QueryClientProvider>
     </div>
   </>);
 }

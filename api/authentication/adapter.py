@@ -1,9 +1,12 @@
+import jwt
 import os
 from django.contrib.sites.shortcuts import get_current_site
 from django.core.mail import EmailMessage, EmailMultiAlternatives
 from django.template import TemplateDoesNotExist
 from django.template.loader import render_to_string
 from allauth.account.adapter import DefaultAccountAdapter
+from allauth.socialaccount.providers.oauth2.client import OAuth2Error
+from allauth.socialaccount.providers.google.views import GoogleOAuth2Adapter as DefaultGoogleOAuth2Adapter
 
 from .functions import get_frontend_url
 
@@ -62,3 +65,30 @@ class AccountAdapter(DefaultAccountAdapter):
             msg = EmailMessage(subject, bodies["html"], from_email, to, headers=headers)
             msg.content_subtype = "html"  # Main content is now text/html
         return msg
+
+
+class GoogleOAuth2Adapter(DefaultGoogleOAuth2Adapter):
+    
+     def complete_login(self, request, app, token, response, **kwargs):
+        try:
+            identity_data = jwt.decode(
+                response["id_token"]["id_token"],
+                # Since the token was received by direct communication
+                # protected by TLS between this library and Google, we
+                # are allowed to skip checking the token signature
+                # according to the OpenID Connect Core 1.0
+                # specification.
+                # https://openid.net/specs/openid-connect-core-1_0.html#IDTokenValidation
+                options={
+                    "verify_signature": False,
+                    "verify_iss": True,
+                    "verify_aud": True,
+                    "verify_exp": True,
+                },
+                issuer=self.id_token_issuer,
+                audience=app.client_id,
+            )
+        except jwt.PyJWTError as e:
+            raise OAuth2Error("Invalid id_token") from e
+        login = self.get_provider().sociallogin_from_response(request, identity_data)
+        return login
