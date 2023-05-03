@@ -8,7 +8,7 @@ import api from "../../utils/api";
 import { axiosBase as http, axiosError as httpError } from "../../utils/axios";
 import { getMyUser, updateMyInfo } from "../../utils/auth/auth.utils";
 import logger from "@/utils/logger";
-import { AuthError, User } from "@/utils/auth/auth.types";
+import { AuthError, User, ProviderKey } from "@/utils/auth/auth.types";
 import { AuthAction, AuthState, authReducer } from "./AuthReducer";
 import { fetchMyUser } from "../../utils/auth/auth.utils";
 
@@ -26,6 +26,8 @@ export interface AuthContextProps {
   dispatchAuth: React.Dispatch<AuthAction>;
   emailLogin: (loginData: { username?: string, email?: string, password?: string },
     options?: { redirect?: boolean, redirectTo?: string }) => Promise<User | null>;
+  socialLogin: (provider: ProviderKey, socialAction: "login" | "connect" | null, connectData: any,
+    options?: { redirect?: boolean, redirectTo?: string }) => Promise<User | null>;
   logout: (options?: { redirect?: boolean, redirectTo?: string }) => void,
   changeName: (data: { first_name?: string, last_name?: string }) => Promise<boolean>;
   forceReconnect: () => void;
@@ -39,6 +41,7 @@ const authContextDefaults: AuthContextProps = {
   authState: authReducerDefaults,
   dispatchAuth: () => {},
   emailLogin: () => Promise.resolve(null),
+  socialLogin: () => Promise.resolve(null),
   logout: () => {},
   changeName: () => Promise.resolve(false),
   forceReconnect: () => {},
@@ -74,7 +77,7 @@ export interface AuthProviderProps {
   defaultCallbackUrlParamName?: string,
 }
 
-type SocialAction = "login" | "connect" | null;
+export type SocialAction = "login" | "connect" | null;
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ 
   children, defaultRedirectTo, defaultSetCallbackUrlParam, defaultCallbackUrlParamName
@@ -89,22 +92,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({
       dispatch({ type: "clearErrors" });
       
       let user: User | null = null;
-      const socialAction = sessionStorage.getItem("socialAction") as SocialAction;
-
-      if (socialAction && (socialAction === "login" || socialAction === "connect")) {
-        // Check if a valid social access token exists, or if the user
-        // is trying to connect its social account
-        user = await socialLogin(socialAction, signal);
-      }
-      else {
-        // Check if valid session exists
-        const { data } = await fetchMyUser(http, signal);
-        user = data;
-      }
+      // Check if valid session exists
+      const { data } = await fetchMyUser(http, signal);
+      user = data;
 
       return user;
     },
-    enabled: state.registeredHooks > 0,
+    enabled: state.registeredHooks > 0 && !state.user,
     // cacheTime: 1000 * 60 * 6,  // 6 minutes
     // staleTime: 1000 * 60 * 5, // 5 minutes
     retry: false,
@@ -112,22 +106,35 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({
     refetchOnReconnect: true,
     refetchIntervalInBackground: false,
     onSettled: (data, error) => {
-      if (sessionStorage.getItem("socialAction")) 
-        sessionStorage.removeItem("socialAction");
       dispatch({ type: "setUser", payload: data ?? null });
       dispatch({ type: "loading", payload: false });
     },
   });
 
   const socialLogin = useCallback(async (
-    socialAction: "login" | "connect" | null, abortSignal?: AbortSignal | undefined
+    provider: ProviderKey,
+    socialAction: SocialAction, 
+    connectData: any,
+    options?: { redirect?: boolean, redirectTo?: string }
   ): Promise<User | null> => {
-    const sessionData = await getSession();
+    const opts: typeof options = {
+      redirect: true,
+      redirectTo: "/",
+      ...options
+    };
 
-    if (sessionData && sessionData.user && 
-      (sessionData.user as any).accessToken && (sessionData.user as any).provider) {
-      const provider = (sessionData.user as any).provider;
-      const socialUrls = api.endpoints.auth.social[provider as keyof typeof api.endpoints.auth.social];
+    dispatch({ type: "loading", payload: true });
+    const socialUrls = api.endpoints.auth.social[provider as keyof typeof api.endpoints.auth.social];
+
+    let user: User | null = null;
+
+    if (!socialUrls) {
+      dispatch({ type: "addError", payload: AuthError.ProviderNotFound })
+      logger.error(
+        `No valid ${socialAction === "connect" ? "connection" : "login"} url for the ${provider} was found.`
+      );
+    }
+    else {
       let url = socialUrls.login;
 
       if (socialAction === "connect")
@@ -135,21 +142,14 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({
 
       if (url) {
         try {
-          const resp = await http.post(url, {
-            access_token: (sessionData.user as any).accessToken,
-          }, {
-            signal: abortSignal,
-          });
-  
-          if (resp.status >= 200 || resp.status < 300) {
-            const user = await getMyUser(http, abortSignal);
-            signOut({ redirect: false });
-            return user;
+          const resp = await http.post(url, connectData);
+
+          if (resp.status === 200) {
+            user = resp.data.user;
           }
         }
         catch (e) {
           logger.debug("Error authenticating user.", e);
-          signOut({ redirect: false });
 
           if (isAxiosError(e)) {
             const err = e as AxiosError<any, any>;
@@ -157,24 +157,22 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({
             const errorList = err.response?.data.non_field_errors;
             if (errorList) {
               if (errorList.includes("Incorrect value")) 
-                dispatch({ type: "addError", payload: AuthError.IncorrectCredentials })
+                dispatch({ type: "addError", payload: AuthError.IncorrectCredentials });
               if (errorList.includes("User is already registered with this e-mail address.")) 
-                dispatch({ type: "addError", payload: AuthError.EmailAlreadyRegistered })
+                dispatch({ type: "addError", payload: AuthError.EmailAlreadyRegistered });
             }
           }
-
-          throw e; // rethrow error to be handled by caller
         }
       }
-      else {
-        dispatch({ type: "addError", payload: AuthError.ProviderNotFound })
-        throw new Error(
-          `No valid ${socialAction === "connect" ? "connection" : "login"} url for the ${provider} was found.`
-        );
-      }
     }
+  
+    dispatch({ type: "setUser", payload: user });
+    dispatch({ type: "loading", payload: false });
 
-    return null;
+    if (opts?.redirect && user)
+      Router.push(opts.redirectTo!);
+
+    return user;
   }, []);
 
   const emailLogin = useCallback(async (
@@ -280,13 +278,14 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({
     authState: state,
     dispatchAuth: dispatch,
     emailLogin,
+    socialLogin,
     logout,
     changeName,
     forceReconnect,
     defaultRedirectTo: defaultRedirectTo ?? authContextDefaults.defaultRedirectTo,
     defaultSetCallbackUrlParam: defaultSetCallbackUrlParam ?? authContextDefaults.defaultSetCallbackUrlParam,
     defaultCallbackUrlParamName: defaultCallbackUrlParamName ?? authContextDefaults.defaultCallbackUrlParamName,
-  }), [state, dispatch, emailLogin, logout, changeName, forceReconnect, defaultRedirectTo, defaultSetCallbackUrlParam, defaultCallbackUrlParamName]);
+  }), [state, dispatch, emailLogin, socialLogin, logout, changeName, forceReconnect, defaultRedirectTo, defaultSetCallbackUrlParam, defaultCallbackUrlParamName]);
 
   return (
     <AuthContext.Provider value={contextValue}>

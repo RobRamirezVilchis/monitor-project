@@ -1,9 +1,9 @@
-import React, { useCallback, useContext, useEffect, useRef } from "react";
+import React, { useCallback, useContext, useEffect, useLayoutEffect, useRef } from "react";
 import Router from "next/router";
 
-import { AuthContext } from "./AuthProvider";
+import { AuthContext, SocialAction } from "./AuthProvider";
 import { isUserInAuthorizedRoles } from "../../utils/auth/auth.utils";
-import { Role } from "../../utils/auth/auth.types";
+import { Role, ProviderKey } from "@/utils/auth/auth.types";
 
 export const useAuth = (options?: {
   /**
@@ -69,6 +69,7 @@ export const useAuth = (options?: {
     authState,
     dispatchAuth,
     emailLogin,
+    socialLogin,
     logout,
     changeName,
     forceReconnect,
@@ -79,7 +80,7 @@ export const useAuth = (options?: {
   const [isAuthorized, setIsAuthorized] = React.useState<boolean>(false);
   const registered = useRef(false);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const triggerAuthentication = options?.triggerAuthentication ?? true;
     if (triggerAuthentication && !registered.current) {
       registered.current = true;
@@ -167,8 +168,9 @@ export const useAuth = (options?: {
         password?: string 
       },
       socialLogin?: {
-        provider?: any, 
-        type?: "login" | "connect"
+        provider: ProviderKey, 
+        type: SocialAction,
+        connectionData?: any,
       }
     },
     options?: {
@@ -182,14 +184,25 @@ export const useAuth = (options?: {
       return emailLogin(data.basicLogin, options);
     }
     else if (data.socialLogin) {
-      sessionStorage.setItem("socialAction", data.socialLogin.type || "login");
+      if (data.socialLogin.connectionData) {
+        return socialLogin(
+          data.socialLogin.provider, 
+          data.socialLogin.type, 
+          data.socialLogin.connectionData, 
+          options
+        );
+      }
+      else {
+        sessionStorage.setItem("socialAction", data.socialLogin.type || "login");
+        sessionStorage.setItem("socialProvider", data.socialLogin.provider);
         
-      return signIn(data.socialLogin.provider, { redirect: options?.redirect, callbackUrl: options?.redirectTo }, data.socialLogin.authorizationParams);
+        startSocialLogin(data.socialLogin.provider);
+      }
     }
     else {
       throw new Error("At least one type of login data must be given");
     }
-  }, [dispatchAuth, emailLogin]);
+  }, [dispatchAuth, emailLogin, socialLogin]);
 
   return {
     user: authState.user,
@@ -200,6 +213,25 @@ export const useAuth = (options?: {
     login,
     logout: logout,
     forceReconnect,
-    changeName: changeName,
+    changeName,
   };
+}
+
+function startSocialLogin(provider: ProviderKey) {
+  switch (provider) {
+    case "google":
+      sessionStorage.setItem("socialAction", "login");
+      const googleCallbackUrl = process.env.NEXT_PUBLIC_GOOGLE_CALLBACK_URL;
+      Router.push({
+        pathname: "https://accounts.google.com/o/oauth2/v2/auth",
+        query: {
+          client_id: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID,
+          redirect_uri: googleCallbackUrl,
+          response_type: "code",
+          scope: "openid profile email",
+          prompt: "consent",
+        },
+      });
+      break;
+  }
 }

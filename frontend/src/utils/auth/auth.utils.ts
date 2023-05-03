@@ -236,3 +236,10 @@ export const getRoleName = (role: Role) => {
       return "Sin rol";
   }
 }
+
+export const providers = {
+  google: {
+    id: "google",
+    name: "Google",
+  }
+};

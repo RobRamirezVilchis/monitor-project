@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useCallback, useLayoutEffect, useMemo, useState } from "react";
 import type { NextPage } from "next";
 import { NextRouter, useRouter } from "next/router";
 import { FormProvider, useForm } from "react-hook-form";
@@ -6,41 +6,31 @@ import Link from "next/link";
 import Button from "@mui/lab/LoadingButton";
 import ButtonBase from "@mui/material/ButtonBase";
 
-import { axiosBase as http } from "@/utils/axios";
 import { useAuth } from "@/components/auth/useAuth";
-import { AuthError } from "@/utils/auth/auth.types";
-import { emailPattern, getAuthErrorString } from "@/utils/auth/auth.utils";
+import { AuthError, ProviderKey, Providers } from "@/utils/auth/auth.types";
+import { emailPattern, getAuthErrorString, providers } from "@/utils/auth/auth.utils";
 import { TextInput } from "@/components/shared/inputs";
 import api from "@/utils/api";
 
 import LogoGoogle from "@/../assets/logo-google.svg";
+import { Backdrop, CircularProgress } from "@mui/material";
+import { useSnackbar } from "@/components/shared";
 
 interface BasicLoginData {
   email: string; 
   password: string; 
 }
 
-const providers = {
-  google: {
-    id: "google",
-    name: "Google",
-  }
-};
-
-type Providers = typeof providers;
-
-type ProviderKey = keyof Providers;
-
-type Provider = Providers[ProviderKey];
-
 const Login: NextPage = () => {
   const router = useRouter();
   const { callbackUrl } = router.query;
   const [loading, setLoading] = useState(false);
+  const [loadingBackdrop, setLoadingBackdrop] = useState(false);
   const { login, errors } = useAuth({
     skipAll: true,
     triggerAuthentication: false,
   });
+  const { enqueueSnackbar } = useSnackbar();
   const formMethods = useForm<BasicLoginData>({
     mode: "onTouched",
     defaultValues: {
@@ -49,9 +39,47 @@ const Login: NextPage = () => {
     },
   });
 
-  const redirectTo = typeof callbackUrl === "string" && callbackUrl 
-    ? callbackUrl
-    : "/";
+  const redirectTo = useMemo(() => typeof callbackUrl === "string" && callbackUrl 
+  ? callbackUrl
+  : "/", [callbackUrl]);
+
+  const socialConnect = useCallback(async (code: string) => {
+    const type = sessionStorage.getItem("socialAction") as "login" | "connect";
+    const provider = sessionStorage.getItem("socialProvider") as ProviderKey;
+    const url = sessionStorage.getItem("socialCallbackUrl");
+
+    sessionStorage.removeItem("socialAction");
+    sessionStorage.removeItem("socialProvider");
+
+    router.replace(router.pathname, undefined, { shallow: true });
+
+    if (type && provider && !loadingBackdrop) {
+      setLoadingBackdrop(true);
+      try {
+        await login({ 
+          socialLogin: { provider, type, connectionData: { code } } 
+        }, { redirectTo: url ?? "/" });
+        sessionStorage.removeItem("socialCallbackUrl");
+      }
+      catch (e) {
+        enqueueSnackbar(
+          "Ha ocurrido un problema, por favor intenta de nuevo más tarde.", 
+          { variant: "error" }
+        );
+      }
+      setLoadingBackdrop(false);
+    }
+  }, [login, router, loadingBackdrop, enqueueSnackbar]);
+
+  useLayoutEffect(() => {
+    if (router.isReady) {
+      // TODO: Change this if providers other than Google are added
+      const { code } = router.query;
+      if (code) {
+        socialConnect(code as string);
+      }
+    }
+  }, [router, socialConnect, redirectTo]);
 
   const onSubmit = async (values: BasicLoginData) => {
     setLoading(true);
@@ -139,18 +167,16 @@ const Login: NextPage = () => {
         <div>
           {providers ? (
             <div className="flex flex-col gap-1 items-center mt-2 border border-1 rounded-xl">
-              {Object.entries(providers).map(([key, provider]) => (
+              {Object.entries(providers).map(([providerKey, provider]) => (
                 <ButtonBase
                   key={provider.id}
-                  onClick={(_) =>
-                    login(
-                      { socialLogin: { provider: provider.id } },
-                      { redirectTo }
-                    )
-                  }
+                  onClick={() => {
+                    sessionStorage.setItem("socialCallbackUrl", redirectTo);
+                    login({ socialLogin: { provider: providerKey as ProviderKey, type: "login" } });
+                  }}
                   className="!bg-white !py-2.5 !px-8 !rounded-2xl !flex !gap-3"
                 >
-                  {getProviderLogo(key as ProviderKey)}
+                  {getProviderLogo(providerKey as ProviderKey)}
                   <span>Continuar con {provider.name}</span>
                 </ButtonBase>
               ))}
@@ -167,23 +193,16 @@ const Login: NextPage = () => {
                 Crear cuenta
               </Link>
             </div>
-
-            <div>
-              <button onClick={() => redirectToGoogleAuthentication(router)}>
-                Google
-              </button>
-
-              <button onClick={async () => {
-                const resp = await http.post(api.endpoints.auth.social.google.login, {
-                  code: router.query.code
-                });
-              }}>
-                Google 2
-              </button>
-            </div>
           </div>
         </div>
       </div>
+
+      <Backdrop
+        sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+        open={loadingBackdrop}
+      >
+        <CircularProgress color="inherit" />
+      </Backdrop>
     </div>
   );
 }
@@ -195,17 +214,4 @@ function getProviderLogo(provider: keyof Providers) {
     case "google": return <LogoGoogle />;
     default: return null;
   }
-}
-
-function redirectToGoogleAuthentication(router: NextRouter) {
-  router.push({
-    pathname: "https://accounts.google.com/o/oauth2/v2/auth",
-    query: {
-      client_id: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID,
-      redirect_uri: "http://localhost:3000/auth/login",
-      response_type: "code",
-      scope: "openid profile email",
-      prompt: "consent",
-    },
-  });
 }
