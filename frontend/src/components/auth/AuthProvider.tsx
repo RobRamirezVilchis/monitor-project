@@ -26,7 +26,7 @@ export interface AuthContextProps {
   dispatchAuth: React.Dispatch<AuthAction>;
   emailLogin: (loginData: { username?: string, email?: string, password?: string },
     options?: { redirect?: boolean, redirectTo?: string }) => Promise<User | null>;
-  socialLogin: (provider: ProviderKey, socialAction: "login" | "connect" | null, connectData: any,
+  socialLogin: (provider: ProviderKey, socialAction: "login" | "connect" | null, data: any,
     options?: { redirect?: boolean, redirectTo?: string }) => Promise<User | null>;
   logout: (options?: { redirect?: boolean, redirectTo?: string }) => void,
   changeName: (data: { first_name?: string, last_name?: string }) => Promise<boolean>;
@@ -114,7 +114,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({
   const socialLogin = useCallback(async (
     provider: ProviderKey,
     socialAction: SocialAction, 
-    connectData: any,
+    data: any,
     options?: { redirect?: boolean, redirectTo?: string }
   ): Promise<User | null> => {
     const opts: typeof options = {
@@ -142,7 +142,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({
 
       if (url) {
         try {
-          const resp = await http.post(url, connectData);
+          const resp = await http.post(url, data);
 
           if (resp.status === 200) {
             if (useJwt) {

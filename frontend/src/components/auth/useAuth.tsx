@@ -4,6 +4,7 @@ import Router from "next/router";
 import { AuthContext, SocialAction } from "./AuthProvider";
 import { isUserInAuthorizedRoles } from "../../utils/auth/auth.utils";
 import { Role, ProviderKey } from "@/utils/auth/auth.types";
+import { openCenteredPopupWindow } from "@/utils/window.utils";
 
 export const useAuth = (options?: {
   /**
@@ -162,7 +163,7 @@ export const useAuth = (options?: {
    */
   const login = useCallback(async (
     data: {
-      basicLogin?: { 
+      emailLogin?: { 
         username?: string, 
         email?: string, 
         password?: string 
@@ -170,7 +171,6 @@ export const useAuth = (options?: {
       socialLogin?: {
         provider: ProviderKey, 
         type: SocialAction,
-        connectionData?: any,
       }
     },
     options?: {
@@ -180,24 +180,20 @@ export const useAuth = (options?: {
   ) => {
     dispatchAuth({ type: "clearErrors" });
 
-    if (data.basicLogin) {
-      return emailLogin(data.basicLogin, options);
+    if (data.emailLogin) {
+      return emailLogin(data.emailLogin, options);
     }
     else if (data.socialLogin) {
-      if (data.socialLogin.connectionData) {
-        return socialLogin(
-          data.socialLogin.provider, 
-          data.socialLogin.type, 
-          data.socialLogin.connectionData, 
-          options
-        );
-      }
-      else {
-        sessionStorage.setItem("socialAction", data.socialLogin.type || "login");
-        sessionStorage.setItem("socialProvider", data.socialLogin.provider);
-        
-        startSocialLogin(data.socialLogin.provider);
-      }
+      startSocialLogin(data.socialLogin.provider, 
+        popupData => 
+          data.socialLogin 
+          && socialLogin(
+            data.socialLogin.provider, 
+            data.socialLogin.type, 
+            popupData, 
+            options
+          )
+      );
     }
     else {
       throw new Error("At least one type of login data must be given");
@@ -217,21 +213,45 @@ export const useAuth = (options?: {
   };
 }
 
-function startSocialLogin(provider: ProviderKey) {
+const socialLoginMessageListeners: Array<(event: MessageEvent<any>) => void> = [];
+
+function startSocialLogin(provider: ProviderKey, callback?: (data: any) => void) {
+  clearSocialLoginMessageListeners();
+
   switch (provider) {
     case "google":
-      sessionStorage.setItem("socialAction", "login");
-      const googleCallbackUrl = process.env.NEXT_PUBLIC_GOOGLE_CALLBACK_URL;
-      Router.push({
-        pathname: "https://accounts.google.com/o/oauth2/v2/auth",
-        query: {
-          client_id: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID,
-          redirect_uri: googleCallbackUrl,
-          response_type: "code",
-          scope: "openid profile email",
-          prompt: "consent",
-        },
-      });
+      const url = new URL("https://accounts.google.com/o/oauth2/v2/auth");
+      url.searchParams.append("client_id", process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID!);
+      url.searchParams.append("redirect_uri", process.env.NEXT_PUBLIC_GOOGLE_CALLBACK_URL!);
+      url.searchParams.append("response_type", "code");
+      url.searchParams.append("scope", "openid profile email");
+      url.searchParams.append("prompt", "consent");
+      
+      const socialLoginWindow = openCenteredPopupWindow(url, window, "oauth", { width: 500, height: 600 });
+      
+      if (socialLoginWindow) {
+        socialLoginWindow.focus();
+
+        const onChildMessage = (event: MessageEvent<any>) => {
+          if (event.origin !== window.location.origin) return;
+  
+          if (event.data.type === "google-callback") {
+            callback && callback(event.data.payload);
+            clearSocialLoginMessageListeners();
+          }
+        };
+        
+        socialLoginMessageListeners.push(onChildMessage);
+        window.addEventListener("message", onChildMessage, false);
+      }
       break;
+  }
+}
+
+function clearSocialLoginMessageListeners() {
+  let listener = socialLoginMessageListeners.pop();
+  while (listener) {
+    window.removeEventListener("message", listener);
+    listener = socialLoginMessageListeners.pop();
   }
 }

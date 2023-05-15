@@ -1,6 +1,6 @@
-import { useCallback, useLayoutEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import type { NextPage } from "next";
-import { NextRouter, useRouter } from "next/router";
+import { useRouter } from "next/router";
 import { FormProvider, useForm } from "react-hook-form";
 import Link from "next/link";
 import Button from "@mui/lab/LoadingButton";
@@ -10,11 +10,9 @@ import { useAuth } from "@/components/auth/useAuth";
 import { AuthError, ProviderKey, Providers } from "@/utils/auth/auth.types";
 import { emailPattern, getAuthErrorString, providers } from "@/utils/auth/auth.utils";
 import { TextInput } from "@/components/shared/inputs";
-import api from "@/utils/api";
 
 import LogoGoogle from "@/../assets/logo-google.svg";
 import { Backdrop, CircularProgress } from "@mui/material";
-import { useSnackbar } from "@/components/shared";
 
 interface BasicLoginData {
   email: string; 
@@ -30,7 +28,6 @@ const Login: NextPage = () => {
     skipAll: true,
     triggerAuthentication: false,
   });
-  const { enqueueSnackbar } = useSnackbar();
   const formMethods = useForm<BasicLoginData>({
     mode: "onTouched",
     defaultValues: {
@@ -43,48 +40,10 @@ const Login: NextPage = () => {
   ? callbackUrl
   : "/", [callbackUrl]);
 
-  const socialConnect = useCallback(async (code: string) => {
-    const type = sessionStorage.getItem("socialAction") as "login" | "connect";
-    const provider = sessionStorage.getItem("socialProvider") as ProviderKey;
-    const url = sessionStorage.getItem("socialCallbackUrl");
-
-    sessionStorage.removeItem("socialAction");
-    sessionStorage.removeItem("socialProvider");
-
-    router.replace(router.pathname, undefined, { shallow: true });
-
-    if (type && provider && !loadingBackdrop) {
-      setLoadingBackdrop(true);
-      try {
-        await login({ 
-          socialLogin: { provider, type, connectionData: { code } } 
-        }, { redirectTo: url ?? "/" });
-        sessionStorage.removeItem("socialCallbackUrl");
-      }
-      catch (e) {
-        enqueueSnackbar(
-          "Ha ocurrido un problema, por favor intenta de nuevo más tarde.", 
-          { variant: "error" }
-        );
-      }
-      setLoadingBackdrop(false);
-    }
-  }, [login, router, loadingBackdrop, enqueueSnackbar]);
-
-  useLayoutEffect(() => {
-    if (router.isReady) {
-      // TODO: Change this if providers other than Google are added
-      const { code } = router.query;
-      if (code) {
-        socialConnect(code as string);
-      }
-    }
-  }, [router, socialConnect, redirectTo]);
-
   const onSubmit = async (values: BasicLoginData) => {
     setLoading(true);
     try {
-      await login({ basicLogin: { 
+      await login({ emailLogin: { 
         username: values.email,
         password: values.password,
       } }, { redirectTo });
@@ -95,6 +54,10 @@ const Login: NextPage = () => {
     finally {
       setLoading(false);
     }
+  };
+
+  const onSocialLogin = async (provider: ProviderKey) => {
+    login({ socialLogin: { provider, type: "login" } });
   };
 
   return (
@@ -170,10 +133,7 @@ const Login: NextPage = () => {
               {Object.entries(providers).map(([providerKey, provider]) => (
                 <ButtonBase
                   key={provider.id}
-                  onClick={() => {
-                    sessionStorage.setItem("socialCallbackUrl", redirectTo);
-                    login({ socialLogin: { provider: providerKey as ProviderKey, type: "login" } });
-                  }}
+                  onClick={() => onSocialLogin(providerKey as ProviderKey)}
                   className="!bg-white !py-2.5 !px-8 !rounded-2xl !flex !gap-3"
                 >
                   {getProviderLogo(providerKey as ProviderKey)}
