@@ -5,6 +5,7 @@ from django.core.mail import EmailMessage, EmailMultiAlternatives
 from django.template import TemplateDoesNotExist
 from django.template.loader import render_to_string
 from allauth.account.adapter import DefaultAccountAdapter
+from allauth.socialaccount.adapter import app_settings, DefaultSocialAccountAdapter
 from allauth.socialaccount.providers.oauth2.client import OAuth2Error
 from allauth.socialaccount.providers.google.views import GoogleOAuth2Adapter as DefaultGoogleOAuth2Adapter
 
@@ -65,6 +66,23 @@ class AccountAdapter(DefaultAccountAdapter):
             msg = EmailMessage(subject, bodies["html"], from_email, to, headers=headers)
             msg.content_subtype = "html"  # Main content is now text/html
         return msg
+
+
+class SocialAccountAdapter(DefaultSocialAccountAdapter):
+    def get_app(self, request, provider, config=None):
+        # NOTE: Avoid loading models at top due to registry boot...
+        from allauth.socialaccount.models import SocialApp
+
+        config = config or app_settings.PROVIDERS.get(provider, {}).get("APP")
+        if config:
+            # app = SocialApp(provider=provider)
+            app = SocialApp.objects.get_or_create(provider=provider)[0]
+            for field in ["client_id", "secret", "key", "certificate_key"]:
+                setattr(app, field, config.get(field))
+        else:
+            app = SocialApp.objects.get_current(provider, request)
+
+        return app
 
 
 class GoogleOAuth2Adapter(DefaultGoogleOAuth2Adapter):

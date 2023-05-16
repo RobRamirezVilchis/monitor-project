@@ -176,8 +176,11 @@ SITE_ID = 1 # This must be setup in the Django admin and must be the frontend ur
 ACCOUNT_ADAPTER = "authentication.adapter.AccountAdapter"
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_EMAIL_VERIFICATION = "optional"
+
+SOCIALACCOUNT_ADAPTER = "authentication.adapter.SocialAccountAdapter"
 SOCIALACCOUNT_EMAIL_VERIFICATION = "none"
 SOCIALACCOUNT_EMAIL_REQUIRED = True
+SOCIALACCOUNT_STORE_TOKENS = True
 
 REST_AUTH = {
     "USER_DETAILS_SERIALIZER": "authentication.serializers.CustomUserDetailsSerializer",
@@ -185,7 +188,7 @@ REST_AUTH = {
     "PASSWORD_RESET_SERIALIZER": "authentication.serializers.CustomPasswordResetSerializer",
 
     "SESSION_LOGIN": True,
-    "USE_JWT": True,
+    "USE_JWT": False,
 
     "JWT_AUTH_COOKIE": 'auth',
     "JWT_AUTH_REFRESH_COOKIE": 'refresh',
