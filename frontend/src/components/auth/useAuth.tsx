@@ -3,7 +3,7 @@ import Router from "next/router";
 
 import { AuthContext, SocialAction } from "./AuthProvider";
 import { isUserInAuthorizedRoles } from "../../utils/auth/auth.utils";
-import { Role, ProviderKey } from "@/utils/auth/auth.types";
+import { Role, ProviderKey, User } from "@/utils/auth/auth.types";
 
 export const useAuth = (options?: {
   /**
@@ -164,11 +164,13 @@ export const useAuth = (options?: {
       emailLogin?: { 
         username?: string, 
         email?: string, 
-        password?: string 
+        password?: string,
       },
       socialLogin?: {
         provider: ProviderKey, 
         type: SocialAction,
+        onPopupClosed?: () => void,
+        onFinish?: (user: User | null) => void,
       }
     },
     options?: {
@@ -188,7 +190,9 @@ export const useAuth = (options?: {
       socialLogin(
         data.socialLogin.provider, 
         data.socialLogin.type, 
-        options
+        options,
+        data.socialLogin.onPopupClosed,
+        data.socialLogin.onFinish
       );
     }
     else {

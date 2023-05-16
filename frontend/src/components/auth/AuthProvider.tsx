@@ -28,7 +28,8 @@ export interface AuthContextProps {
   emailLogin: (loginData: { username?: string, email?: string, password?: string },
     options?: { redirect?: boolean, redirectTo?: string }) => Promise<User | null>;
   socialLogin: (provider: ProviderKey, socialAction: "login" | "connect" | null,
-    options?: { redirect?: boolean, redirectTo?: string }) => void;
+    options?: { redirect?: boolean, redirectTo?: string }, 
+    onPopupClosed?: () => void, onFinish?: (user: User | null) => void) => void;
   logout: (options?: { redirect?: boolean, redirectTo?: string }) => void,
   changeName: (data: { first_name?: string, last_name?: string }) => Promise<boolean>;
   forceReconnect: () => void;
@@ -274,15 +275,20 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({
   const socialLogin = useCallback(async (
     provider: ProviderKey,
     socialAction: SocialAction, 
-    options?: { redirect?: boolean, redirectTo?: string }
+    options?: { redirect?: boolean, redirectTo?: string },
+    onPopupClosed?: () => void,
+    onFinish?: (user: User | null) => void
   ) => {
-    startSocialLogin(provider, popupData => 
-      socialLoginAction(
+    startSocialLogin(provider, async (popupData) => {
+      const user = await socialLoginAction(
         provider, 
         socialAction, 
         popupData, 
         options
-      )
+      );
+      onFinish?.(user);
+    },
+      onPopupClosed,
     );
   }, []);
 

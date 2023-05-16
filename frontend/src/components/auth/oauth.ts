@@ -3,7 +3,7 @@ import { openCenteredPopupWindow } from "@/utils/window.utils";
 
 const socialLoginMessageListeners: Array<(event: MessageEvent<any>) => void> = [];
 
-export function startSocialLogin(provider: ProviderKey, callback?: (data: any) => void) {
+export function startSocialLogin(provider: ProviderKey, callback?: (data: any) => void, onPopupClosed?: () => void) {
   clearSocialLoginMessageListeners();
 
   switch (provider) {
@@ -35,8 +35,9 @@ export function startSocialLogin(provider: ProviderKey, callback?: (data: any) =
           if (socialLoginWindow.closed) {
             clearInterval(closedCheck);
             clearSocialLoginMessageListeners();
+            onPopupClosed?.();
           }
-        }, 500);
+        }, 250);
       }
       break;
   }
