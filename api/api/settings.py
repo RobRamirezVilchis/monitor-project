@@ -220,6 +220,10 @@ SOCIALACCOUNT_PROVIDERS = {
             'profile',
             'email',
         ],
+        'AUTH_PARAMS': {
+            "access_type": "offline",
+            "prompt": "consent",
+        }
     }
 }
 
