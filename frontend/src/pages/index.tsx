@@ -2,9 +2,10 @@ import { NextPage } from "next"
 
 import { useAuth } from "../components/auth/useAuth";
 import { getOrRefreshAccessToken } from "@/utils/auth/auth.utils";
+import Link from "next/link";
 
 const Home: NextPage = () => {
-  const { user, logout } = useAuth({
+  const { user, login, logout } = useAuth({
     skipAll: true,
   });
 
@@ -31,8 +32,28 @@ const Home: NextPage = () => {
           >
             Refresh token
           </button>
+
+          <button 
+            className="p-2 bg-blue-500 text-white rounded-md"
+            onClick={async () => {
+              login({ socialLogin: { provider: "google", type: "connect" } })
+            }}
+          >
+            Connect account to Google
+          </button>
         </div>
-      ) : null}
+      ) : (
+        null
+      )}
+
+      <div className="p-2 flex gap-2">
+        <Link 
+          href="auth/login" 
+          className="p-2 bg-blue-500 text-white rounded-md"
+        >
+          Go to Login
+        </Link>
+      </div>
     </main>
   )
 }

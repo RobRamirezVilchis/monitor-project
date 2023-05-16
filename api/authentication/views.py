@@ -30,6 +30,8 @@ class GoogleLoginView(SocialLoginView):
 
 class GoogleConnectView(SocialConnectView):
     adapter_class = GoogleOAuth2Adapter
+    callback_url = GOOGLE_CALLBACK_URL
+    client_class = OAuth2Client
 
 
 class RegistrationKeyValidView(VerifyEmailView):
