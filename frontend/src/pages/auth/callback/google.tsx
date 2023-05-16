@@ -9,14 +9,15 @@ const GoogleCallback: NextPage = () => {
 
   useLayoutEffect(() => {
     const opener = window.opener.location.href;
-    const { code } = router.query;
+    const { code, error } = router.query;
 
-    if (opener && !ready.current && code) {
+    if (opener && !ready.current && (code || error)) {
       ready.current = true;
       window.opener.postMessage({ 
         type: "google-callback", 
         payload: {
-          code: code as string
+          code: code as string,
+          error: error as string,
         }
       }, opener);
       window.close();

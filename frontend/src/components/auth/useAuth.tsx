@@ -171,6 +171,7 @@ export const useAuth = (options?: {
         type: SocialAction,
         onPopupClosed?: () => void,
         onFinish?: (user: User | null) => void,
+        onError?: (error: any) => void,
       }
     },
     options?: {
@@ -192,7 +193,8 @@ export const useAuth = (options?: {
         data.socialLogin.type, 
         options,
         data.socialLogin.onPopupClosed,
-        data.socialLogin.onFinish
+        data.socialLogin.onFinish,
+        data.socialLogin.onError
       );
     }
     else {

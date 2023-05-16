@@ -29,7 +29,7 @@ export interface AuthContextProps {
     options?: { redirect?: boolean, redirectTo?: string }) => Promise<User | null>;
   socialLogin: (provider: ProviderKey, socialAction: "login" | "connect" | null,
     options?: { redirect?: boolean, redirectTo?: string }, 
-    onPopupClosed?: () => void, onFinish?: (user: User | null) => void) => void;
+    onPopupClosed?: () => void, onFinish?: (user: User | null) => void, onError?: (error: any) => void) => void;
   logout: (options?: { redirect?: boolean, redirectTo?: string }) => void,
   changeName: (data: { first_name?: string, last_name?: string }) => Promise<boolean>;
   forceReconnect: () => void;
@@ -277,13 +277,18 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({
     socialAction: SocialAction, 
     options?: { redirect?: boolean, redirectTo?: string },
     onPopupClosed?: () => void,
-    onFinish?: (user: User | null) => void
+    onFinish?: (user: User | null) => void,
+    onError?: (error: any) => void
   ) => {
-    startSocialLogin(provider, async (popupData) => {
+    startSocialLogin(provider, async (data) => {
+      if (data.error) {
+        onError?.(data.error);
+        return;
+      }
       const user = await socialLoginAction(
         provider, 
         socialAction, 
-        popupData, 
+        data, 
         options
       );
       onFinish?.(user);
