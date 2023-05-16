@@ -4,7 +4,6 @@ import Router from "next/router";
 import { AuthContext, SocialAction } from "./AuthProvider";
 import { isUserInAuthorizedRoles } from "../../utils/auth/auth.utils";
 import { Role, ProviderKey } from "@/utils/auth/auth.types";
-import { openCenteredPopupWindow } from "@/utils/window.utils";
 
 export const useAuth = (options?: {
   /**
@@ -153,13 +152,12 @@ export const useAuth = (options?: {
   }, [options, authState.loading, authState.user, defaultRedirectTo, defaultSetCallbackUrlParam, defaultCallbackUrlParamName]);
 
   /**
-   * Login the user using basic login (username and password) or social login (i.e. Google)
-   * @param data Data used for the login method. If both types are given, socialLogin will
-   * be ignored
+   * Login the user using email login or social login (i.e. Google)
+   * @param data Data used for the login method. If both types are given, email login will be used
    * @param options Extra options for the login function
-   * @returns a Promise<boolean> if basicLogin data was given. If socialLogin data is given,
-   * it returns a Promise based on the documentation found at https://next-auth.js.org/getting-started/client#signin
-   * @throws an error if neither basicLogin or socialLogin data was given
+   * @returns a Promise<User | null> if emailLogin data was given. If socialLogin data is given,
+   * it returns a Promise<void>
+   * @throws an error if neither emailLogin or socialLogin data was given
    */
   const login = useCallback(async (
     data: {
@@ -181,22 +179,20 @@ export const useAuth = (options?: {
     dispatchAuth({ type: "clearErrors" });
 
     if (data.emailLogin) {
-      return emailLogin(data.emailLogin, options);
+      return emailLogin(
+        data.emailLogin, 
+        options
+      );
     }
     else if (data.socialLogin) {
-      startSocialLogin(data.socialLogin.provider, 
-        popupData => 
-          data.socialLogin 
-          && socialLogin(
-            data.socialLogin.provider, 
-            data.socialLogin.type, 
-            popupData, 
-            options
-          )
+      socialLogin(
+        data.socialLogin.provider, 
+        data.socialLogin.type, 
+        options
       );
     }
     else {
-      throw new Error("At least one type of login data must be given");
+      throw new Error("At least one type of login data must be provided.");
     }
   }, [dispatchAuth, emailLogin, socialLogin]);
 
@@ -211,47 +207,4 @@ export const useAuth = (options?: {
     forceReconnect,
     changeName,
   };
-}
-
-const socialLoginMessageListeners: Array<(event: MessageEvent<any>) => void> = [];
-
-function startSocialLogin(provider: ProviderKey, callback?: (data: any) => void) {
-  clearSocialLoginMessageListeners();
-
-  switch (provider) {
-    case "google":
-      const url = new URL("https://accounts.google.com/o/oauth2/v2/auth");
-      url.searchParams.append("client_id", process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID!);
-      url.searchParams.append("redirect_uri", process.env.NEXT_PUBLIC_GOOGLE_CALLBACK_URL!);
-      url.searchParams.append("response_type", "code");
-      url.searchParams.append("scope", "openid profile email");
-      url.searchParams.append("prompt", "consent");
-      
-      const socialLoginWindow = openCenteredPopupWindow(url, window, "oauth", { width: 500, height: 600 });
-      
-      if (socialLoginWindow) {
-        socialLoginWindow.focus();
-
-        const onChildMessage = (event: MessageEvent<any>) => {
-          if (event.origin !== window.location.origin) return;
-  
-          if (event.data.type === "google-callback") {
-            callback && callback(event.data.payload);
-            clearSocialLoginMessageListeners();
-          }
-        };
-        
-        socialLoginMessageListeners.push(onChildMessage);
-        window.addEventListener("message", onChildMessage, false);
-      }
-      break;
-  }
-}
-
-function clearSocialLoginMessageListeners() {
-  let listener = socialLoginMessageListeners.pop();
-  while (listener) {
-    window.removeEventListener("message", listener);
-    listener = socialLoginMessageListeners.pop();
-  }
 }

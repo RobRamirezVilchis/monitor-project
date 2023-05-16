@@ -10,6 +10,7 @@ import logger from "@/utils/logger";
 import { AuthError, User, ProviderKey } from "@/utils/auth/auth.types";
 import { AuthAction, AuthState, authReducer } from "./AuthReducer";
 import { fetchMyUser } from "../../utils/auth/auth.utils";
+import { startSocialLogin } from "./oauth";
 
 // Reducer ---------------------------------------------------------------------
 const authReducerDefaults: AuthState = {
@@ -26,8 +27,8 @@ export interface AuthContextProps {
   dispatchAuth: React.Dispatch<AuthAction>;
   emailLogin: (loginData: { username?: string, email?: string, password?: string },
     options?: { redirect?: boolean, redirectTo?: string }) => Promise<User | null>;
-  socialLogin: (provider: ProviderKey, socialAction: "login" | "connect" | null, data: any,
-    options?: { redirect?: boolean, redirectTo?: string }) => Promise<User | null>;
+  socialLogin: (provider: ProviderKey, socialAction: "login" | "connect" | null,
+    options?: { redirect?: boolean, redirectTo?: string }) => void;
   logout: (options?: { redirect?: boolean, redirectTo?: string }) => void,
   changeName: (data: { first_name?: string, last_name?: string }) => Promise<boolean>;
   forceReconnect: () => void;
@@ -128,83 +129,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({
     }
   }, [state.registeredHooks, state.user, state.userFetched, online]);
 
-  const socialLogin = useCallback(async (
-    provider: ProviderKey,
-    socialAction: SocialAction, 
-    data: any,
-    options?: { redirect?: boolean, redirectTo?: string }
-  ): Promise<User | null> => {
-    const opts: typeof options = {
-      redirect: true,
-      redirectTo: "/",
-      ...options
-    };
-
-    dispatch({ type: "loading", payload: true });
-    const socialUrls = api.endpoints.auth.social[provider as keyof typeof api.endpoints.auth.social];
-
-    let user: User | null = null;
-
-    if (!socialUrls) {
-      dispatch({ type: "addError", payload: AuthError.ProviderNotFound })
-      logger.error(
-        `No valid ${socialAction === "connect" ? "connection" : "login"} url for the ${provider} was found.`
-      );
-    }
-    else {
-      let url = socialUrls.login;
-
-      if (socialAction === "connect")
-        url = socialUrls.connect;
-
-      if (url) {
-        try {
-          const resp = await http.post(url, data, { withCredentials: true });
-          
-          if (resp.status === 200) {
-            if (useJwt) {
-              clearJwtStorage();
-              if (!jwtCookie) {
-                setAccessToken(resp.data.access_token);
-                setRefreshToken(resp.data.refresh_token);
-              }
-              setAccessTokenExpiration(resp.data.access_token_expiration);
-              setRefreshTokenExpiration(resp.data.refresh_token_expiration);
-            }
-
-            if (resp.data.user)
-              user = resp.data.user;
-            else
-              user = await getMyUser(http);
-          }
-        }
-        catch (e) {
-          logger.debug("Error authenticating user.", e);
-
-          if (isAxiosError(e)) {
-            const err = e as AxiosError<any, any>;
-    
-            const errorList = err.response?.data.non_field_errors;
-            if (errorList) {
-              if (errorList.includes("Incorrect value")) 
-                dispatch({ type: "addError", payload: AuthError.IncorrectCredentials });
-              if (errorList.includes("User is already registered with this e-mail address.")) 
-                dispatch({ type: "addError", payload: AuthError.EmailAlreadyRegistered });
-            }
-          }
-        }
-      }
-    }
-  
-    dispatch({ type: "setUser", payload: user });
-    dispatch({ type: "loading", payload: false });
-
-    if (opts?.redirect && user)
-      Router.push(opts.redirectTo!);
-
-    return user;
-  }, []);
-
   const emailLogin = useCallback(async (
     loginData: { 
       username?: string, 
@@ -268,6 +192,98 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({
       Router.push(opts.redirectTo!);
 
     return newUser;
+  }, []);
+
+  const socialLoginAction = useCallback(async (
+    provider: ProviderKey,
+    socialAction: SocialAction, 
+    data: any,
+    options?: { redirect?: boolean, redirectTo?: string }
+  ): Promise<User | null> => {
+    const opts: typeof options = {
+      redirect: true,
+      redirectTo: "/",
+      ...options
+    };
+
+    dispatch({ type: "loading", payload: true });
+    const socialUrls = api.endpoints.auth.social[provider as keyof typeof api.endpoints.auth.social];
+
+    let user: User | null = null;
+
+    if (!socialUrls) {
+      dispatch({ type: "addError", payload: AuthError.ProviderNotFound })
+      logger.error(
+        `No valid ${socialAction === "connect" ? "connection" : "login"} url for the ${provider} was found.`
+      );
+    }
+    else {
+      let url = socialUrls.login;
+
+      if (socialAction === "connect")
+        url = socialUrls.connect;
+
+      if (url) {
+        try {
+          const resp = await http.post(url, data);
+          
+          if (resp.status === 200) {
+            if (useJwt) {
+              clearJwtStorage();
+              if (!jwtCookie) {
+                setAccessToken(resp.data.access_token);
+                setRefreshToken(resp.data.refresh_token);
+              }
+              setAccessTokenExpiration(resp.data.access_token_expiration);
+              setRefreshTokenExpiration(resp.data.refresh_token_expiration);
+            }
+
+            if (resp.data.user)
+              user = resp.data.user;
+            else
+              user = await getMyUser(http);
+          }
+        }
+        catch (e) {
+          logger.debug("Error authenticating user.", e);
+
+          if (isAxiosError(e)) {
+            const err = e as AxiosError<any, any>;
+    
+            const errorList = err.response?.data.non_field_errors;
+            if (errorList) {
+              if (errorList.includes("Incorrect value")) 
+                dispatch({ type: "addError", payload: AuthError.IncorrectCredentials });
+              if (errorList.includes("User is already registered with this e-mail address.")) 
+                dispatch({ type: "addError", payload: AuthError.EmailAlreadyRegistered });
+            }
+          }
+        }
+      }
+    }
+  
+    dispatch({ type: "setUser", payload: user });
+    dispatch({ type: "loading", payload: false });
+
+    if (opts?.redirect && user)
+      Router.push(opts.redirectTo!);
+
+    return user;
+  }, []);
+
+  const socialLogin = useCallback(async (
+    provider: ProviderKey,
+    socialAction: SocialAction, 
+    options?: { redirect?: boolean, redirectTo?: string }
+  ) => {
+    startSocialLogin(provider, popupData => 
+      socialLoginAction(
+        provider, 
+        socialAction, 
+        popupData, 
+        options
+      )
+    );
   }, []);
 
   const logout = useCallback(async (options?: {
