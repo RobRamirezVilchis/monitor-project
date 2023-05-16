@@ -3,11 +3,6 @@ import "@/styles/react-datepicker-custom.css"
 
 import type { AppProps } from "next/app";
 import Head from "next/head";
-import {
-  QueryClient,
-  QueryClientProvider,
-} from "react-query";
-import { ReactQueryDevtools } from "react-query/devtools";
 import { Roboto_Flex } from "next/font/google";
 import { SnackbarProvider } from "notistack";
 
@@ -17,8 +12,6 @@ const roboto = Roboto_Flex({
   weight: ["400", "500", "700"],
   subsets: ["latin"],
 });
-
-const queryClient = new QueryClient();
 
 export default function App({ Component, pageProps: { session, ...pageProps } }: AppProps) {
   return (<>
@@ -31,14 +24,11 @@ export default function App({ Component, pageProps: { session, ...pageProps } }:
     </Head>
     
     <div id="__app" className={roboto.className}>
-      <QueryClientProvider client={queryClient}>
-        <AuthProvider>
-          <SnackbarProvider maxSnack={5} dense autoHideDuration={10000}>
-            <Component {...pageProps} />
-          </SnackbarProvider>
-          <ReactQueryDevtools initialIsOpen={false} />
-        </AuthProvider>
-      </QueryClientProvider>
+      <AuthProvider>
+        <SnackbarProvider maxSnack={5} dense autoHideDuration={10000}>
+          <Component {...pageProps} />
+        </SnackbarProvider>
+      </AuthProvider>
     </div>
   </>);
 }

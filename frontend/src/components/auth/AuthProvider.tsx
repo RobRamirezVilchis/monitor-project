@@ -1,5 +1,4 @@
-import React, { createContext, useCallback, useMemo } from "react";
-import { useQuery, useQueryClient } from "react-query";
+import React, { createContext, useCallback, useEffect, useMemo, useState } from "react";
 import { AxiosError, isAxiosError } from "axios";
 import Router from "next/router";
 import { useImmerReducer } from "use-immer";
@@ -16,6 +15,7 @@ import { fetchMyUser } from "../../utils/auth/auth.utils";
 const authReducerDefaults: AuthState = {
   user: null,
   loading: true,
+  userFetched: false,
   errors: null,
   registeredHooks: 0,
 };
@@ -82,34 +82,51 @@ export type SocialAction = "login" | "connect" | null;
 export const AuthProvider: React.FC<AuthProviderProps> = ({ 
   children, defaultRedirectTo, defaultSetCallbackUrlParam, defaultCallbackUrlParamName
 }) => {
+  const [online, setOnline] = useState<boolean>(typeof window !== "undefined" ? navigator.onLine : true);
   const [state, dispatch] = useImmerReducer(authReducer, authReducerDefaults);
-  const queryClient = useQueryClient();
 
-  const authenticatedQuery = useQuery({
-    queryKey: ["auth-user"],
-    queryFn: async ({ signal }) => {
+  useEffect(() => {
+    const handleOnline = () => setOnline(true);
+    const handleOffline = () => setOnline(false);
+
+    window.addEventListener("online", handleOnline);
+    window.addEventListener("offline", handleOffline);
+
+    return () => {
+      window.removeEventListener("online", handleOnline);
+      window.removeEventListener("offline", handleOffline);
+    }
+  }, []);
+
+  useEffect(() => {
+    const abortController = new AbortController();
+
+    if (!state.userFetched && state.registeredHooks > 0 && !state.user && online) {
       dispatch({ type: "loading", payload: true });
       dispatch({ type: "clearErrors" });
+      dispatch({ type: "userFetched", payload: true });
       
-      let user: User | null = null;
-      // Check if valid session exists
-      const { data } = await fetchMyUser(http, signal);
-      user = data;
+      (async () => {
+        try {
+          // Check if valid session exists
+          const { data } = await fetchMyUser(http, abortController.signal);
+          dispatch({ type: "setUser", payload: data ?? null });
+        }
+        catch (e) {
+          if (isAxiosError(e)) {
+            if (e.code !== "ERR_CANCELED") {
+              logger.debug("No valid session found", e);
+            }
+          }
+        }
+        dispatch({ type: "loading", payload: false });
 
-      return user;
-    },
-    enabled: state.registeredHooks > 0 && !state.user,
-    // cacheTime: 1000 * 60 * 6,  // 6 minutes
-    // staleTime: 1000 * 60 * 5, // 5 minutes
-    retry: false,
-    refetchOnWindowFocus: false,
-    refetchOnReconnect: true,
-    refetchIntervalInBackground: false,
-    onSettled: (data, error) => {
-      dispatch({ type: "setUser", payload: data ?? null });
-      dispatch({ type: "loading", payload: false });
-    },
-  });
+        return () => {
+          abortController.abort();
+        }
+      })();
+    }
+  }, [state.registeredHooks, state.user, state.userFetched, online]);
 
   const socialLogin = useCallback(async (
     provider: ProviderKey,
@@ -142,8 +159,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({
 
       if (url) {
         try {
-          const resp = await http.post(url, data);
-
+          const resp = await http.post(url, data, { withCredentials: true });
+          
           if (resp.status === 200) {
             if (useJwt) {
               clearJwtStorage();
@@ -264,7 +281,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({
     };
 
     clearJwtStorage();
-    queryClient.invalidateQueries();
 
     try {
       await http.post(api.endpoints.auth.logout);
@@ -275,15 +291,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({
 
     if (opts.redirect) 
       Router.push(opts.redirectTo!).then(x => dispatch({ type: "setUser", payload: null }));
-  }, [queryClient]);
+  }, []);
 
   const forceReconnect = useCallback(() => {
-    queryClient.invalidateQueries({
-      queryKey: ["auth-user"],
-      refetchActive: true,
-      refetchInactive: false,
-    });
-  }, [queryClient]);
+    dispatch({ type: "userFetched", payload: false });
+  }, []);
 
   const changeName = useCallback(async (data: { first_name?: string, last_name?: string }) => {
     try {

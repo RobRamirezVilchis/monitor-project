@@ -5,6 +5,7 @@ import { AuthError, User } from "@/utils/auth/auth.types";
 
 export interface AuthState {
   user: User | null;
+  userFetched: boolean;
   loading: boolean;
   errors: AuthError[] | null;
   registeredHooks: number;
@@ -12,6 +13,7 @@ export interface AuthState {
 
 export type AuthAction = 
   | Action<"loading", boolean>
+  | Action<"userFetched", boolean>
   | Action<"setUser", User | null>
   | Action<"authorize", boolean>
   | Action<"setErrors", AuthError[] | null>
@@ -26,6 +28,10 @@ export const authReducer: ImmerReducer<AuthState, AuthAction> = (draft, action) 
     case "loading":
       if (action.payload === draft.loading) break;
       draft.loading = action.payload;
+      break;
+    case "userFetched":
+      if (action.payload === draft.userFetched) break;
+      draft.userFetched = action.payload;
       break;
     case "setUser":
       const user = action.payload;

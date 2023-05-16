@@ -108,8 +108,8 @@ function setCSRFTokenHeader(config?: InternalAxiosRequestConfig<any>): InternalA
       conf.headers = {};
     conf.headers["X-CSRFToken"] = csrfToken;
   }
-  if (!useJwt) // TODO: Check if this is needed even for jwt
-    conf.withCredentials = true;
+  
+  conf.withCredentials = true;
 
   return conf as InternalAxiosRequestConfig<any>;
 }
