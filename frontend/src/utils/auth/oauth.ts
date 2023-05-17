@@ -9,12 +9,14 @@ export function startSocialLogin(provider: ProviderKey, callback?: (data: any) =
   switch (provider) {
     case "google":
       const url = new URL("https://accounts.google.com/o/oauth2/v2/auth");
-      url.searchParams.append("redirect_uri", process.env.NEXT_PUBLIC_GOOGLE_CALLBACK_URL!);
-      url.searchParams.append("response_type", "code");
-      url.searchParams.append("scope", "openid profile email");
-      url.searchParams.append("access_type", "offline");
-      url.searchParams.append("prompt", "consent");
-      url.searchParams.append("client_id", process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID!);
+      url.search = new URLSearchParams({
+        redirect_uri: process.env.NEXT_PUBLIC_GOOGLE_CALLBACK_URL!,
+        response_type: "code",
+        scope: "openid profile email",
+        access_type: "offline",
+        prompt: "consent",
+        client_id: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID!,
+      }).toString();
       
       const socialLoginWindow = openCenteredPopupWindow(url, window, "oauth", { width: 500, height: 600 });
       

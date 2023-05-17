@@ -5,14 +5,24 @@ import { AxiosError, isAxiosError } from "axios";
 import { useImmerReducer } from "use-immer";
 import { useRouter } from "next/navigation";
 
-import api from "../../utils/api";
-import { axiosBase as http, axiosError as httpError } from "../../utils/axios";
-import { clearJwtStorage, getMyUser, jwtCookie, setAccessToken, setAccessTokenExpiration, setRefreshToken, setRefreshTokenExpiration, updateMyInfo, useJwt } from "../../utils/auth/auth.utils";
+import api from "@/utils/api";
+import { axiosBase as http, axiosError as httpError } from "@/utils/axios";
+import {
+  clearJwtStorage,
+  fetchMyUser,
+  getMyUser,
+  jwtCookie,
+  setAccessToken,
+  setAccessTokenExpiration,
+  setRefreshToken,
+  setRefreshTokenExpiration,
+  updateMyInfo,
+  useJwt,
+} from "@/utils/auth/auth.utils";
 import logger from "@/utils/logger";
 import { AuthError, User, ProviderKey } from "@/utils/auth/auth.types";
 import { AuthAction, AuthState, authReducer } from "./AuthReducer";
-import { fetchMyUser } from "../../utils/auth/auth.utils";
-import { startSocialLogin } from "./oauth";
+import { startSocialLogin } from "@/utils/auth/oauth";
 
 // Reducer ---------------------------------------------------------------------
 const authReducerDefaults: AuthState = {
