@@ -69,8 +69,8 @@ class CustomUserDetailsSerializer(UserDetailsSerializer):
 
     class Meta:
         model = UserModel
-        fields = ["id", "username", "email", "first_name", "last_name", "role"]
-        read_only_fields = ["username", "email", "role"]
+        fields = ["email", "first_name", "last_name", "role"]
+        read_only_fields = ["email", "role"]
 
     def get_role(self, obj):
         return "None"
