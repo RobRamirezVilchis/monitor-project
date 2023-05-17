@@ -1,15 +1,17 @@
-import { NextPage } from "next";
-import { useRouter } from "next/router";
+"use client";
+
+import { useSearchParams } from "next/navigation";
 import { useLayoutEffect, useRef } from "react";
 import CircularProgress from "@mui/material/CircularProgress";
 
-const GoogleCallback: NextPage = () => {
+const GoogleCallback = () => {
   const ready = useRef(false);
-  const router = useRouter();
+  const searchParams = useSearchParams();
+  const code = searchParams?.get("code");
+  const error = searchParams?.get("error");
 
   useLayoutEffect(() => {
     const opener = window.opener.location.href;
-    const { code, error } = router.query;
 
     if (opener && !ready.current && (code || error)) {
       ready.current = true;
@@ -22,7 +24,7 @@ const GoogleCallback: NextPage = () => {
       }, opener);
       window.close();
     }
-  }, [router.query]);
+  }, [code, error]);
 
   return (
     <div className="h-full grid place-items-center">

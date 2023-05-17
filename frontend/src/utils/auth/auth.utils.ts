@@ -1,5 +1,4 @@
 import { AxiosInstance, AxiosResponse } from "axios";
-import Router from "next/router";
 import { parseISO } from "date-fns";
 import { axiosBase } from "../axios";
 
@@ -203,15 +202,6 @@ export const changePassword = (
     { signal: abortSignal }
   );
 };
-
-export const goToLoginPage = () => {
-  Router.push({
-    pathname: "/auth/login/", 
-    query: { 
-      callbackUrl: document.URL 
-    },
-  });
-}
 
 export const getAuthErrorString = (error: AuthError) => {
   switch(error) {

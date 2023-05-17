@@ -1,6 +1,8 @@
+"use client";
+
 import { ImmerReducer } from "use-immer";
 
-import { ReducerAction as Action, Reducer } from "@/utils/types";
+import { ReducerAction as Action } from "@/utils/types";
 import { AuthError, User } from "@/utils/auth/auth.types";
 
 export interface AuthState {

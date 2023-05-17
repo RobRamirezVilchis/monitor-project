@@ -1,6 +1,5 @@
 import axios, { AxiosRequestConfig, InternalAxiosRequestConfig } from "axios";
 import Cookies from "js-cookie";
-import Router from "next/router";
 
 import api from "./api";
 import { getOrRefreshAccessToken, jwtCookie, useJwt } from "./auth/auth.utils";
@@ -53,12 +52,13 @@ axiosRedirectOnError.interceptors.request.use(async (config) => {
   let conf = setCSRFTokenHeader(config);
 
   if (!hasCSRFToken(conf)) {
-    Router.push({
-      pathname: "/auth/login",
-      query: {
-        callbackUrl: document.URL
-      }
+    const url = new URL("/auth/login", window.location.origin);
+    const query = new URLSearchParams({
+      callbackUrl: window.location.href
     });
+    url.search = query.toString();
+    window.location.href = url.toString();
+
     return Promise.reject({
       response: {
         status: 401,
@@ -81,12 +81,12 @@ axiosRedirectOnError.interceptors.response.use(
       error.response &&
       (error.response.status == 401 || error.response.status == 403)
     ) {
-      Router.push({
-        pathname: "/auth/login",
-        query: {
-          callbackUrl: document.URL
-        }
+      const url = new URL("/auth/login", window.location.origin);
+      const query = new URLSearchParams({
+        callbackUrl: window.location.href
       });
+      url.search = query.toString();
+      window.location.href = url.toString();
     }
 
     return Promise.reject(error);

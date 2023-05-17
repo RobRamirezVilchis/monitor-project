@@ -1,5 +1,7 @@
+"use client";
+
 import React, { useCallback, useContext, useEffect, useLayoutEffect, useRef } from "react";
-import Router from "next/router";
+import { useRouter } from "next/navigation";
 
 import { AuthContext, SocialAction } from "./AuthProvider";
 import { isUserInAuthorizedRoles } from "../../utils/auth/auth.utils";
@@ -79,6 +81,7 @@ export const useAuth = (options?: {
   } = useContext(AuthContext);
   const [isAuthorized, setIsAuthorized] = React.useState<boolean>(false);
   const registered = useRef(false);
+  const router = useRouter();
 
   useLayoutEffect(() => {
     const triggerAuthentication = options?.triggerAuthentication ?? true;
@@ -119,15 +122,14 @@ export const useAuth = (options?: {
   
         if (opts.redirectIfNotAuthenticated) {
           if (opts.setCallbackUrlParam) {
-            Router.push({
-              pathname: opts.redirectTo!,
-              query: {
-               [opts.callbackUrlParamName!]: document.URL
-              }
-            });
+            const url = new URL(opts.redirectTo!);
+            url.search = new URLSearchParams({
+              [opts.callbackUrlParamName!]: window.location.href
+            }).toString();
+            router.push(url.toString());
           }
           else {
-            Router.push(opts.redirectTo!);
+            router.push(opts.redirectTo!);
           }
         }
       }
@@ -136,20 +138,19 @@ export const useAuth = (options?: {
         setIsAuthorized(authorized);
         if (!authorized && opts.redirectIfNotAuthorized) {
           if (opts.setCallbackUrlParam) {
-            Router.push({
-              pathname: opts.redirectTo!,
-              query: {
-               [opts.callbackUrlParamName!]: document.URL
-              }
-            });
+            const url = new URL(opts.redirectTo!);
+            url.search = new URLSearchParams({
+              [opts.callbackUrlParamName!]: window.location.href
+            }).toString();
+            router.push(url.toString());
           }
           else {
-            Router.push(opts.redirectTo!);
+            router.push(opts.redirectTo!);
           }
         }
       }
     }
-  }, [options, authState.loading, authState.user, defaultRedirectTo, defaultSetCallbackUrlParam, defaultCallbackUrlParamName]);
+  }, [router, options, authState.loading, authState.user, defaultRedirectTo, defaultSetCallbackUrlParam, defaultCallbackUrlParamName]);
 
   /**
    * Login the user using email login or social login (i.e. Google)

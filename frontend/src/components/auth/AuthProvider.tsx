@@ -1,7 +1,9 @@
+"use client";
+
 import React, { createContext, useCallback, useEffect, useMemo, useState } from "react";
 import { AxiosError, isAxiosError } from "axios";
-import Router from "next/router";
 import { useImmerReducer } from "use-immer";
+import { useRouter } from "next/navigation";
 
 import api from "../../utils/api";
 import { axiosBase as http, axiosError as httpError } from "../../utils/axios";
@@ -86,6 +88,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({
 }) => {
   const [online, setOnline] = useState<boolean>(typeof window !== "undefined" ? navigator.onLine : true);
   const [state, dispatch] = useImmerReducer(authReducer, authReducerDefaults);
+  const router = useRouter();
 
   useEffect(() => {
     const handleOnline = () => setOnline(true);
@@ -128,7 +131,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({
         }
       })();
     }
-  }, [state.registeredHooks, state.user, state.userFetched, online]);
+  }, [dispatch, state.registeredHooks, state.user, state.userFetched, online]);
 
   const emailLogin = useCallback(async (
     loginData: { 
@@ -190,10 +193,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({
     dispatch({ type: "loading", payload: false });
     
     if (opts.redirect && newUser)
-      Router.push(opts.redirectTo!);
+      router.push(opts.redirectTo!);
 
     return newUser;
-  }, []);
+  }, [dispatch, router]);
 
   const socialLoginAction = useCallback(async (
     provider: ProviderKey,
@@ -267,10 +270,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({
     dispatch({ type: "loading", payload: false });
 
     if (opts?.redirect && user)
-      Router.push(opts.redirectTo!);
+      router.push(opts.redirectTo!);
 
     return user;
-  }, []);
+  }, [dispatch, router]);
 
   const socialLogin = useCallback(async (
     provider: ProviderKey,
@@ -295,7 +298,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({
     },
       onPopupClosed,
     );
-  }, []);
+  }, [socialLoginAction]);
 
   const logout = useCallback(async (options?: {
     redirect?: boolean,
@@ -316,13 +319,15 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({
       logger.debug("Error.", e);
     }
 
-    if (opts.redirect) 
-      Router.push(opts.redirectTo!).then(x => dispatch({ type: "setUser", payload: null }));
-  }, []);
+    if (opts.redirect) {
+      router.push(opts.redirectTo!);
+      dispatch({ type: "setUser", payload: null });
+    }
+  }, [dispatch, router]);
 
   const forceReconnect = useCallback(() => {
     dispatch({ type: "userFetched", payload: false });
-  }, []);
+  }, [dispatch]);
 
   const changeName = useCallback(async (data: { first_name?: string, last_name?: string }) => {
     try {
@@ -335,7 +340,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({
       logger.debug("Failed to update user.");
       return false;
     }
-  }, []);
+  }, [dispatch]);
 
   const contextValue: AuthContextProps = useMemo(() => ({
     authState: state,

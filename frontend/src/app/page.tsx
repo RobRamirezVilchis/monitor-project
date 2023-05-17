@@ -1,10 +1,10 @@
-import { NextPage } from "next"
+"use client";
 
 import { useAuth } from "../components/auth/useAuth";
 import { getOrRefreshAccessToken } from "@/utils/auth/auth.utils";
 import Link from "next/link";
 
-const Home: NextPage = () => {
+const Home = () => {
   const { user, login, logout } = useAuth({
     skipAll: true,
   });
