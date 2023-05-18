@@ -14,7 +14,7 @@ import {
   RegisterUserData,
 } from "@/utils/auth/auth.utils";
 import { TextInput } from "@/components/shared/inputs";
-import { useSnackbar } from "@/components/shared";
+import { useSnackbar } from "@/components/shared/hooks";
 
 const Register = () => {
   const [loading, setLoading] = useState(false);
