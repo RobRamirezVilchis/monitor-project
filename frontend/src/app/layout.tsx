@@ -1,5 +1,4 @@
 import "@/styles/globals.css"
-import "@/styles/react-datepicker-custom.css"
 
 import { Metadata } from "next"
 import { Roboto } from "next/font/google"

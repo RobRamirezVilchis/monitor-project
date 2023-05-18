@@ -1,5 +1,14 @@
 "use client";
 
+//! Using custom styling
+// import "react-datepicker/dist/react-datepicker.css";
+import "@/styles/react-datepicker-custom.css";
+
+/**
+ * docs: https://github.com/Hacker0x01/react-datepicker/blob/master/docs/datepicker.md
+ * examples: https://reactdatepicker.com/
+ */
+
 import React, { useState } from "react";
 import RDatePicker, {
   CalendarContainer,
@@ -20,14 +29,6 @@ import { useMediaQuery } from "@/components/shared/hooks/useMediaQuery";
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
-
-//! Custom styling imported globaly in the _app.tsx file
-// import "react-datepicker/dist/react-datepicker.css";
-
-/**
- * docs: https://github.com/Hacker0x01/react-datepicker/blob/master/docs/datepicker.md
- * examples: https://reactdatepicker.com/
- */
 
 registerLocale("es", es);
 
