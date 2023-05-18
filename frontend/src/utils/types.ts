@@ -10,6 +10,10 @@ export type RecursiveRequired<T> = {
 
 export type PartialExcept<T, K extends keyof T> = RecursivePartial<T> & Pick<T, K>;
 
+export type Nullable<T> = {
+  [K in keyof T]: T[K] | null;
+};
+
 export type ReducerAction<T extends string, P = undefined> = {
   type: T;
 } & (P extends undefined ? {} : { payload: P });
