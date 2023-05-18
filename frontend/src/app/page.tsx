@@ -1,17 +1,19 @@
 "use client";
 
+import { NavLink } from "@/components/shared";
 import { useAuth } from "../components/auth/useAuth";
 import { getOrRefreshAccessToken } from "@/utils/auth/auth.utils";
 import Link from "next/link";
 
 const Home = () => {
-  const { user, login, logout } = useAuth({
+  const { user, loading, login, logout } = useAuth({
     skipAll: true,
   });
 
   return (
     <main>
-      User: {user ? user.email : "Not logged in"}
+      {!user && loading ? <div>Loading...</div> : null}
+      {user ? `User: ${user.email}` : null}
 
       <br />
 
@@ -53,6 +55,25 @@ const Home = () => {
         >
           Go to Login
         </Link>
+      </div>
+
+      <div className="flex gap-2">
+        <NavLink href="/" 
+          classes={{
+            active: "text-blue-500",
+            inactive: "text-red-500",
+          }}
+        >
+          Test
+        </NavLink>
+        <NavLink href="/test" 
+          classes={{
+            active: "text-blue-500",
+            inactive: "text-red-500",
+          }}
+        >
+          Test
+        </NavLink>
       </div>
     </main>
   )
