@@ -1,12 +1,16 @@
+import api from "@/utils/api";
 
-const wait = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+import http from "@/utils/server/fetchWithCredentials";
+import { User } from "@/utils/auth/auth.types";
+
+const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
 const SuspensePage = async () => {
-  await wait(3000);
+  const { data: user } = await http<User>(`${api.baseURL}${api.endpoints.auth.user}`);
 
   return (
     <div>
-      Hi
+      Hi {user.email}
     </div>
   );
 }
