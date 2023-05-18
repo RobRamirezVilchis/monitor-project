@@ -1,3 +1,5 @@
+"use client";
+
 import React from "react";
 import { Controller, FieldError, FieldValues, useFormContext } from "react-hook-form";
 import FormControl, { FormControlClasses } from "@mui/material/FormControl";

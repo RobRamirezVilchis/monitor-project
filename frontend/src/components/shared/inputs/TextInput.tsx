@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useState } from "react";
 import { TextField, type TextFieldProps, TextFieldClasses } from "@mui/material";
 import { Controller, FieldError, FieldValues, useFormContext } from "react-hook-form";

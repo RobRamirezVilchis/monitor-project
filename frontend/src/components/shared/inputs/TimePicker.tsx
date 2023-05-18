@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useEffect, useRef, useState } from "react";
 import Switch, { SwitchProps } from "@mui/material/Switch";
 import { SxProps, Theme } from "@mui/system";

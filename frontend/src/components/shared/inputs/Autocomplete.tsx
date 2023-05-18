@@ -1,3 +1,5 @@
+"use client";
+
 import React from "react";
 import FormControl, { FormControlClasses } from "@mui/material/FormControl";
 import FormHelperText, { FormHelperTextClasses } from "@mui/material/FormHelperText";

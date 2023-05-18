@@ -1,3 +1,5 @@
+"use client";
+
 import React from "react";
 import { Controller, FieldError, FieldValues, useFormContext, UseFormTrigger } from "react-hook-form";
 import MuiCheckbox, { CheckboxProps as MuiCheckboxProps } from "@mui/material/Checkbox";
