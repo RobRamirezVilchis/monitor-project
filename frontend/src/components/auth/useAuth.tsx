@@ -75,6 +75,7 @@ export const useAuth = (options?: {
     logout,
     changeName,
     forceReconnect,
+    lastAction,
     defaultRedirectTo,
     defaultSetCallbackUrlParam,
     defaultCallbackUrlParamName,
@@ -117,7 +118,7 @@ export const useAuth = (options?: {
     };
 
     if (!authState.loading && !opts.skipAll) {
-      if (!authState.user) {
+      if (!authState.user && lastAction !== "logout") {
         setIsAuthorized(false);
   
         if (opts.redirectIfNotAuthenticated) {
@@ -150,7 +151,7 @@ export const useAuth = (options?: {
         }
       }
     }
-  }, [router, options, authState.loading, authState.user, defaultRedirectTo, defaultSetCallbackUrlParam, defaultCallbackUrlParamName]);
+  }, [router, options, authState.loading, authState.user, defaultRedirectTo, defaultSetCallbackUrlParam, defaultCallbackUrlParamName, lastAction]);
 
   /**
    * Login the user using email login or social login (i.e. Google)

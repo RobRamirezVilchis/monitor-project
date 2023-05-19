@@ -1,6 +1,6 @@
 "use client";
 
-import React, { createContext, useCallback, useEffect, useMemo, useState } from "react";
+import React, { createContext, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { AxiosError, isAxiosError } from "axios";
 import { useImmerReducer } from "use-immer";
 import { useRouter } from "next/navigation";
@@ -45,6 +45,7 @@ export interface AuthContextProps {
   logout: (options?: { redirect?: boolean, redirectTo?: string }) => void,
   changeName: (data: { first_name?: string, last_name?: string }) => Promise<boolean>;
   forceReconnect: () => void;
+  lastAction: "login" | "logout" | null;
 
   defaultRedirectTo?: string,
   defaultSetCallbackUrlParam?: boolean,
@@ -59,6 +60,7 @@ const authContextDefaults: AuthContextProps = {
   logout: () => {},
   changeName: () => Promise.resolve(false),
   forceReconnect: () => {},
+  lastAction: null,
 
   defaultRedirectTo: "/auth/login",
   defaultSetCallbackUrlParam: true,
@@ -99,6 +101,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({
   const [online, setOnline] = useState<boolean>(typeof window !== "undefined" ? navigator.onLine : true);
   const [state, dispatch] = useImmerReducer(authReducer, authReducerDefaults);
   const router = useRouter();
+  const lastAction = useRef<AuthContextProps["lastAction"]>(null);
 
   useEffect(() => {
     const handleOnline = () => setOnline(true);
@@ -159,6 +162,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({
       redirectTo: "/",
       ...options
     };
+    lastAction.current = "login";
 
     dispatch({ type: "loading", payload: true });
     let newUser: User | null = null;
@@ -219,6 +223,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({
       redirectTo: "/",
       ...options
     };
+    lastAction.current = "login";
 
     dispatch({ type: "loading", payload: true });
     const socialUrls = api.endpoints.auth.social[provider as keyof typeof api.endpoints.auth.social];
@@ -319,6 +324,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({
       redirectTo: "/auth/login",
       ...options
     };
+    lastAction.current = "logout";
 
     clearJwtStorage();
 
@@ -333,7 +339,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({
       router.push(opts.redirectTo!);
       dispatch({ type: "setUser", payload: null });
     }
-  }, [dispatch, router]);
+  }, [router, dispatch]);
 
   const forceReconnect = useCallback(() => {
     dispatch({ type: "userFetched", payload: false });
@@ -360,6 +366,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({
     logout,
     changeName,
     forceReconnect,
+    lastAction: lastAction.current,
     defaultRedirectTo: defaultRedirectTo ?? authContextDefaults.defaultRedirectTo,
     defaultSetCallbackUrlParam: defaultSetCallbackUrlParam ?? authContextDefaults.defaultSetCallbackUrlParam,
     defaultCallbackUrlParamName: defaultCallbackUrlParamName ?? authContextDefaults.defaultCallbackUrlParamName,
