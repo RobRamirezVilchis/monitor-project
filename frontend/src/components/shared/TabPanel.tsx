@@ -1,17 +1,15 @@
 import React from "react";
-
-export type TabHideMode = "remove" | "hide";
+import classNames from "classnames";
 
 export interface TabPanelProps {
   children?: React.ReactNode;
   index: number;
   value: number;
   /**
-   * remove will remove the content from the document while
-   * hide will only make its display as none
-   * @default remove
+   * wether to unmount or just hide (display: none) the children when the index is not equal to the value
+   * @default false
    */
-  hideMode?: TabHideMode;
+  unmount?: boolean;
   classes?: {
     root?: string;
     tabContainer?: string;
@@ -19,7 +17,7 @@ export interface TabPanelProps {
 }
 
 export const TabPanel: React.FC<TabPanelProps> = ({ 
-  children, value, index, hideMode, classes, ...other 
+  children, value, index, unmount, classes, ...other 
 }) => {
   return (
     <div
@@ -30,8 +28,12 @@ export const TabPanel: React.FC<TabPanelProps> = ({
       {...other}
       className={classes?.root}
     >
-      {hideMode === "hide" ? (
-        <div className={`${value !== index ? "hidden" : ""} ${classes?.tabContainer}`}>
+      {!unmount ? (
+        <div 
+          className={classNames(classes?.tabContainer, {
+            hidden: value !== index,
+          })}
+        >
           {children}
         </div>
       ) : (
