@@ -3,19 +3,37 @@ import { openCenteredPopupWindow } from "@/utils/window.utils";
 
 const socialLoginMessageListeners: Array<(event: MessageEvent<any>) => void> = [];
 
-export function startSocialLogin(provider: ProviderKey, callback?: (data: any) => void, onPopupClosed?: () => void) {
+export interface ProvidersOptions {
+  google?: {
+    scope?: string;
+    prompt?: string;
+    access_type?: string;
+    login_hint?: string;
+  }
+}
+
+export function startSocialLogin(
+  provider: ProviderKey, 
+  options: {
+    callback?: (data: any) => void;
+    providers?: ProvidersOptions;
+    onPopupClosed?: () => void;
+  }
+) {
   clearSocialLoginMessageListeners();
 
   switch (provider) {
     case "google":
+      const google = options?.providers?.google;
       const url = new URL("https://accounts.google.com/o/oauth2/v2/auth");
       url.search = new URLSearchParams({
         redirect_uri: process.env.NEXT_PUBLIC_GOOGLE_CALLBACK_URL!,
         response_type: "code",
-        scope: "openid profile email",
-        access_type: "offline",
-        prompt: "consent",
+        scope: "openid profile email" + (google?.scope ? " " + google.scope : ""),
+        access_type: google?.access_type || "offline",
+        prompt: google?.prompt || "consent",
         client_id: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID!,
+        ...(google?.login_hint ? { login_hint: google.login_hint } : {})
       }).toString();
       
       const socialLoginWindow = openCenteredPopupWindow(url, window, "oauth", { width: 500, height: 600 });
@@ -27,7 +45,7 @@ export function startSocialLogin(provider: ProviderKey, callback?: (data: any) =
           if (event.origin !== window.location.origin) return;
   
           if (event.data.type === "google-callback") {
-            callback && callback(event.data.payload);
+            options?.callback?.(event.data.payload);
           }
         };
         
@@ -38,7 +56,7 @@ export function startSocialLogin(provider: ProviderKey, callback?: (data: any) =
           if (socialLoginWindow.closed) {
             clearInterval(closedCheck);
             clearSocialLoginMessageListeners();
-            onPopupClosed?.();
+            options?.onPopupClosed?.();
           }
         }, 250);
       }

@@ -22,7 +22,7 @@ import {
 import logger from "@/utils/logger";
 import { AuthError, User, ProviderKey } from "@/utils/auth/auth.types";
 import { AuthAction, AuthState, authReducer } from "./AuthReducer";
-import { startSocialLogin } from "@/utils/auth/oauth";
+import { ProvidersOptions, startSocialLogin } from "@/utils/auth/oauth";
 
 // Reducer ---------------------------------------------------------------------
 const authReducerDefaults: AuthState = {
@@ -39,9 +39,16 @@ export interface AuthContextProps {
   dispatchAuth: React.Dispatch<AuthAction>;
   emailLogin: (loginData: { username?: string, email?: string, password?: string },
     options?: { redirect?: boolean, redirectTo?: string }) => Promise<User | null>;
-  socialLogin: (provider: ProviderKey, socialAction: "login" | "connect" | null,
-    options?: { redirect?: boolean, redirectTo?: string }, 
-    onPopupClosed?: () => void, onFinish?: (user: User | null) => void, onError?: (error: any) => void) => void;
+  socialLogin: (provider: ProviderKey,
+    type: SocialAction, 
+    options?: { 
+      redirect?: boolean;
+      redirectTo?: string;
+      providersOptions?: ProvidersOptions;
+      onPopupClosed?: () => void;
+      onFinish?: (user: User | null) => void;
+      onError?: (error: any) => void;
+    }) => void;
   logout: (options?: { redirect?: boolean, redirectTo?: string }) => void,
   changeName: (data: { first_name?: string, last_name?: string }) => Promise<boolean>;
   forceReconnect: () => void;
@@ -292,27 +299,33 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({
 
   const socialLogin = useCallback(async (
     provider: ProviderKey,
-    socialAction: SocialAction, 
-    options?: { redirect?: boolean, redirectTo?: string },
-    onPopupClosed?: () => void,
-    onFinish?: (user: User | null) => void,
-    onError?: (error: any) => void
+    type: SocialAction, 
+    options?: { 
+      redirect?: boolean;
+      redirectTo?: string;
+      providersOptions?: ProvidersOptions;
+      onPopupClosed?: () => void;
+      onFinish?: (user: User | null) => void;
+      onError?: (error: any) => void;
+    }
   ) => {
-    startSocialLogin(provider, async (data) => {
-      if (data.error) {
-        onError?.(data.error);
-        return;
-      }
-      const user = await socialLoginAction(
-        provider, 
-        socialAction, 
-        data, 
-        options
-      );
-      onFinish?.(user);
-    },
-      onPopupClosed,
-    );
+    startSocialLogin(provider, {
+      callback: async (data) => {
+        if (data.error) {
+          options?.onError?.(data.error);
+          return;
+        }
+        const user = await socialLoginAction(
+          provider, 
+          type, 
+          data, 
+          options
+        );
+        options?.onFinish?.(user);
+      },
+      providers: options?.providersOptions,
+      onPopupClosed: options?.onPopupClosed,
+    });
   }, [socialLoginAction]);
 
   const logout = useCallback(async (options?: {

@@ -15,7 +15,7 @@ const SocialProviders = () => {
   });
 
   const onSocialLogin = async (provider: ProviderKey) => {
-    login({ socialLogin: { provider, type: "login" } });
+    login({ socialLogin: { provider } });
   };
 
   return (

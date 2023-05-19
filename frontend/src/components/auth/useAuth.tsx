@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { AuthContext, SocialAction } from "./AuthProvider";
 import { isUserInAuthorizedRoles } from "../../utils/auth/auth.utils";
 import { Role, ProviderKey, User } from "@/utils/auth/auth.types";
+import { ProvidersOptions } from "@/utils/auth/oauth";
 
 export const useAuth = (options?: {
   /**
@@ -170,7 +171,8 @@ export const useAuth = (options?: {
       },
       socialLogin?: {
         provider: ProviderKey, 
-        type: SocialAction,
+        type?: SocialAction,
+        providersOptions?: ProvidersOptions;
         onPopupClosed?: () => void,
         onFinish?: (user: User | null) => void,
         onError?: (error: any) => void,
@@ -192,11 +194,14 @@ export const useAuth = (options?: {
     else if (data.socialLogin) {
       socialLogin(
         data.socialLogin.provider, 
-        data.socialLogin.type, 
-        options,
-        data.socialLogin.onPopupClosed,
-        data.socialLogin.onFinish,
-        data.socialLogin.onError
+        data.socialLogin.type ?? "login", 
+        {
+          ...options,
+          providersOptions: data.socialLogin.providersOptions,
+          onPopupClosed: data.socialLogin.onPopupClosed,
+          onFinish: data.socialLogin.onFinish,
+          onError: data.socialLogin.onError
+        }
       );
     }
     else {
