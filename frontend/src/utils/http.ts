@@ -4,6 +4,7 @@ import Cookies from "js-cookie";
 import api from "./api";
 import { getOrRefreshAccessToken, jwtCookie, useJwt } from "./auth/auth.utils";
 import type { AxiosInstance as AxiosInstanceBase, AxiosRequestConfig as AxiosRequestConfigBase, InternalAxiosRequestConfig } from "./axios.types";
+import { sleep } from "./utils";
 
 export const csrfTokenName = "csrftoken_django";
 
@@ -22,6 +23,7 @@ export interface ExtraHttpProps {
   retries?: number;
   retryDelay?: number;
   retryIf?: (error: any) => boolean;
+  delay?: number;
 }
 
 export type AxiosRequestConfig = AxiosRequestConfigBase<ExtraHttpProps>;
@@ -84,6 +86,14 @@ axiosInstance.interceptors.request.use((config) => {
   return config.withCredentials ? setCSRFTokenHeader(config) : config;
 }, undefined, { synchronous: true, runWhen: (config) => !!config.setCsrfToken }); 
 
+// Delay interceptor
+axiosInstance.interceptors.request.use(async (config) => {
+  if (config?.delay && config.delay > 0)
+    await sleep(config.delay);
+
+  return config;
+}, undefined, { runWhen: (config) => !!config.delay });
+
 // Error interceptor
 axiosInstance.interceptors.response.use(undefined, (error) => {
   error.config?.onError?.(error);
@@ -94,7 +104,8 @@ axiosInstance.interceptors.response.use(undefined, (error) => {
 // Retry interceptor
 axiosInstance.interceptors.response.use(undefined, async (error) => {
   if (error.config?.retries && error.config?.retries > 0 && error.config?.retryIf?.(error)) {
-    await new Promise((resolve) => setTimeout(resolve, error.config?.retryDelay));
+    if (error.config?.retryDelay)
+      await sleep(error.config.retryDelay);
     return axiosInstance({
       ...error.config,
       retries: error.config.retries - 1,
