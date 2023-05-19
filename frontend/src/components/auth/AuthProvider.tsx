@@ -129,7 +129,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({
         }
         catch (e) {
           if (isAxiosError(e)) {
-            if (e.code !== "ERR_CANCELED") {
+            if (e.code !== AxiosError.ERR_CANCELED) {
               logger.debug("No valid session found", e);
             }
           }
