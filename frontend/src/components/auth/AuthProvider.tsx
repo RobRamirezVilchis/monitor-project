@@ -6,7 +6,7 @@ import { useImmerReducer } from "use-immer";
 import { useRouter } from "next/navigation";
 
 import api from "@/utils/api";
-import { axiosBase as http, axiosError as httpError } from "@/utils/http";
+import http from "@/utils/http";
 import {
   clearJwtStorage,
   fetchMyUser,
@@ -124,7 +124,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({
       (async () => {
         try {
           // Check if valid session exists
-          const { data } = await fetchMyUser(http, abortController.signal);
+          const { data } = await fetchMyUser({ signal: abortController.signal, rejectRequest: undefined, onError: undefined });
           dispatch({ type: "setUser", payload: data ?? null });
         }
         catch (e) {
@@ -164,7 +164,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({
     let newUser: User | null = null;
 
     try {
-      const resp = await http.post(api.endpoints.auth.login, loginData);
+      const resp = await http.post(api.endpoints.auth.login, loginData, { rejectRequest: undefined, onError: undefined });
       if (resp.status === 200) {
         if (useJwt) {
           clearJwtStorage();
@@ -179,7 +179,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({
         if (resp.data.user)
           newUser = resp.data.user;
         else
-          newUser = await getMyUser(http);
+          newUser = await getMyUser({ rejectRequest: undefined, onError: undefined });
       }
     }    
     catch (e) {
@@ -239,7 +239,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({
 
       if (url) {
         try {
-          const resp = await http.post(url, data);
+          const resp = await http.post(url, data, { rejectRequest: undefined, onError: undefined });
           
           if (resp.status === 200) {
             if (useJwt) {
@@ -255,7 +255,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({
             if (resp.data.user)
               user = resp.data.user;
             else
-              user = await getMyUser(http);
+              user = await getMyUser({ rejectRequest: undefined, onError: undefined });
           }
         }
         catch (e) {
@@ -323,7 +323,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({
     clearJwtStorage();
 
     try {
-      await http.post(api.endpoints.auth.logout);
+      await http.post(api.endpoints.auth.logout, { rejectRequest: undefined, onError: undefined });
     }
     catch (e) {
       logger.debug("Error.", e);
@@ -341,7 +341,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({
 
   const changeName = useCallback(async (data: { first_name?: string, last_name?: string }) => {
     try {
-      const resp = await updateMyInfo(httpError, data);
+      const resp = await updateMyInfo(data, { rejectRequest: undefined });
       const user = resp.data;
       dispatch({ type: "setUser", payload: user });
       return true;

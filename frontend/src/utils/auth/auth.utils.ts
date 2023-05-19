@@ -1,6 +1,6 @@
-import { AxiosInstance, AxiosResponse } from "axios";
+import { AxiosResponse } from "axios";
 import { parseISO } from "date-fns";
-import { axiosBase } from "../http";
+import http, { AxiosRequestConfig } from "../http";
 
 import api from "../api";
 import { AuthError, Role, User } from "./auth.types";
@@ -24,21 +24,13 @@ export function isUserInAuthorizedRoles(
   return authorized;
 }
 
-export const fetchMyUser = async (
-  http: AxiosInstance, 
-  abortSignal?: AbortSignal
-): Promise<AxiosResponse<User, any>> => {
-  return http.get<User>(api.endpoints.auth.user, {
-    signal: abortSignal,
-  });
+export const fetchMyUser = async (config?: AxiosRequestConfig): Promise<AxiosResponse<User, any>> => {
+  return http.get<User>(api.endpoints.auth.user, config);
 }
 
-export const getMyUser = async (
-  http: AxiosInstance, 
-  abortSignal?: AbortSignal
-): Promise<User | null> => {
+export const getMyUser = async (config?: AxiosRequestConfig): Promise<User | null> => {
   try {
-    const resp = await fetchMyUser(http, abortSignal);
+    const resp = await fetchMyUser(config);
     if (resp.status === 200)
       return resp.data;
   }
@@ -50,22 +42,18 @@ export const getMyUser = async (
 }
 
 export const updateMyInfo = (
-  http: AxiosInstance,
   data: {
     username?: string,
     first_name?: string,
     last_name?: string,
   },
-  abortSignal?: AbortSignal
+  config?: AxiosRequestConfig
 ) => {
-  return http.patch<User>(api.endpoints.auth.user, data, { signal: abortSignal });
+  return http.patch<User>(api.endpoints.auth.user, data, config);
 };
 
-export const deleteMyAccount = (
-  http: AxiosInstance,
-  abortSignal?: AbortSignal
-) => {
-  return http.delete(api.endpoints.auth.user, { signal: abortSignal });
+export const deleteMyAccount = (config?: AxiosRequestConfig) => {
+  return http.delete(api.endpoints.auth.user, config);
 };
 
 export interface RegisterUserData {
@@ -77,60 +65,30 @@ export interface RegisterUserData {
   last_name: string;
 }
 
-export const registerUser = ( 
-  http: AxiosInstance,
-  data: RegisterUserData,
-  abortSignal?: AbortSignal
-) => {
-  return http.post(api.endpoints.auth.register, data, { signal: abortSignal });
+export const registerUser = (data: RegisterUserData, config?: AxiosRequestConfig) => {
+  return http.post(api.endpoints.auth.register, data, config);
 };
 
-export const isRegisterTokenValid = async (
-  http: AxiosInstance, 
-  key: string,
-  abortSignal?: AbortSignal
-) => {
+export const isRegisterTokenValid = async (key: string, config?: AxiosRequestConfig) => {
   try {
-    const resp = await http.get(api.endpoints.auth.registerTokenValidity, { 
-      params: { key }, 
-      signal: abortSignal
-    });
+    const resp = await http.get(api.endpoints.auth.registerTokenValidity, { ...config, params: { key } });
     return true;
   }
   catch (e) { }
   return false;
 };
 
-export const verifyAccount = (
-  http: AxiosInstance, 
-  key: string,
-  abortSignal?: AbortSignal
-) => {
-  return http.post(api.endpoints.auth.registerVerifyEmail, 
-    { key }, 
-    { signal: abortSignal }
-  );
+export const verifyAccount = (key: string, config?: AxiosRequestConfig) => {
+  return http.post(api.endpoints.auth.registerVerifyEmail, { key }, config);
 };
 
-export const resendActivationEmail = (
-  http: AxiosInstance, 
-  email: string,
-  abortSignal?: AbortSignal
-) => {
-  return http.post(api.endpoints.auth.registerResendEmail,
-    { email },
-    { signal: abortSignal }
-  );
+export const resendActivationEmail = (email: string, config?: AxiosRequestConfig) => {
+  return http.post(api.endpoints.auth.registerResendEmail, { email }, config);
 };
 
-export const getConnectedSocialAccounts = async (
-  http: AxiosInstance, 
-  abortSignal?: AbortSignal
-) => {
+export const getConnectedSocialAccounts = async (config?: AxiosRequestConfig) => {
   try {
-    const resp = await http.get(api.endpoints.auth.connectedSocialAccounts,
-      { signal: abortSignal }
-    );
+    const resp = await http.get(api.endpoints.auth.connectedSocialAccounts, config);
     return resp.data;
   }
   catch (e) {
@@ -138,68 +96,40 @@ export const getConnectedSocialAccounts = async (
   }
 };
 
-export const disconnectSocialAccount = (
-  http: AxiosInstance, 
-  socialAccountId: number,
-  abortSignal?: AbortSignal
-) => {
-  return http.post(api.endpoints.auth.disconnectSocialAccount(socialAccountId), 
-    undefined,
-    { signal: abortSignal }
-  );
+export const disconnectSocialAccount = (socialAccountId: number, config?: AxiosRequestConfig) => {
+  return http.post(api.endpoints.auth.disconnectSocialAccount(socialAccountId), undefined, config);
 }
 
-export const requestPasswordReset = (
-  http: AxiosInstance, 
-  email: string,
-  abortSignal?: AbortSignal
-) => {
-  return http.post(api.endpoints.auth.passwordResetRequest, 
-    { email },
-    { signal: abortSignal }
-  );
+export const requestPasswordReset = (email: string, config?: AxiosRequestConfig) => {
+  return http.post(api.endpoints.auth.passwordResetRequest, { email }, config);
 };
 
 export const confirmPasswordReset = (
-  http: AxiosInstance, 
   uid: string,
   token: string,
   newPassword1: string,
   newPassword2: string,
-  abortSignal?: AbortSignal
+  config?: AxiosRequestConfig
 ) => {
   return http.post(api.endpoints.auth.passwordResetConfirm, 
     { uid, token, new_password1: newPassword1, new_password2: newPassword2 },
-    { signal: abortSignal }
+    config
   );
 };
 
-export const isPasswordResetTokenValid = async (
-  http: AxiosInstance, 
-  uid: string,
-  token: string,
-  abortSignal?: AbortSignal
-) => {
+export const isPasswordResetTokenValid = async (uid: string, token: string, config?: AxiosRequestConfig) => {
   try {
-    const resp = await http.get(api.endpoints.auth.passwordResetValidity, { 
-      params: { uid, token }, 
-      signal: abortSignal
-    });
+    const resp = await http.get(api.endpoints.auth.passwordResetValidity, { ...config, params: { uid, token } });
     return true;
   }
   catch (e) { }
   return false;
 };
 
-export const changePassword = (
-  http: AxiosInstance, 
-  newPassword1: string,
-  newPassword2: string,
-  abortSignal?: AbortSignal
-) => {
+export const changePassword = (newPassword1: string, newPassword2: string, config?: AxiosRequestConfig) => {
   return http.post(api.endpoints.auth.passwordChange, 
     { new_password1: newPassword1, new_password2: newPassword2 },
-    { signal: abortSignal }
+    config
   );
 };
 
@@ -316,9 +246,10 @@ export function isRefreshTokenExpired() {
 
 export async function refreshAccessToken() {
   try {
-    const resp = await axiosBase.post(
+    const resp = await http.post(
       api.endpoints.auth.tokenRefresh, 
-      jwtCookie ? undefined : { refresh: getRefreshToken() }
+      jwtCookie ? undefined : { refresh: getRefreshToken() },
+      { rejectRequest: undefined, onError: undefined }
     );
     setAccessToken(resp.data.access);
     setAccessTokenExpiration(resp.data.access_token_expiration);

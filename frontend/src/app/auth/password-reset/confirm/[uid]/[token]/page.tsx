@@ -6,7 +6,7 @@ import Link from "next/link";
 import { FormProvider, useForm } from "react-hook-form";
 import Button from "@mui/lab/LoadingButton";
 
-import { axiosBase as http } from "@/utils/http";
+import http from "@/utils/http";
 import {
   isPasswordResetTokenValid,
   confirmPasswordReset,
@@ -43,7 +43,7 @@ const PasswordResetConfirmation = () => {
   useEffect(() => {
     if (uid && token && typeof uid === "string" && typeof token === "string") {
       (async () => {
-        const valid = await isPasswordResetTokenValid(http, uid, token);
+        const valid = await isPasswordResetTokenValid(uid, token, { rejectRequest: undefined, onError: undefined });
         setTokenValid(valid);
       })();
     }
@@ -53,11 +53,11 @@ const PasswordResetConfirmation = () => {
     try {
       if (tokenValid) {
         await confirmPasswordReset(
-          http,
           uid as string,
           token as string,
           values.password1,
-          values.password2
+          values.password2,
+          { rejectRequest: undefined, onError: undefined }
         );
         setPasswordChanged(true);
       }

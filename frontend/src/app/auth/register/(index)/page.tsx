@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation";
 import Button from "@mui/lab/LoadingButton";
 import Link from "next/link";
 
-import { axiosBase as http } from "@/utils/http";
+import http from "@/utils/http";
 import {
   emailPattern,
   registerUser,
@@ -44,7 +44,7 @@ const Register = () => {
     if (values) {
       try {
         const data = { ...values, username: values.email };
-        await registerUser(http, data);
+        await registerUser(data, { rejectRequest: undefined, onError: undefined });
 
         enqueueSnackbar(
           <div>

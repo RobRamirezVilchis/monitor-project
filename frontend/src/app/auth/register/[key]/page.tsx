@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import Button from "@mui/lab/LoadingButton";
 
-import { axiosBase as http } from "@/utils/http";
+import http from "@/utils/http";
 import { isRegisterTokenValid, verifyAccount } from "@/utils/auth/auth.utils";
 import logger from "@/utils/logger";
 
@@ -21,7 +21,7 @@ const RegisterActivation: NextPage = () => {
   useEffect(() => {
     if (key && typeof key === "string") {
       (async () => {
-        const valid = await isRegisterTokenValid(http, key);
+        const valid = await isRegisterTokenValid(key, { rejectRequest: undefined, onError: undefined });
         setTokenValid(valid);
       })();
     }
@@ -31,7 +31,7 @@ const RegisterActivation: NextPage = () => {
     setLoading(true);
     try {
       if (tokenValid) {
-        await verifyAccount(http, key as string);
+        await verifyAccount(key, { rejectRequest: undefined, onError: undefined });
         setAccountVerified(true);
       }
     }

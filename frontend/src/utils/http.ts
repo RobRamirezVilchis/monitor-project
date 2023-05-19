@@ -3,7 +3,7 @@ import Cookies from "js-cookie";
 
 import api from "./api";
 import { getOrRefreshAccessToken, jwtCookie, useJwt } from "./auth/auth.utils";
-import type { AxiosInstance, AxiosRequestConfig, InternalAxiosRequestConfig } from "./axios.types";
+import type { AxiosInstance as AxiosInstanceBase, AxiosRequestConfig as AxiosRequestConfigBase, InternalAxiosRequestConfig } from "./axios.types";
 
 export const csrfTokenName = "csrftoken_django";
 
@@ -24,7 +24,11 @@ export interface ExtraHttpProps {
   retryIf?: (error: any) => boolean;
 }
 
-export const axiosConfig: AxiosRequestConfig<ExtraHttpProps> = {
+export type AxiosRequestConfig = AxiosRequestConfigBase<ExtraHttpProps>;
+
+export type AxiosInstance = AxiosInstanceBase<ExtraHttpProps>;
+
+export const axiosConfig: AxiosRequestConfig = {
   baseURL: api.baseURL,
   withCredentials: true,
   setCsrfToken: true,
@@ -57,10 +61,10 @@ export const axiosConfig: AxiosRequestConfig<ExtraHttpProps> = {
   },
   retries: 0,
   retryDelay: 500,
-  retryIf: (error) => true,
+  retryIf: (_) => true,
 };
 
-const axiosInstance = axios.create(axiosConfig) as AxiosInstance<ExtraHttpProps>;
+const axiosInstance = axios.create(axiosConfig) as AxiosInstance;
 
 // Reject request interceptor
 axiosInstance.interceptors.request.use(async (config) => {
@@ -102,96 +106,6 @@ axiosInstance.interceptors.response.use(undefined, async (error) => {
 
 export default axiosInstance;
 
-// -------------------------------------------------------------------------------------
-// -------------------------------------------------------------------------------------
-// -------------------------------------------------------------------------------------
-// -------------------------------------------------------------------------------------
-// -------------------------------------------------------------------------------------
-// -------------------------------------------------------------------------------------
-// -------------------------------------------------------------------------------------
-// -------------------------------------------------------------------------------------
-
-/**
- * Base instance that includes the base url of the api, 
- * the csrf_token and withCredentials set to true
- */
-export const axiosBase = axios.create(axiosConfig) as AxiosInstance;
-
-axiosBase.interceptors.request.use(async (config) => {
-  return setCSRFTokenHeader(config); 
-});
-
-/**
- * Same as axios Base but throws a 401 error code if no csrf_token exist
- */
-export const axiosError = axios.create(axiosConfig);
-
-axiosError.interceptors.request.use(async (config) => {
-  let conf = setCSRFTokenHeader(config);
-
-  if (!hasCSRFToken(conf)) {
-    return Promise.reject({
-      response: {
-        status: 401,
-        statusText: "Unauthorized",
-      },
-    });
-  }
-
-  conf = await setJwtAuthorizationHeader(config);
-
-  return conf;
-});
-
-/**
- * Same as axiosError but redirects the client to the login page on authentication/authorization 
- * errors, including the one thrown by not having the csrf_token
- */
-export const axiosRedirectOnError = axios.create(axiosConfig);
-
-axiosRedirectOnError.interceptors.request.use(async (config) => {
-  let conf = setCSRFTokenHeader(config);
-
-  if (!hasCSRFToken(conf)) {
-    const url = new URL("/auth/login", window.location.origin);
-    const query = new URLSearchParams({
-      callbackUrl: window.location.href
-    });
-    url.search = query.toString();
-    window.location.href = url.toString();
-
-    return Promise.reject({
-      response: {
-        status: 401,
-        statusText: "Unauthorized",
-      },
-    });
-  }
-
-  conf = await setJwtAuthorizationHeader(config);
-
-  return conf;
-});
-
-axiosRedirectOnError.interceptors.response.use(
-  undefined,
-  (error) => {
-    if (
-      error.response &&
-      (error.response.status == 401 || error.response.status == 403)
-    ) {
-      const url = new URL("/auth/login", window.location.origin);
-      const query = new URLSearchParams({
-        callbackUrl: window.location.href
-      });
-      url.search = query.toString();
-      window.location.href = url.toString();
-    }
-
-    throw error;
-  },
-  { synchronous: true }
-);
 
 // Utility
 

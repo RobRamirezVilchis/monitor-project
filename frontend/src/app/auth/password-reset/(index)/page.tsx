@@ -6,7 +6,7 @@ import { AxiosError } from "axios";
 import { FormProvider, useForm } from "react-hook-form";
 import Button from "@mui/lab/LoadingButton";
 
-import { axiosBase as http } from "@/utils/http";
+import http from "@/utils/http";
 import { requestPasswordReset } from "@/utils/auth/auth.utils";
 import { TextInput } from "@/components/shared/inputs";
 
@@ -31,7 +31,7 @@ const PasswordResetRequest = () => {
     setError("");
 
     try {
-      await requestPasswordReset(http, values.email);
+      await requestPasswordReset(values.email, { rejectRequest: undefined, onError: undefined });
       setEmailSent(true);
     }
     catch (e) {
