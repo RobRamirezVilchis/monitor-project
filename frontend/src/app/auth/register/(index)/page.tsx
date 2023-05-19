@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation";
 import Button from "@mui/lab/LoadingButton";
 import Link from "next/link";
 
-import { axiosBase as http } from "@/utils/axios";
+import { axiosBase as http } from "@/utils/http";
 import {
   emailPattern,
   registerUser,

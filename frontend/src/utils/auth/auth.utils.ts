@@ -1,6 +1,6 @@
 import { AxiosInstance, AxiosResponse } from "axios";
 import { parseISO } from "date-fns";
-import { axiosBase } from "../axios";
+import { axiosBase } from "../http";
 
 import api from "../api";
 import { AuthError, Role, User } from "./auth.types";

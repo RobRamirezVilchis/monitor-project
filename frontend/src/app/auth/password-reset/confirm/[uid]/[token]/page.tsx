@@ -6,7 +6,7 @@ import Link from "next/link";
 import { FormProvider, useForm } from "react-hook-form";
 import Button from "@mui/lab/LoadingButton";
 
-import { axiosBase as http } from "@/utils/axios";
+import { axiosBase as http } from "@/utils/http";
 import {
   isPasswordResetTokenValid,
   confirmPasswordReset,

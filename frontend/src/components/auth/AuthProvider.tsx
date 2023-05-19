@@ -6,7 +6,7 @@ import { useImmerReducer } from "use-immer";
 import { useRouter } from "next/navigation";
 
 import api from "@/utils/api";
-import { axiosBase as http, axiosError as httpError } from "@/utils/axios";
+import { axiosBase as http, axiosError as httpError } from "@/utils/http";
 import {
   clearJwtStorage,
   fetchMyUser,

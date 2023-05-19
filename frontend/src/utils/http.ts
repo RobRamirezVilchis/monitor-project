@@ -4,11 +4,14 @@ import Cookies from "js-cookie";
 import api from "./api";
 import { getOrRefreshAccessToken, jwtCookie, useJwt } from "./auth/auth.utils";
 
-const csrfTokenName = "csrftoken_django";
+export const csrfTokenName = "csrftoken_django";
 
-const customAxiosConfig: AxiosRequestConfig<any> = {
+const customAxiosConfig: AxiosRequestConfig = {
   baseURL: api.baseURL,
+  withCredentials: true,
 };
+
+const axiosInstance = axios.create(customAxiosConfig);
 
 /**
  * Base instance that includes the base url of the api, 
@@ -17,7 +20,7 @@ const customAxiosConfig: AxiosRequestConfig<any> = {
 export const axiosBase = axios.create(customAxiosConfig);
 
 axiosBase.interceptors.request.use(async (config) => {
-  return setCSRFTokenHeader(config);
+  return setCSRFTokenHeader(config); 
 });
 
 /**
@@ -73,9 +76,7 @@ axiosRedirectOnError.interceptors.request.use(async (config) => {
 });
 
 axiosRedirectOnError.interceptors.response.use(
-  (response) => {
-    return response;
-  },
+  undefined,
   (error) => {
     if (
       error.response &&
@@ -89,8 +90,9 @@ axiosRedirectOnError.interceptors.response.use(
       window.location.href = url.toString();
     }
 
-    return Promise.reject(error);
-  }
+    throw error;
+  },
+  { synchronous: true }
 );
 
 // Utility
@@ -111,14 +113,14 @@ function setCSRFTokenHeader(config?: InternalAxiosRequestConfig<any>): InternalA
   
   conf.withCredentials = true;
 
-  return conf as InternalAxiosRequestConfig<any>;
+  return conf as InternalAxiosRequestConfig;
 }
 
-function hasCSRFToken(config: InternalAxiosRequestConfig<any>) {
+function hasCSRFToken(config: InternalAxiosRequestConfig) {
   return config?.headers && config.headers["X-CSRFToken"];
 }
 
-async function setJwtAuthorizationHeader(config?: InternalAxiosRequestConfig<any>): Promise<InternalAxiosRequestConfig<any>> {
+async function setJwtAuthorizationHeader(config?: InternalAxiosRequestConfig): Promise<InternalAxiosRequestConfig> {
   let conf = config as any;
   
   if (!conf) 
@@ -134,5 +136,5 @@ async function setJwtAuthorizationHeader(config?: InternalAxiosRequestConfig<any
     conf.headers["Authorization"] = `Bearer ${accessToken}`;
   }
 
-  return conf as InternalAxiosRequestConfig<any>;
+  return conf as InternalAxiosRequestConfig;
 }

@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import Button from "@mui/lab/LoadingButton";
 
-import { axiosBase as http } from "@/utils/axios";
+import { axiosBase as http } from "@/utils/http";
 import { isRegisterTokenValid, verifyAccount } from "@/utils/auth/auth.utils";
 import logger from "@/utils/logger";
 
