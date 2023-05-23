@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     "dj_rest_auth.registration",
     "allauth.socialaccount",
     "allauth.socialaccount.providers.google",
+    "guardian",
     # Local apps
     "authentication",
 ]
@@ -90,6 +91,11 @@ WSGI_APPLICATION = "api.wsgi.application"
 
 # User model
 AUTH_USER_MODEL = "authentication.User"
+
+
+# Django Guardian
+GUARDIAN_MONKEY_PATCH = False
+GUARDIAN_RAISE_403 = True
 
 
 # Database
@@ -167,6 +173,9 @@ AUTHENTICATION_BACKENDS = [
     # `allauth` specific authentication methods, such as login by e-mail:
     # "allauth.account.auth_backends.AuthenticationBackend",
     "authentication.backends.AllAuthAuthenticationBackend",
+
+    # Django Guardian for object level permissions
+    "guardian.backends.ObjectPermissionBackend",
 ]
 
 

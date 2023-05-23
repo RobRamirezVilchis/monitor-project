@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
+from guardian.mixins import GuardianUserMixin
 
 # https://docs.djangoproject.com/en/4.2/topics/auth/customizing/#substituting-a-custom-user-model
 
@@ -12,5 +13,5 @@ from django.contrib.auth.models import AbstractUser
 # from django.conf import settings
 # settings.AUTH_USER_MODEL
 
-class User(AbstractUser):
+class User(AbstractUser, GuardianUserMixin):
     pass
