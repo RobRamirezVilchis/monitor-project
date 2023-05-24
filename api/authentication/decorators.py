@@ -5,15 +5,18 @@ import inspect
 
 from django.contrib.auth.models import AnonymousUser
 
-def method_permission_classes(classes):
+def action_permission_classes(classes):
     '''
-        Permission classes for each method in addition to the class level permission_classes
+        Permission classes for view actions in addition to the view permission_classes
     '''
     def decorator(func):
         def decorated_func(self, *args, **kwargs):
+            original_permission_classes = self.permission_classes
             self.permission_classes = classes
-            # this call is needed for request permissions
             self.check_permissions(self.request)
+            # Append the original permission classes back after checking in case
+            # they must be used in the view action
+            self.permission_classes = original_permission_classes + classes
             return func(self, *args, **kwargs)
         return decorated_func
     return decorator
