@@ -1,5 +1,6 @@
 from typing import Union, TypedDict, List, Optional, Callable, Tuple
 from rest_framework.permissions import BasePermission
+from django.core.exceptions import ImproperlyConfigured
 from django.contrib.auth import get_user_model
 
 User = get_user_model()
@@ -12,7 +13,7 @@ class Policy(TypedDict):
     conditions: Optional[List[Condition]]
 
 
-class PolicyPermission(BasePermission):
+class PolicyPermissions(BasePermission):
     """
     A permission class that checks if the user has the required permissions
     to perform the action on the view or object.
@@ -22,29 +23,28 @@ class PolicyPermission(BasePermission):
     If a policy list is set to a list, all actions in the view will be marked as access
     denied by default, so policy rules must be set explicitly for each action.
 
-    - policies: A list of policies that will be used to check the permissions
-                for the view.
+    - policies: A list of policies that will be used to check the model permissions.
     - object_policies: A list of policies that will be used to check the permissions
-                for the object.
+                       for the object.
 
     A policy is a dictionary with the following attributes:
     - action: A string or a list of strings that represents the action(s) that
-                the user is trying to perform. 
-                The action can be a view action name or a request method name
-                when the action is not defined in the view.
-                Passing a wild card ("*" or ["*"]) will match any action.
+              the user is trying to perform. 
+              The action can be a view action name or a request method name
+              when the action is not defined in the view.
+              Passing a wild card ("*" or ["*"]) will match any action.
     - permission: A string or a list of strings that represents the permission(s)
-                that the user must have to perform the action(s).
-                Passing a wild card ("*" or ["*"]) will mark that policy
-                permissions as granted.
+                  that the user must have to perform the action(s).
+                  Passing a wild card ("*" or ["*"]) will mark that policy
+                  permissions as granted.
     - conditions: An optional list of callables that will be checked to grant
-                the permission. A condition accepts the following parameters:
-                - user: The user that is trying to perform the action.
-                - action: The view action or request method.
-                - obj: The object that the user is trying to access (for object 
-                       level permissions).
-                - request: The request object.
-                - view: The view object.
+                  the permission. A condition accepts the following parameters:
+                  - user: The user that is trying to perform the action.
+                  - action: The view action or request method.
+                  - obj: The object that the user is trying to access (for object 
+                         level permissions).
+                  - request: The request object.
+                  - view: The view object.
 
     The permission class will check that the user has all the permissions matched
     and that all the conditions matched return True in order to grant access. 
@@ -85,7 +85,7 @@ class PolicyPermission(BasePermission):
             policy_conditions: Optional[List[Condition]] = policy.get("conditions", None)
             
             if not policy_action or not policy_permission:
-                raise Exception("Invalid value: Both action and permission attributes values must be set.")
+                raise ImproperlyConfigured("Required both 'action' and 'permission'.")
 
             action_match = False
 
@@ -98,7 +98,7 @@ class PolicyPermission(BasePermission):
                 policy_action = [x.upper() for x in policy_action]
                 action_match = (action in policy_action) or (method in policy_action)
             else:
-                raise Exception("Invalid value: action must be a string or a list of strings.")
+                raise ImproperlyConfigured("Required 'action' to be a string or a list of strings. Type %s was given." % type(policy_action).__name__)
 
             if not action_match: continue
             
@@ -109,7 +109,7 @@ class PolicyPermission(BasePermission):
             elif isinstance(policy_permission, List):
                 permissions += policy_permission
             else:
-                raise Exception("Invalid value: permission must be a string or a list of strings.")
+                raise ImproperlyConfigured("Required 'permission' must be a string or a list of strings. Type %s was given." % type(policy_permission).__name__)
             
             if policy_conditions:
                 conditions += policy_conditions
