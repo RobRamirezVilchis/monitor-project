@@ -1,14 +1,8 @@
-from .constants import HOST_HMT, HOST_MET, HOST_MEL, HOST_MLB
 import os
 
-ALLOWED_DOMAIN_NAMES = [
-    HOST_HMT,
-    HOST_MET,
-    HOST_MEL,
-    HOST_MLB,
-]
+ALLOWED_DOMAIN_NAMES = []
 
-DOMAIN_IDX = int(os.getenv("COMPANY_DOMAIN_INDEX", 0))
+DOMAIN_IDX = int(os.getenv("DOMAIN_INDEX", 0))
 
 class DomainMiddleware:
     """
