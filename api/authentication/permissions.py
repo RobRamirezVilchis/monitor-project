@@ -1,9 +1,15 @@
-from typing import Union, TypedDict, List, Literal, Optional
+from typing import Union, TypedDict, List, Optional, Callable, Tuple
 from rest_framework.permissions import BasePermission
+from django.contrib.auth import get_user_model
+
+User = get_user_model()
+
+Condition = Callable[[User, str, Optional[any], any, any], bool]
 
 class Policy(TypedDict):
     action: Union[str, List[str]]
     permission: Union[str, List[str]]
+    conditions: Optional[List[Condition]]
 
 
 class PolicyPermission(BasePermission):
@@ -24,17 +30,24 @@ class PolicyPermission(BasePermission):
     A policy is a dictionary with the following attributes:
     - action: A string or a list of strings that represents the action(s) that
                 the user is trying to perform. 
-                The action can be a request method name, a view action name,
-                or a function name for function based views.
+                The action can be a view action name or a request method name
+                when the action is not defined in the view.
                 Passing a wild card ("*" or ["*"]) will match any action.
     - permission: A string or a list of strings that represents the permission(s)
                 that the user must have to perform the action(s).
                 Passing a wild card ("*" or ["*"]) will mark that policy
                 permissions as granted.
+    - conditions: An optional list of callables that will be checked to grant
+                the permission. A condition accepts the following parameters:
+                - user: The user that is trying to perform the action.
+                - action: The view action or request method.
+                - obj: The object that the user is trying to access (for object 
+                       level permissions).
+                - request: The request object.
+                - view: The view object.
 
     The permission class will check that the user has all the permissions matched
-    by action in the policy list. If the user has the required permissions, the
-    permission class will return True, otherwise it will return False.
+    and that all the conditions matched return True in order to grant access. 
     """
     policies:        Optional[List[Policy]] = None
     object_policies: Optional[List[Policy]] = None
@@ -54,19 +67,22 @@ class PolicyPermission(BasePermission):
         method = request.method
         action = self.get_action_or_method(request, view)
 
-        required_permissions = self.get_required_permissions(action, method, policies)
+        required_permissions, conditions = self.get_required_permissions(action, method, policies)
         if required_permissions is None: return False
-        return user.has_perms(required_permissions, obj)
+        return user.has_perms(required_permissions, obj) \
+            and all([condition(user, action, obj, request, view) for condition in conditions])
     
-    def get_required_permissions(self, action: str, method: str, policies: List[Policy]) -> Optional[List[str]]:       
+    def get_required_permissions(self, action: str, method: str, policies: List[Policy]) -> Union[Tuple[List[str], List[Condition]], Tuple[None, None]]:       
         action = action.upper()
         method = method.upper()
         permissions: List[str] = []
+        conditions: List[Condition] = []
         wild_card = False
         
         for policy in policies:
             policy_action: Optional[Union[str, List[str]]] = policy.get("action", None)
             policy_permission: Optional[Union[str, List[str]]] = policy.get("permission", None)
+            policy_conditions: Optional[List[Condition]] = policy.get("conditions", None)
             
             if not policy_action or not policy_permission:
                 raise Exception("Invalid value: Both action and permission attributes values must be set.")
@@ -94,17 +110,17 @@ class PolicyPermission(BasePermission):
                 permissions += policy_permission
             else:
                 raise Exception("Invalid value: permission must be a string or a list of strings.")
+            
+            if policy_conditions:
+                conditions += policy_conditions
 
-        return permissions if len(permissions) > 0 or wild_card else None
+        return (permissions, conditions) if len(permissions) > 0 or wild_card else (None, None)
 
     def get_action(self, request, view) -> Optional[str]:
         if hasattr(view, "action"):
             if hasattr(view, "action_map"):
                 return view.action or view.action_map[request.method]
             return view.action
-        # For function api_view:
-        elif hasattr(view, "__class__"):
-            return view.__class__.__name__
         
         return None
     
