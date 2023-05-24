@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 
 import { AuthContext, SocialAction } from "./AuthProvider";
 import { isUserInAuthorizedRoles } from "../../utils/auth/auth.utils";
-import { Role, ProviderKey, User } from "@/utils/auth/auth.types";
+import { ProviderKey, User } from "@/utils/auth/auth.types";
 import { ProvidersOptions } from "@/utils/auth/oauth";
 
 export const useAuth = (options?: {
@@ -44,12 +44,17 @@ export const useAuth = (options?: {
    * If undefined, all users will be authorized unless their roles are blacklisted.
    * If a list is given, only users in it will be authorized, unless they're also blacklisted.
    */
-  rolesWhitelist?: Role[],
+  rolesWhitelist?: string[],
   /**
    * Users whose role is in this list will not be authorized.
-   */
-  rolesBlacklist?: Role[],
-
+  */
+  rolesBlacklist?: string[],
+  /**
+    * The permissions required to authorize the user. If undefined, the user will be authorized
+    * unless they are restricted by the rolesWhitelist or rolesBlacklist options.
+    */
+  permissionsRequired?: string[],
+  
   /**
    * The route where the client will be redirected if the user is not authenticated and
    * or authorized.
@@ -136,7 +141,7 @@ export const useAuth = (options?: {
         }
       }
       else if (!opts.skipAuthorization) {
-        const authorized = isUserInAuthorizedRoles(authState.user, opts.rolesWhitelist, opts.rolesBlacklist);
+        const authorized = isUserInAuthorizedRoles(authState.user, opts.rolesWhitelist, opts.rolesBlacklist, opts.permissionsRequired);
         setIsAuthorized(authorized);
         if (!authorized && opts.redirectIfNotAuthorized) {
           if (opts.setCallbackUrlParam) {

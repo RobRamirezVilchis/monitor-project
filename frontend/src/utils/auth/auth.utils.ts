@@ -3,7 +3,7 @@ import { parseISO } from "date-fns";
 import http, { AxiosRequestConfig } from "../http";
 
 import api from "../api";
-import { AuthError, Role, User } from "./auth.types";
+import { AuthError, User } from "./auth.types";
 import logger from "../logger";
 
 export const emailPattern = /(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])/;
@@ -13,14 +13,15 @@ export const emailPattern = /(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+
  * or if both lists are undefined. False otherwise or if the user is null or undefined.
  */
 export function isUserInAuthorizedRoles(
-  user?: User | null, rolesWhitelist?: Role[], rolesBlacklist?: Role[]
+  user?: User | null, rolesWhitelist?: string[], rolesBlacklist?: string[], permissionsRequired?: string[]
 ) {
   if (!user) 
     return false;
 
-  const whitelisted = !rolesWhitelist || rolesWhitelist.includes(user.role);
-  const blacklisted = rolesBlacklist && rolesBlacklist.includes(user.role);
-  const authorized = whitelisted && !blacklisted;
+  const whitelisted = !rolesWhitelist || rolesWhitelist.some(x => user.roles.includes(x));
+  const blacklisted = rolesBlacklist && rolesBlacklist.some(x => user.roles.includes(x));
+  const permissions = !permissionsRequired || permissionsRequired.every(x => user.permissions.includes(x));
+  const authorized = whitelisted && !blacklisted && permissions;
   return authorized;
 }
 
@@ -147,17 +148,6 @@ export const getAuthErrorString = (error: AuthError) => {
       return "Error en el proveedor seleccionado.";
     default:
       return "Error en la aplicación.";
-  }
-}
-
-export const getRoleName = (role: Role) => {
-  switch(role) {
-    case Role.Admin:
-      return "Admin";
-    case Role.User:
-      return "Usuario";
-    default:
-      return "Sin rol";
   }
 }
 

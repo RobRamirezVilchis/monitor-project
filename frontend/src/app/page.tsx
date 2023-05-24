@@ -6,14 +6,16 @@ import { getOrRefreshAccessToken } from "@/utils/auth/auth.utils";
 import Link from "next/link";
 
 const Home = () => {
-  const { user, loading, login, logout } = useAuth({
-    skipAll: true,
+  const { user, loading, login, logout, isAuthorized } = useAuth({
+    skipAll: false,
+    redirectIfNotAuthorized: false,
+    rolesWhitelist: ["Admin"]
   });
 
   return (
     <main>
       {!user && loading ? <div>Loading...</div> : null}
-      {user ? `User: ${user.email}` : null}
+      {user ? `User: ${user.email}, authorized: ${isAuthorized}` : null}
 
       <br />
 
