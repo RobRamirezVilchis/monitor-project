@@ -1,8 +1,8 @@
-import os
+from django.conf import settings
 
 ALLOWED_DOMAIN_NAMES = []
 
-DOMAIN_IDX = int(os.getenv("DOMAIN_INDEX", 0))
+DOMAIN_IDX = int(settings.ENV["DOMAIN_INDEX"])
 
 class DomainMiddleware:
     """

@@ -14,6 +14,28 @@ import os
 from pathlib import Path
 from datetime import timedelta
 
+# environment variables
+ENV = {
+    "SECRET_KEY": os.getenv("SECRET_KEY"),
+    # True | False
+    "DEBUG": os.getenv("DEBUG", "False"),
+    "LOG_LEVEL": os.getenv("LOG_LEVEL", "INFO"),
+    "EMAIL_HOST": os.getenv("EMAIL_HOST"),
+    "EMAIL_PORT": os.getenv("EMAIL_PORT"),
+    "EMAIL_USER": os.getenv("EMAIL_USER"),
+    "EMAIL_PASSWORD": os.getenv("EMAIL_PASSWORD"),
+    "GOOGLE_CLIENT_ID": os.getenv("GOOGLE_CLIENT_ID"),
+    "GOOGLE_CLIENT_SECRET": os.getenv("GOOGLE_CLIENT_SECRET"),
+    "GOOGLE_CALLBACK_URL": os.getenv("GOOGLE_CALLBACK_URL"),
+    # 0 based index number
+    "COMPANY_DOMAIN_INDEX": os.getenv("COMPANY_DOMAIN_INDEX", "0"),
+    "FRONTEND_URL": os.getenv("FRONTEND_URL"),
+    # params: <key>
+    "FRONTEND_REGISTER_CONFIRM_PATH": os.getenv("FRONTEND_REGISTER_CONFIRM_PATH"),
+    # params: <uid>, <token>
+    "FRONTEND_PASSWORD_RESET_PATH": os.getenv("FRONTEND_PASSWORD_RESET_PATH"),
+}
+
 # Build paths inside the project like this: BASE_DIR / "subdir".
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -22,10 +44,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.getenv("DJANGO_SEC_KEY")
+SECRET_KEY = ENV["SECRET_KEY"]
 
 # SECURITY WARNING: don"t run with debug turned on in production!
-DEBUG = os.getenv("DEBUG", "False") == "True"
+DEBUG = ENV["DEBUG"] == "True"
 
 ALLOWED_HOSTS = ["*"]
 
@@ -225,8 +247,8 @@ SOCIALACCOUNT_PROVIDERS = {
         # (``socialaccount`` app) containing the required client
         # credentials, or list them here:
         "APP": {
-            "client_id": os.getenv("GOOGLE_CLIENT_ID"),
-            "secret": os.getenv("GOOGLE_CLIENT_SECRET"),
+            "client_id": ENV["GOOGLE_CLIENT_ID"],
+            "secret": ENV["GOOGLE_CLIENT_SECRET"],
             "key": ""
         },
         "SCOPE": [
@@ -242,9 +264,9 @@ SOCIALACCOUNT_PROVIDERS = {
 
 
 # CORS
-CORS_ALLOWED_ORIGINS = [os.getenv("FRONTEND_URL")]
-CORS_ORIGIN_WHITELIST = [os.getenv("FRONTEND_URL")]
-CSRF_TRUSTED_ORIGINS = [os.getenv("FRONTEND_URL")]
+CORS_ALLOWED_ORIGINS = [ENV["FRONTEND_URL"]]
+CORS_ORIGIN_WHITELIST = [ENV["FRONTEND_URL"]]
+CSRF_TRUSTED_ORIGINS = [ENV["FRONTEND_URL"]]
 CORS_ALLOW_CREDENTIALS = True
 
 
@@ -266,22 +288,21 @@ if DEBUG:
 else:
     CSRF_COOKIE_SECURE = True
     SESSION_COOKIE_SECURE = True
-    SESSION_COOKIE_DOMAIN = os.getenv("COOKIE_DOMAIN")
-    CSRF_COOKIE_DOMAIN = os.getenv("COOKIE_DOMAIN")
+    SESSION_COOKIE_DOMAIN = ENV["COOKIE_DOMAIN"]
+    CSRF_COOKIE_DOMAIN = ENV["COOKIE_DOMAIN"]
 
 
 # Email settings
 
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
-EMAIL_HOST = os.getenv("DJANGO_EMAIL_HOST")
-EMAIL_PORT = os.getenv("DJANGO_EMAIL_PORT")
-EMAIL_HOST_USER = os.getenv("DJANGO_EMAIL_USER")
-EMAIL_HOST_PASSWORD = os.getenv("DJANGO_EMAIL_PASSWORD")
+EMAIL_HOST = ENV["EMAIL_HOST"]
+EMAIL_PORT = ENV["EMAIL_PORT"]
+EMAIL_HOST_USER = ENV["EMAIL_USER"]
+EMAIL_HOST_PASSWORD = ENV["EMAIL_PASSWORD"]
 EMAIL_USE_TLS = True
 
 
 # https://docs.djangoproject.com/en/4.1/topics/logging/
-LOG_LEVEL = os.getenv("LOG_LEVEL", "INFO")
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
@@ -302,7 +323,7 @@ LOGGING = {
         #     "propagate": False,
         # },
         "django.db.backends": { # Log queries: https://stackoverflow.com/questions/4375784/how-to-log-all-sql-queries-in-django
-            "level": LOG_LEVEL,
+            "level": ENV["LOG_LEVEL"],
             "handlers": ["console"],
         },
     },
