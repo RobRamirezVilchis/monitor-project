@@ -2,6 +2,7 @@ from typing import Union, TypedDict, List, Optional, Callable, Tuple
 from rest_framework.permissions import BasePermission
 from django.core.exceptions import ImproperlyConfigured
 from django.contrib.auth import get_user_model
+from guardian.shortcuts import get_anonymous_user
 
 User = get_user_model()
 
@@ -52,6 +53,18 @@ class PolicyPermissions(BasePermission):
     policies:        Optional[List[Policy]] = None
     object_policies: Optional[List[Policy]] = None
 
+    def set_view_permissions(self, view, permissions: Optional[List[str]]):
+        """
+        Set the current view permissions to the view object.
+        Useful if the view needs to know the permissions that are required
+        by the current action.
+        If the permissions are None, the view will be marked as access denied.
+        If the permissions are an empty list, the view will be marked as access granted.
+        If the permissions are a list of permissions, the view will be marked as access granted
+        only if the user has all the permissions in the list.
+        """
+        pass
+
     def has_permission(self, request, view) -> bool:
         if self.policies is None: return True
         if not self.policies: return False
@@ -64,15 +77,26 @@ class PolicyPermissions(BasePermission):
 
     def check_permissions(self, policies: List[Policy], request, view, obj = None) -> bool:
         user = request.user
+        if user.is_anonymous:
+            user = get_anonymous_user()
         method = request.method
         action = self.get_action_or_method(request, view)
 
         required_permissions, conditions = self.get_required_permissions(action, method, policies)
+        self.set_view_permissions(view, required_permissions)
         if required_permissions is None: return False
         return user.has_perms(required_permissions, obj) \
             and all([condition(user, action, obj, request, view) for condition in conditions])
     
-    def get_required_permissions(self, action: str, method: str, policies: List[Policy]) -> Union[Tuple[List[str], List[Condition]], Tuple[None, None]]:       
+    def get_required_permissions(self, action: str, method: str, policies: List[Policy]) -> Union[Tuple[List[str], List[Condition]], Tuple[None, None]]:
+        """
+        Return a tuple with the required permissions and conditions for the given action.
+        If no permissions are matched for the action, the tuple will be (None, None).
+        If the permissions are None, the view will be marked as access denied.
+        If the permissions are an empty list, the view will be marked as access granted.
+        If the permissions are a list of permissions, the view will be marked as access granted
+        only if the user has all the permissions in the list.
+        """
         action = action.upper()
         method = method.upper()
         permissions: List[str] = []
