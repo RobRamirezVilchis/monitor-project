@@ -1,4 +1,5 @@
-from typing import Union, TypedDict, List, Optional, Callable, Tuple
+from typing import Union, TypedDict, List, Optional, Callable, Tuple, Any
+from typing_extensions import NotRequired
 from rest_framework.permissions import BasePermission
 from django.core.exceptions import ImproperlyConfigured
 from django.contrib.auth import get_user_model
@@ -6,12 +7,12 @@ from guardian.shortcuts import get_anonymous_user
 
 User = get_user_model()
 
-Condition = Callable[[User, str, Optional[any], any, any], bool]
+Condition = Callable[[User, str, Optional[Any], Any, Any], bool]
 
 class Policy(TypedDict):
     action: Union[str, List[str]]
     permission: Union[str, List[str]]
-    conditions: Optional[List[Condition]]
+    conditions: NotRequired[List[Condition]]
 
 
 class PolicyPermissions(BasePermission):
