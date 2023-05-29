@@ -1,5 +1,10 @@
-from typing import Union, TypedDict, List, Optional, Callable, Tuple, Any
-from typing_extensions import NotRequired
+from typing import Union, List, Optional, Callable, Tuple, Any
+import sys
+if sys.version_info < (3, 11):
+    from typing_extensions import TypedDict, NotRequired
+else:
+    from typing import TypedDict, NotRequired
+
 from rest_framework.permissions import BasePermission
 from django.core.exceptions import ImproperlyConfigured
 from django.contrib.auth import get_user_model
