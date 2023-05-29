@@ -114,7 +114,7 @@ export function useQueryState<T extends Record<string, any> = Record<string, any
     });
 
     const updateRouteParams = options?.history === "replace" ? router.replace : router.push;
-    const url = new URL(window.location.origin + window.location.pathname);
+    const url = new URL(window.location.pathname, window.location.origin);
     url.search = updatedQueryParams.toString();
     updateRouteParams(url.toString(), options?.navigateOptions);
   }, [params, options?.history, options?.navigateOptions, router, searchParams]);

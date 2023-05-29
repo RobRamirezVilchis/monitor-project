@@ -129,7 +129,7 @@ export const useAuth = (options?: {
   
         if (opts.redirectIfNotAuthenticated) {
           if (opts.setCallbackUrlParam) {
-            const url = new URL(opts.redirectTo!);
+            const url = new URL(opts.redirectTo!, window.location.origin);
             url.search = new URLSearchParams({
               [opts.callbackUrlParamName!]: window.location.href
             }).toString();
@@ -145,7 +145,7 @@ export const useAuth = (options?: {
         setIsAuthorized(authorized);
         if (!authorized && opts.redirectIfNotAuthorized) {
           if (opts.setCallbackUrlParam) {
-            const url = new URL(opts.redirectTo!);
+            const url = new URL(opts.redirectTo!, window.location.origin);
             url.search = new URLSearchParams({
               [opts.callbackUrlParamName!]: window.location.href
             }).toString();
