@@ -1,10 +1,10 @@
 import axios from "axios";
 import Cookies from "js-cookie";
 
-import api from "./api";
-import { getOrRefreshAccessToken, jwtCookie, useJwt } from "./auth/auth.utils";
+import api from "@/utils/api";
+import { getOrRefreshAccessToken, jwtCookie, useJwt } from "@/utils/auth/auth.utils";
 import type { AxiosInstance as AxiosInstanceBase, AxiosRequestConfig as AxiosRequestConfigBase, InternalAxiosRequestConfig } from "./axios.types";
-import { sleep } from "./utils";
+import { sleep } from "@/utils/utils";
 
 export const csrfTokenName = "csrftoken_django";
 
