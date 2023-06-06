@@ -334,7 +334,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({
   }): Promise<void> => {
     const opts: typeof options = {
       redirect: true,
-      redirectTo: "/auth/login",
+      redirectTo: defaultRedirectTo ?? authContextDefaults.defaultRedirectTo,
       ...options
     };
     lastAction.current = "logout";
@@ -352,7 +352,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({
       router.push(opts.redirectTo!);
       dispatch({ type: "setUser", payload: null });
     }
-  }, [router, dispatch]);
+  }, [router, dispatch, defaultRedirectTo]);
 
   const forceReconnect = useCallback(() => {
     dispatch({ type: "userFetched", payload: false });
