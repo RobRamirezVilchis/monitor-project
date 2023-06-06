@@ -44,7 +44,7 @@ const Register = () => {
     if (values) {
       try {
         const data = { ...values, username: values.email };
-        await registerUser(data, { rejectRequest: undefined, onError: undefined });
+        await registerUser(data, { rejectRequest: false, onError: false });
 
         enqueueSnackbar(
           <div>

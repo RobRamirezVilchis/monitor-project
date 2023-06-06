@@ -21,7 +21,7 @@ const RegisterActivation: NextPage = () => {
   useEffect(() => {
     if (key && typeof key === "string") {
       (async () => {
-        const valid = await isRegisterTokenValid(key, { rejectRequest: undefined, onError: undefined });
+        const valid = await isRegisterTokenValid(key, { rejectRequest: false, onError: false });
         setTokenValid(valid);
       })();
     }
@@ -31,7 +31,7 @@ const RegisterActivation: NextPage = () => {
     setLoading(true);
     try {
       if (tokenValid) {
-        await verifyAccount(key, { rejectRequest: undefined, onError: undefined });
+        await verifyAccount(key, { rejectRequest: false, onError: false });
         setAccountVerified(true);
       }
     }

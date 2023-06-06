@@ -17,9 +17,9 @@ export const csrfTokenName = "csrftoken_django";
 export interface ExtraHttpProps {
   setCsrfToken?: boolean;
   setJwtToken?: boolean;
-  rejectRequest?: (config: InternalAxiosRequestConfig<ExtraHttpProps>) => 
-    { response: any, config: InternalAxiosRequestConfig<ExtraHttpProps> } | false;
-  onError?: (error: any) => void;
+  rejectRequest?: false | ((config: InternalAxiosRequestConfig<ExtraHttpProps>) => 
+    { response: any, config: InternalAxiosRequestConfig<ExtraHttpProps> } | false);
+  onError?: false | ((error: any) => void);
   retries?: number;
   retryDelay?: number;
   retryIf?: (error: any) => boolean;
@@ -70,7 +70,7 @@ const axiosInstance = axios.create(axiosConfig) as AxiosInstance;
 
 // Reject request interceptor
 axiosInstance.interceptors.request.use(async (config) => {
-  const reject = config?.rejectRequest?.(config);
+  const reject = config?.rejectRequest && config?.rejectRequest(config);
   if (reject) throw reject;
   return config;
 });
@@ -96,7 +96,7 @@ axiosInstance.interceptors.request.use(async (config) => {
 
 // Error interceptor
 axiosInstance.interceptors.response.use(undefined, (error) => {
-  error.config?.onError?.(error);
+  error.config?.onError && error.config?.onError(error);
 
   return error;
 });

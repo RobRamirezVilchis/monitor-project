@@ -43,7 +43,7 @@ const PasswordResetConfirmation = () => {
   useEffect(() => {
     if (uid && token && typeof uid === "string" && typeof token === "string") {
       (async () => {
-        const valid = await isPasswordResetTokenValid(uid, token, { rejectRequest: undefined, onError: undefined });
+        const valid = await isPasswordResetTokenValid(uid, token, { rejectRequest: false, onError: false });
         setTokenValid(valid);
       })();
     }
@@ -57,7 +57,7 @@ const PasswordResetConfirmation = () => {
           token as string,
           values.password1,
           values.password2,
-          { rejectRequest: undefined, onError: undefined }
+          { rejectRequest: false, onError: false }
         );
         setPasswordChanged(true);
       }

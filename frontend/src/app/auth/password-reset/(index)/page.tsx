@@ -31,7 +31,7 @@ const PasswordResetRequest = () => {
     setError("");
 
     try {
-      await requestPasswordReset(values.email, { rejectRequest: undefined, onError: undefined });
+      await requestPasswordReset(values.email, { rejectRequest: false, onError: false });
       setEmailSent(true);
     }
     catch (e) {

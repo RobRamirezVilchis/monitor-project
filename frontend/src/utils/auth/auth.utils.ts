@@ -239,7 +239,7 @@ export async function refreshAccessToken() {
     const resp = await http.post(
       api.endpoints.auth.tokenRefresh, 
       jwtCookie ? undefined : { refresh: getRefreshToken() },
-      { rejectRequest: undefined, onError: undefined }
+      { rejectRequest: false, onError: false }
     );
     setAccessToken(resp.data.access);
     setAccessTokenExpiration(resp.data.access_token_expiration);
