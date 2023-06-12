@@ -258,8 +258,7 @@ const DatePresets: React.FC<DatePresetsProps> = ({
   const onLast7DaysClick = React.useCallback(() => {
     const start = new Date();
     const end = new Date();
-    start.setDate(start.getDate() - start.getDay());
-    end.setDate(start.getDate() + 6);
+    start.setDate(end.getDate() - 6);
     onChange && onChange([start, end], undefined);
   }, [onChange]);
 
@@ -293,7 +292,7 @@ const DatePresets: React.FC<DatePresetsProps> = ({
   const onThisTriClick = React.useCallback(() => {
     const start = new Date();
     start.setDate(1);
-    start.setMonth(Math.floor(start.getMonth() / 3));
+    start.setMonth(Math.floor(start.getMonth() / 3) * 3);   
     const end = new Date(start);
     end.setMonth(end.getMonth() + 3);
     end.setDate(end.getDate() - 1);
@@ -303,7 +302,7 @@ const DatePresets: React.FC<DatePresetsProps> = ({
   const onLastTriClick = React.useCallback(() => {
     const start = new Date();
     start.setDate(1);
-    start.setMonth(Math.floor(start.getMonth() / 3) - 3);
+    start.setMonth(Math.floor(start.getMonth() / 3) * 3 - 3);   
     const end = new Date(start);
     end.setMonth(end.getMonth() + 3);
     end.setDate(end.getDate() - 1);
