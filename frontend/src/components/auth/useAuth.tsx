@@ -90,7 +90,7 @@ export const useAuth = (options?: {
   const registered = useRef(false);
   const router = useRouter();
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     const triggerAuthentication = options?.triggerAuthentication ?? true;
     if (triggerAuthentication && !registered.current) {
       registered.current = true;
