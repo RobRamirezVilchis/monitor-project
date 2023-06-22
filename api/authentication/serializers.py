@@ -1,5 +1,6 @@
 from django.conf import settings
 from django.contrib.auth import get_user_model
+from django.contrib.auth.models import Group, Permission
 from django.utils.encoding import force_str
 from django.utils.translation import gettext_lazy as _
 from allauth.account import app_settings as allauth_account_settings
@@ -62,15 +63,37 @@ class CustomRegisterSerializer(RegisterSerializer):
         user.first_name = user_first_name
         user.last_name = user_last_name
         user.save()
-    
+
+
+class GroupSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Group
+        fields = ["name"]
+
+    def to_representation(self, instance):
+        return super().to_representation(instance).get("name")
+
+
+class PermissionSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Permission
+        fields = ["codename"]
+
+    def to_representation(self, instance):
+        return super().to_representation(instance).get("codename")
+
 
 class CustomUserDetailsSerializer(UserDetailsSerializer):
-    role = serializers.SerializerMethodField()
+    roles = GroupSerializer(many=True, read_only=True, source="groups")
+    permissions = PermissionSerializer(many=True, read_only=True, source="user_permissions")
+    # permissions = serializers.SerializerMethodField()
 
     class Meta:
         model = UserModel
-        fields = ["id", "username", "email", "first_name", "last_name", "role"]
-        read_only_fields = ["username", "email", "role"]
+        fields = ["email", "first_name", "last_name", "roles", "permissions"]
+        read_only_fields = ["email"]
 
-    def get_role(self, obj):
-        return "None"
+    def get_permissions(self, obj):
+        return obj.get_all_permissions()

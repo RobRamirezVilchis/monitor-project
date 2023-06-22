@@ -6,6 +6,8 @@ const api = {
     auth: {
       // https://dj-rest-auth.readthedocs.io/en/latest/api_endpoints.html
       login: "/api/auth/login/",
+      tokenVerify: "/api/auth/token/verify/",
+      tokenRefresh: "/api/auth/token/refresh/",
       social: {
         google: {
           login: "/api/auth/social/google/",

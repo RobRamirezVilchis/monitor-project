@@ -1,3 +1,14 @@
+"use client";
+
+//! Using custom styling
+// import "react-datepicker/dist/react-datepicker.css";
+import "@/styles/react-datepicker-custom.css";
+
+/**
+ * docs: https://github.com/Hacker0x01/react-datepicker/blob/master/docs/datepicker.md
+ * examples: https://reactdatepicker.com/
+ */
+
 import React, { useState } from "react";
 import RDatePicker, {
   CalendarContainer,
@@ -18,14 +29,6 @@ import { useMediaQuery } from "@/components/shared/hooks/useMediaQuery";
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
-
-//! Custom styling imported globaly in the _app.tsx file
-// import "react-datepicker/dist/react-datepicker.css";
-
-/**
- * docs: https://github.com/Hacker0x01/react-datepicker/blob/master/docs/datepicker.md
- * examples: https://reactdatepicker.com/
- */
 
 registerLocale("es", es);
 
@@ -255,8 +258,7 @@ const DatePresets: React.FC<DatePresetsProps> = ({
   const onLast7DaysClick = React.useCallback(() => {
     const start = new Date();
     const end = new Date();
-    start.setDate(start.getDate() - start.getDay());
-    end.setDate(start.getDate() + 6);
+    start.setDate(end.getDate() - 6);
     onChange && onChange([start, end], undefined);
   }, [onChange]);
 
@@ -290,7 +292,7 @@ const DatePresets: React.FC<DatePresetsProps> = ({
   const onThisTriClick = React.useCallback(() => {
     const start = new Date();
     start.setDate(1);
-    start.setMonth(Math.floor(start.getMonth() / 3));
+    start.setMonth(Math.floor(start.getMonth() / 3) * 3);   
     const end = new Date(start);
     end.setMonth(end.getMonth() + 3);
     end.setDate(end.getDate() - 1);
@@ -300,7 +302,7 @@ const DatePresets: React.FC<DatePresetsProps> = ({
   const onLastTriClick = React.useCallback(() => {
     const start = new Date();
     start.setDate(1);
-    start.setMonth(Math.floor(start.getMonth() / 3) - 3);
+    start.setMonth(Math.floor(start.getMonth() / 3) * 3 - 3);   
     const end = new Date(start);
     end.setMonth(end.getMonth() + 3);
     end.setDate(end.getDate() - 1);

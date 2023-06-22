@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useState } from "react";
 import { TextField, type TextFieldProps, TextFieldClasses } from "@mui/material";
 import { Controller, FieldError, FieldValues, useFormContext } from "react-hook-form";
@@ -23,7 +25,7 @@ export type TextInputProps<TFieldValues extends FieldValues = FieldValues> = Tex
 export const TextInput = <TFieldValues extends FieldValues = FieldValues>({
   children, name, rules, shouldUnregisterField, defaultFieldValue,
   showPasswordToggle, classes, error: componentError,
-  helperText, inputProps, type, fullWidth,
+  helperText, inputProps, InputProps, type, fullWidth,
   onChange: _onChange, onBlur: _onBlur,
   PasswordVisibilityOnIcon, PasswordVisibilityOffIcon,
   ...textFieldProps
@@ -63,7 +65,7 @@ export const TextInput = <TFieldValues extends FieldValues = FieldValues>({
 
   return (
     <div
-      className={`flex relative ${fullWidth ? "w-full" : ""}`}
+      className={`flex ${fullWidth ? "w-full" : ""}`}
     >
       {formMethods && name ? (
         <Controller 
@@ -87,6 +89,21 @@ export const TextInput = <TFieldValues extends FieldValues = FieldValues>({
                 className:
                   `${showPasswordToggle ? "pr-9 " : ""}` +
                   (inputProps?.className || ""),
+              }}
+              InputProps={{
+                ...InputProps,
+                endAdornment: (
+                  showPasswordToggle && (inputType === "text" || inputType === "password") && !textFieldProps.disabled ? (
+                    <button
+                      type="button"
+                      onClick={toggleShowPassword}
+                      className={classes?.passwordToggle}
+                      disabled={textFieldProps.disabled}
+                    >
+                      {getPasswordToggleIcon()}
+                    </button>
+                  ) : undefined
+                )
               }}
               onChange={(e) => {
                 onChange(e);
@@ -116,27 +133,27 @@ export const TextInput = <TFieldValues extends FieldValues = FieldValues>({
               `${showPasswordToggle ? "pr-9 " : ""}` +
               (inputProps?.className || ""),
           }}
+          InputProps={{
+            ...InputProps,
+            endAdornment: (
+              showPasswordToggle && (inputType === "text" || inputType === "password") && !textFieldProps.disabled ? (
+                <button
+                  type="button"
+                  onClick={toggleShowPassword}
+                  className={classes?.passwordToggle}
+                  disabled={textFieldProps.disabled}
+                >
+                  {getPasswordToggleIcon()}
+                </button>
+              ) : undefined
+            )
+          }}
           onBlur={_onBlur}
           onChange={_onChange}
         >
           {children}
         </TextField>
       )}
-      {showPasswordToggle && (inputType === "text" || inputType === "password") && !textFieldProps.disabled ? (
-        <button
-          type="button"
-          onClick={toggleShowPassword}
-          className={`right-2 ${classes?.passwordToggle}`}
-          disabled={textFieldProps.disabled}
-          style={{
-            display: "block",
-            position: "absolute",
-            transform: "translateY(65%)",
-          }}
-        >
-          {getPasswordToggleIcon()}
-        </button>
-      ) : null}
     </div>
   );
 };

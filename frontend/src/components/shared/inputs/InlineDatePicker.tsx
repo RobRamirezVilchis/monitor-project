@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useState } from "react";
 import Dialog from "@mui/material/Dialog";
 import InputBase, { InputBaseProps } from "@mui/material/InputBase";

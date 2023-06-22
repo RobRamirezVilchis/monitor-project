@@ -1,11 +1,12 @@
-import React, { useCallback, useContext, useEffect, useRef } from "react";
-import { LiteralUnion, signIn, SignInAuthorizationParams } from "next-auth/react";
-import type { BuiltInProviderType, RedirectableProviderType } from "next-auth/providers";
-import Router from "next/router";
+"use client";
 
-import { AuthContext } from "./AuthProvider";
+import React, { useCallback, useContext, useEffect, useLayoutEffect, useRef } from "react";
+import { useRouter } from "next/navigation";
+
+import { AuthContext, SocialAction } from "./AuthProvider";
 import { isUserInAuthorizedRoles } from "../../utils/auth/auth.utils";
-import { Role } from "../../utils/auth/auth.types";
+import { ProviderKey, User } from "@/utils/auth/auth.types";
+import { ProvidersOptions } from "@/utils/auth/oauth";
 
 export const useAuth = (options?: {
   /**
@@ -43,12 +44,17 @@ export const useAuth = (options?: {
    * If undefined, all users will be authorized unless their roles are blacklisted.
    * If a list is given, only users in it will be authorized, unless they're also blacklisted.
    */
-  rolesWhitelist?: Role[],
+  rolesWhitelist?: string[],
   /**
    * Users whose role is in this list will not be authorized.
-   */
-  rolesBlacklist?: Role[],
-
+  */
+  rolesBlacklist?: string[],
+  /**
+    * The permissions required to authorize the user. If undefined, the user will be authorized
+    * unless they are restricted by the rolesWhitelist or rolesBlacklist options.
+    */
+  permissionsRequired?: string[],
+  
   /**
    * The route where the client will be redirected if the user is not authenticated and
    * or authorized.
@@ -71,15 +77,18 @@ export const useAuth = (options?: {
     authState,
     dispatchAuth,
     emailLogin,
+    socialLogin,
     logout,
     changeName,
     forceReconnect,
+    lastAction,
     defaultRedirectTo,
     defaultSetCallbackUrlParam,
     defaultCallbackUrlParamName,
   } = useContext(AuthContext);
   const [isAuthorized, setIsAuthorized] = React.useState<boolean>(false);
   const registered = useRef(false);
+  const router = useRouter();
 
   useEffect(() => {
     const triggerAuthentication = options?.triggerAuthentication ?? true;
@@ -115,63 +124,63 @@ export const useAuth = (options?: {
     };
 
     if (!authState.loading && !opts.skipAll) {
-      if (!authState.user) {
+      if (!authState.user && lastAction !== "logout") {
         setIsAuthorized(false);
   
         if (opts.redirectIfNotAuthenticated) {
           if (opts.setCallbackUrlParam) {
-            Router.push({
-              pathname: opts.redirectTo!,
-              query: {
-               [opts.callbackUrlParamName!]: document.URL
-              }
-            });
+            const url = new URL(opts.redirectTo!, window.location.origin);
+            url.search = new URLSearchParams({
+              [opts.callbackUrlParamName!]: window.location.href
+            }).toString();
+            router.push(url.toString());
           }
           else {
-            Router.push(opts.redirectTo!);
+            router.push(opts.redirectTo!);
           }
         }
       }
       else if (!opts.skipAuthorization) {
-        const authorized = isUserInAuthorizedRoles(authState.user, opts.rolesWhitelist, opts.rolesBlacklist);
+        const authorized = isUserInAuthorizedRoles(authState.user, opts.rolesWhitelist, opts.rolesBlacklist, opts.permissionsRequired);
         setIsAuthorized(authorized);
         if (!authorized && opts.redirectIfNotAuthorized) {
           if (opts.setCallbackUrlParam) {
-            Router.push({
-              pathname: opts.redirectTo!,
-              query: {
-               [opts.callbackUrlParamName!]: document.URL
-              }
-            });
+            const url = new URL(opts.redirectTo!, window.location.origin);
+            url.search = new URLSearchParams({
+              [opts.callbackUrlParamName!]: window.location.href
+            }).toString();
+            router.push(url.toString());
           }
           else {
-            Router.push(opts.redirectTo!);
+            router.push(opts.redirectTo!);
           }
         }
       }
     }
-  }, [options, authState.loading, authState.user, defaultRedirectTo, defaultSetCallbackUrlParam, defaultCallbackUrlParamName]);
+  }, [router, options, authState.loading, authState.user, defaultRedirectTo, defaultSetCallbackUrlParam, defaultCallbackUrlParamName, lastAction]);
 
   /**
-   * Login the user using basic login (username and password) or social login (i.e. Google)
-   * @param data Data used for the login method. If both types are given, socialLogin will
-   * be ignored
+   * Login the user using email login or social login (i.e. Google)
+   * @param data Data used for the login method. If both types are given, email login will be used
    * @param options Extra options for the login function
-   * @returns a Promise<boolean> if basicLogin data was given. If socialLogin data is given,
-   * it returns a Promise based on the documentation found at https://next-auth.js.org/getting-started/client#signin
-   * @throws an error if neither basicLogin or socialLogin data was given
+   * @returns a Promise<User | null> if emailLogin data was given. If socialLogin data is given,
+   * it returns a Promise<void>
+   * @throws an error if neither emailLogin or socialLogin data was given
    */
-  const login = useCallback(async <P extends RedirectableProviderType | undefined = undefined>(
+  const login = useCallback(async (
     data: {
-      basicLogin?: { 
+      emailLogin?: { 
         username?: string, 
         email?: string, 
-        password?: string 
+        password?: string,
       },
       socialLogin?: {
-        provider?: LiteralUnion<P extends RedirectableProviderType ? P | BuiltInProviderType : BuiltInProviderType>, 
-        authorizationParams?: SignInAuthorizationParams,
-        type?: "login" | "connect"
+        provider: ProviderKey, 
+        type?: SocialAction,
+        providersOptions?: ProvidersOptions;
+        onPopupClosed?: () => void,
+        onFinish?: (user: User | null) => void,
+        onError?: (error: any) => void,
       }
     },
     options?: {
@@ -181,18 +190,29 @@ export const useAuth = (options?: {
   ) => {
     dispatchAuth({ type: "clearErrors" });
 
-    if (data.basicLogin) {
-      return emailLogin(data.basicLogin, options);
+    if (data.emailLogin) {
+      return emailLogin(
+        data.emailLogin, 
+        options
+      );
     }
     else if (data.socialLogin) {
-      sessionStorage.setItem("socialAction", data.socialLogin.type || "login");
-        
-      return signIn(data.socialLogin.provider, { redirect: options?.redirect, callbackUrl: options?.redirectTo }, data.socialLogin.authorizationParams);
+      socialLogin(
+        data.socialLogin.provider, 
+        data.socialLogin.type ?? "login", 
+        {
+          ...options,
+          providersOptions: data.socialLogin.providersOptions,
+          onPopupClosed: data.socialLogin.onPopupClosed,
+          onFinish: data.socialLogin.onFinish,
+          onError: data.socialLogin.onError
+        }
+      );
     }
     else {
-      throw new Error("At least one type of login data must be given");
+      throw new Error("At least one type of login data must be provided.");
     }
-  }, [dispatchAuth, emailLogin]);
+  }, [dispatchAuth, emailLogin, socialLogin]);
 
   return {
     user: authState.user,
@@ -203,6 +223,6 @@ export const useAuth = (options?: {
     login,
     logout: logout,
     forceReconnect,
-    changeName: changeName,
+    changeName,
   };
 }

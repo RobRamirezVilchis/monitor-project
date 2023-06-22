@@ -1,4 +1,4 @@
-import os
+from django.conf import settings
 from allauth.account.models import EmailAddress
 from allauth.socialaccount.models import SocialAccount
 
@@ -29,5 +29,5 @@ def delete_user(user):
 
 
 def get_frontend_url():
-    frontend_url = os.getenv("FRONTEND_URL", "")
+    frontend_url = settings.ENV["FRONTEND_URL"]
     return frontend_url

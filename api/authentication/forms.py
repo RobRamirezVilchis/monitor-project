@@ -1,4 +1,3 @@
-import os
 from django.conf import settings
 from django.contrib.sites.shortcuts import get_current_site
 from django.urls import reverse
@@ -34,7 +33,7 @@ class PasswordResetForm(AllAuthPasswordResetForm):
             # send the password reset email
             frontend_url = get_frontend_url()
             # url = f"{frontend_url}/auth/password-reset/confirm/{uid}/{temp_key}"
-            password_reset_path = os.getenv("FRONTEND_PASSWORD_RESET_PATH", "")
+            password_reset_path = settings.ENV["FRONTEND_PASSWORD_RESET_PATH"]
             password_reset_path = password_reset_path.replace("<uid>", uid).replace("<token>", temp_key)
             url = f"{frontend_url}/{password_reset_path}"
             context = {

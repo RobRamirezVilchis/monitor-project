@@ -1,22 +1,34 @@
-import React, { createContext, useCallback, useMemo } from "react";
-import { useQuery, useQueryClient } from "react-query";
-import { AxiosError, isAxiosError } from "axios";
-import { getSession, signOut } from "next-auth/react";
-import Router from "next/router";
-import { useImmerReducer } from "use-immer";
+"use client";
 
-import api from "../../utils/api";
-import { axiosBase as http, axiosError as httpError } from "../../utils/axios";
-import { getMyUser, updateMyInfo } from "../../utils/auth/auth.utils";
+import React, { createContext, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { AxiosError, isAxiosError } from "axios";
+import { useImmerReducer } from "use-immer";
+import { useRouter } from "next/navigation";
+
+import api from "@/utils/api";
+import http from "@/utils/http";
+import {
+  clearJwtStorage,
+  fetchMyUser,
+  getMyUser,
+  jwtCookie,
+  setAccessToken,
+  setAccessTokenExpiration,
+  setRefreshToken,
+  setRefreshTokenExpiration,
+  updateMyInfo,
+  useJwt,
+} from "@/utils/auth/auth.utils";
 import logger from "@/utils/logger";
-import { AuthError, User } from "@/utils/auth/auth.types";
+import { AuthError, User, ProviderKey } from "@/utils/auth/auth.types";
 import { AuthAction, AuthState, authReducer } from "./AuthReducer";
-import { fetchMyUser } from "../../utils/auth/auth.utils";
+import { ProvidersOptions, startSocialLogin } from "@/utils/auth/oauth";
 
 // Reducer ---------------------------------------------------------------------
 const authReducerDefaults: AuthState = {
   user: null,
   loading: true,
+  userFetched: false,
   errors: null,
   registeredHooks: 0,
 };
@@ -27,9 +39,20 @@ export interface AuthContextProps {
   dispatchAuth: React.Dispatch<AuthAction>;
   emailLogin: (loginData: { username?: string, email?: string, password?: string },
     options?: { redirect?: boolean, redirectTo?: string }) => Promise<User | null>;
+  socialLogin: (provider: ProviderKey,
+    type: SocialAction, 
+    options?: { 
+      redirect?: boolean;
+      redirectTo?: string;
+      providersOptions?: ProvidersOptions;
+      onPopupClosed?: () => void;
+      onFinish?: (user: User | null) => void;
+      onError?: (error: any) => void;
+    }) => void;
   logout: (options?: { redirect?: boolean, redirectTo?: string }) => void,
   changeName: (data: { first_name?: string, last_name?: string }) => Promise<boolean>;
   forceReconnect: () => void;
+  lastAction: "login" | "logout" | null;
 
   defaultRedirectTo?: string,
   defaultSetCallbackUrlParam?: boolean,
@@ -40,9 +63,11 @@ const authContextDefaults: AuthContextProps = {
   authState: authReducerDefaults,
   dispatchAuth: () => {},
   emailLogin: () => Promise.resolve(null),
+  socialLogin: () => Promise.resolve(null),
   logout: () => {},
   changeName: () => Promise.resolve(false),
   forceReconnect: () => {},
+  lastAction: null,
 
   defaultRedirectTo: "/auth/login",
   defaultSetCallbackUrlParam: true,
@@ -75,108 +100,58 @@ export interface AuthProviderProps {
   defaultCallbackUrlParamName?: string,
 }
 
-type SocialAction = "login" | "connect" | null;
+export type SocialAction = "login" | "connect" | null;
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ 
   children, defaultRedirectTo, defaultSetCallbackUrlParam, defaultCallbackUrlParamName
 }) => {
+  const [online, setOnline] = useState<boolean>(typeof window !== "undefined" ? navigator.onLine : true);
   const [state, dispatch] = useImmerReducer(authReducer, authReducerDefaults);
-  const queryClient = useQueryClient();
+  const router = useRouter();
+  const lastAction = useRef<AuthContextProps["lastAction"]>(null);
 
-  const authenticatedQuery = useQuery({
-    queryKey: ["auth-user"],
-    queryFn: async ({ signal }) => {
+  useEffect(() => {
+    const handleOnline = () => setOnline(true);
+    const handleOffline = () => setOnline(false);
+
+    window.addEventListener("online", handleOnline);
+    window.addEventListener("offline", handleOffline);
+
+    return () => {
+      window.removeEventListener("online", handleOnline);
+      window.removeEventListener("offline", handleOffline);
+    }
+  }, []);
+
+  useEffect(() => {
+    const abortController = new AbortController();
+
+    if (!state.userFetched && state.registeredHooks > 0 && !state.user && online) {
       dispatch({ type: "loading", payload: true });
       dispatch({ type: "clearErrors" });
+      dispatch({ type: "userFetched", payload: true });
       
-      let user: User | null = null;
-      const socialAction = sessionStorage.getItem("socialAction") as SocialAction;
-
-      if (socialAction && (socialAction === "login" || socialAction === "connect")) {
-        // Check if a valid social access token exists, or if the user
-        // is trying to connect its social account
-        user = await socialLogin(socialAction, signal);
-      }
-      else {
-        // Check if valid session exists
-        const { data } = await fetchMyUser(http, signal);
-        user = data;
-      }
-
-      return user;
-    },
-    enabled: state.registeredHooks > 0,
-    // cacheTime: 1000 * 60 * 6,  // 6 minutes
-    // staleTime: 1000 * 60 * 5, // 5 minutes
-    retry: false,
-    refetchOnWindowFocus: false,
-    refetchOnReconnect: true,
-    refetchIntervalInBackground: false,
-    onSettled: (data, error) => {
-      if (sessionStorage.getItem("socialAction")) 
-        sessionStorage.removeItem("socialAction");
-      dispatch({ type: "setUser", payload: data ?? null });
-      dispatch({ type: "loading", payload: false });
-    },
-  });
-
-  const socialLogin = useCallback(async (
-    socialAction: "login" | "connect" | null, abortSignal?: AbortSignal | undefined
-  ): Promise<User | null> => {
-    const sessionData = await getSession();
-
-    if (sessionData && sessionData.user && 
-      (sessionData.user as any).accessToken && (sessionData.user as any).provider) {
-      const provider = (sessionData.user as any).provider;
-      const socialUrls = api.endpoints.auth.social[provider as keyof typeof api.endpoints.auth.social];
-      let url = socialUrls.login;
-
-      if (socialAction === "connect")
-        url = socialUrls.connect;
-
-      if (url) {
+      (async () => {
         try {
-          const resp = await http.post(url, {
-            access_token: (sessionData.user as any).accessToken,
-          }, {
-            signal: abortSignal,
-          });
-  
-          if (resp.status >= 200 || resp.status < 300) {
-            const user = await getMyUser(http, abortSignal);
-            signOut({ redirect: false });
-            return user;
-          }
+          // Check if valid session exists
+          const { data } = await fetchMyUser({ signal: abortController.signal, rejectRequest: false, onError: false });
+          dispatch({ type: "setUser", payload: data ?? null });
         }
         catch (e) {
-          logger.debug("Error authenticating user.", e);
-          signOut({ redirect: false });
-
           if (isAxiosError(e)) {
-            const err = e as AxiosError<any, any>;
-    
-            const errorList = err.response?.data.non_field_errors;
-            if (errorList) {
-              if (errorList.includes("Incorrect value")) 
-                dispatch({ type: "addError", payload: AuthError.IncorrectCredentials })
-              if (errorList.includes("User is already registered with this e-mail address.")) 
-                dispatch({ type: "addError", payload: AuthError.EmailAlreadyRegistered })
+            if (e.code !== AxiosError.ERR_CANCELED) {
+              logger.debug("No valid session found", e);
             }
           }
-
-          throw e; // rethrow error to be handled by caller
         }
-      }
-      else {
-        dispatch({ type: "addError", payload: AuthError.ProviderNotFound })
-        throw new Error(
-          `No valid ${socialAction === "connect" ? "connection" : "login"} url for the ${provider} was found.`
-        );
-      }
-    }
+        dispatch({ type: "loading", payload: false });
 
-    return null;
-  }, []);
+        return () => {
+          abortController.abort();
+        }
+      })();
+    }
+  }, [dispatch, state.registeredHooks, state.user, state.userFetched, online]);
 
   const emailLogin = useCallback(async (
     loginData: { 
@@ -194,17 +169,28 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({
       redirectTo: "/",
       ...options
     };
+    lastAction.current = "login";
 
     dispatch({ type: "loading", payload: true });
     let newUser: User | null = null;
 
     try {
-      const resp = await http.post(api.endpoints.auth.login, loginData);
+      const resp = await http.post(api.endpoints.auth.login, loginData, { rejectRequest: false, onError: false });
       if (resp.status === 200) {
-        newUser = resp.data.user;
-      }
-      else if (resp.status === 204) {
-        newUser = await getMyUser(http);
+        if (useJwt) {
+          clearJwtStorage();
+          if (!jwtCookie) {
+            setAccessToken(resp.data.access_token);
+            setRefreshToken(resp.data.refresh_token);
+          }
+          setAccessTokenExpiration(resp.data.access_token_expiration);
+          setRefreshTokenExpiration(resp.data.refresh_token_expiration);
+        }
+        
+        if (resp.data.user)
+          newUser = resp.data.user;
+        else
+          newUser = await getMyUser({ rejectRequest: false, onError: false });
       }
     }    
     catch (e) {
@@ -228,10 +214,119 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({
     dispatch({ type: "loading", payload: false });
     
     if (opts.redirect && newUser)
-      Router.push(opts.redirectTo!);
+      router.push(opts.redirectTo!);
 
     return newUser;
-  }, []);
+  }, [dispatch, router]);
+
+  const socialLoginAction = useCallback(async (
+    provider: ProviderKey,
+    socialAction: SocialAction, 
+    data: any,
+    options?: { redirect?: boolean, redirectTo?: string }
+  ): Promise<User | null> => {
+    const opts: typeof options = {
+      redirect: true,
+      redirectTo: "/",
+      ...options
+    };
+    lastAction.current = "login";
+
+    dispatch({ type: "loading", payload: true });
+    const socialUrls = api.endpoints.auth.social[provider as keyof typeof api.endpoints.auth.social];
+
+    let user: User | null = null;
+
+    if (!socialUrls) {
+      dispatch({ type: "addError", payload: AuthError.ProviderNotFound })
+      logger.error(
+        `No valid ${socialAction === "connect" ? "connection" : "login"} url for the ${provider} was found.`
+      );
+    }
+    else {
+      let url = socialUrls.login;
+
+      if (socialAction === "connect")
+        url = socialUrls.connect;
+
+      if (url) {
+        try {
+          const resp = await http.post(url, data, { rejectRequest: false, onError: false });
+          
+          if (resp.status === 200) {
+            if (useJwt) {
+              clearJwtStorage();
+              if (!jwtCookie) {
+                setAccessToken(resp.data.access_token);
+                setRefreshToken(resp.data.refresh_token);
+              }
+              setAccessTokenExpiration(resp.data.access_token_expiration);
+              setRefreshTokenExpiration(resp.data.refresh_token_expiration);
+            }
+
+            if (resp.data.user)
+              user = resp.data.user;
+            else
+              user = await getMyUser({ rejectRequest: false, onError: false });
+          }
+        }
+        catch (e) {
+          logger.debug("Error authenticating user.", e);
+
+          if (isAxiosError(e)) {
+            const err = e as AxiosError<any, any>;
+    
+            const errorList = err.response?.data.non_field_errors;
+            if (errorList) {
+              if (errorList.includes("Incorrect value")) 
+                dispatch({ type: "addError", payload: AuthError.IncorrectCredentials });
+              if (errorList.includes("User is already registered with this e-mail address.")) 
+                dispatch({ type: "addError", payload: AuthError.EmailAlreadyRegistered });
+            }
+          }
+        }
+      }
+    }
+  
+    dispatch({ type: "setUser", payload: user });
+    dispatch({ type: "loading", payload: false });
+
+    if (opts?.redirect && user)
+      router.push(opts.redirectTo!);
+
+    return user;
+  }, [dispatch, router]);
+
+  const socialLogin = useCallback(async (
+    provider: ProviderKey,
+    type: SocialAction, 
+    options?: { 
+      redirect?: boolean;
+      redirectTo?: string;
+      providersOptions?: ProvidersOptions;
+      onPopupClosed?: () => void;
+      onFinish?: (user: User | null) => void;
+      onError?: (error: any) => void;
+    }
+  ) => {
+    startSocialLogin(provider, {
+      callback: async (data) => {
+        if (data.error) {
+          options?.onError?.(data.error);
+          return;
+        }
+        const user = await socialLoginAction(
+          provider, 
+          type, 
+          data, 
+          options
+        );
+        options?.onFinish?.(user);
+      },
+      providers: options?.providersOptions,
+      onPopupClosed: options?.onPopupClosed,
+    });
+  }, [socialLoginAction]);
 
   const logout = useCallback(async (options?: {
     redirect?: boolean,
@@ -239,34 +334,33 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({
   }): Promise<void> => {
     const opts: typeof options = {
       redirect: true,
-      redirectTo: "/auth/login",
+      redirectTo: defaultRedirectTo ?? authContextDefaults.defaultRedirectTo,
       ...options
     };
+    lastAction.current = "logout";
 
-    queryClient.invalidateQueries();
+    clearJwtStorage();
 
     try {
-      await http.post(api.endpoints.auth.logout);
+      await http.post(api.endpoints.auth.logout, { rejectRequest: false, onError: false });
     }
     catch (e) {
       logger.debug("Error.", e);
     }
 
-    if (opts.redirect) 
-      Router.push(opts.redirectTo!).then(x => dispatch({ type: "setUser", payload: null }));
-  }, [queryClient]);
+    if (opts.redirect) {
+      router.push(opts.redirectTo!);
+      dispatch({ type: "setUser", payload: null });
+    }
+  }, [router, dispatch, defaultRedirectTo]);
 
   const forceReconnect = useCallback(() => {
-    queryClient.invalidateQueries({
-      queryKey: ["auth-user"],
-      refetchActive: true,
-      refetchInactive: false,
-    });
-  }, [queryClient]);
+    dispatch({ type: "userFetched", payload: false });
+  }, [dispatch]);
 
   const changeName = useCallback(async (data: { first_name?: string, last_name?: string }) => {
     try {
-      const resp = await updateMyInfo(httpError, data);
+      const resp = await updateMyInfo(data, { rejectRequest: false });
       const user = resp.data;
       dispatch({ type: "setUser", payload: user });
       return true;
@@ -275,19 +369,21 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({
       logger.debug("Failed to update user.");
       return false;
     }
-  }, []);
+  }, [dispatch]);
 
   const contextValue: AuthContextProps = useMemo(() => ({
     authState: state,
     dispatchAuth: dispatch,
     emailLogin,
+    socialLogin,
     logout,
     changeName,
     forceReconnect,
+    lastAction: lastAction.current,
     defaultRedirectTo: defaultRedirectTo ?? authContextDefaults.defaultRedirectTo,
     defaultSetCallbackUrlParam: defaultSetCallbackUrlParam ?? authContextDefaults.defaultSetCallbackUrlParam,
     defaultCallbackUrlParamName: defaultCallbackUrlParamName ?? authContextDefaults.defaultCallbackUrlParamName,
-  }), [state, dispatch, emailLogin, logout, changeName, forceReconnect, defaultRedirectTo, defaultSetCallbackUrlParam, defaultCallbackUrlParamName]);
+  }), [state, dispatch, emailLogin, socialLogin, logout, changeName, forceReconnect, defaultRedirectTo, defaultSetCallbackUrlParam, defaultCallbackUrlParamName]);
 
   return (
     <AuthContext.Provider value={contextValue}>
