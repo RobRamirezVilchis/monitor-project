@@ -123,8 +123,8 @@ export const useAuth = (options?: {
       ...options
     };
 
-    if (!authState.loading && !opts.skipAll) {
-      if (!authState.user && lastAction !== "logout") {
+    if (!authState.loading && !opts.skipAll && lastAction !== "logout") {
+      if (!authState.user) {
         setIsAuthorized(false);
   
         if (opts.redirectIfNotAuthenticated) {
