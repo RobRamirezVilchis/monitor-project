@@ -2,6 +2,8 @@
 
 import React from "react";
 import { SnackbarProvider } from "notistack";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 
 import { AuthProvider } from "@/components/auth/AuthProvider";
 
@@ -9,12 +11,18 @@ interface ProvidersProps {
   children: React.ReactNode
 }
 
+const queryClient = new QueryClient();
+
 export const Providers: React.FC<ProvidersProps> = ({ children }) => {
   return (
-    <AuthProvider>
-      <SnackbarProvider maxSnack={5} dense autoHideDuration={10000}>
-        {children}
-      </SnackbarProvider>
-    </AuthProvider>
+    <QueryClientProvider client={queryClient}>
+      <AuthProvider>
+        <SnackbarProvider maxSnack={5} dense autoHideDuration={10000}>
+          {children}
+        </SnackbarProvider>
+      </AuthProvider>
+
+      <ReactQueryDevtools initialIsOpen={false} />
+    </QueryClientProvider>
   );
 }
