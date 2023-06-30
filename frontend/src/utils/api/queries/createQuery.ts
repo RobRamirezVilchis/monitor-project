@@ -4,6 +4,8 @@ import {
   InvalidateQueryFilters,
   QueryFunction,
   QueryKey,
+  SetDataOptions,
+  Updater,
   useQuery,
   useQueryClient,
   UseQueryOptions,
@@ -54,6 +56,15 @@ Omit<
   : { args: TArgs; }
 );
 
+export type QueryInvalidateOptions = Omit<InvalidateQueryFilters, "queryKey">;
+
+export type CreateQueryResult<TQueryData, TQueryFnData, TError> = UseQueryResult<TQueryData, TError> & {
+  queryPrimaryKey: string,
+  queryKey: QueryKey;
+  invalidate: (options?: QueryInvalidateOptions) => void;
+  setData: (updater: Updater<TQueryData | undefined, TQueryData | undefined>, options?: SetDataOptions) => TQueryFnData | undefined;
+}
+
 type UseCreatedQuery<
   TArgs = unknown, 
   TQueryFnData = unknown, 
@@ -61,16 +72,8 @@ type UseCreatedQuery<
   TData = TQueryFnData, 
   TQueryKey extends QueryKey = QueryKey
 > = TArgs extends undefined
-  ? (options?: QueryOptions<TArgs, TQueryFnData,  TError, TData, TQueryKey>) => CreateQueryResult<TData, TError> 
-  : (options: QueryOptions<TArgs, TQueryFnData,  TError, TData, TQueryKey>) => CreateQueryResult<TData, TError>
-
-export type QueryInvalidateOptions = Omit<InvalidateQueryFilters, "queryKey">;
-
-export type CreateQueryResult<TQueryData, TError> = UseQueryResult<TQueryData, TError> & {
-  queryPrimaryKey: string,
-  queryKey: QueryKey;
-  invalidate: (options?: QueryInvalidateOptions) => void;
-}
+  ? (options?: QueryOptions<TArgs, TQueryFnData,  TError, TData, TQueryKey>) => CreateQueryResult<TData, TQueryFnData, TError> 
+  : (options: QueryOptions<TArgs, TQueryFnData,  TError, TData, TQueryKey>) => CreateQueryResult<TData, TQueryFnData, TError>
 
 
 export const createQuery = <
@@ -106,6 +109,12 @@ export const createQuery = <
       [queryClient, queryKey]
     );
 
+    const setData = useCallback(
+      (updater:  Updater<TQueryFnData | undefined, TQueryFnData | undefined>, options?: SetDataOptions) =>
+        queryClient.setQueryData(queryKey, updater, options),
+      [queryClient, queryKey]
+    );
+
     const useQueryResult = useQuery<TQueryFnData, TError, TData, UnionFlatten<string, TQueryKeyArgs>>({
       queryKey,
       ...otherOptions,
@@ -116,6 +125,7 @@ export const createQuery = <
       queryPrimaryKey,
       queryKey,
       invalidate,
+      setData,
     });
   }) as any;
 
