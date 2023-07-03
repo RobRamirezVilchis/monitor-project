@@ -64,13 +64,28 @@ export type UseCreatedMutation<
 export const createMutation = <TData = unknown, TError = unknown, TVariables = void, TContext = unknown>(
   useMutationOptions: CreateMutationOptions<TData, TError, TVariables, TContext>,
 ) => {
-  
   const useMutationResult: UseCreatedMutation<TData, TError, TVariables, TContext> = (options) => {
     const queryClient = useQueryClient({ context: useMutationOptions?.context });
-    const mutation = useMutation({
+    const mutation = useMutation<TData, TError, TVariables, TContext>({
       ...useMutationOptions,
       ...options,
-    });
+      onMutate: async (variables) => {
+        useMutationOptions?.onMutate?.(variables);
+        options?.onMutate?.(variables);
+      },
+      onSuccess: async (data, variables, context) => {
+        useMutationOptions?.onSuccess?.(data, variables, context);
+        options?.onSuccess?.(data, variables, context);
+      },
+      onError: async (error, variables, context) => {
+        useMutationOptions?.onError?.(error, variables, context);
+        options?.onError?.(error, variables, context);
+      },
+      onSettled: async (data, error, variables, context) => {
+        useMutationOptions?.onSettled?.(data, error, variables, context);
+        options?.onSettled?.(data, error, variables, context);
+      },
+    } as UseMutationOptions<TData, TError, TVariables, TContext>);
 
     return Object.assign(mutation, {
       mutationKey: useMutationOptions.mutationKey,
