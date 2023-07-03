@@ -1,4 +1,4 @@
-import { ComponentType, useEffect, useRef, useState } from "react";
+import { ComponentType, useEffect, useRef } from "react";
 import { useAuth } from "@/hooks/auth";
 import CircularProgress from "@mui/material/CircularProgress";
 import { useRouter } from "next/navigation";
