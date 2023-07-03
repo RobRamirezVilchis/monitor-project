@@ -2,7 +2,7 @@ import { useCallback } from "react";
 import {
   ContextOptions,
   InvalidateQueryFilters,
-  QueryFunction,
+  QueryFunctionContext,
   QueryKey,
   SetDataOptions,
   Updater,
@@ -32,7 +32,10 @@ Omit<
 > & {
   queryPrimaryKey: string;
   queryKeyVariables?: (TVariables extends undefined ? (() => TQueryKeyVariables) : ((variables: TVariables) => TQueryKeyVariables));
-  queryFn: QueryFunction<TQueryFnData, UnionFlatten<string, TQueryKeyVariables>>;
+  queryFn: (
+    context: QueryFunctionContext<UnionFlatten<string, TQueryKeyVariables>, any>, 
+    variables: TVariables extends undefined ? void : TVariables
+  ) => TQueryFnData | Promise<TQueryFnData>;
 };
 
 export type QueryOptions<
@@ -90,7 +93,7 @@ export const createQuery = <
   useQueryOptions: CreateQueryOptions<TVariables, TQueryFnData, TError, TData, TQueryKeyVariables>,
   queryClientOptions: ContextOptions = {},
 ) => {
-  const { queryPrimaryKey, queryKeyVariables: queryKeyVariables, ...otherOptions } = useQueryOptions;
+  const { queryPrimaryKey, queryKeyVariables: queryKeyVariables, queryFn, ...otherOptions } = useQueryOptions;
 
   const queryKeyFn: (
     TVariables extends undefined 
@@ -125,6 +128,7 @@ export const createQuery = <
 
     const useQueryResult = useQuery<TQueryFnData, TError, TData, UnionFlatten<string, TQueryKeyVariables>>({
       queryKey,
+      queryFn: ctx => queryFn(ctx, options?.variables),
       ...otherOptions,
       ...options,
     });
