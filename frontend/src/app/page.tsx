@@ -1,7 +1,7 @@
 "use client";
 
 import { NavLink } from "@/components/shared";
-import { useAuth } from "../components/auth/useAuth";
+import { useAuth } from "@/hooks/auth";
 import { getOrRefreshAccessToken } from "@/utils/api/auth";
 import Link from "next/link";
 

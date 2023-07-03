@@ -2,7 +2,7 @@
 
 import ButtonBase from "@mui/material/ButtonBase";
 
-import { useAuth } from "@/components/auth/useAuth";
+import { useAuth } from "@/hooks/auth";
 import { ProviderKey, Providers } from "@/utils/api/auth.types";
 import { providers } from "@/utils/api/auth";
 

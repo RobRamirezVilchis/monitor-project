@@ -3,8 +3,8 @@
 import React, { useCallback, useContext, useEffect, useLayoutEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 
-import { AuthContext, SocialAction } from "./AuthProvider";
-import { isUserInAuthorizedRoles } from "../../utils/api/auth";
+import { AuthContext, SocialAction } from "@/components/auth/AuthProvider";
+import { isUserInAuthorizedRoles } from "@/utils/api/auth";
 import { ProviderKey, User } from "@/utils/api/auth.types";
 import { ProvidersOptions } from "@/utils/auth/oauth";
 
