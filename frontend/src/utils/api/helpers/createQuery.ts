@@ -1,7 +1,7 @@
 import { useCallback } from "react";
 import {
-  ContextOptions,
   InvalidateQueryFilters,
+  QueryClient,
   QueryFunctionContext,
   QueryKey,
   SetDataOptions,
@@ -52,7 +52,7 @@ Omit<
     TData,
     TQueryKey
   >,
-  "queryHash" | "queryKeyHashFn" | "queryKey" | "queryFn"
+  "queryHash" | "queryKeyHashFn" | "queryKey" | "queryFn" | "context"
 > & (
   TVariables extends undefined 
   ? {  } 
@@ -66,6 +66,7 @@ export type CreateQueryResult<TVariables, TQueryData, TQueryFnData, TError> = Us
   queryKey: QueryKey;
   invalidate: (options?: QueryInvalidateOptions) => void;
   setData: (updater: Updater<TQueryData | undefined, TQueryData | undefined>, options?: SetDataOptions) => TQueryFnData | undefined;
+  queryClient: QueryClient,
 } & (
   TVariables extends undefined 
   ? {  } 
@@ -91,7 +92,6 @@ export const createQuery = <
   TQueryKeyVariables extends unknown[] = unknown[]
 >(
   useQueryOptions: CreateQueryOptions<TVariables, TQueryFnData, TError, TData, TQueryKeyVariables>,
-  queryClientOptions: ContextOptions = {},
 ) => {
   const { queryPrimaryKey, queryKeyVariables: queryKeyVariables, queryFn, ...otherOptions } = useQueryOptions;
 
@@ -107,7 +107,7 @@ export const createQuery = <
 
   const useCreatedQuery: UseCreatedQuery<TVariables, TQueryFnData,  TError, TData, UnionFlatten<string, TQueryKeyVariables>> = 
   ((options: any) => {
-    const queryClient = useQueryClient(queryClientOptions);
+    const queryClient = useQueryClient({ context: useQueryOptions?.context });
     const queryKey = queryKeyFn(options?.variables)
     
     const invalidate = useCallback(
@@ -138,6 +138,7 @@ export const createQuery = <
       queryKey,
       invalidate,
       setData,
+      queryClient,
       variables: options?.variables,
     });
   }) as any;
@@ -148,5 +149,6 @@ export const createQuery = <
     queryFn: useQueryOptions.queryFn,
     queryHash: useQueryOptions.queryHash,
     queryKeyHashFn: useQueryOptions.queryKeyHashFn,
+    context: useQueryOptions.context,
   });
 }
