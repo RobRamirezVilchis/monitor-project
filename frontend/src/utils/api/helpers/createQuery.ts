@@ -15,28 +15,28 @@ import {
 import { UnionFlatten } from "@/utils/types";
 
 export type CreateQueryOptions<
-  TArgs = unknown, 
+  TVariables = unknown, 
   TQueryFnData = unknown, 
   TError = unknown, 
   TData = TQueryFnData, 
-  TQueryKeyArgs extends unknown[] = unknown[]
+  TQueryKeyVariables extends unknown[] = unknown[]
 > = 
 Omit<
   UseQueryOptions<
     TQueryFnData,
     TError,
     TData,
-    UnionFlatten<string, TQueryKeyArgs>
+    UnionFlatten<string, TQueryKeyVariables>
   >,
   "queryKey" | "queryFn"
 > & {
   queryPrimaryKey: string;
-  queryKeyArgs?: (TArgs extends undefined ? (() => TQueryKeyArgs) : ((args: TArgs) => TQueryKeyArgs));
-  queryFn: QueryFunction<TQueryFnData, UnionFlatten<string, TQueryKeyArgs>>;
+  queryKeyVariables?: (TVariables extends undefined ? (() => TQueryKeyVariables) : ((variables: TVariables) => TQueryKeyVariables));
+  queryFn: QueryFunction<TQueryFnData, UnionFlatten<string, TQueryKeyVariables>>;
 };
 
 export type QueryOptions<
-  TArgs = unknown, 
+  TVariables = unknown, 
   TQueryFnData = unknown, 
   TError = unknown, 
   TData = TQueryFnData, 
@@ -51,61 +51,61 @@ Omit<
   >,
   "queryHash" | "queryKeyHashFn" | "queryKey" | "queryFn"
 > & (
-  TArgs extends undefined 
+  TVariables extends undefined 
   ? {  } 
-  : { args: TArgs; }
+  : { variables: TVariables; }
 );
 
 export type QueryInvalidateOptions = Omit<InvalidateQueryFilters, "queryKey">;
 
-export type CreateQueryResult<TArgs, TQueryData, TQueryFnData, TError> = UseQueryResult<TQueryData, TError> & {
+export type CreateQueryResult<TVariables, TQueryData, TQueryFnData, TError> = UseQueryResult<TQueryData, TError> & {
   queryPrimaryKey: string,
   queryKey: QueryKey;
   invalidate: (options?: QueryInvalidateOptions) => void;
   setData: (updater: Updater<TQueryData | undefined, TQueryData | undefined>, options?: SetDataOptions) => TQueryFnData | undefined;
 } & (
-  TArgs extends undefined 
+  TVariables extends undefined 
   ? {  } 
-  : { args: TArgs; }
+  : { variables: TVariables; }
 );
 
 type UseCreatedQuery<
-  TArgs = unknown, 
+  TVariables = unknown, 
   TQueryFnData = unknown, 
   TError = unknown, 
   TData = TQueryFnData, 
   TQueryKey extends QueryKey = QueryKey
-> = TArgs extends undefined
-  ? (options?: QueryOptions<TArgs, TQueryFnData,  TError, TData, TQueryKey>) => CreateQueryResult<TArgs, TData, TQueryFnData, TError> 
-  : (options: QueryOptions<TArgs, TQueryFnData,  TError, TData, TQueryKey>) => CreateQueryResult<TArgs, TData, TQueryFnData, TError>
+> = TVariables extends undefined
+  ? (options?: QueryOptions<TVariables, TQueryFnData,  TError, TData, TQueryKey>) => CreateQueryResult<TVariables, TData, TQueryFnData, TError> 
+  : (options: QueryOptions<TVariables, TQueryFnData,  TError, TData, TQueryKey>) => CreateQueryResult<TVariables, TData, TQueryFnData, TError>
 
 
 export const createQuery = <
-  TArgs = undefined, 
+  TVariables = undefined, 
   TQueryFnData = unknown, 
   TError = unknown, 
   TData = TQueryFnData, 
-  TQueryKeyArgs extends unknown[] = unknown[]
+  TQueryKeyVariables extends unknown[] = unknown[]
 >(
-  useQueryOptions: CreateQueryOptions<TArgs, TQueryFnData, TError, TData, TQueryKeyArgs>,
+  useQueryOptions: CreateQueryOptions<TVariables, TQueryFnData, TError, TData, TQueryKeyVariables>,
   queryClientOptions: ContextOptions = {},
 ) => {
-  const { queryPrimaryKey, queryKeyArgs, ...otherOptions } = useQueryOptions;
+  const { queryPrimaryKey, queryKeyVariables: queryKeyVariables, ...otherOptions } = useQueryOptions;
 
   const queryKeyFn: (
-    TArgs extends undefined 
-    ? (() => UnionFlatten<string, TQueryKeyArgs>) 
-    : ((args: TArgs) => UnionFlatten<string, TQueryKeyArgs>)
+    TVariables extends undefined 
+    ? (() => UnionFlatten<string, TQueryKeyVariables>) 
+    : ((variables: TVariables) => UnionFlatten<string, TQueryKeyVariables>)
   ) = 
-  ((args: any) => {
-    const qArgs = queryKeyArgs?.(args);
-    return qArgs ? [queryPrimaryKey, ...qArgs] : [queryPrimaryKey];
+  ((variables: any) => {
+    const qVariables = queryKeyVariables?.(variables);
+    return qVariables ? [queryPrimaryKey, ...qVariables] : [queryPrimaryKey];
   }) as any;
 
-  const useCreatedQuery: UseCreatedQuery<TArgs, TQueryFnData,  TError, TData, UnionFlatten<string, TQueryKeyArgs>> = 
+  const useCreatedQuery: UseCreatedQuery<TVariables, TQueryFnData,  TError, TData, UnionFlatten<string, TQueryKeyVariables>> = 
   ((options: any) => {
     const queryClient = useQueryClient(queryClientOptions);
-    const queryKey = queryKeyFn(options?.args)
+    const queryKey = queryKeyFn(options?.variables)
     
     const invalidate = useCallback(
       (options?: QueryInvalidateOptions) => {
@@ -123,7 +123,7 @@ export const createQuery = <
       [queryClient, queryKey]
     );
 
-    const useQueryResult = useQuery<TQueryFnData, TError, TData, UnionFlatten<string, TQueryKeyArgs>>({
+    const useQueryResult = useQuery<TQueryFnData, TError, TData, UnionFlatten<string, TQueryKeyVariables>>({
       queryKey,
       ...otherOptions,
       ...options,
@@ -134,7 +134,7 @@ export const createQuery = <
       queryKey,
       invalidate,
       setData,
-      args: options?.args,
+      variables: options?.variables,
     });
   }) as any;
 
