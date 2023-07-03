@@ -92,7 +92,11 @@ export const createQuery = <
 ) => {
   const { queryPrimaryKey, queryKeyArgs, ...otherOptions } = useQueryOptions;
 
-  const queryKeyFn: (TArgs extends undefined ? (() => UnionFlatten<string, TQueryKeyArgs>) : ((args: TArgs) => UnionFlatten<string, TQueryKeyArgs>)) = 
+  const queryKeyFn: (
+    TArgs extends undefined 
+    ? (() => UnionFlatten<string, TQueryKeyArgs>) 
+    : ((args: TArgs) => UnionFlatten<string, TQueryKeyArgs>)
+  ) = 
   ((args: any) => {
     const qArgs = queryKeyArgs?.(args);
     return qArgs ? [queryPrimaryKey, ...qArgs] : [queryPrimaryKey];
