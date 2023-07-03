@@ -2,7 +2,7 @@
 
 import { NavLink } from "@/components/shared";
 import { useAuth } from "../components/auth/useAuth";
-import { getOrRefreshAccessToken } from "@/utils/auth/auth.utils";
+import { getOrRefreshAccessToken } from "@/utils/api/auth";
 import Link from "next/link";
 
 const Home = () => {

@@ -7,7 +7,7 @@ import { FormProvider, useForm } from "react-hook-form";
 import Button from "@mui/lab/LoadingButton";
 
 import http from "@/utils/http";
-import { requestPasswordReset } from "@/utils/auth/auth.utils";
+import { requestPasswordReset } from "@/utils/api/auth";
 import { TextInput } from "@/components/shared/inputs";
 
 interface PasswordResetRequestData {

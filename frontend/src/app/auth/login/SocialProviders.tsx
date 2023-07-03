@@ -3,8 +3,8 @@
 import ButtonBase from "@mui/material/ButtonBase";
 
 import { useAuth } from "@/components/auth/useAuth";
-import { ProviderKey, Providers } from "@/utils/auth/auth.types";
-import { providers } from "@/utils/auth/auth.utils";
+import { ProviderKey, Providers } from "@/utils/api/auth.types";
+import { providers } from "@/utils/api/auth";
 
 import LogoGoogle from "@/../assets/logo-google.svg";
 

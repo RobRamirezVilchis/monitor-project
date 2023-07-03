@@ -12,7 +12,7 @@ import {
   emailPattern,
   registerUser,
   RegisterUserData,
-} from "@/utils/auth/auth.utils";
+} from "@/utils/api/auth";
 import { TextInput } from "@/components/shared/inputs";
 import { useSnackbar } from "@/components/shared/hooks";
 

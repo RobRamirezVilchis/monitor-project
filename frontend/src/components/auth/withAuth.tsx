@@ -2,7 +2,7 @@ import { ComponentType, useEffect, useRef, useState } from "react";
 import { useAuth } from "./useAuth";
 import CircularProgress from "@mui/material/CircularProgress";
 import { useRouter } from "next/navigation";
-import { User } from "@/utils/auth/auth.types";
+import { User } from "@/utils/api/auth.types";
 
 /**
  * Shows a spinner while user authentication/authorization is being checked.
