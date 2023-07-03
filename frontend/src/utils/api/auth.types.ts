@@ -1,4 +1,4 @@
-import { providers } from "./auth.utils";
+import { providers } from "./auth";
 
 export interface User {
   id?: number;

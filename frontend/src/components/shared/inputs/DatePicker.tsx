@@ -24,7 +24,7 @@ import Tab from "@mui/material/Tab";
 import Tabs from "@mui/material/Tabs";
 
 import breakpoints from "@/utils/breakpoints";
-import { useMediaQuery } from "@/components/shared/hooks/useMediaQuery";
+import { useMediaQuery } from "@/hooks/shared";
 
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';

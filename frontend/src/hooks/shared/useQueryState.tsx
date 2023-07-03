@@ -38,7 +38,10 @@ export type QueryStateOptions = {
   navigateOptions?: NavigateOptions; 
 }
 
-export type DispatchState<T> = (value: Partial<Nullable<T>>) => void;
+export type DispatchState<T> = {
+  (value: Partial<Nullable<T>>):void;
+  (value: (prev: T) => Partial<Nullable<T>>): void;
+};
 
 export type ResetState<T> = (param?: keyof T | (keyof T)[]) => void;
 
@@ -100,6 +103,8 @@ export function useQueryState<T extends Record<string, any> = Record<string, any
   const state = useRef<T>(initState);
 
   const pushQueryParams = useCallback((values: T) => { 
+    if (!searchParams) return;
+
     const updatedQueryParams = new URLSearchParams(searchParams.toString());
 
     Object.entries(values).forEach(([key, value]) => {
@@ -120,7 +125,8 @@ export function useQueryState<T extends Record<string, any> = Record<string, any
   }, [params, options?.history, options?.navigateOptions, router, searchParams]);
 
   const update: DispatchState<T> = (value) => {
-    state.current = { ...state.current, ...value };
+    const newValue = typeof value === "function" ? value(state.current) : value;
+    state.current = { ...state.current, ...newValue };
     pushQueryParams(state.current);
   };
 

@@ -5,9 +5,9 @@ import { useSearchParams } from "next/navigation";
 import { FormProvider, useForm } from "react-hook-form";
 import Button from "@mui/lab/LoadingButton";
 
-import { useAuth } from "@/components/auth/useAuth";
-import { AuthError } from "@/utils/auth/auth.types";
-import { emailPattern, getAuthErrorString } from "@/utils/auth/auth.utils";
+import { useAuth } from "@/hooks/auth";
+import { AuthError } from "@/utils/api/auth.types";
+import { emailPattern, getAuthErrorString } from "@/utils/api/auth";
 import { TextInput } from "@/components/shared/inputs";
 
 interface BasicLoginData {

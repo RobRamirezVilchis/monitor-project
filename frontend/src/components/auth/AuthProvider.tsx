@@ -18,9 +18,9 @@ import {
   setRefreshTokenExpiration,
   updateMyInfo,
   useJwt,
-} from "@/utils/auth/auth.utils";
+} from "@/utils/api/auth";
 import logger from "@/utils/logger";
-import { AuthError, User, ProviderKey } from "@/utils/auth/auth.types";
+import { AuthError, User, ProviderKey } from "@/utils/api/auth.types";
 import { AuthAction, AuthState, authReducer } from "./AuthReducer";
 import { ProvidersOptions, startSocialLogin } from "@/utils/auth/oauth";
 

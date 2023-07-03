@@ -14,6 +14,12 @@ export type Nullable<T> = {
   [K in keyof T]: T[K] | null;
 };
 
+// This type extracts the elements from an array type
+export type Unpacked<T> = T extends (infer U)[] ? U : T;
+
+// This type creates the union of two array types and flattens it
+export type UnionFlatten<T, K> = Array<Unpacked<T> | Unpacked<K>>;
+
 export type ReducerAction<T extends string, P = undefined> = {
   type: T;
 } & (P extends undefined ? {} : { payload: P });

@@ -1,7 +1,7 @@
-import "@/styles/globals.css"
+import "@/styles/globals.css";
 
-import { Metadata } from "next"
-import { Roboto } from "next/font/google"
+import { Metadata } from "next";
+import { Roboto } from "next/font/google";
 
 import { Providers } from "./Providers";
 
