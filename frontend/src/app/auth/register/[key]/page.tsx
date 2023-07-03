@@ -1,7 +1,7 @@
 "use client";
 
-import type { NextPage } from "next"
-import { useParams } from "next/navigation"
+import type { NextPage } from "next";
+import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import Button from "@mui/lab/LoadingButton";
@@ -16,7 +16,7 @@ const RegisterActivation: NextPage = () => {
   const [accountVerified, setAccountVerified] = useState<boolean | null>(null);
 
   const params = useParams();
-  const key = params?.["key"];
+  const key = params?.["key"] as string;
 
   useEffect(() => {
     if (key && typeof key === "string") {
