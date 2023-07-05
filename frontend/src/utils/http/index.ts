@@ -19,7 +19,7 @@ export interface ExtraHttpProps {
   setJwtToken?: boolean;
   rejectRequest?: false | ((config: InternalAxiosRequestConfig<ExtraHttpProps>) => 
     { response: any, config: InternalAxiosRequestConfig<ExtraHttpProps> } | false);
-  onError?: false | ((error: any) => void);
+  onError?: false | ((error: any) => any);
   retries?: number;
   retryDelay?: number;
   retryIf?: (error: any) => boolean;
@@ -49,8 +49,8 @@ export const axiosConfig: AxiosRequestConfig = {
     return false;
   },
   onError: (error) => {
-    if (!error.config || !error.config.retries && (!hasCSRFToken(error.config) 
-      || error.response.status === 401 || error.response.status === 403)) {
+    if (!error.config || !error.config.retries 
+      && (error?.response?.status === 401 || error?.response?.status === 403)) {
       const url = new URL("/auth/login", window.location.origin);
       const query = new URLSearchParams({
         callbackUrl: window.location.href,
@@ -96,9 +96,10 @@ axiosInstance.interceptors.request.use(async (config) => {
 
 // Error interceptor
 axiosInstance.interceptors.response.use(undefined, (error) => {
-  error.config?.onError && error.config?.onError(error);
+  if (error.config?.onError)
+    return error.config?.onError(error);
 
-  return error;
+  throw error;
 });
 
 // Retry interceptor
