@@ -2,6 +2,7 @@ import { useCallback } from "react";
 import {
   InvalidateQueryFilters,
   QueryClient,
+  QueryFilters,
   QueryFunctionContext,
   QueryKey,
   SetDataOptions,
@@ -66,6 +67,7 @@ export type CreateQueryResult<TVariables, TQueryData, TQueryFnData, TError> = Us
   queryKey: QueryKey;
   invalidate: (options?: QueryInvalidateOptions) => void;
   setData: (updater: Updater<TQueryData | undefined, TQueryData | undefined>, options?: SetDataOptions) => TQueryFnData | undefined;
+  getData: (filters?: QueryFilters) => TQueryData | undefined;
   queryClient: QueryClient,
 } & (
   TVariables extends undefined 
@@ -126,6 +128,11 @@ export const createQuery = <
       [queryClient, queryKey]
     );
 
+    const getData = useCallback(
+      (filters?: QueryFilters) => queryClient.getQueryData<TQueryFnData>(queryKey, filters),
+      [queryClient, queryKey]
+    );
+
     const useQueryResult = useQuery<TQueryFnData, TError, TData, UnionFlatten<string, TQueryKeyVariables>>({
       queryKey,
       queryFn: ctx => queryFn(ctx, options?.variables),
@@ -138,6 +145,7 @@ export const createQuery = <
       queryKey,
       invalidate,
       setData,
+      getData,
       queryClient,
       variables: options?.variables,
     });

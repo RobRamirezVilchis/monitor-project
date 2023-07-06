@@ -69,21 +69,29 @@ export const createMutation = <TData = unknown, TError = unknown, TVariables = v
     const mutation = useMutation<TData, TError, TVariables, TContext>({
       ...useMutationOptions,
       ...options,
-      onMutate: async (variables) => {
-        useMutationOptions?.onMutate?.(variables);
-        options?.onMutate?.(variables);
+      onMutate: (variables) => {
+        return Promise.all([
+          useMutationOptions?.onMutate?.(variables),
+          options?.onMutate?.(variables),
+        ]);
       },
-      onSuccess: async (data, variables, context) => {
-        useMutationOptions?.onSuccess?.(data, variables, context);
-        options?.onSuccess?.(data, variables, context);
+      onSuccess: (data, variables, context) => {
+        return Promise.all([
+          useMutationOptions?.onSuccess?.(data, variables, context),
+          options?.onSuccess?.(data, variables, context),
+        ]);
       },
-      onError: async (error, variables, context) => {
-        useMutationOptions?.onError?.(error, variables, context);
-        options?.onError?.(error, variables, context);
+      onError: (error, variables, context) => {
+        return Promise.all([
+          useMutationOptions?.onError?.(error, variables, context),
+          options?.onError?.(error, variables, context),
+        ]);
       },
-      onSettled: async (data, error, variables, context) => {
-        useMutationOptions?.onSettled?.(data, error, variables, context);
-        options?.onSettled?.(data, error, variables, context);
+      onSettled: (data, error, variables, context) => {
+        return Promise.all([
+          useMutationOptions?.onSettled?.(data, error, variables, context),
+          options?.onSettled?.(data, error, variables, context),
+        ]);
       },
     } as UseMutationOptions<TData, TError, TVariables, TContext>);
 
