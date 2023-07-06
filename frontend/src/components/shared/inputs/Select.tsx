@@ -93,7 +93,9 @@ export const Select = <TFieldValues extends FieldValues = FieldValues>({
             onBlur={_onBlur}
             value={_value}
             displayEmpty={displayEmpty || !!placeholder}
-            className={(placeholder && _value === "" ? "!text-disabled-black " : "") + className}
+            className={classNames(className, {
+              "text-neutral-400": placeholder && _value === "",
+            })}
             classes={classes?.select}
           >
             {placeholder ? (
