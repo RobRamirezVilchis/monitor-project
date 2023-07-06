@@ -6,6 +6,7 @@ import FormHelperText from "@mui/material/FormHelperText";
 import MuiSelect, { SelectClasses, type SelectProps as MuiSelectProps } from "@mui/material/Select";
 import { Controller, FieldError, FieldValues, useFormContext } from "react-hook-form";
 import MenuItem, { MenuItemClasses } from "@mui/material/MenuItem";
+import classNames from "classnames";
 
 import { FormInputConditionalProps } from "./Form";
 
@@ -69,7 +70,9 @@ export const Select = <TFieldValues extends FieldValues = FieldValues>({
                 _onBlur && _onBlur(e);
               }}
               displayEmpty={displayEmpty || !!placeholder}
-              className={(placeholder && value === "" ? "!text-disabled-black " : "") + className}
+              className={classNames(className, {
+                "text-neutral-400": placeholder && value === "",
+              })}
               classes={classes?.select}
             >
               {placeholder ? (
