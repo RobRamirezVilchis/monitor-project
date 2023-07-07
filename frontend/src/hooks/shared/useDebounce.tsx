@@ -2,15 +2,20 @@
 
 import { useCallback, useRef, useEffect } from "react";
 
-export const useDebounce = (options?: {
-  /**
+export interface UseDebounceOptions<T extends unknown[]> {
+    /**
    * Time in ms before the callback is called if the debounce 
    * function is not called before the time is elapsed.
    * @default 500
    */
-  debounceTime?: number,
-  callback: () => void,
-}) => {
+    debounceTime?: number;
+    callback: (...args: T) => void;
+}
+
+export const useDebounce = <T extends unknown[]>({
+  debounceTime = 500,
+  callback,
+}: UseDebounceOptions<T>) => {
   const timeout = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
@@ -20,18 +25,12 @@ export const useDebounce = (options?: {
     }
   }, []);
 
-  const debounce = useCallback(() => {
+  const debounce = useCallback((...args: T) => {
     if (timeout.current)
       clearTimeout(timeout.current);
 
-    const opts: typeof options = {
-      debounceTime: 500,
-      callback: () => {},
-      ...options,
-    };
-
-    timeout.current = setTimeout(opts.callback, opts.debounceTime);
-  }, [timeout, options]);
+    timeout.current = setTimeout(() => callback(...args), debounceTime);
+  }, [timeout, debounceTime, callback]);
 
   return debounce;
 }
