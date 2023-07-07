@@ -7,7 +7,7 @@ import { User } from "@/utils/api/auth.types";
 /**
  * Shows a spinner while user authentication/authorization is being checked.
  * After authentication/authorization is checked, the component is rendered.
- * NOTE: Only works on the client-side.
+ * NOTE: client-side only.
  */
 export function withAuth<T extends JSX.IntrinsicAttributes>(
   Component: ComponentType<T>, 
@@ -34,11 +34,11 @@ export function withAuth<T extends JSX.IntrinsicAttributes>(
  * Shows a spinner while user authentication/authorization is being checked.
  * After authentication/authorization is checked, if the user is not authenticated,
  * the component is rendered. Otherwise, the user is redirected to the specified URL.
- * NOTE: Only works on the client-side.
+ * NOTE: client-side only.
  * @param redirectTo The URL to redirect to if the user is authenticated. Defaults to "/".
  */
 export function withRedirectIfLoggedIn<T extends JSX.IntrinsicAttributes>(
-  Component: ComponentType<T>, redirectTo?: (user: User | null) => URL
+  Component: ComponentType<T>, redirectTo?: (user: User | null) => string | URL
 ) {
   const AuthProtected = (props: T) => {
     const { user, isAuthenticated, loading } = useAuth({

@@ -3,7 +3,7 @@
 import React, { useCallback, useContext, useEffect, useLayoutEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 
-import { AuthContext, SocialAction } from "@/components/auth/AuthProvider";
+import { AuthContext, RedirectToUrl, SocialAction, getRedirectUrl } from "@/components/auth/AuthProvider";
 import { isUserInAuthorizedRoles } from "@/utils/api/auth";
 import { ProviderKey, User } from "@/utils/api/auth.types";
 import { ProvidersOptions } from "@/utils/auth/oauth";
@@ -60,7 +60,7 @@ export const useAuth = (options?: {
    * or authorized.
    * @see AuthProvider for default value
    */
-  redirectTo?: string,
+  redirectTo?: RedirectToUrl,
   /**
    * Whether to append a callback url param to the redirect url.
    * @see callbackUrlParamName
@@ -127,32 +127,32 @@ export const useAuth = (options?: {
       if (!authState.user) {
         setIsAuthorized(false);
   
-        if (opts.redirectIfNotAuthenticated) {
+        if (opts.redirectIfNotAuthenticated && opts.redirectTo) {
           if (opts.setCallbackUrlParam) {
-            const url = new URL(opts.redirectTo!, window.location.origin);
+            const url = new URL(getRedirectUrl(authState.user, opts.redirectTo), window.location.origin);
             url.search = new URLSearchParams({
               [opts.callbackUrlParamName!]: window.location.href
             }).toString();
             router.push(url.toString());
           }
           else {
-            router.push(opts.redirectTo!);
+            router.push(getRedirectUrl(authState.user, opts.redirectTo).toString());
           }
         }
       }
       else if (!opts.skipAuthorization) {
         const authorized = isUserInAuthorizedRoles(authState.user, opts.rolesWhitelist, opts.rolesBlacklist, opts.permissionsRequired);
         setIsAuthorized(authorized);
-        if (!authorized && opts.redirectIfNotAuthorized) {
+        if (!authorized && opts.redirectIfNotAuthorized && opts.redirectTo) {
           if (opts.setCallbackUrlParam) {
-            const url = new URL(opts.redirectTo!, window.location.origin);
+            const url = new URL(getRedirectUrl(authState.user, opts.redirectTo), window.location.origin);
             url.search = new URLSearchParams({
               [opts.callbackUrlParamName!]: window.location.href
             }).toString();
             router.push(url.toString());
           }
           else {
-            router.push(opts.redirectTo!);
+            router.push(getRedirectUrl(authState.user, opts.redirectTo).toString());
           }
         }
       }
@@ -185,7 +185,7 @@ export const useAuth = (options?: {
     },
     options?: {
       redirect?: boolean,
-      redirectTo?: string,
+      redirectTo?: RedirectToUrl,
     }
   ) => {
     dispatchAuth({ type: "clearErrors" });

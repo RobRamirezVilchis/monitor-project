@@ -38,23 +38,23 @@ export interface AuthContextProps {
   authState: AuthState;
   dispatchAuth: React.Dispatch<AuthAction>;
   emailLogin: (loginData: { username?: string, email?: string, password?: string },
-    options?: { redirect?: boolean, redirectTo?: string }) => Promise<User | null>;
+    options?: { redirect?: boolean, redirectTo?: RedirectToUrl }) => Promise<User | null>;
   socialLogin: (provider: ProviderKey,
     type: SocialAction, 
     options?: { 
       redirect?: boolean;
-      redirectTo?: string;
+      redirectTo?: RedirectToUrl;
       providersOptions?: ProvidersOptions;
       onPopupClosed?: () => void;
       onFinish?: (user: User | null) => void;
       onError?: (error: any) => void;
     }) => void;
-  logout: (options?: { redirect?: boolean, redirectTo?: string }) => void,
+  logout: (options?: { redirect?: boolean, redirectTo?: RedirectToUrl }) => void,
   changeName: (data: { first_name?: string, last_name?: string }) => Promise<boolean>;
   forceReconnect: () => void;
   lastAction: "login" | "logout" | null;
 
-  defaultRedirectTo?: string,
+  defaultRedirectTo?: RedirectToUrl,
   defaultSetCallbackUrlParam?: boolean,
   defaultCallbackUrlParamName?: string,
 }
@@ -76,6 +76,19 @@ const authContextDefaults: AuthContextProps = {
 
 export const AuthContext = createContext<AuthContextProps>(authContextDefaults);
 
+export type RedirectToUrl = string | URL | ((user: User | null) => string | URL);
+
+export function getRedirectUrl(
+  user: User | null, 
+  redirectTo: RedirectToUrl, 
+): string | URL {
+  if (typeof redirectTo === "function")
+    return redirectTo(user);
+  else
+    return redirectTo;
+}
+
+
 // Provider --------------------------------------------------------------------
 export interface AuthProviderProps {
   children: React.ReactNode;
@@ -85,7 +98,7 @@ export interface AuthProviderProps {
    * if authentication of authorization fails.
    * @default "/auth/login"
    */
-  defaultRedirectTo?: string,
+  defaultRedirectTo?: RedirectToUrl,
   /**
    * Default value for the useAuth hook for whether if a callback url param
    * should be appended to the redirect url.
@@ -161,7 +174,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({
     },
     options?: {
       redirect?: boolean,
-      redirectTo?: string,
+      redirectTo?: RedirectToUrl,
     }
   ): Promise<User | null> => {
     const opts: typeof options = {
@@ -213,8 +226,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({
     dispatch({ type: "setUser", payload: newUser });
     dispatch({ type: "loading", payload: false });
     
-    if (opts.redirect && newUser)
-      router.push(opts.redirectTo!);
+    if (opts.redirect && opts.redirectTo && newUser)
+      router.push(getRedirectUrl(newUser, opts.redirectTo).toString());
 
     return newUser;
   }, [dispatch, router]);
@@ -223,7 +236,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({
     provider: ProviderKey,
     socialAction: SocialAction, 
     data: any,
-    options?: { redirect?: boolean, redirectTo?: string }
+    options?: { redirect?: boolean, redirectTo?: RedirectToUrl }
   ): Promise<User | null> => {
     const opts: typeof options = {
       redirect: true,
@@ -283,6 +296,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({
               if (errorList.includes("User is already registered with this e-mail address.")) 
                 dispatch({ type: "addError", payload: AuthError.EmailAlreadyRegistered });
             }
+            if (err.response?.data?.detail.includes("unauthorized"))
+              dispatch({ type: "addError", payload: AuthError.IncorrectCredentials });
           }
         }
       }
@@ -291,8 +306,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({
     dispatch({ type: "setUser", payload: user });
     dispatch({ type: "loading", payload: false });
 
-    if (opts?.redirect && user)
-      router.push(opts.redirectTo!);
+    if (opts?.redirect && opts.redirectTo && user)
+      router.push(getRedirectUrl(user, opts.redirectTo).toString());
 
     return user;
   }, [dispatch, router]);
@@ -302,7 +317,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({
     type: SocialAction, 
     options?: { 
       redirect?: boolean;
-      redirectTo?: string;
+      redirectTo?: RedirectToUrl;
       providersOptions?: ProvidersOptions;
       onPopupClosed?: () => void;
       onFinish?: (user: User | null) => void;
@@ -330,7 +345,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({
 
   const logout = useCallback(async (options?: {
     redirect?: boolean,
-    redirectTo?: string,
+    redirectTo?: RedirectToUrl,
   }): Promise<void> => {
     const opts: typeof options = {
       redirect: true,
@@ -348,11 +363,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({
       logger.debug("Error.", e);
     }
 
-    if (opts.redirect) {
-      router.push(opts.redirectTo!);
+    if (opts.redirect && opts.redirectTo) {
+      router.push(getRedirectUrl(state.user, opts.redirectTo).toString());
       dispatch({ type: "setUser", payload: null });
     }
-  }, [router, dispatch, defaultRedirectTo]);
+  }, [router, dispatch, defaultRedirectTo, state.user]);
 
   const forceReconnect = useCallback(() => {
     dispatch({ type: "userFetched", payload: false });
