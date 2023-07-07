@@ -270,6 +270,13 @@ const DatePresets: React.FC<DatePresetsProps> = ({
     onChange && onChange([start, end], undefined);
   }, [onChange]);
 
+  const onLast30DaysClick = React.useCallback(() => {
+    const start = new Date();
+    const end = new Date();
+    start.setDate(end.getDate() - 30);
+    onChange && onChange([start, end], undefined);
+  }, [onChange]);
+
   const onThisMonthClick = React.useCallback(() => {
     const start = new Date();
     start.setDate(1);
@@ -350,6 +357,11 @@ const DatePresets: React.FC<DatePresetsProps> = ({
         onClick={onLastWeekClick}
       >
         Semana pasada
+      </ButtonBase>
+      <ButtonBase className="!rounded !px-2 whitespace-nowrap"
+        onClick={onLast30DaysClick}
+      >
+        Últimos 30 días
       </ButtonBase>
       <ButtonBase className="!rounded !px-2 whitespace-nowrap"
         onClick={onThisMonthClick}
