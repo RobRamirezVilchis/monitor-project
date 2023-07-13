@@ -62,12 +62,12 @@ Omit<
 
 export type QueryInvalidateOptions = Omit<InvalidateQueryFilters, "queryKey">;
 
-export type CreateQueryResult<TVariables, TQueryData, TQueryFnData, TError> = UseQueryResult<TQueryData, TError> & {
+export type CreateQueryResult<TVariables, TQueryFnData, TData, TError> = UseQueryResult<TData, TError> & {
   queryPrimaryKey: string,
   queryKey: QueryKey;
   invalidate: (options?: QueryInvalidateOptions) => void;
-  setData: (updater: Updater<TQueryData | undefined, TQueryData | undefined>, options?: SetDataOptions) => TQueryFnData | undefined;
-  getData: (filters?: QueryFilters) => TQueryData | undefined;
+  setData: (updater: Updater<TQueryFnData | undefined, TQueryFnData | undefined>, options?: SetDataOptions) => TQueryFnData | undefined;
+  getData: (filters?: QueryFilters) => TQueryFnData | undefined;
   queryClient: QueryClient,
 } & (
   TVariables extends undefined 
@@ -82,8 +82,8 @@ type UseCreatedQuery<
   TData = TQueryFnData, 
   TQueryKey extends QueryKey = QueryKey
 > = TVariables extends undefined
-  ? (options?: QueryOptions<TVariables, TQueryFnData,  TError, TData, TQueryKey>) => CreateQueryResult<TVariables, TData, TQueryFnData, TError> 
-  : (options: QueryOptions<TVariables, TQueryFnData,  TError, TData, TQueryKey>) => CreateQueryResult<TVariables, TData, TQueryFnData, TError>
+  ? <TRData = TData>(options?: QueryOptions<TVariables, TQueryFnData,  TError, TRData, TQueryKey>) => CreateQueryResult<TVariables, TQueryFnData, TRData, TError> 
+  : <TRData = TData>(options: QueryOptions<TVariables, TQueryFnData,  TError, TRData, TQueryKey>) => CreateQueryResult<TVariables, TQueryFnData, TRData, TError>
 
 
 export const createQuery = <
