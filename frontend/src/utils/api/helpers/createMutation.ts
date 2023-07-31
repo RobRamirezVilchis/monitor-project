@@ -30,6 +30,7 @@ export type MutationsOptions<
   TData = unknown,
   TError = unknown,
   TVariables = void,
+  TPContext = unknown,
   TContext = unknown,
 > =
 Omit<
@@ -39,8 +40,17 @@ Omit<
     TVariables,
     TContext
   >,
-  "mutationKey" | "mutationFn" | "context"
->;
+  "mutationKey" | "mutationFn" | "context" | "onMutate"
+> & {
+  onMutate?: TPContext extends undefined 
+  ? (
+    variables: TVariables,
+  ) => Promise<TContext | undefined> | TContext | undefined
+  : (
+    variables: TVariables, 
+    parentContext: TPContext extends undefined ? undefined : TPContext
+  ) => Promise<TContext | undefined> | TContext | undefined;
+};
 
 export type CreateMutationResult<
   TData = unknown,
@@ -58,42 +68,40 @@ export type UseCreatedMutation<
   TError = unknown,
   TVariables = void,
   TContext = unknown,
-> = (options?: MutationsOptions<TData, TError, TVariables, TContext>) => CreateMutationResult<TData, TError, TVariables, TContext>;
+> = <TOverrideContext = TContext>(options?: MutationsOptions<TData, TError, TVariables, TContext, TOverrideContext>) => CreateMutationResult<TData, TError, TVariables, TOverrideContext>;
 
 
 export const createMutation = <TData = unknown, TError = unknown, TVariables = void, TContext = unknown>(
   useMutationOptions: CreateMutationOptions<TData, TError, TVariables, TContext>,
 ) => {
-  const useMutationResult: UseCreatedMutation<TData, TError, TVariables, TContext> = (options) => {
+  const useMutationResult: UseCreatedMutation<TData, TError, TVariables, TContext> = <TOverrideContext = TContext>(options?: MutationsOptions<TData, TError, TVariables, TContext, TOverrideContext>) => {
     const queryClient = useQueryClient({ context: useMutationOptions?.context });
-    const mutation = useMutation<TData, TError, TVariables, TContext>({
+    const mutation = useMutation<TData, TError, TVariables, TOverrideContext>({
       ...useMutationOptions,
       ...options,
-      onMutate: (variables) => {
-        return Promise.all([
-          useMutationOptions?.onMutate?.(variables),
-          options?.onMutate?.(variables),
-        ]);
+      onMutate: async (variables) => {
+        const pCtx = await useMutationOptions?.onMutate?.(variables);
+        return options?.onMutate?.(variables, pCtx as any);
       },
       onSuccess: (data, variables, context) => {
         return Promise.all([
-          useMutationOptions?.onSuccess?.(data, variables, context),
+          useMutationOptions?.onSuccess?.(data, variables, context as any),
           options?.onSuccess?.(data, variables, context),
         ]);
       },
       onError: (error, variables, context) => {
         return Promise.all([
-          useMutationOptions?.onError?.(error, variables, context),
+          useMutationOptions?.onError?.(error, variables, context as any),
           options?.onError?.(error, variables, context),
         ]);
       },
       onSettled: (data, error, variables, context) => {
         return Promise.all([
-          useMutationOptions?.onSettled?.(data, error, variables, context),
+          useMutationOptions?.onSettled?.(data, error, variables, context as any),
           options?.onSettled?.(data, error, variables, context),
         ]);
       },
-    } as UseMutationOptions<TData, TError, TVariables, TContext>);
+    } as UseMutationOptions<TData, TError, TVariables, TOverrideContext>);
 
     return Object.assign(mutation, {
       mutationKey: useMutationOptions.mutationKey,
