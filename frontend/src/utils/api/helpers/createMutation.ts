@@ -52,7 +52,7 @@ Omit<
   ) => Promise<TContext | undefined> | TContext | undefined;
 };
 
-export type CreateMutationResult<
+export type UseCreatedMutationResult<
   TData = unknown,
   TError = unknown,
   TVariables = void,
@@ -68,12 +68,12 @@ export type UseCreatedMutation<
   TError = unknown,
   TVariables = void,
   TContext = unknown,
-> = <TOverrideContext = TContext>(options?: MutationsOptions<TData, TError, TVariables, TContext, TOverrideContext>) => CreateMutationResult<TData, TError, TVariables, TOverrideContext>;
+> = <TOverrideContext = TContext>(options?: MutationsOptions<TData, TError, TVariables, TContext, TOverrideContext>) => UseCreatedMutationResult<TData, TError, TVariables, TOverrideContext>;
 
 
-export const createMutation = <TData = unknown, TError = unknown, TVariables = void, TContext = unknown>(
+export function createMutation<TData = unknown, TError = unknown, TVariables = void, TContext = unknown>(
   useMutationOptions: CreateMutationOptions<TData, TError, TVariables, TContext>,
-) => {
+) {
   const useMutationResult: UseCreatedMutation<TData, TError, TVariables, TContext> = <TOverrideContext = TContext>(options?: MutationsOptions<TData, TError, TVariables, TContext, TOverrideContext>) => {
     const queryClient = useQueryClient({ context: useMutationOptions?.context });
     const mutation = useMutation<TData, TError, TVariables, TOverrideContext>({

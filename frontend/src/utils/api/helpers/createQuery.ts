@@ -37,6 +37,12 @@ Omit<
     context: QueryFunctionContext<UnionFlatten<string, TQueryKeyVariables>, any>, 
     variables: TVariables extends undefined ? void : TVariables
   ) => TQueryFnData | Promise<TQueryFnData>;
+  /**
+   * The QueryClient used by the result invalidate and get/set global functions only.
+   * When the hook is consumed, invalidate and get/set functions will use the client
+   * returned by the useQueryClient hook based on the context given.
+   */
+  queryClient?: QueryClient;
 };
 
 export type QueryOptions<
@@ -62,10 +68,10 @@ Omit<
 
 export type QueryInvalidateOptions = Omit<InvalidateQueryFilters, "queryKey">;
 
-export type CreateQueryResult<TVariables, TQueryFnData, TData, TError> = UseQueryResult<TData, TError> & {
+export type UseCreatedQueryResult<TVariables, TQueryFnData, TData, TError> = UseQueryResult<TData, TError> & {
   queryPrimaryKey: string,
   queryKey: QueryKey;
-  invalidate: (options?: QueryInvalidateOptions) => void;
+  invalidate: (options?: QueryInvalidateOptions) => Promise<void>;
   setData: (updater: Updater<TQueryFnData | undefined, TQueryFnData | undefined>, options?: SetDataOptions) => TQueryFnData | undefined;
   getData: (filters?: QueryFilters) => TQueryFnData | undefined;
   queryClient: QueryClient,
@@ -75,18 +81,18 @@ export type CreateQueryResult<TVariables, TQueryFnData, TData, TError> = UseQuer
   : { variables: TVariables; }
 );
 
-type UseCreatedQuery<
+export type UseCreatedQuery<
   TVariables = unknown, 
   TQueryFnData = unknown, 
   TError = unknown, 
   TData = TQueryFnData, 
   TQueryKey extends QueryKey = QueryKey
 > = TVariables extends undefined
-  ? <TRData = TData>(options?: QueryOptions<TVariables, TQueryFnData,  TError, TRData, TQueryKey>) => CreateQueryResult<TVariables, TQueryFnData, TRData, TError> 
-  : <TRData = TData>(options: QueryOptions<TVariables, TQueryFnData,  TError, TRData, TQueryKey>) => CreateQueryResult<TVariables, TQueryFnData, TRData, TError>
+  ? <TRData = TData>(options?: QueryOptions<TVariables, TQueryFnData,  TError, TRData, TQueryKey>) => UseCreatedQueryResult<TVariables, TQueryFnData, TRData, TError> 
+  : <TRData = TData>(options: QueryOptions<TVariables, TQueryFnData,  TError, TRData, TQueryKey>) => UseCreatedQueryResult<TVariables, TQueryFnData, TRData, TError>
 
 
-export const createQuery = <
+export function createQuery<
   TVariables = undefined, 
   TQueryFnData = unknown, 
   TError = unknown, 
@@ -94,7 +100,7 @@ export const createQuery = <
   TQueryKeyVariables extends unknown[] = unknown[]
 >(
   useQueryOptions: CreateQueryOptions<TVariables, TQueryFnData, TError, TData, TQueryKeyVariables>,
-) => {
+) {
   const { queryPrimaryKey, queryKeyVariables: queryKeyVariables, queryFn, ...otherOptions } = useQueryOptions;
 
   const queryKeyFn: (
@@ -107,18 +113,82 @@ export const createQuery = <
     return qVariables ? [queryPrimaryKey, ...qVariables] : [queryPrimaryKey];
   }) as any;
 
-  const useCreatedQuery: UseCreatedQuery<TVariables, TQueryFnData,  TError, TData, UnionFlatten<string, TQueryKeyVariables>> = 
+  const invalidatePrimaryKey = 
+  (options?: QueryInvalidateOptions) => {
+    if (!useQueryOptions.queryClient) {
+      throw new Error("queryClient is not defined.");
+    }
+
+    const queryKey = [queryPrimaryKey];
+
+    return useQueryOptions.queryClient.invalidateQueries({
+      queryKey,
+      ...options,
+    });
+  };
+
+  const invalidate: (
+    TVariables extends undefined 
+    ? ((options?: QueryInvalidateOptions) => Promise<void>) 
+    : ((options: QueryInvalidateOptions & { variables: TVariables; }) => Promise<void>)
+  ) = 
+  ((opts: any) => {
+    if (!useQueryOptions.queryClient) {
+      throw new Error("queryClient is not defined.");
+    }
+
+    const { variables, ...options } = opts || {};
+    const queryKey = queryKeyFn(variables);
+
+    return useQueryOptions.queryClient.invalidateQueries({
+      queryKey,
+      ...options,
+    });
+  }) as any;
+
+  const setData: (
+    TVariables extends undefined 
+    ? ((updater:  Updater<TQueryFnData | undefined, TQueryFnData | undefined>, options?: SetDataOptions) => TQueryFnData | undefined) 
+    : ((updater:  Updater<TQueryFnData | undefined, TQueryFnData | undefined>, options: SetDataOptions & { variables: TVariables; }) => TQueryFnData | undefined)
+  ) = 
+  ((updater: any, opts?: any) => {
+    if (!useQueryOptions.queryClient) {
+      throw new Error("queryClient is not defined.");
+    }
+
+    const { variables, ...options } = opts || {};
+    const queryKey = queryKeyFn(variables);
+
+    return useQueryOptions.queryClient.setQueryData<TQueryFnData>(queryKey, updater, options);
+  }) as any;
+
+  const getData: (
+    TVariables extends undefined 
+    ? ((filters?: QueryFilters) => TQueryFnData | undefined) 
+    : ((filters: QueryFilters & { variables: TVariables; }) => TQueryFnData | undefined)
+  ) = 
+  ((opts: any) => {
+    if (!useQueryOptions.queryClient) {
+      throw new Error("queryClient is not defined.");
+    }
+
+    const { variables, ...filters } = opts || {};
+    const queryKey = queryKeyFn(variables);
+
+    return useQueryOptions.queryClient.getQueryData<TQueryFnData>(queryKey, filters)
+  }) as any;
+
+  const useCreatedQuery: UseCreatedQuery<TVariables, TQueryFnData, TError, TData, UnionFlatten<string, TQueryKeyVariables>> = 
   ((options: any) => {
     const queryClient = useQueryClient({ context: useQueryOptions?.context });
     const queryKey = queryKeyFn(options?.variables)
     
     const invalidate = useCallback(
-      (options?: QueryInvalidateOptions) => {
+      (options?: QueryInvalidateOptions) => 
         queryClient.invalidateQueries({
           queryKey,
           ...options,
-        });
-      },
+        }),
       [queryClient, queryKey]
     );
 
@@ -158,5 +228,10 @@ export const createQuery = <
     queryHash: useQueryOptions.queryHash,
     queryKeyHashFn: useQueryOptions.queryKeyHashFn,
     context: useQueryOptions.context,
+    queryClient: useQueryOptions.queryClient,
+    invalidatePrimaryKey,
+    invalidate,
+    setData,
+    getData,
   });
 }
