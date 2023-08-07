@@ -4,14 +4,14 @@ import type { AppProps } from "next/app";
 import Head from "next/head";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
-import { Roboto } from "next/font/google";
+import { Roboto_Flex as Roboto } from "next/font/google";
 import { SnackbarProvider } from "notistack";
 
 import { AuthProvider } from "@/components/auth/AuthProvider";
 
 const roboto = Roboto({
-  weight: ["400", "500", "700"],
-  style: ["normal", "italic"],
+  weight: ["400", "500", "600", "700"],
+  style: ["normal"],
   subsets: ["latin"],
 });
 
