@@ -180,6 +180,9 @@ if DEBUG:
 
 
 REST_FRAMEWORK = {
+    "DEFAULT_VERSIONING_CLASS": "rest_framework.versioning.URLPathVersioning",
+    "VERSION_PARAM": "version",
+    "DEFAULT_VERSION": "v1",
     "DEFAULT_AUTHENTICATION_CLASSES": [
         "rest_framework.authentication.SessionAuthentication",
         "rest_framework.authentication.TokenAuthentication",
