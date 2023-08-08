@@ -23,6 +23,6 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("api/auth/", include(auth_urls)),
 
-    # re_path(r"api/(?P<version>[v1|v2|...]+)/", include("...")),
     # path(r"api/<str:version>/", include("...")),
+    # re_path(r"api/(?P<version>[v1|v2|...]+)/", include("...")),
 ]
