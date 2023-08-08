@@ -66,6 +66,7 @@ INSTALLED_APPS = [
     "rest_framework",
     "rest_framework.authtoken",
     "dj_rest_auth",
+    "django_filters",
     "allauth",
     "allauth.account",
     "dj_rest_auth.registration",
@@ -187,7 +188,11 @@ REST_FRAMEWORK = {
     "DEFAULT_PERMISSION_CLASSES": [
         "rest_framework.permissions.IsAuthenticated",
     ],
+    "DEFAULT_FILTER_BACKENDS": [
+        "django_filters.rest_framework.DjangoFilterBackend",
+    ],
     "EXCEPTION_HANDLER": "drf_standardized_errors.handler.exception_handler",
+    # "PAGE_SIZE": 25,
 }
 
 DRF_STANDARDIZED_ERRORS = { 
@@ -318,12 +323,20 @@ LOGGING = {
             "class": "logging.StreamHandler",
             "formatter": "color"
         },
+        "console.simple": {
+            "class": "logging.StreamHandler",
+            "formatter": "color"
+        }
     },
     "loggers": {
         "django.db.backends": { # Log queries: https://stackoverflow.com/questions/4375784/how-to-log-all-sql-queries-in-django
-            "level": ENV["LOG_LEVEL"],
+            "level": ENV["LOG_LEVEL"] or "WARNING",
             "handlers": ["console"],
         },
+        "core": {
+            "level": ENV["LOG_LEVEL"] or "WARNING",
+            "handlers": ["console"],
+        }
     },
     "formatters": {
         "verbose": {
@@ -340,6 +353,18 @@ LOGGING = {
             "()": "colorlog.ColoredFormatter",
             "format": "{asctime}{log_color} {levelname}: {message}",
             "datefmt": "%Y-%m-%d %H:%M:%S",
+            "log_colors": {
+                "DEBUG":    "blue",
+                "INFO":     "green",
+                "WARNING":  "yellow",
+                "ERROR":    "red",
+                "CRITICAL": "bold_red",
+            },
+            "style": "{",
+        },
+        "color.simple": {
+            "()": "colorlog.ColoredFormatter",
+            "format": "---{log_color} {levelname}: {message}",
             "log_colors": {
                 "DEBUG":    "blue",
                 "INFO":     "green",
