@@ -328,7 +328,7 @@ LOGGING = {
         },
         "console.simple": {
             "class": "logging.StreamHandler",
-            "formatter": "color"
+            "formatter": "color.simple"
         }
     },
     "loggers": {
@@ -338,7 +338,7 @@ LOGGING = {
         },
         "core": {
             "level": ENV["LOG_LEVEL"] or "WARNING",
-            "handlers": ["console"],
+            "handlers": ["console.simple"],
         }
     },
     "formatters": {
@@ -354,7 +354,7 @@ LOGGING = {
         },
         "color": {
             "()": "colorlog.ColoredFormatter",
-            "format": "{asctime}{log_color} {levelname}: {message}",
+            "format": "[{asctime}]{log_color} {levelname}: {message}",
             "datefmt": "%Y-%m-%d %H:%M:%S",
             "log_colors": {
                 "DEBUG":    "blue",
@@ -367,7 +367,7 @@ LOGGING = {
         },
         "color.simple": {
             "()": "colorlog.ColoredFormatter",
-            "format": "---{log_color} {levelname}: {message}",
+            "format": ">>{log_color} {levelname}: {message}",
             "log_colors": {
                 "DEBUG":    "blue",
                 "INFO":     "green",
