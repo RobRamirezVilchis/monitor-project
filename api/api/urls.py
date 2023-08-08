@@ -26,6 +26,6 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("api/auth/", include(auth_urls)),
 
-    # path(r"api/<api_version:version>/", include("...")),
+    # path("api/<api_version:version>/", include("...")),
     # re_path(r"api/(?P<version>[v1|v2|...]+)/", include("...")),
 ]
