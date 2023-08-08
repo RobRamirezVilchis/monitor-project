@@ -195,6 +195,7 @@ REST_FRAMEWORK = {
         "django_filters.rest_framework.DjangoFilterBackend",
     ],
     "EXCEPTION_HANDLER": "drf_standardized_errors.handler.exception_handler",
+    "DEFAULT_PAGINATION_CLASS": "common.pagination.PageNumberPagination",
     # "PAGE_SIZE": 25,
 }
 

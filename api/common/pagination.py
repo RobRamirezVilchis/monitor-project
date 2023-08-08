@@ -1,15 +1,17 @@
 from typing import Optional
 from collections import OrderedDict
+from django.core.paginator import EmptyPage
 from rest_framework.pagination import (
     BasePagination, PageNumberPagination as _PageNumberPagination
 )
 from rest_framework.response import Response
 from rest_framework.settings import api_settings
+from rest_framework.exceptions import NotFound
 
-def get_paginated_response(*, queryset, serializer_class, request, view, pagination_class: Optional[BasePagination] = None):
-    paginator_class = pagination_class if pagination_class else api_settings.DEFAULT_PAGINATION_CLASS
+def get_paginated_response(queryset, serializer_class, request, pagination_class: Optional[BasePagination] = None, view = None):
+    pagination_class = pagination_class if pagination_class else api_settings.DEFAULT_PAGINATION_CLASS
 
-    if paginator_class is not None:
+    if pagination_class is not None:
         paginator = pagination_class()
 
         page = paginator.paginate_queryset(queryset, request, view=view)
@@ -48,3 +50,33 @@ class PageNumberPagination(_PageNumberPagination):
                 ]),
             )
         ]))
+    
+    def paginate_queryset(self, queryset, request, view=None):
+        """
+        Paginate a queryset if required, either returning a
+        page object, or `None` if pagination is not configured for this view.
+        A valid page is always returned, even if the page argument isn't
+        a number (returns first page) or isn't in range (returns last page).
+        """
+        page_size = self.get_page_size(request)
+        if not page_size:
+            return None
+
+        paginator = self.django_paginator_class(queryset, page_size)
+        page_number = self.get_page_number(request, paginator)
+
+        try:
+            self.page = paginator.get_page(page_number)
+        except EmptyPage as exc:
+            msg = self.invalid_page_message.format(
+                page_number=page_number, message=str(exc)
+            )
+            raise NotFound(msg)
+
+        if paginator.num_pages > 1 and self.template is not None:
+            # The browsable API should display pagination controls.
+            self.display_page_controls = True
+
+        self.request = request
+        return list(self.page)
+
