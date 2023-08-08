@@ -15,6 +15,7 @@ django-filter==23.2
 django-guardian==2.4.0
 djangorestframework==3.14.0
 djangorestframework-simplejwt==5.2.2
+drf-standardized-errors==0.12.5
 idna==3.4
 oauthlib==3.2.2
 pycparser==2.21

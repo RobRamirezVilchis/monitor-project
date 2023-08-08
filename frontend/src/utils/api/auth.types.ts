@@ -21,4 +21,5 @@ export enum AuthError {
   UsernameAlreadyRegistered,
   EmailAlreadyRegistered,
   ProviderNotFound,
+  ServerError,
 }

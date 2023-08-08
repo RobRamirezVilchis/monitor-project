@@ -72,6 +72,7 @@ INSTALLED_APPS = [
     "allauth.socialaccount",
     "allauth.socialaccount.providers.google",
     "guardian",
+    "drf_standardized_errors",
     # Local apps
     "authentication",
 ]
@@ -185,7 +186,13 @@ REST_FRAMEWORK = {
     ], 
     "DEFAULT_PERMISSION_CLASSES": [
         "rest_framework.permissions.IsAuthenticated",
-    ]
+    ],
+    "EXCEPTION_HANDLER": "drf_standardized_errors.handler.exception_handler",
+}
+
+DRF_STANDARDIZED_ERRORS = { 
+    "EXCEPTION_FORMATTER_CLASS": "common.exception_formatter.ExceptionFormatter",
+    "EXCEPTION_HANDLER_CLASS": "common.exception_handler.ExceptionHandler",
 }
 
 
@@ -312,16 +319,7 @@ LOGGING = {
             "formatter": "color"
         },
     },
-    # "root": {
-    #     "handlers": ["console"],
-    #     "level": "DEBUG" if DEBUG else "WARNING",
-    # },
     "loggers": {
-        # "django": {
-        #     "handlers": ["console"],
-        #     "level": "INFO",
-        #     "propagate": False,
-        # },
         "django.db.backends": { # Log queries: https://stackoverflow.com/questions/4375784/how-to-log-all-sql-queries-in-django
             "level": ENV["LOG_LEVEL"],
             "handlers": ["console"],
