@@ -1,12 +1,13 @@
-from django.urls import path, re_path, include
-from . import views
-from django.views.generic import TemplateView
-
 from dj_rest_auth import urls as dj_rest_auth_urls
 from dj_rest_auth.registration import urls as dj_rest_auth_registration_urls
+from django.urls import path, re_path, include
+from django.views.generic import TemplateView
 from dj_rest_auth.registration.views import (
     SocialAccountListView, SocialAccountDisconnectView
 )
+
+from . import views
+
 
 urlpatterns = [
     # Revert template urls: ------------------------------------------------

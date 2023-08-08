@@ -1,25 +1,26 @@
+from allauth.account import app_settings as allauth_account_settings
+from allauth.account.adapter import get_adapter
+from allauth.utils import email_address_exists
+from dj_rest_auth.registration.serializers import RegisterSerializer
+from dj_rest_auth.serializers import PasswordResetSerializer, UserDetailsSerializer
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group, Permission
 from django.utils.encoding import force_str
 from django.utils.translation import gettext_lazy as _
-from allauth.account import app_settings as allauth_account_settings
-from allauth.account.adapter import get_adapter
-from allauth.utils import email_address_exists
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
-from dj_rest_auth.serializers import PasswordResetSerializer, UserDetailsSerializer
-from dj_rest_auth.registration.serializers import RegisterSerializer
 
 from .forms import PasswordResetForm
+
+UserModel = get_user_model()
+
 
 class CustomPasswordResetSerializer(PasswordResetSerializer):
     @property
     def password_reset_form_class(self):
         return PasswordResetForm
 
-
-UserModel = get_user_model()
 
 class PasswordResetKeyValidSerializer(serializers.Serializer):
     """
@@ -51,6 +52,7 @@ class PasswordResetKeyValidSerializer(serializers.Serializer):
             raise ValidationError({'token': ['Invalid value']})
 
         return attrs
+
 
 class CustomRegisterSerializer(RegisterSerializer):
     first_name = serializers.CharField(required=True)

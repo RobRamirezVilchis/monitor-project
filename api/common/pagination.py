@@ -1,12 +1,11 @@
-from typing import Optional
 from collections import OrderedDict
 from django.core.paginator import EmptyPage
-from rest_framework.pagination import (
-    BasePagination, PageNumberPagination as _PageNumberPagination
-)
+from rest_framework.exceptions import NotFound
+from rest_framework.pagination import BasePagination, PageNumberPagination as _PageNumberPagination
 from rest_framework.response import Response
 from rest_framework.settings import api_settings
-from rest_framework.exceptions import NotFound
+from typing import Optional
+
 
 def get_paginated_response(queryset, serializer_class, request, pagination_class: Optional[BasePagination] = None, view = None):
     pagination_class = pagination_class if pagination_class else api_settings.DEFAULT_PAGINATION_CLASS

@@ -1,3 +1,7 @@
+from django.contrib.auth import get_user_model
+from django.core.exceptions import ImproperlyConfigured
+from guardian.shortcuts import get_anonymous_user
+from rest_framework.permissions import BasePermission
 from typing import Union, List, Optional, Callable, Any
 import sys
 if sys.version_info < (3, 11):
@@ -5,14 +9,10 @@ if sys.version_info < (3, 11):
 else:
     from typing import TypedDict, NotRequired
 
-from rest_framework.permissions import BasePermission
-from django.core.exceptions import ImproperlyConfigured
-from django.contrib.auth import get_user_model
-from guardian.shortcuts import get_anonymous_user
-
 User = get_user_model()
 
 Condition = Callable[[User, str, Optional[Any], Any, Any], bool]
+
 
 class Policy(TypedDict):
     '''

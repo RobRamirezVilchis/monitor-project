@@ -1,19 +1,16 @@
+from dj_rest_auth.forms import AllAuthPasswordResetForm
 from django.conf import settings
 from django.contrib.sites.shortcuts import get_current_site
-from django.urls import reverse
-
-from dj_rest_auth.forms import AllAuthPasswordResetForm
-if 'allauth' in settings.INSTALLED_APPS:
+if "allauth" in settings.INSTALLED_APPS:
     from allauth.account import app_settings
     from allauth.account.adapter import get_adapter
-    from allauth.account.forms import \
-        ResetPasswordForm as DefaultPasswordResetForm
     from allauth.account.forms import default_token_generator
-    from allauth.account.utils import (filter_users_by_email,
-                                       user_pk_to_url_str, user_username)
+    from allauth.account.forms import ResetPasswordForm as DefaultPasswordResetForm
+    from allauth.account.utils import filter_users_by_email, user_pk_to_url_str, user_username
     from allauth.utils import build_absolute_uri
 
-from .functions import get_frontend_url
+from .services import get_frontend_url
+
 
 class PasswordResetForm(AllAuthPasswordResetForm):
     def save(self, request, **kwargs):

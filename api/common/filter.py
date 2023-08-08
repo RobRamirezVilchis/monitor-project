@@ -1,5 +1,6 @@
 from rest_framework.settings import api_settings
 
+
 def filter_queryset(queryset, request, view):
     """
     Filter the queryset based on the request and the view.

@@ -1,10 +1,11 @@
-from django.conf import settings
 from allauth.account.models import EmailAddress
 from allauth.socialaccount.models import SocialAccount
+from django.conf import settings
 
 from . import constants
 
-def delete_user(user):
+
+def user_soft_delete(user):
     if not user:
         return
 

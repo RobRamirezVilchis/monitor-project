@@ -1,15 +1,16 @@
-import jwt
+from allauth.account.adapter import DefaultAccountAdapter
+from allauth.socialaccount.adapter import app_settings, DefaultSocialAccountAdapter
+from allauth.socialaccount.providers.google.views import GoogleOAuth2Adapter as DefaultGoogleOAuth2Adapter
+from allauth.socialaccount.providers.oauth2.client import OAuth2Error
 from django.conf import settings
 from django.contrib.sites.shortcuts import get_current_site
 from django.core.mail import EmailMessage, EmailMultiAlternatives
 from django.template import TemplateDoesNotExist
 from django.template.loader import render_to_string
-from allauth.account.adapter import DefaultAccountAdapter
-from allauth.socialaccount.adapter import app_settings, DefaultSocialAccountAdapter
-from allauth.socialaccount.providers.oauth2.client import OAuth2Error
-from allauth.socialaccount.providers.google.views import GoogleOAuth2Adapter as DefaultGoogleOAuth2Adapter
+import jwt
 
-from .functions import get_frontend_url
+from .services import get_frontend_url
+
 
 class AccountAdapter(DefaultAccountAdapter):
    
