@@ -2,10 +2,11 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { AxiosError } from "axios";
+import { isAxiosError } from "axios";
 import { FormProvider, useForm } from "react-hook-form";
 import Button from "@mui/lab/LoadingButton";
 
+import { ApiError } from "@/utils/api/types";
 import http from "@/utils/http";
 import { requestPasswordReset } from "@/utils/api/auth";
 import { TextInput } from "@/components/shared/inputs";
@@ -35,12 +36,16 @@ const PasswordResetRequest = () => {
       setEmailSent(true);
     }
     catch (e) {
-      const error = e as AxiosError;
-      if (error.response?.status === 400) {
-        setError("Ingrese un email válido");
-      }
-      else {
-        setError("Ha ocurrido un problema, por favor intente más tarde")
+      if (isAxiosError<ApiError>(e)) {
+        if (e.response?.data.type === "server_error")
+          setError("Ha ocurrido un problema, por favor intente más tarde");
+        else if (e.response?.data.type === "validation_error") {
+          for (const error of e.response?.data.errors ?? []) {
+            if (error.field === "email") {
+              setError("Ingrese un email válido");
+            } 
+          }
+        }
       }
     }
     finally {

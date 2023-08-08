@@ -6,6 +6,7 @@ import { useImmerReducer } from "use-immer";
 import { useRouter } from "next/navigation";
 
 import api from "@/utils/api";
+import { ApiError } from "@/utils/api/types";
 import http from "@/utils/http";
 import {
   clearJwtStorage,
@@ -210,15 +211,17 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({
       logger.debug("Error signing in.", e);
 
       if (isAxiosError(e)) {
-        const err = e as AxiosError<any, any>;
-
-        const errorList = err.response?.data.non_field_errors;
-        if (errorList) {
-          if (errorList.includes("Unable to log in with provided credentials.") 
-            || errorList.includes('Must include "username" and "password".')) 
-            dispatch({ type: "addError", payload: AuthError.IncorrectCredentials });
-          if (errorList.includes("E-mail is not verified.")) 
-            dispatch({ type: "addError", payload: AuthError.EmailNotVerified });
+        if (isAxiosError<ApiError>(e)) {
+          if (e.response?.data.type === "server_error")
+            dispatch({ type: "addError", payload: AuthError.ServerError });
+          else if (e.response?.data.type === "validation_error") {
+            for (const error of e.response?.data.errors ?? []) {
+              if (error.detail.includes("E-mail is not verified"))
+                dispatch({ type: "addError", payload: AuthError.EmailNotVerified });
+              else
+                dispatch({ type: "addError", payload: AuthError.IncorrectCredentials });
+            }
+          }
         }
       }
     }
@@ -287,17 +290,18 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({
           logger.debug("Error authenticating user.", e);
 
           if (isAxiosError(e)) {
-            const err = e as AxiosError<any, any>;
-    
-            const errorList = err.response?.data.non_field_errors;
-            if (errorList) {
-              if (errorList.includes("Incorrect value")) 
-                dispatch({ type: "addError", payload: AuthError.IncorrectCredentials });
-              if (errorList.includes("User is already registered with this e-mail address.")) 
-                dispatch({ type: "addError", payload: AuthError.EmailAlreadyRegistered });
+            if (isAxiosError<ApiError>(e)) {
+              if (e.response?.status === 500)
+                dispatch({ type: "addError", payload: AuthError.ServerError });
+              else if (e.response?.data.type === "validation_error") {
+                for (const error of e.response?.data.errors ?? []) {
+                  if (error.detail.includes("Incorrect value"))
+                    dispatch({ type: "addError", payload: AuthError.IncorrectCredentials });
+                  else if (error.detail.includes("User is already registered with this e-mail address"))
+                    dispatch({ type: "addError", payload: AuthError.EmailAlreadyRegistered });
+                }
+              }
             }
-            if (err.response?.data?.detail.includes("unauthorized"))
-              dispatch({ type: "addError", payload: AuthError.IncorrectCredentials });
           }
         }
       }
