@@ -18,7 +18,7 @@ from django.contrib import admin
 from django.urls import path, include, register_converter
 
 from authentication import urls as auth_urls
-from common.urls.converters import ApiVersionConverter
+from core.urls.converters import ApiVersionConverter
 
 register_converter(ApiVersionConverter, "api_version")
 
