@@ -43,7 +43,7 @@ class PageNumberPagination(_PageNumberPagination):
             ("pagination",
                 OrderedDict([
                     ("page", self.page.number),
-                    ("page_size", self.page_size),
+                    ("page_size", self.page.paginator.per_page),
                     ("count", self.page.paginator.count),
                     ("pages", self.page.paginator.num_pages),
                 ]),
