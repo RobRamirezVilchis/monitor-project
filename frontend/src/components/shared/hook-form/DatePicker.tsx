@@ -53,9 +53,11 @@ export const DatePicker = <
     className,
     children,
   } : CalendarContainerProps) => {
+    /* eslint-disable react-hooks/rules-of-hooks */
     const [selectedTab, setSelectedTab] = useState(0);
     const desktop = useMediaQuery(`(min-width: ${breakpoints.md}px)`);
-
+    /* eslint-enable react-hooks/rules-of-hooks */
+    
     return (
       <div className="bg-white shadow-md rounded-2xl shadow-br p-2">
         <div className="flex flex-col items-center">
