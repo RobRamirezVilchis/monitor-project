@@ -13,7 +13,7 @@ import {
   registerUser,
   RegisterUserData,
 } from "@/api/auth";
-import { TextInput } from "@/components/shared/inputs";
+import { TextInput } from "@/components/shared/hook-form";
 import { useSnackbar } from "@/hooks/shared";
 
 const schema = z.object({

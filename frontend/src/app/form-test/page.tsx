@@ -6,11 +6,11 @@ import Button from "@mui/material/Button";
 
 import {
   Form,
-} from "@/components/shared/inputs";
+} from "@/components/shared/hook-form";
 import {
   Autocomplete, TextInput, RadioGroup, Switch, 
   Checkbox, CheckboxGroup, Select, TimePicker, DatePicker, InlineDatePicker
-} from "@/components/shared/inputs";
+} from "@/components/shared/hook-form";
 import logger from "@/utils/logger";
 
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';

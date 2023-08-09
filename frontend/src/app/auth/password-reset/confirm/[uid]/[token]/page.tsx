@@ -12,7 +12,7 @@ import {
   isPasswordResetTokenValid,
   confirmPasswordReset,
 } from "@/api/auth";
-import { TextInput } from "@/components/shared/inputs";
+import { TextInput } from "@/components/shared/hook-form";
 import logger from "@/utils/logger";
 
 const schema = z.object({
