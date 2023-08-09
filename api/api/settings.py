@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 import os
 from pathlib import Path
 from datetime import timedelta
+import dj_database_url
 
 # environment variables
 ENV = {
@@ -20,6 +21,7 @@ ENV = {
     "DEBUG": os.getenv("DEBUG", "False"),
     "LOG_LEVEL": os.getenv("LOG_LEVEL", "INFO"),
     "SECRET_KEY": os.getenv("SECRET_KEY"),
+    "DEFAULT_DB": os.getenv("DEFAULT_DB"),
     "EMAIL_HOST": os.getenv("EMAIL_HOST"),
     "EMAIL_PORT": os.getenv("EMAIL_PORT"),
     "EMAIL_USER": os.getenv("EMAIL_USER"),
@@ -124,10 +126,7 @@ GUARDIAN_RAISE_403 = True
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
 DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
-    }
+    "default": dj_database_url.config("DEFAULT_DB"),
 }
 
 
