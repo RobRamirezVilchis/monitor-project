@@ -1,8 +1,8 @@
 import axios from "axios";
 import Cookies from "js-cookie";
 
-import api from "@/utils/api";
-import { getOrRefreshAccessToken, jwtCookie, useJwt } from "@/utils/api/auth";
+import api from "@/api";
+import { getOrRefreshAccessToken, jwtCookie, useJwt } from "@/api/auth";
 import type { AxiosInstance as AxiosInstanceBase, AxiosRequestConfig as AxiosRequestConfigBase, InternalAxiosRequestConfig } from "./axios.types";
 import { sleep } from "@/utils/utils";
 

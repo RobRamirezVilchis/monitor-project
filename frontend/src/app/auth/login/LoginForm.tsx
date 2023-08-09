@@ -6,8 +6,8 @@ import { FormProvider, useForm } from "react-hook-form";
 import Button from "@mui/lab/LoadingButton";
 
 import { useAuth } from "@/hooks/auth";
-import { AuthError } from "@/utils/api/auth.types";
-import { emailPattern, getAuthErrorString } from "@/utils/api/auth";
+import { AuthError } from "@/api/auth.types";
+import { emailPattern, getAuthErrorString } from "@/api/auth";
 import { TextInput } from "@/components/shared/inputs";
 
 interface BasicLoginData {

@@ -7,7 +7,7 @@ import Link from "next/link";
 import Button from "@mui/lab/LoadingButton";
 
 import http from "@/utils/http";
-import { isRegisterTokenValid, verifyAccount } from "@/utils/api/auth";
+import { isRegisterTokenValid, verifyAccount } from "@/api/auth";
 import logger from "@/utils/logger";
 
 const RegisterActivation: NextPage = () => {

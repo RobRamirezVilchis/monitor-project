@@ -1,4 +1,4 @@
-import { ProviderKey } from "@/utils/api/auth.types";
+import { ProviderKey } from "@/api/auth.types";
 import { openCenteredPopupWindow } from "@/utils/window.utils";
 
 const socialLoginMessageListeners: Array<(event: MessageEvent<any>) => void> = [];

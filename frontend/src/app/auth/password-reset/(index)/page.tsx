@@ -6,9 +6,8 @@ import { isAxiosError } from "axios";
 import { FormProvider, useForm } from "react-hook-form";
 import Button from "@mui/lab/LoadingButton";
 
-import { ApiError } from "@/utils/api/types";
-import http from "@/utils/http";
-import { requestPasswordReset } from "@/utils/api/auth";
+import { ApiError } from "@/api/types";
+import { requestPasswordReset } from "@/api/auth";
 import { TextInput } from "@/components/shared/inputs";
 
 interface PasswordResetRequestData {

@@ -1,7 +1,7 @@
 "use client";
 
-import { createMutation } from "@/utils/api/helpers/createMutation";
-import { createQuery } from "@/utils/api/helpers/createQuery";
+import { createMutation } from "@/api/helpers/createMutation";
+import { createQuery } from "@/api/helpers/createQuery";
 
 const useMyQuery = createQuery({
   queryPrimaryKey: "test",

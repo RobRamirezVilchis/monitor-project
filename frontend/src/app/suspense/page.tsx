@@ -1,7 +1,7 @@
-import api from "@/utils/api";
+import api from "@/api";
 
 import http from "@/utils/server/fetchWithCredentials";
-import { User } from "@/utils/api/auth.types";
+import { User } from "@/api/auth.types";
 
 const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 

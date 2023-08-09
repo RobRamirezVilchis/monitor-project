@@ -4,8 +4,8 @@ import React, { useCallback, useContext, useEffect, useLayoutEffect, useRef } fr
 import { useRouter } from "next/navigation";
 
 import { AuthContext, RedirectToUrl, SocialAction, getRedirectUrl } from "@/components/auth/AuthProvider";
-import { isUserInAuthorizedRoles } from "@/utils/api/auth";
-import { ProviderKey, User } from "@/utils/api/auth.types";
+import { isUserInAuthorizedRoles } from "@/api/auth";
+import { ProviderKey, User } from "@/api/auth.types";
 import { ProvidersOptions } from "@/utils/auth/oauth";
 
 export const useAuth = (options?: {

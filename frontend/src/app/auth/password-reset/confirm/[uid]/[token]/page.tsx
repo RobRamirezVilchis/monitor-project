@@ -10,7 +10,7 @@ import http from "@/utils/http";
 import {
   isPasswordResetTokenValid,
   confirmPasswordReset,
-} from "@/utils/api/auth";
+} from "@/api/auth";
 import { TextInput } from "@/components/shared/inputs";
 import logger from "@/utils/logger";
 
