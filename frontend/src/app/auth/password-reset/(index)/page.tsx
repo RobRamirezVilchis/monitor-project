@@ -1,18 +1,22 @@
 "use client";
 
-import { useState } from "react";
-import Link from "next/link";
-import { isAxiosError } from "axios";
 import { FormProvider, useForm } from "react-hook-form";
+import { isAxiosError } from "axios";
+import { useState } from "react";
+import { zodResolver } from "@hookform/resolvers/zod";
 import Button from "@mui/lab/LoadingButton";
+import Link from "next/link";
+import z from "zod";
 
 import { ApiError } from "@/api/types";
 import { requestPasswordReset } from "@/api/auth";
 import { TextInput } from "@/components/shared/inputs";
 
-interface PasswordResetRequestData {
-  email: string;
-}
+const schema = z.object({
+  email: z.string().email("Ingrese un email válido"),
+});
+
+type PasswordResetRequestData = z.infer<typeof schema>;
 
 const PasswordResetRequest = () => {
   const [emailSent, setEmailSent] = useState(false);
@@ -20,6 +24,7 @@ const PasswordResetRequest = () => {
   const [loading, setLoading] = useState(false);
   const formMethods = useForm<PasswordResetRequestData>({
     mode: "onTouched",
+    resolver: zodResolver(schema),
     defaultValues: {
       email: "",
     },
@@ -84,14 +89,6 @@ const PasswordResetRequest = () => {
             type="email"
             placeholder="Correo"
             title="Ingresar correo"
-            rules={{
-              required: "El correo es necesario",
-              pattern: {
-                value:
-                  /(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])/,
-                message: "Ingrese un email válido",
-              },
-            }}
             fullWidth
           />
 

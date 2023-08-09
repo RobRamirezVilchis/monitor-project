@@ -1,12 +1,13 @@
 "use client";
 
-import { useParams } from "next/navigation";
-import { useCallback, useEffect, useState } from "react";
-import Link from "next/link";
 import { FormProvider, useForm } from "react-hook-form";
+import { useCallback, useEffect, useState } from "react";
+import { useParams } from "next/navigation";
+import { zodResolver } from "@hookform/resolvers/zod";
 import Button from "@mui/lab/LoadingButton";
+import Link from "next/link";
+import z from "zod";
 
-import http from "@/utils/http";
 import {
   isPasswordResetTokenValid,
   confirmPasswordReset,
@@ -14,23 +15,31 @@ import {
 import { TextInput } from "@/components/shared/inputs";
 import logger from "@/utils/logger";
 
-interface PasswordResetData {
-  password1: string;
-  password2: string;
-}
+const schema = z.object({
+  password1: z.string({ required_error: "La contraseña es requerida" }).regex(
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d@$!%*?&]{8,}$/, 
+      "La contraseña debe tener al menos 8 caracteres, 1 mayúscula y un número"
+  ),
+  password2: z.string(),
+}).refine(({password1, password2}) => password1 === password2, {
+  message: "Las contraseñas no coinciden",
+  path: ["password2"],
+});
+
+type PasswordResetData = z.infer<typeof schema>;
 
 const PasswordResetConfirmation = () => {
   const [tokenValid, setTokenValid] = useState<boolean | null>(null);
   const [passwordChanged, setPasswordChanged] = useState<boolean | null>(null);
   const formMethods = useForm<PasswordResetData>({
     mode: "onTouched",
+    resolver: zodResolver(schema),
     defaultValues: {
       password1: "",
       password2: "",
     },
   });
   const {
-    getValues,
     trigger,
     getFieldState,
     formState: { touchedFields, isValid },
@@ -130,14 +139,6 @@ const PasswordResetConfirmation = () => {
         <TextInput
           name="password1"
           type="password"
-          rules={{
-            required: "Este campo es requerido",
-            pattern: {
-              value: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d@$!%*?&]{8,}$/,
-              message:
-                "La contraseña debe tener al menos 8 caracteres, 1 mayúscula y un número",
-            },
-          }}
           placeholder="Contraseña"
           title="Nueva contraseña"
           fullWidth
@@ -150,13 +151,6 @@ const PasswordResetConfirmation = () => {
         <TextInput
           name="password2"
           type="password"
-          rules={{
-            validate: {
-              passwordMatch: (value: string) =>
-                value === getValues("password1") ||
-                "Las contraseñas no coinciden",
-            },
-          }}
           placeholder="Confirmar contraseña"
           title="Repetir contraseña"
           fullWidth

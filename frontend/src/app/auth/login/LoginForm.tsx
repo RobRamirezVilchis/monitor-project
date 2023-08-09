@@ -3,17 +3,21 @@
 import { useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { FormProvider, useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import Button from "@mui/lab/LoadingButton";
+import z from "zod";
 
 import { useAuth } from "@/hooks/auth";
 import { AuthError } from "@/api/auth.types";
-import { emailPattern, getAuthErrorString } from "@/api/auth";
+import { getAuthErrorString } from "@/api/auth";
 import { TextInput } from "@/components/shared/inputs";
 
-interface BasicLoginData {
-  email: string; 
-  password: string; 
-}
+const schema = z.object({
+  email: z.string().email("Ingrese un email válido"),
+  password: z.string().min(8, "La contraseña es necesaria (min 8 caracteres)"),
+});
+
+type BasicLoginData = z.infer<typeof schema>;
 
 export const LoginForm = () => {
   const searchParams = useSearchParams();
@@ -25,6 +29,7 @@ export const LoginForm = () => {
   });
   const formMethods = useForm<BasicLoginData>({
     mode: "onTouched",
+    resolver: zodResolver(schema),
     defaultValues: {
       email: "",
       password: "",
@@ -63,13 +68,6 @@ export const LoginForm = () => {
           variant="filled"
           type="email"
           placeholder="Correo"
-          rules={{
-            required: "El correo es necesario",
-            pattern: {
-              value: emailPattern,
-              message: "Ingrese un email válido",
-            },
-          }}
           inputProps={{
             maxLength: 100,
           }}
@@ -81,9 +79,6 @@ export const LoginForm = () => {
           type="password"
           placeholder="Contraseña"
           showPasswordToggle
-          rules={{
-            required: "La contraseña es necesaria",
-          }}
           inputProps={{
             maxLength: 150,
           }}

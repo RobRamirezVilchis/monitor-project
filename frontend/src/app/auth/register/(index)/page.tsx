@@ -1,20 +1,34 @@
 "use client";
 
-import React, { useState } from "react";
-import { FormProvider, useForm } from "react-hook-form";
 import { AxiosError } from "axios";
+import { FormProvider, useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { zodResolver } from "@hookform/resolvers/zod";
 import Button from "@mui/lab/LoadingButton";
 import Link from "next/link";
+import z from "zod";
 
-import http from "@/utils/http";
 import {
-  emailPattern,
   registerUser,
   RegisterUserData,
 } from "@/api/auth";
 import { TextInput } from "@/components/shared/inputs";
 import { useSnackbar } from "@/hooks/shared";
+
+const schema = z.object({
+  first_name: z.string().nonempty("El nombre es requerido"),
+  last_name: z.string().nonempty("El apellido es requerido"),
+  email: z.string().email("Ingrese un email válido"),
+  password1: z.string({ required_error: "La contraseña es requerida" }).regex(
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d@$!%*?&]{8,}$/, 
+      "La contraseña debe tener al menos 8 caracteres, 1 mayúscula y un número"
+  ),
+  password2: z.string(),
+}).refine(({password1, password2}) => password1 === password2, {
+  message: "Las contraseñas no coinciden",
+  path: ["password2"],
+});
 
 const Register = () => {
   const [loading, setLoading] = useState(false);
@@ -22,6 +36,7 @@ const Register = () => {
   const router = useRouter();
   const formMethods = useForm<RegisterUserData>({
     mode: "onTouched",
+    resolver: zodResolver(schema),
     defaultValues: {
       first_name: "",
       last_name: "",
@@ -32,7 +47,6 @@ const Register = () => {
     },
   });
   const {
-    getValues,
     trigger,
     getFieldState,
     formState: { touchedFields, isValid },
@@ -135,9 +149,6 @@ const Register = () => {
           placeholder="Nombre"
           fullWidth
           autoComplete="first_name"
-          rules={{
-            required: "Este campo es requerido",
-          }}
           inputProps={{
             maxLength: 150,
           }}
@@ -149,9 +160,6 @@ const Register = () => {
           placeholder="Apellido(s)"
           fullWidth
           autoComplete="last_name"
-          rules={{
-            required: "Este campo es requerido",
-          }}
           inputProps={{
             maxLength: 150,
           }}
@@ -165,13 +173,6 @@ const Register = () => {
             placeholder="email@example.com"
             fullWidth
             autoComplete="email"
-            rules={{
-              required: "Este campo es requerido",
-              pattern: {
-                value: emailPattern,
-                message: "Ingrese un email válido",
-              },
-            }}
             inputProps={{
               maxLength: 100,
             }}
@@ -187,14 +188,6 @@ const Register = () => {
           showPasswordToggle
           fullWidth
           autoComplete="password"
-          rules={{
-            required: "Este campo es requerido",
-            pattern: {
-              value: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d@$!%*?&]{8,}$/,
-              message:
-                "La contraseña debe tener al menos 8 caracteres, 1 mayúscula y un número",
-            },
-          }}
           inputProps={{
             maxLength: 150,
           }}
@@ -210,13 +203,6 @@ const Register = () => {
           placeholder="Confirmar contraseña"
           showPasswordToggle
           fullWidth
-          rules={{
-            validate: {
-              passwordMatch: (value: string) =>
-                value === getValues("password1") ||
-                "Las contraseñas no coinciden",
-            },
-          }}
           inputProps={{
             maxLength: 150,
           }}
