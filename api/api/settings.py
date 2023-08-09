@@ -22,6 +22,7 @@ ENV = {
     "LOG_LEVEL": os.getenv("LOG_LEVEL", "INFO"),
     "SECRET_KEY": os.getenv("SECRET_KEY"),
     "DEFAULT_DB": os.getenv("DEFAULT_DB"),
+    "COOKIE_DOMAIN": os.getenv("COOKIE_DOMAIN"),
     "EMAIL_HOST": os.getenv("EMAIL_HOST"),
     "EMAIL_PORT": os.getenv("EMAIL_PORT"),
     "EMAIL_USER": os.getenv("EMAIL_USER"),
