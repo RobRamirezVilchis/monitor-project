@@ -77,6 +77,8 @@ INSTALLED_APPS = [
     "drf_standardized_errors",
     # Local apps
     "authentication",
+    "common",
+    "core",
 ]
 
 MIDDLEWARE = [
