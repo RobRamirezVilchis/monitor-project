@@ -16,10 +16,10 @@ from datetime import timedelta
 
 # environment variables
 ENV = {
-    "SECRET_KEY": os.getenv("SECRET_KEY"),
     # True | False
     "DEBUG": os.getenv("DEBUG", "False"),
     "LOG_LEVEL": os.getenv("LOG_LEVEL", "INFO"),
+    "SECRET_KEY": os.getenv("SECRET_KEY"),
     "EMAIL_HOST": os.getenv("EMAIL_HOST"),
     "EMAIL_PORT": os.getenv("EMAIL_PORT"),
     "EMAIL_USER": os.getenv("EMAIL_USER"),
@@ -27,8 +27,6 @@ ENV = {
     "GOOGLE_CLIENT_ID": os.getenv("GOOGLE_CLIENT_ID"),
     "GOOGLE_CLIENT_SECRET": os.getenv("GOOGLE_CLIENT_SECRET"),
     "GOOGLE_CALLBACK_URL": os.getenv("GOOGLE_CALLBACK_URL"),
-    # 0 based index number
-    "COMPANY_DOMAIN_INDEX": os.getenv("COMPANY_DOMAIN_INDEX", "0"),
     "FRONTEND_URL": os.getenv("FRONTEND_URL"),
     # params: <key>
     "FRONTEND_REGISTER_CONFIRM_PATH": os.getenv("FRONTEND_REGISTER_CONFIRM_PATH"),
