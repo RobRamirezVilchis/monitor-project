@@ -1,0 +1,620 @@
+{
+	"info": {
+		"_postman_id": "3f1ff4af-a19a-4e7e-b8e4-6bd7857aaa89",
+		"name": "Django Common",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "20531334"
+	},
+	"item": [
+		{
+			"name": "--- Auth ---",
+			"request": {
+				"method": "OPTIONS",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"username\": \"jesus.cantu@introid.com\",\n    \"password1\": \"password\",\n    \"password2\": \"password\",\n    \"email\": \"jesus.cantu@introid.com\",\n    \"first_name\": \"Jesus\",\n    \"last_name\": \"Cantu Ramirez\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": ""
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Register",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"username\": \"username\",\n    \"password1\": \"password\",\n    \"password2\": \"password\",\n    \"email\": \"example@example.com\",\n    \"first_name\": \"John\",\n    \"last_name\": \"Doe\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{host}}/api/auth/register/",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"api",
+						"auth",
+						"register",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Register token validity",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{host}}/api/auth/register/token-valid/?key=MTA:1p3g3B:VpD3zcytYpY6t2N6oAv_1HwDw96HkMnJQxhoC194prg",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"api",
+						"auth",
+						"register",
+						"token-valid",
+						""
+					],
+					"query": [
+						{
+							"key": "key",
+							"value": "MTA:1p3g3B:VpD3zcytYpY6t2N6oAv_1HwDw96HkMnJQxhoC194prg"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Register verify email",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"key\": \"OQ:1p3QXx:SYCS_hoN1xUZoKJIZpxvNWOxcbYlYJ27lt6Qf8QFWUQ\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{host}}/api/auth/register/verify-email/",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"api",
+						"auth",
+						"register",
+						"verify-email",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Register resend verify email",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"email\": \"example@example.com\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{host}}/api/auth/register/resend-email/",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"api",
+						"auth",
+						"register",
+						"resend-email",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Social login",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"code\": \"4/0Adeu5BV_LGBvzJ_DhJMDTMKA-w8kdiii6Z9oUNGEuh3qDkaVnAQgdlAC6qrtlvkg7SEHOw\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{host}}/api/auth/social/google/",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"api",
+						"auth",
+						"social",
+						"google",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Connect social account",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"access_token\": \"ya29.a0AeTM1iftXj4Cs4rog5KzHCJxDRjLQSOlmOrT3zh1Ca8LRHpZxd2k1THAsbhlJTJS5-JHbxeUclr0QiBLm2KCd3maIo8A08PaqMSGC_v4E3klrEC7WbGJkBG93bNm7fdp9hYMQCTM2zA3mfYwa3Ry6X9uK4g-oAaCgYKATkSARESFQHWtWOmHQ7aJEyx8-vmCU_mpQEH6g0165\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{host}}/api/auth/social/google/connect/",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"api",
+						"auth",
+						"social",
+						"google",
+						"connect",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "List connected social accounts",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{host}}/api/auth/socialaccounts/",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"api",
+						"auth",
+						"socialaccounts",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Disconnect social account",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{host}}/api/auth/socialaccounts/3/disconnect/",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"api",
+						"auth",
+						"socialaccounts",
+						"3",
+						"disconnect",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Login",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"username\": \"example@example.com\",\n    \"password\": \"password\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{host}}/api/auth/login/",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"api",
+						"auth",
+						"login",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "JWT Verify",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNjgzMDQ1NTIyLCJpYXQiOjE2ODMwNDUyMjIsImp0aSI6IjA1MmEzZDVmN2I2NDQyMjRiMzYzMTEzNDE5MzQzNDNiIiwidXNlcl9pZCI6M30.98EE-JLdsQZmeA2LFPNB3UGi5kSWXhhgmorYNSmVvP8\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{host}}/api/auth/token/verify/",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"api",
+						"auth",
+						"token",
+						"verify",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "JWT Refresh",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"refresh\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTY4MzEzMTg2MCwiaWF0IjoxNjgzMDQ1NDYwLCJqdGkiOiI4MGNlMWIxYWRlNzQ0YmQwYmM4M2NiZWQ5YzQwMDU2ZSIsInVzZXJfaWQiOjN9.KXT4iFe44JgLqr_H50Ip8VZ2lnQuYWcTYxP5HCQRBDo\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{host}}/api/auth/token/refresh/",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"api",
+						"auth",
+						"token",
+						"refresh",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Logout",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{host}}/api/auth/logout/",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"api",
+						"auth",
+						"logout",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Profile",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNjgzMDQ2MDgyLCJpYXQiOjE2ODMwNDU3ODIsImp0aSI6ImE4ZGQ4ZDEzOTM2YzRjMDE5YTg2NTY3ODJhZjM2ODQ2IiwidXNlcl9pZCI6NH0.lVCz-fbLofjXz2TGtOV4g5nvFW-NjsnDuod4VExwMkM",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{host}}/api/auth/user/",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"api",
+						"auth",
+						"user",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update Profile",
+			"request": {
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNjgzMDQ2MDgyLCJpYXQiOjE2ODMwNDU3ODIsImp0aSI6ImE4ZGQ4ZDEzOTM2YzRjMDE5YTg2NTY3ODJhZjM2ODQ2IiwidXNlcl9pZCI6NH0.lVCz-fbLofjXz2TGtOV4g5nvFW-NjsnDuod4VExwMkM",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"first_name\": \"Mike\",\n    \"last_name\": \"Doe\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{host}}/api/auth/user/",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"api",
+						"auth",
+						"user",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Password reset request",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"email\": \"example@example.com\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{host}}/api/auth/password/reset/",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"api",
+						"auth",
+						"password",
+						"reset",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Password reset confirm",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"uid\": \"w\",\n    \"token\": \"bg0v3j-92c3428968c0f8136c646206d031d6eb\",\n    \"new_password1\": \"password\",\n    \"new_password2\": \"password\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{host}}/api/auth/password/reset/confirm/",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"api",
+						"auth",
+						"password",
+						"reset",
+						"confirm",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Password reset token validity",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{host}}/api/auth/password/reset-token-valid/?uid=c&token=bg6c5t-cfe8c1de9ed5c6fb0162abc97255c870",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"api",
+						"auth",
+						"password",
+						"reset-token-valid",
+						""
+					],
+					"query": [
+						{
+							"key": "uid",
+							"value": "c"
+						},
+						{
+							"key": "token",
+							"value": "bg6c5t-cfe8c1de9ed5c6fb0162abc97255c870"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Password change",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"new_password1\": \"password\",\n    \"new_password2\": \"password\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{host}}/api/auth/password/change/",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"api",
+						"auth",
+						"password",
+						"change",
+						""
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					"const cookieJar = pm.cookies.jar();",
+					"const URL = pm.variables.get(\"host\");",
+					"cookieJar.get(",
+					"    URL, ",
+					"    \"csrftoken_django\", ",
+					"    (error, cookie) => {",
+					"        if (cookie) {",
+					"            pm.request.headers.add({ key: \"X-CSRFToken\", value: cookie });",
+					"        }",
+					"        else {",
+					"            console.log(\"Failed to get CSRF Token:\", error);",
+					"        }",
+					"    }",
+					");"
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "host",
+			"value": "http://localhost:8000",
+			"type": "string"
+		}
+	]
+}
