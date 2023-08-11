@@ -94,6 +94,7 @@ class UserAccessListApi(APIView):
         sort = serializers.CharField(max_length=254, required=False)
 
     class OutputSerializer(serializers.Serializer):
+        id = serializers.IntegerField(source="user.id")
         user = CommonUserSerializer()
         last_access = serializers.DateField()
         access = serializers.IntegerField()
