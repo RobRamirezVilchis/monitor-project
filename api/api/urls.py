@@ -17,14 +17,15 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include, register_converter
 
-from authentication import urls as auth_urls
 from core.urls.converters import ApiVersionConverter
+
 
 register_converter(ApiVersionConverter, "api_version")
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path("api/auth/", include(auth_urls)),
+    path("api/auth/", include("authentication.urls")),
+    path("api/<api_version:version>/", include("users.urls")),
 
     # path("api/<api_version:version>/", include("...")),
     # re_path(r"api/(?P<version>[v1|v2|...]+)/", include("...")),

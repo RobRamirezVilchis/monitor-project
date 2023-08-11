@@ -1,10 +1,12 @@
 from allauth.account.models import EmailAddress
 from allauth.socialaccount.models import SocialAccount
+from django.db import transaction
 from django.conf import settings
 
 from . import constants
 
 
+@transaction.atomic
 def user_soft_delete(user):
     if not user:
         return
@@ -12,6 +14,8 @@ def user_soft_delete(user):
     user.is_active = False
     user.username = constants.DELETED_PREFIX + str(user.id) + "_" + user.username
     user.email = constants.DELETED_PREFIX + str(user.id) + "_" + user.email
+    user.groups.clear()
+    user.user_permissions.clear()
     user.save()
 
     try:

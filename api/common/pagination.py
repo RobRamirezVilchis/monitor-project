@@ -78,4 +78,3 @@ class PageNumberPagination(_PageNumberPagination):
 
         self.request = request
         return list(self.page)
-

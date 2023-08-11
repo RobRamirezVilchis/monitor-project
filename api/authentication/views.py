@@ -1,11 +1,8 @@
 # from allauth.socialaccount.providers.google.views import GoogleOAuth2Adapter
-from allauth.account.signals import user_signed_up
 from allauth.socialaccount.providers.oauth2.client import OAuth2Client
 from dj_rest_auth.registration.views import SocialLoginView, VerifyEmailView, SocialConnectView
 from dj_rest_auth.views import UserDetailsView
 from django.conf import settings
-from django.dispatch import receiver
-from django.http import HttpRequest, HttpResponse
 from django.utils.translation import gettext_lazy as _
 from rest_framework import generics, status
 from rest_framework.exceptions import MethodNotAllowed
@@ -13,12 +10,13 @@ from rest_framework.generics import DestroyAPIView
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 
+from users.services import UserService, UserAccessService
+
 from .adapter import GoogleOAuth2Adapter
 from .serializers import PasswordResetKeyValidSerializer
-from .services import user_soft_delete
+
 
 GOOGLE_CALLBACK_URL = settings.ENV["GOOGLE_CALLBACK_URL"]
-
 
 class GoogleLoginView(SocialLoginView):
     authentication_classes = []
@@ -76,7 +74,13 @@ class UserView(UserDetailsView, DestroyAPIView):
 
     Returns UserModel fields.
     """
+    def retrieve(self, request, *args, **kwargs):
+        instance = self.get_object()
+        UserAccessService.log_access(instance)
+
+        return super().retrieve(request, *args, **kwargs)
+
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
-        user_soft_delete(instance)
+        UserService.soft_delete(instance)
         return Response(status=status.HTTP_204_NO_CONTENT)
