@@ -4,8 +4,19 @@ from django.db.models import Q
 from django.db.models.constants import LOOKUP_SEP
 from functools import reduce
 from operator import or_
-from rest_framework.settings import api_settings
 from rest_framework.compat import distinct
+from rest_framework.settings import api_settings
+import sys
+if sys.version_info < (3, 11):
+    from typing_extensions import TypedDict
+else:
+    from typing import TypedDict
+from typing import Any
+
+
+class FilterContext(TypedDict):
+    request: Any
+    view: Any
 
 
 def filter_queryset(queryset, request, view):
