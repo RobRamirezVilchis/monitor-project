@@ -15,7 +15,7 @@ interface ProvidersProps {
 export const Providers: React.FC<ProvidersProps> = ({ children }) => {
   return (
     <QueryClientProvider client={defaultQueryClient}>
-      <AuthProvider>
+      <AuthProvider defaultSetCallbackUrlParam={false}>
         <SnackbarProvider maxSnack={5} dense autoHideDuration={10000}>
           {children}
         </SnackbarProvider>

@@ -29,7 +29,7 @@ export default function App({ Component, pageProps }: AppProps) {
       </Head>
 
       <QueryClientProvider client={defaultQueryClient}>
-        <AuthProvider>
+        <AuthProvider defaultSetCallbackUrlParam={false}>
           <SnackbarProvider maxSnack={5} dense autoHideDuration={10000}>
             <div id="__app" className={roboto.className}>
               <Component {...pageProps} />

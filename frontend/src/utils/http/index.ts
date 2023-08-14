@@ -56,7 +56,7 @@ export const axiosConfig: AxiosRequestConfig = {
         callbackUrl: window.location.href,
       });
       url.search = query.toString();
-      window.location.href = url.toString();
+      window.location.assign(url.toString());
     }
 
     throw error;

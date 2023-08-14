@@ -44,6 +44,7 @@ export function withRedirectIfLoggedIn<T extends JSX.IntrinsicAttributes>(
     const { user, isAuthenticated, loading } = useAuth({
       redirectIfNotAuthenticated: false,
       redirectIfNotAuthorized: false,
+      triggerAuthentication: false,
     });
     const router = useRouter();
     const firstLoad = useRef(false);

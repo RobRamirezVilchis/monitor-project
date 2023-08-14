@@ -165,6 +165,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({
         }
       })();
     }
+
+    if (state.registeredHooks === 0) {
+      dispatch({ type: "userFetched", payload: false });
+      dispatch({ type: "loading", payload: true });
+      dispatch({ type: "setUser", payload: null });
+    }
   }, [dispatch, state.registeredHooks, state.user, state.userFetched, online]);
 
   const emailLogin = useCallback(async (
