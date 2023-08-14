@@ -1,5 +1,6 @@
 from allauth.account import app_settings as allauth_account_settings
 from allauth.account.adapter import get_adapter
+from allauth.socialaccount.models import SocialAccount
 from allauth.utils import email_address_exists
 from dj_rest_auth.registration.serializers import RegisterSerializer
 from dj_rest_auth.serializers import PasswordResetSerializer, UserDetailsSerializer
@@ -91,11 +92,21 @@ class CustomUserDetailsSerializer(UserDetailsSerializer):
     roles = GroupSerializer(many=True, read_only=True, source="groups")
     permissions = PermissionSerializer(many=True, read_only=True, source="user_permissions")
     # permissions = serializers.SerializerMethodField()
+    extra = serializers.SerializerMethodField()
 
     class Meta:
         model = UserModel
-        fields = ["email", "first_name", "last_name", "roles", "permissions"]
+        fields = ["email", "first_name", "last_name", "roles", "permissions", "extra"]
         read_only_fields = ["email"]
 
     def get_permissions(self, obj):
         return obj.get_all_permissions()
+    
+    def get_extra(self, obj):
+        try:
+            social_account = SocialAccount.objects.get(user=obj, provider="google")
+            return {
+                "picture": social_account.extra_data["picture"],
+            }
+        except:
+            return None

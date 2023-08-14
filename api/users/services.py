@@ -195,7 +195,7 @@ class UserAccessService:
         ).filter(user__is_active=True).all().annotate(
             last_access=Max("created_at"),
             access=Count("user_id")
-        ).order_by("user_id")
+        ).order_by()
 
         if filters:
             qs = UserAccessLogFilter(filters, qs).qs
