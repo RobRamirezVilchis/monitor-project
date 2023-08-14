@@ -9,9 +9,11 @@ import {
 } from "@/components/shared/hook-form";
 import {
   Autocomplete, TextInput, RadioGroup, Switch, 
-  Checkbox, CheckboxGroup, Select, DatePicker
-} from "@/components/shared/hook-form/styled";
+  Checkbox, CheckboxGroup, Select, TimePicker, DatePicker, InlineDatePicker
+} from "@/components/shared/hook-form";
 import logger from "@/utils/logger";
+
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 
 type TestObj = {
   id: number;
@@ -134,7 +136,6 @@ const FormTest = () => {
               },
             }}
             helperText=" "
-            variant="outlined"
             fullWidth
           />
           <TextInput<IFormProps>
@@ -318,6 +319,17 @@ const FormTest = () => {
             />
           ) : null}
 
+          <TimePicker 
+            label=" "
+            name="time4"
+            helperText=" "
+            rules={{
+              validate: {
+                min4pm: (value: Date) => value.getHours() >= 16 || "Min h is 4 pm" 
+              }
+            }}
+          />
+
           {errorMsg ? <span>{errorMsg}</span> : null}
 
           <div className=""></div>
@@ -346,9 +358,41 @@ const FormTest = () => {
               setTestEndDate(ed);
               logger.debug(sd, ed)
             }}
+            showPopperArrow={false}
+            withPortal
             calendarStartDay={0}
           />
 
+          <DatePicker<true>
+            inline
+            selectsRange
+            selected={testStartDate}
+            startDate={testStartDate}
+            endDate={testEndDate}
+            disabledKeyboardNavigation
+            onChange={([sd, ed]) => {
+              setTestStartDate(sd);
+              setTestEndDate(ed);
+              logger.debug(sd, ed)
+            }}
+            showPopperArrow={false}
+            calendarStartDay={0}
+          />
+
+          <InlineDatePicker<true>
+            selectsRange
+            selected={testStartDate}
+            startDate={testStartDate}
+            endDate={testEndDate}
+            disabledKeyboardNavigation
+            onChange={([sd, ed]) => {
+              setTestStartDate(sd);
+              setTestEndDate(ed);
+              logger.debug(sd, ed)
+            }}
+            calendarStartDay={0}
+          />
+          
           <div className="my-10"></div>
         </>
       )}}
