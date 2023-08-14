@@ -3,6 +3,7 @@
 import React from "react";
 import { usePathname } from "next/navigation";
 import Link, { LinkProps } from "next/link";
+import classNames from "classnames";
 
 export interface NavLinkProps extends 
   Omit<LinkProps, "className">, 
@@ -33,15 +34,18 @@ export const NavLink: React.FC<NavLinkProps> = ({ classes, children, ...linkProp
       href = linkProps.href.href;
     }
 
-    return pathname?.startsWith(href);
+    return pathname === href;
   };
+
+  const active = isLinkActive();
 
   return (
     <Link
       {...linkProps}
-      className={`${linkProps.className} ${classes?.root} ${
-        isLinkActive() ? classes?.active : classes?.inactive
-      }`}
+      className={classNames(linkProps.className, classes?.root, {
+        [`${classes?.active}`]: classes?.active && active,
+        [`${classes?.inactive}`]: classes?.inactive && !active,
+      })}
     >
       {children}
     </Link>

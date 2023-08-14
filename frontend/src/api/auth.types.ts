@@ -1,5 +1,8 @@
 import { providers } from "./auth";
 
+export type Role = 
+  | "Admin";
+
 export interface User {
   id?: number;
   email: string;
@@ -7,6 +10,9 @@ export interface User {
   last_name: string;
   roles: string[];
   permissions: string[];
+  extra?: {
+    picture?: string;
+  };
 }
 
 export type Providers = typeof providers;

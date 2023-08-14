@@ -27,7 +27,18 @@ const api = {
       passwordResetConfirm: "/api/auth/password/reset/confirm/",
       passwordChange: "/api/auth/password/change/",
     },
-  }
+    users: {
+      whitelist: {
+        list: "/api/v1/users/whitelist/",
+        create: "/api/v1/users/whitelist/",
+        update: (id: string | number) => `/api/v1/users/whitelist/${id}/`,
+        delete: (id: string | number) => `/api/v1/users/whitelist/${id}/`,
+      },
+      access: {
+        list: "/api/v1/users/access/",
+      }
+    },
+  },
 };
 
 export default api;

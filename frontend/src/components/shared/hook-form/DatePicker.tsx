@@ -61,7 +61,7 @@ export const DatePicker = <
     return (
       <div className="bg-white shadow-md rounded-2xl shadow-br p-2">
         <div className="flex flex-col items-center">
-          <div className="hidden md:block px-4 pt-2 text-green-600 text-xs self-start">
+          <div className="hidden md:block px-4 pt-2 text-blue-600 text-xs self-start">
             Seleccionar fecha{props.selectsRange ? " o periodo" : ""}
           </div>
 
@@ -80,7 +80,7 @@ export const DatePicker = <
                 value={0}
                 classes={{
                   root: "!normal-case !text-base !font-normal text-neutral-500",
-                  selected: "!text-green-600 !bg-green-50 !rounded-xl"
+                  selected: "!text-blue-600 !bg-blue-50 !rounded-xl"
                 }}
                 wrapped
               />
@@ -89,7 +89,7 @@ export const DatePicker = <
                 value={1}
                 classes={{
                   root: "!normal-case !text-base !font-normal text-neutral-500",
-                  selected: "!text-green-600 !bg-green-50 !rounded-xl"
+                  selected: "!text-blue-600 !bg-blue-50 !rounded-xl"
                 }}
                 wrapped
               />
@@ -104,7 +104,7 @@ export const DatePicker = <
             {props.selectsRange ? (
               <>
                 <div className="hidden md:flex items-center">
-                  <div className="border-r border-r-1 border-green-500 h-3/4"></div>
+                  <div className="border-r border-r-1 border-blue-500 h-3/4"></div>
                 </div>
 
                 {desktop || selectedTab === 1 ? (
@@ -133,7 +133,7 @@ export const DatePicker = <
         prevMonthButtonDisabled,
         nextMonthButtonDisabled,
       }) => (
-        <div className="text-green-600 flex items-center px-1">
+        <div className="text-blue-600 flex items-center px-1">
           <div>
             <RDatePicker
               locale="es"
@@ -150,7 +150,7 @@ export const DatePicker = <
               customInput={<MonthYearCustomInput />}
               showPopperArrow={false}
               renderCustomHeader={({ date, decreaseYear, increaseYear }) => (
-                <div className="text-green-600 grid grid-cols-[auto_minmax(0,1fr)_auto] items-center px-1">
+                <div className="text-blue-600 grid grid-cols-[auto_minmax(0,1fr)_auto] items-center px-1">
                   <IconButton color="inherit" 
                     disabled={prevMonthButtonDisabled}
                     onClick={() => decreaseYear()}
