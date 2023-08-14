@@ -10,7 +10,7 @@ import z from "zod";
 
 import { ApiError } from "@/api/types";
 import { requestPasswordReset } from "@/api/auth";
-import { TextInput } from "@/components/shared/hook-form";
+import { TextInput } from "@/components/shared/hook-form/styled";
 
 const schema = z.object({
   email: z.string().email("Ingrese un email válido"),
