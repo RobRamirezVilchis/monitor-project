@@ -96,8 +96,8 @@ class CustomUserDetailsSerializer(UserDetailsSerializer):
 
     class Meta:
         model = UserModel
-        fields = ["email", "first_name", "last_name", "roles", "permissions", "extra"]
-        read_only_fields = ["email"]
+        fields = ["id", "email", "first_name", "last_name", "roles", "permissions", "extra"]
+        read_only_fields = ["id", "email"]
 
     def get_permissions(self, obj):
         return obj.get_all_permissions()

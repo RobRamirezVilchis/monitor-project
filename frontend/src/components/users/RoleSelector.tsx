@@ -15,7 +15,10 @@ export interface RoleSelectorProps {
 }
 
 export const RoleSelector: FC<RoleSelectorProps> = ({ whitelistItem, value }) => {
-  const { user } = useAuth();
+  const { user } = useAuth({
+    skipAll: true,
+    triggerAuthentication: false,
+  });
   const { enqueueSnackbar } = useSnackbar();
   const updateWhitelistItemMutation = useUpdateWhitelistItemMutation({
     onSuccess: () => enqueueSnackbar("Rol actualizado correctamente.", { variant: "success" }),

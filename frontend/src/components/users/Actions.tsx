@@ -13,7 +13,10 @@ export interface ActionsProps {
 }
 
 export const Actions: FC<ActionsProps> = ({ whitelistItem }) => {
-  const { user } = useAuth();
+  const { user } = useAuth({
+    skipAll: true,
+    triggerAuthentication: false,
+  });
   const { enqueueSnackbar } = useSnackbar();
   const deleteWhitelistItemMutation = useDeleteWhitelistItemMutation({
     onSuccess: () => enqueueSnackbar("Usuario eliminado correctamente.", { variant: "success" }),
