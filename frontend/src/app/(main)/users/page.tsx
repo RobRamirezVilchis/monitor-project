@@ -2,7 +2,6 @@
 
 import { GridCallbackDetails, GridColDef, GridFilterModel } from "@mui/x-data-grid";
 import { useDebounce, useQueryState } from "@/hooks/shared";
-import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";
 
@@ -14,10 +13,12 @@ import { Actions } from "@/components/users/Actions";
 import { useState } from "react";
 import { NewUserForm } from "@/components/users/NewUserForm";
 import { useAddToWhitelistMutation } from "@/api/mutations/users";
+import { UserAvatar } from "@/components/shared/UserAvatar";
 import { useSnackbar } from "@/hooks/shared";
 
 import AddIcon from '@mui/icons-material/Add';
 import { getUserRoleLocalized } from "@/api/users";
+import { User } from "@/api/auth.types";
 
 const UsersPage = () => {
   const pagination = useQueryState({
@@ -148,10 +149,9 @@ const cols: GridColDef<WhitelistItem>[] = [
     renderHeader: () => null,
     width: 32,
     renderCell: params => params.row.user ? (
-      <Avatar
-        className="!w-8 !h-8"
-        src={params.row.user?.extra?.picture}
-        alt={params.value}
+      <UserAvatar
+        user={params.row.user as User}
+        className="!w-8 !h-8 !text-base"
       />
     ) : null,
     type: "actions",

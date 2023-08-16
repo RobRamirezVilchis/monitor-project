@@ -2,13 +2,14 @@
 
 import { GridCallbackDetails, GridColDef, GridFilterModel } from "@mui/x-data-grid";
 import { useDebounce, useQueryState } from "@/hooks/shared";
-import Avatar from "@mui/material/Avatar";
 import { parseISO, format as formatDate } from "date-fns";
 
 import { useUsersAccessQuery } from "@/api/queries/users";
 import { UserAccess } from "@/api/users.types";
 import { DataGrid, GridToolbarWithSearch } from "@/components/shared/DataGrid";
 import { DatePicker } from "@/components/shared/hook-form/styled";
+import { User } from "@/api/auth.types";
+import { UserAvatar } from "@/components/shared/UserAvatar";
 import { useState } from "react";
 
 function datetimeToDateStr(datetime: Date | null) {
@@ -145,10 +146,9 @@ const cols: GridColDef<UserAccess>[] = [
     renderHeader: () => null,
     width: 32,
     renderCell: params => params.row.user ? (
-      <Avatar
-        className="!w-8 !h-8"
-        src={params.row.user?.extra?.picture}
-        alt={params.value}
+      <UserAvatar
+        user={params.row.user as User}
+        className="!w-8 !h-8 !text-base"
       />
     ) : null,
     type: "actions",
