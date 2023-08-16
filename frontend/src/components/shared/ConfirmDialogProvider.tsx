@@ -23,7 +23,7 @@ export interface ConfirmDialogOpenOptions {
 }
 
 // Context --------------------------------------------------------------------
-export interface ConfirmDialogContext {
+export interface ConfirmDialogContextProps {
   isOpen: boolean;
   open: (options?: ConfirmDialogOpenOptions) => void;
   close: () => void;
@@ -31,7 +31,7 @@ export interface ConfirmDialogContext {
   setLoading: (loading: boolean) => void;
 }
 
-export const ConfirmDialogContext = createContext<ConfirmDialogContext>({
+export const ConfirmDialogContext = createContext<ConfirmDialogContextProps>({
   isOpen: false,
   open: () => console.warn("Not ConfirmDialogProvider found"),
   close: () => console.warn("Not ConfirmDialogProvider found"),
@@ -94,7 +94,7 @@ export const ConfirmDialogProvider = ({
     setState(draft => { draft.loading = loading; });
   }, [setState]);
 
-  const contextValue = useMemo<ConfirmDialogContext>(() => ({
+  const contextValue = useMemo<ConfirmDialogContextProps>(() => ({
     isOpen: state.open,
     open,
     close,
