@@ -5,16 +5,17 @@ import { useDebounce, useQueryState } from "@/hooks/shared";
 import Button from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";
 
-import { useWhitelistQuery } from "@/api/queries/users";
-import { WhitelistItem } from "@/api/users.types";
+import { ConfirmDialogProvider } from "@/components/shared/ConfirmDialogProvider";
 import { DataGrid, GridToolbarWithSearch } from "@/components/shared/DataGrid";
-import { RoleSelector } from "@/components/users/RoleSelector";
-import { Actions } from "@/components/users/Actions";
-import { useState } from "react";
+import { DeleteUserAction } from "@/components/users/Actions";
 import { NewUserForm } from "@/components/users/NewUserForm";
+import { RoleSelector } from "@/components/users/RoleSelector";
 import { useAddToWhitelistMutation } from "@/api/mutations/users";
 import { UserAvatar } from "@/components/shared/UserAvatar";
 import { useSnackbar } from "@/hooks/shared";
+import { useState } from "react";
+import { useWhitelistQuery } from "@/api/queries/users";
+import { WhitelistItem } from "@/api/users.types";
 
 import AddIcon from '@mui/icons-material/Add';
 import { getUserRoleLocalized } from "@/api/users";
@@ -91,36 +92,50 @@ const UsersPage = () => {
       </div>
 
       <div className="flex-[1_0_0] overflow-y-hidden pb-1 pr-1">
-        <DataGrid
-          rows={usersWhitelistQuery.data?.data || []}
-          columns={cols}
-          loading={usersWhitelistQuery.isLoading || usersWhitelistQuery.isFetching}
-          disableColumnMenu
-          rowSelection={false}
-          className="h-full"
-          
-          pagination
-          paginationMode="server"
-          paginationModel={{
-            page: pagination.state.page,
-            pageSize: pagination.state.page_size,
+        <ConfirmDialogProvider 
+          outsideClickClose
+          confirmButtonProps={{
+            color: "error",
           }}
-          onPaginationModelChange={(model) => pagination.update({
-            page: model.page,
-            page_size: model.pageSize,
-          })}
-          pageSizeOptions={[25, 50, 100]}
-          rowCount={usersWhitelistQuery.data?.pagination?.count || 0}
+          cancelButtonProps={{
+            color: "primary",
+          }}
+          dialogProps={{
+            maxWidth: "xs",
+            fullWidth: true,
+          }}
+        >
+          <DataGrid
+            rows={usersWhitelistQuery.data?.data || []}
+            columns={cols}
+            loading={usersWhitelistQuery.isLoading || usersWhitelistQuery.isFetching}
+            disableColumnMenu
+            rowSelection={false}
+            className="h-full"
+            
+            pagination
+            paginationMode="server"
+            paginationModel={{
+              page: pagination.state.page,
+              pageSize: pagination.state.page_size,
+            }}
+            onPaginationModelChange={(model) => pagination.update({
+              page: model.page,
+              page_size: model.pageSize,
+            })}
+            pageSizeOptions={[25, 50, 100]}
+            rowCount={usersWhitelistQuery.data?.pagination?.count || 0}
 
-          filterMode="server"
-          onFilterModelChange={onFilterModelChange}
-          slots={{
-            toolbar: GridToolbarWithSearch,
-          }}
-          disableDensitySelector
-          disableColumnFilter
-          disableColumnSelector
-        />
+            filterMode="server"
+            onFilterModelChange={onFilterModelChange}
+            slots={{
+              toolbar: GridToolbarWithSearch,
+            }}
+            disableDensitySelector
+            disableColumnFilter
+            disableColumnSelector
+          />
+        </ConfirmDialogProvider>
       </div>
 
       <Dialog
@@ -154,7 +169,6 @@ const cols: GridColDef<WhitelistItem>[] = [
         className="!w-8 !h-8 !text-base"
       />
     ) : null,
-    type: "actions",
   },
   {
     field: "user.name",
@@ -188,7 +202,9 @@ const cols: GridColDef<WhitelistItem>[] = [
     headerName: "Acciones",
     renderHeader: () => null,
     width: 80,
-    renderCell: params => <Actions whitelistItem={params.row} />,
     type: "actions",
+    getActions: params => [
+      <DeleteUserAction key={1} whitelistItem={params.row} />,
+    ],
   }
 ];

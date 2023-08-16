@@ -151,7 +151,6 @@ const cols: GridColDef<UserAccess>[] = [
         className="!w-8 !h-8 !text-base"
       />
     ) : null,
-    type: "actions",
   },
   {
     field: "user.name",

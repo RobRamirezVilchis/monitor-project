@@ -1,8 +1,8 @@
 import { FC } from "react";
-import Tooltip from "@mui/material/Tooltip";
 
-import { ConfirmDialogIconButton } from "@/components/shared/ConfirmDialogIconButton";
+import { GridActionsCellTooltipItem } from "@/components/shared/GridActionsCellTooltipItem";
 import { useAuth } from "@/hooks/auth";
+import { useConfirmDialog } from "@/hooks/shared/useConfirmDialog";
 import { useDeleteWhitelistItemMutation } from "@/api/mutations/users";
 import { useSnackbar } from "@/hooks/shared";
 import { WhitelistItem } from "@/api/users.types";
@@ -12,7 +12,7 @@ export interface ActionsProps {
   whitelistItem: WhitelistItem;
 }
 
-export const Actions: FC<ActionsProps> = ({ whitelistItem }) => {
+export const DeleteUserAction: FC<ActionsProps> = ({ whitelistItem }) => {
   const { user } = useAuth({
     skipAll: true,
     triggerAuthentication: false,
@@ -23,38 +23,30 @@ export const Actions: FC<ActionsProps> = ({ whitelistItem }) => {
     onError: () => enqueueSnackbar("Ocurrió un error al eliminar el usuario. Por favor intenta de nuevo más tarde.", { variant: "error" }),
   });
 
+  const { confirm } = useConfirmDialog({
+    content: {
+      title: "Eliminar usuario",
+      body: "¿Está seguro de eliminar este usuario?",
+      confirmLabel: "Eliminar",
+      cancelLabel: "Cancelar",
+    },
+    onConfirm: () => deleteWhitelistItemMutation.mutateAsync(whitelistItem.id),
+  });
+
   return (
-    <div className="w-full flex justify-center items-center">
-      <Tooltip title="Eliminar usuario" disableInteractive>
-        <span>
-          <ConfirmDialogIconButton
-            aria-label="Eliminar usuario"
-            color="error"
-            dialogProps={{
-              confirmProps: {
-                color: "error",
-                label: "Eliminar",
-              },
-              content: "¿Está seguro de eliminar este usuario?",
-              onConfirm: async () => {
-                try {
-                  await deleteWhitelistItemMutation.mutateAsync(whitelistItem.id);
-                  return true;
-                }
-                catch (error) {
-                  return false;
-                }
-              },
-            }}
-            disabled={
-              deleteWhitelistItemMutation.isLoading 
-              || (!!user && !!whitelistItem.user && user.id === whitelistItem.user.id)
-            }
-          >
-            <DeleteForeverIcon />
-          </ConfirmDialogIconButton>
-        </span>
-      </Tooltip>
-    </div>
+    <GridActionsCellTooltipItem
+      tooltipProps={{
+        title: "Eliminar usuario",
+        disableInteractive: true,
+      }}
+      label="Eliminar usuario"
+      icon={<DeleteForeverIcon />}
+      color="error"
+      disabled={
+        deleteWhitelistItemMutation.isLoading 
+        || (!!user && !!whitelistItem.user && user.id === whitelistItem.user.id)
+      }
+      onClick={() => confirm()}
+    />
   );
 }

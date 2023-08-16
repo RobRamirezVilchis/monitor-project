@@ -2,9 +2,9 @@ import { FC } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import Button  from "@mui/lab/LoadingButton";
 
 import { TextInput, Select } from "../shared/hook-form/styled";
-import { Button } from "../shared/Button";
 import { CreateWhitelistItemData } from "@/api/users.types";
 import { getUserRoleLocalized } from "@/api/users";
 
