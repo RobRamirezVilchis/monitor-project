@@ -89,15 +89,15 @@ class UsersWhitelistDetailApi(APIView):
 class UserAccessListApi(APIView):
 
     class FilterSerializer(serializers.Serializer):
-        start_date = serializers.DateField(required=False)
-        end_date = serializers.DateField(required=False)
+        start_date = serializers.DateTimeField(required=False)
+        end_date = serializers.DateTimeField(required=False)
         search = serializers.CharField(max_length=254, required=False)
         sort = serializers.CharField(max_length=254, required=False)
 
     class OutputSerializer(serializers.Serializer):
         id = serializers.IntegerField(source="user.id")
         user = CommonUserSerializer()
-        last_access = serializers.DateField()
+        last_access = serializers.DateTimeField()
         access = serializers.IntegerField()
 
     def get(self, request, *args, **kwargs):

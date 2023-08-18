@@ -2,12 +2,10 @@ from django_filters import rest_framework as rf_filters
 
 from common import filters
 
-from .models import UserAccessLog, UserWhitelist
-
 
 class UserAccessLogFilter(rf_filters.FilterSet):
-    start_date = rf_filters.DateFilter(field_name="created_at", lookup_expr="gte")
-    end_date = rf_filters.DateFilter(field_name="created_at", lookup_expr="lte")
+    start_date = rf_filters.DateTimeFilter(field_name="created_at", lookup_expr="gte")
+    end_date = rf_filters.DateTimeFilter(field_name="created_at", lookup_expr="lte")
     search = filters.SearchFilter(search_fields=["user__email", "user__first_name", "user__last_name", "=created_at"])
     sort = rf_filters.OrderingFilter(
         fields=(

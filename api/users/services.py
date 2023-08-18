@@ -4,6 +4,7 @@ from django.db import transaction
 from django.db.models import Prefetch, Count, Max
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
+from django.utils import timezone
 from rest_framework import exceptions
 
 from authentication.services import user_soft_delete
@@ -204,9 +205,18 @@ class UserAccessService:
     
     @classmethod
     def has_access_today(cls, user):
+        now_local = timezone.localtime()
+        utc = timezone.utc
+
+        start_local = now_local.replace(hour=0, minute=0, second=0, microsecond=0)
+        end_local = now_local.replace(hour=23, minute=59, second=59, microsecond=999999)
+
+        start_utc = start_local.astimezone(utc)
+        end_utc = end_local.astimezone(utc)
+
         return UserAccessLog.objects.filter(
             user=user, 
-            created_at=datetime.now().date()
+            created_at__range=(start_utc, end_utc)
         ).exists()
 
     @classmethod
