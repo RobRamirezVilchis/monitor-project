@@ -6,6 +6,7 @@ from rest_framework.views import APIView
 
 from common.pagination import get_paginated_response
 
+from . import listeners #? Necessary to register the listeners
 from .enums import user_roles
 from .models import UserWhitelist
 from .services import UserService, UserAccessService, UserWhitelistService

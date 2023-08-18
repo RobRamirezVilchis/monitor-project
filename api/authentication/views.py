@@ -14,6 +14,7 @@ from users.services import UserService, UserAccessService
 
 from .adapter import GoogleOAuth2Adapter
 from .serializers import PasswordResetKeyValidSerializer
+from . import listeners #? Necessary to register the listeners
 
 
 GOOGLE_CALLBACK_URL = settings.ENV["GOOGLE_CALLBACK_URL"]
