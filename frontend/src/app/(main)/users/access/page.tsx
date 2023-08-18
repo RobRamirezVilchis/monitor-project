@@ -2,7 +2,7 @@
 
 import { GridCallbackDetails, GridColDef, GridFilterModel } from "@mui/x-data-grid";
 import { useDebounce, useQueryState } from "@/hooks/shared";
-import { parseISO, format as formatDate } from "date-fns";
+import { parseISO, parse, format as formatDate } from "date-fns";
 
 import { useUsersAccessQuery } from "@/api/queries/users";
 import { UserAccess } from "@/api/users.types";
@@ -12,18 +12,29 @@ import { User } from "@/api/auth.types";
 import { UserAvatar } from "@/components/shared/UserAvatar";
 import { useState } from "react";
 
-function datetimeToDateStr(datetime: Date | null) {
-  const iso = datetime?.toISOString();
-  return iso?.substring(0, iso?.indexOf("T") ?? undefined) ?? "";
+function localDatetimeToLocalDateStr(datetime: Date | null) {
+  return datetime ? formatDate(datetime, "yyyy-MM-dd") : "";
 }
 
-function dateStrToDatetime(dateStr: string) {
-  return dateStr ? parseISO(dateStr) : null;
+function dateStrToDatetime(dateStr: string, range?: "start" | "end") {
+  const date = parse(dateStr, "yyyy-MM-dd", new Date());
+
+  if (range === "start") {
+    date.setHours(0, 0, 0, 0);
+  } else if (range === "end") {
+    date.setHours(23, 59, 59, 999);
+  }
+
+  return date;
 }
 
 const UsersAccessPage = () => {
   const aMonthAgo = new Date();
-  aMonthAgo.setMonth(aMonthAgo.getMonth() - 1);
+  aMonthAgo.setDate(aMonthAgo.getDate() - 30);
+  aMonthAgo.setHours(0, 0, 0, 0);
+  const today = new Date();
+  today.setHours(23, 59, 59, 999);
+
   const usersAccessQueryParams = useQueryState({
     page: {
       defaultValue: 0,
@@ -36,15 +47,19 @@ const UsersAccessPage = () => {
       serialize: (value) => value.toString(),
     },
     start_date: {
-      defaultValue: datetimeToDateStr(aMonthAgo),
+      defaultValue: aMonthAgo,
+      parse: (value) => dateStrToDatetime(value),
+      serialize: (value) => localDatetimeToLocalDateStr(value),
     },
     end_date: {
-      defaultValue: datetimeToDateStr(new Date()),
+      defaultValue: today,
+      parse: (value) => dateStrToDatetime(value),
+      serialize: (value) => localDatetimeToLocalDateStr(value),
     },
   });
-  const [dates, setDates] = useState({
-    startDate: dateStrToDatetime(usersAccessQueryParams.state.start_date),
-    endDate: dateStrToDatetime(usersAccessQueryParams.state.end_date),
+  const [dates, setDates] = useState<{ startDate: Date | null; endDate: Date | null; }>({
+    startDate: usersAccessQueryParams.state.start_date,
+    endDate: usersAccessQueryParams.state.end_date,
   });
   const [filters, setFilters] = useState<{  
     search?: string;
@@ -62,8 +77,8 @@ const UsersAccessPage = () => {
         page_size: usersAccessQueryParams.state.page_size,
       },
       filters: {
-        start_date: usersAccessQueryParams.state.start_date,
-        end_date: usersAccessQueryParams.state.end_date,
+        start_date: usersAccessQueryParams.state.start_date.toISOString(),
+        end_date: usersAccessQueryParams.state.end_date.toISOString(),
         sort: "-user",
         ...filters,
       }
@@ -93,8 +108,8 @@ const UsersAccessPage = () => {
             }}
             onCalendarClose={() => {
               usersAccessQueryParams.update({
-                start_date: datetimeToDateStr(dates.startDate),
-                end_date: datetimeToDateStr(dates.endDate ?? dates.startDate),
+                start_date: dates.startDate,
+                end_date: dates.endDate ?? dates.startDate,
               });
             }}
           />
@@ -176,7 +191,7 @@ const cols: GridColDef<UserAccess>[] = [
     minWidth: 200,
     flex: 1,
     sortable: true,
-    valueFormatter: params => datetimeToDateStr(dateStrToDatetime(params.value)),
+    valueFormatter: params => formatDate(parseISO(params.value), "P"),
     type: "date",
   },
   {
