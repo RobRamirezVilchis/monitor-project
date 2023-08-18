@@ -190,7 +190,7 @@ class UserAccessService:
         """
         List all access logs for a user and apply filters if context is provided
         """
-        qs = UserAccessLog.objects.select_related("user").values(
+        qs = UserAccessLog.objects.values(
             "user_id"
         ).filter(user__is_active=True).all().annotate(
             last_access=Max("created_at"),
