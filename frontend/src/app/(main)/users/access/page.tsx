@@ -16,16 +16,34 @@ function localDatetimeToLocalDateStr(datetime: Date | null) {
   return datetime ? formatDate(datetime, "yyyy-MM-dd") : "";
 }
 
+function dateRangeStart(date: Date | null) {
+  let newDate = date;
+  if (date) {
+    newDate = new Date(date);
+    newDate.setHours(0, 0, 0, 0);
+  }
+  return newDate;
+}
+
+function dateRangeEnd(date: Date | null) {
+  let newDate = date;
+  if (date) {
+    newDate = new Date(date);
+    newDate.setHours(23, 59, 59, 999);
+  }
+  return newDate;
+}
+
 function dateStrToDatetime(dateStr: string, range?: "start" | "end") {
-  const date = parse(dateStr, "yyyy-MM-dd", new Date());
+  let date: Date | null = parse(dateStr, "yyyy-MM-dd", new Date());
 
   if (range === "start") {
-    date.setHours(0, 0, 0, 0);
+    date = dateRangeStart(date);
   } else if (range === "end") {
-    date.setHours(23, 59, 59, 999);
+    date = dateRangeEnd(date);
   }
 
-  return date;
+  return date ?? new Date();
 }
 
 const UsersAccessPage = () => {
@@ -48,12 +66,12 @@ const UsersAccessPage = () => {
     },
     start_date: {
       defaultValue: aMonthAgo,
-      parse: (value) => dateStrToDatetime(value),
+      parse: (value) => dateStrToDatetime(value, "start"),
       serialize: (value) => localDatetimeToLocalDateStr(value),
     },
     end_date: {
       defaultValue: today,
-      parse: (value) => dateStrToDatetime(value),
+      parse: (value) => dateStrToDatetime(value, "end"),
       serialize: (value) => localDatetimeToLocalDateStr(value),
     },
   });
@@ -108,8 +126,8 @@ const UsersAccessPage = () => {
             }}
             onCalendarClose={() => {
               usersAccessQueryParams.update({
-                start_date: dates.startDate,
-                end_date: dates.endDate ?? dates.startDate,
+                start_date: dateRangeStart(dates.startDate),
+                end_date: dateRangeEnd(dates.endDate ?? dates.startDate),
               });
             }}
           />
