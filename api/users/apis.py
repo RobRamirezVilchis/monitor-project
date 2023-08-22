@@ -1,5 +1,5 @@
-from django.utils import timezone
 from django.shortcuts import get_object_or_404
+from django.utils import timezone
 from rest_framework import status, serializers
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -82,7 +82,7 @@ class UsersWhitelistDetailApi(APIView):
         UserWhitelistService.delete(
             whitelist_instance, 
             current_user = request.user, 
-            throw_if_self_delete= True
+            throw_if_self_delete = True
         )
         return Response(status=status.HTTP_204_NO_CONTENT)
     
