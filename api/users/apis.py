@@ -1,3 +1,4 @@
+from django.utils import timezone
 from django.shortcuts import get_object_or_404
 from rest_framework import status, serializers
 from rest_framework.permissions import IsAuthenticated
@@ -97,7 +98,7 @@ class UserAccessListApi(APIView):
     class OutputSerializer(serializers.Serializer):
         id = serializers.IntegerField(source="user.id")
         user = CommonUserSerializer()
-        last_access = serializers.DateTimeField()
+        last_access = serializers.DateTimeField(default_timezone=timezone.utc)
         access = serializers.IntegerField()
 
     def get(self, request, *args, **kwargs):
