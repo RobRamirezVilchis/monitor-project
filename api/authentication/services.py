@@ -34,5 +34,5 @@ def user_soft_delete(user):
 
 
 def get_frontend_url():
-    frontend_url = settings.ENV["FRONTEND_URL"]
+    frontend_url = settings.FRONTEND_URL
     return frontend_url

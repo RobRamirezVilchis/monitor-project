@@ -14,7 +14,10 @@
                 "runserver"
             ],
             "django": true,
-            "justMyCode": true
+            "justMyCode": true,
+            "env": {
+                "DJANGO_SETTINGS_MODULE": "config.django.local",
+            },
         },
     ]
 }

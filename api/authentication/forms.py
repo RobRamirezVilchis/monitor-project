@@ -30,7 +30,7 @@ class PasswordResetForm(AllAuthPasswordResetForm):
             # send the password reset email
             frontend_url = get_frontend_url()
             # url = f"{frontend_url}/auth/password-reset/confirm/{uid}/{temp_key}"
-            password_reset_path = settings.ENV["FRONTEND_PASSWORD_RESET_PATH"]
+            password_reset_path = settings.FRONTEND_PASSWORD_RESET_PATH
             password_reset_path = password_reset_path.replace("<uid>", uid).replace("<token>", temp_key)
             url = f"{frontend_url}/{password_reset_path}"
             context = {

@@ -17,18 +17,16 @@ from .serializers import PasswordResetKeyValidSerializer
 from . import listeners #? Necessary to register the listeners
 
 
-GOOGLE_CALLBACK_URL = settings.ENV["GOOGLE_CALLBACK_URL"]
-
 class GoogleLoginView(SocialLoginView):
     authentication_classes = []
     adapter_class = GoogleOAuth2Adapter
-    callback_url = GOOGLE_CALLBACK_URL
+    callback_url = settings.GOOGLE_CALLBACK_URL
     client_class = OAuth2Client
 
 
 class GoogleConnectView(SocialConnectView):
     adapter_class = GoogleOAuth2Adapter
-    callback_url = GOOGLE_CALLBACK_URL
+    callback_url = settings.GOOGLE_CALLBACK_URL
     client_class = OAuth2Client
 
 

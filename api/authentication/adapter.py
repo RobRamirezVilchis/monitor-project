@@ -17,7 +17,7 @@ class AccountAdapter(DefaultAccountAdapter):
     def send_confirmation_mail(self, request, emailconfirmation, signup):
         frontend_url = get_frontend_url()
         # activation_url = f"{frontend_url}/auth/register/{emailconfirmation.key}"
-        register_confirm_path = settings.ENV["FRONTEND_REGISTER_CONFIRM_PATH"]
+        register_confirm_path = settings.FRONTEND_REGISTER_CONFIRM_PATH
         register_confirm_path = register_confirm_path.replace("<key>", emailconfirmation.key)
         activation_url = f"{frontend_url}/{register_confirm_path}"
         
