@@ -33,9 +33,12 @@ ALLOWED_HOSTS = []
 # Application definition
 
 LOCAL_APPS = [
+    "api",
     "authentication",
     "common",
     "core",
+    "files",
+    "integrations",
     "users",
 ]
 
@@ -166,6 +169,8 @@ AUTHENTICATION_BACKENDS = [
 ]
 
 
+APP_DOMAIN = env.str("APP_DOMAIN", default="http://localhost:8000")
+
 SITE_ID = 1 
 
 
@@ -264,6 +269,7 @@ LOGGING = {
 from config.settings.cors import * # noqa
 from config.settings.email import * # noqa
 from config.settings.errors import * # noqa
+from config.settings.files_and_storages import * # noqa
 from config.settings.guardian import * # noqa
 from config.settings.rest_auth import * # noqa
 from config.settings.session import * # noqa

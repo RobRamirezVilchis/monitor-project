@@ -13,6 +13,6 @@ user_whitelist_patterns = [
 ]
 
 urlpatterns = [
-    path("users/access/", include((user_access_patterns, "user_access"))),
-    path("users/whitelist/", include((user_whitelist_patterns, "user_whitelist"))),
+    path("access/", include((user_access_patterns, "user_access"))),
+    path("whitelist/", include((user_whitelist_patterns, "user_whitelist"))),
 ]
