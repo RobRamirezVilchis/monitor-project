@@ -52,7 +52,7 @@ export interface AuthContextProps {
     }) => void;
   logout: (options?: { redirect?: boolean, redirectTo?: RedirectToUrl }) => void,
   changeName: (data: { first_name?: string, last_name?: string }) => Promise<boolean>;
-  forceReconnect: () => void;
+  refetchUser: () => void;
   lastAction: "login" | "logout" | null;
 
   defaultRedirectTo?: RedirectToUrl,
@@ -67,7 +67,7 @@ const authContextDefaults: AuthContextProps = {
   socialLogin: () => Promise.resolve(null),
   logout: () => {},
   changeName: () => Promise.resolve(false),
-  forceReconnect: () => {},
+  refetchUser: () => {},
   lastAction: null,
 
   defaultRedirectTo: "/auth/login",
@@ -138,14 +138,14 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({
   }, []);
 
   useEffect(() => {
-    const abortController = new AbortController();
-
+    
     if (!state.userFetched && state.registeredHooks > 0 && !state.user && online) {
       dispatch({ type: "loading", payload: true });
       dispatch({ type: "clearErrors" });
       dispatch({ type: "userFetched", payload: true });
       
       (async () => {
+        const abortController = new AbortController();
         try {
           // Check if valid session exists
           const { data } = await fetchMyUser({ signal: abortController.signal, rejectRequest: false, onError: false });
@@ -379,8 +379,18 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({
     }
   }, [router, dispatch, defaultRedirectTo, state.user]);
 
-  const forceReconnect = useCallback(() => {
-    dispatch({ type: "userFetched", payload: false });
+  const refetchUser = useCallback(async () => {
+    try {
+      const { data } = await fetchMyUser({ rejectRequest: false, onError: false });
+      dispatch({ type: "setUser", payload: data ?? null });
+    }
+    catch (e) {
+      if (isAxiosError(e)) {
+        if (e.code !== AxiosError.ERR_CANCELED) {
+          logger.debug("No valid session found", e);
+        }
+      }
+    }
   }, [dispatch]);
 
   const changeName = useCallback(async (data: { first_name?: string, last_name?: string }) => {
@@ -403,12 +413,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({
     socialLogin,
     logout,
     changeName,
-    forceReconnect,
+    refetchUser,
     lastAction: lastAction.current,
     defaultRedirectTo: defaultRedirectTo ?? authContextDefaults.defaultRedirectTo,
     defaultSetCallbackUrlParam: defaultSetCallbackUrlParam ?? authContextDefaults.defaultSetCallbackUrlParam,
     defaultCallbackUrlParamName: defaultCallbackUrlParamName ?? authContextDefaults.defaultCallbackUrlParamName,
-  }), [state, dispatch, emailLogin, socialLogin, logout, changeName, forceReconnect, defaultRedirectTo, defaultSetCallbackUrlParam, defaultCallbackUrlParamName]);
+  }), [state, dispatch, emailLogin, socialLogin, logout, changeName, refetchUser, defaultRedirectTo, defaultSetCallbackUrlParam, defaultCallbackUrlParamName]);
 
   return (
     <AuthContext.Provider value={contextValue}>

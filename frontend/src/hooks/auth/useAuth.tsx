@@ -80,7 +80,7 @@ export const useAuth = (options?: {
     socialLogin,
     logout,
     changeName,
-    forceReconnect,
+    refetchUser,
     lastAction,
     defaultRedirectTo,
     defaultSetCallbackUrlParam,
@@ -222,7 +222,7 @@ export const useAuth = (options?: {
     errors: authState.errors,
     login,
     logout: logout,
-    forceReconnect,
+    refetchUser,
     changeName,
   };
 }
