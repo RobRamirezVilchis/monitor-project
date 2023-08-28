@@ -15,6 +15,8 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path("blog/", include("blog.urls"))
 """
 from django.contrib import admin
+from django.conf import settings
+from django.conf.urls.static import static
 from django.urls import path, include, register_converter
 
 from core.urls.converters import ApiVersionConverter
@@ -24,9 +26,8 @@ register_converter(ApiVersionConverter, "api_version")
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path("api/auth/", include("authentication.urls")),
-    path("api/<api_version:version>/", include("users.urls")),
+    path("api/<api_version:version>/", include(("api.urls", "api"))),
 
     # path("api/<api_version:version>/", include("...")),
     # re_path(r"api/(?P<version>[v1|v2|...]+)/", include("...")),
-]
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

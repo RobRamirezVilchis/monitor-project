@@ -41,12 +41,13 @@
 					}
 				},
 				"url": {
-					"raw": "{{host}}/api/auth/register/",
+					"raw": "{{host}}/api/v1/auth/register/",
 					"host": [
 						"{{host}}"
 					],
 					"path": [
 						"api",
+						"v1",
 						"auth",
 						"register",
 						""
@@ -73,12 +74,13 @@
 					}
 				},
 				"url": {
-					"raw": "{{host}}/api/auth/register/token-valid/?key=MTA:1p3g3B:VpD3zcytYpY6t2N6oAv_1HwDw96HkMnJQxhoC194prg",
+					"raw": "{{host}}/api/v1/auth/register/token-valid/?key=MTA:1p3g3B:VpD3zcytYpY6t2N6oAv_1HwDw96HkMnJQxhoC194prg",
 					"host": [
 						"{{host}}"
 					],
 					"path": [
 						"api",
+						"v1",
 						"auth",
 						"register",
 						"token-valid",
@@ -109,12 +111,13 @@
 					}
 				},
 				"url": {
-					"raw": "{{host}}/api/auth/register/verify-email/",
+					"raw": "{{host}}/api/v1/auth/register/verify-email/",
 					"host": [
 						"{{host}}"
 					],
 					"path": [
 						"api",
+						"v1",
 						"auth",
 						"register",
 						"verify-email",
@@ -139,12 +142,13 @@
 					}
 				},
 				"url": {
-					"raw": "{{host}}/api/auth/register/resend-email/",
+					"raw": "{{host}}/api/v1/auth/register/resend-email/",
 					"host": [
 						"{{host}}"
 					],
 					"path": [
 						"api",
+						"v1",
 						"auth",
 						"register",
 						"resend-email",
@@ -169,12 +173,13 @@
 					}
 				},
 				"url": {
-					"raw": "{{host}}/api/auth/social/google/",
+					"raw": "{{host}}/api/v1/auth/social/google/",
 					"host": [
 						"{{host}}"
 					],
 					"path": [
 						"api",
+						"v1",
 						"auth",
 						"social",
 						"google",
@@ -202,12 +207,13 @@
 					}
 				},
 				"url": {
-					"raw": "{{host}}/api/auth/social/google/connect/",
+					"raw": "{{host}}/api/v1/auth/social/google/connect/",
 					"host": [
 						"{{host}}"
 					],
 					"path": [
 						"api",
+						"v1",
 						"auth",
 						"social",
 						"google",
@@ -224,12 +230,13 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "{{host}}/api/auth/socialaccounts/",
+					"raw": "{{host}}/api/v1/auth/socialaccounts/",
 					"host": [
 						"{{host}}"
 					],
 					"path": [
 						"api",
+						"v1",
 						"auth",
 						"socialaccounts",
 						""
@@ -244,12 +251,13 @@
 				"method": "POST",
 				"header": [],
 				"url": {
-					"raw": "{{host}}/api/auth/socialaccounts/3/disconnect/",
+					"raw": "{{host}}/api/v1/auth/socialaccounts/3/disconnect/",
 					"host": [
 						"{{host}}"
 					],
 					"path": [
 						"api",
+						"v1",
 						"auth",
 						"socialaccounts",
 						"3",
@@ -275,12 +283,13 @@
 					}
 				},
 				"url": {
-					"raw": "{{host}}/api/auth/login/",
+					"raw": "{{host}}/api/v1/auth/login/",
 					"host": [
 						"{{host}}"
 					],
 					"path": [
 						"api",
+						"v1",
 						"auth",
 						"login",
 						""
@@ -304,12 +313,13 @@
 					}
 				},
 				"url": {
-					"raw": "{{host}}/api/auth/token/verify/",
+					"raw": "{{host}}/api/v1/auth/token/verify/",
 					"host": [
 						"{{host}}"
 					],
 					"path": [
 						"api",
+						"v1",
 						"auth",
 						"token",
 						"verify",
@@ -334,12 +344,13 @@
 					}
 				},
 				"url": {
-					"raw": "{{host}}/api/auth/token/refresh/",
+					"raw": "{{host}}/api/v1/auth/token/refresh/",
 					"host": [
 						"{{host}}"
 					],
 					"path": [
 						"api",
+						"v1",
 						"auth",
 						"token",
 						"refresh",
@@ -355,12 +366,13 @@
 				"method": "POST",
 				"header": [],
 				"url": {
-					"raw": "{{host}}/api/auth/logout/",
+					"raw": "{{host}}/api/v1/auth/logout/",
 					"host": [
 						"{{host}}"
 					],
 					"path": [
 						"api",
+						"v1",
 						"auth",
 						"logout",
 						""
@@ -380,7 +392,8 @@
 					{
 						"key": "Authorization",
 						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNjgzMDQ2MDgyLCJpYXQiOjE2ODMwNDU3ODIsImp0aSI6ImE4ZGQ4ZDEzOTM2YzRjMDE5YTg2NTY3ODJhZjM2ODQ2IiwidXNlcl9pZCI6NH0.lVCz-fbLofjXz2TGtOV4g5nvFW-NjsnDuod4VExwMkM",
-						"type": "text"
+						"type": "text",
+						"disabled": true
 					}
 				],
 				"body": {
@@ -393,12 +406,13 @@
 					}
 				},
 				"url": {
-					"raw": "{{host}}/api/auth/user/",
+					"raw": "{{host}}/api/v1/auth/user/",
 					"host": [
 						"{{host}}"
 					],
 					"path": [
 						"api",
+						"v1",
 						"auth",
 						"user",
 						""
@@ -428,12 +442,13 @@
 					}
 				},
 				"url": {
-					"raw": "{{host}}/api/auth/user/",
+					"raw": "{{host}}/api/v1/auth/user/",
 					"host": [
 						"{{host}}"
 					],
 					"path": [
 						"api",
+						"v1",
 						"auth",
 						"user",
 						""
@@ -457,12 +472,13 @@
 					}
 				},
 				"url": {
-					"raw": "{{host}}/api/auth/password/reset/",
+					"raw": "{{host}}/api/v1/auth/password/reset/",
 					"host": [
 						"{{host}}"
 					],
 					"path": [
 						"api",
+						"v1",
 						"auth",
 						"password",
 						"reset",
@@ -487,12 +503,13 @@
 					}
 				},
 				"url": {
-					"raw": "{{host}}/api/auth/password/reset/confirm/",
+					"raw": "{{host}}/api/v1/auth/password/reset/confirm/",
 					"host": [
 						"{{host}}"
 					],
 					"path": [
 						"api",
+						"v1",
 						"auth",
 						"password",
 						"reset",
@@ -521,12 +538,13 @@
 					}
 				},
 				"url": {
-					"raw": "{{host}}/api/auth/password/reset-token-valid/?uid=c&token=bg6c5t-cfe8c1de9ed5c6fb0162abc97255c870",
+					"raw": "{{host}}/api/v1/auth/password/reset-token-valid/?uid=c&token=bg6c5t-cfe8c1de9ed5c6fb0162abc97255c870",
 					"host": [
 						"{{host}}"
 					],
 					"path": [
 						"api",
+						"v1",
 						"auth",
 						"password",
 						"reset-token-valid",
@@ -561,15 +579,387 @@
 					}
 				},
 				"url": {
-					"raw": "{{host}}/api/auth/password/change/",
+					"raw": "{{host}}/api/v1/auth/password/change/",
 					"host": [
 						"{{host}}"
 					],
 					"path": [
 						"api",
+						"v1",
 						"auth",
 						"password",
 						"change",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "--- Users ---",
+			"request": {
+				"method": "OPTIONS",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"username\": \"jesus.cantu@introid.com\",\n    \"password1\": \"password\",\n    \"password2\": \"password\",\n    \"email\": \"jesus.cantu@introid.com\",\n    \"first_name\": \"Jesus\",\n    \"last_name\": \"Cantu Ramirez\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": ""
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "User Access",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{host}}/api/v1/users/access/?start_date=2023-08-18T06:00:00.000Z&end_date=2023-08-23T05:59:59.999Z",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"users",
+						"access",
+						""
+					],
+					"query": [
+						{
+							"key": "page",
+							"value": "1",
+							"disabled": true
+						},
+						{
+							"key": "page_size",
+							"value": "1",
+							"disabled": true
+						},
+						{
+							"key": "search",
+							"value": "je",
+							"disabled": true
+						},
+						{
+							"key": "sort",
+							"value": "user",
+							"disabled": true
+						},
+						{
+							"key": "start_date",
+							"value": "2023-08-18T06:00:00.000Z"
+						},
+						{
+							"key": "end_date",
+							"value": "2023-08-23T05:59:59.999Z"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "User Whitelist",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"username\": \"jesus.cantu@introid.com\",\n    \"password1\": \"password\",\n    \"password2\": \"password\",\n    \"email\": \"jesus.cantu@introid.com\",\n    \"first_name\": \"Jesus\",\n    \"last_name\": \"Cantu Ramirez\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{host}}/api/v1/users/whitelist/",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"users",
+						"whitelist",
+						""
+					],
+					"query": [
+						{
+							"key": "page",
+							"value": "1",
+							"disabled": true
+						},
+						{
+							"key": "page_size",
+							"value": "1",
+							"disabled": true
+						},
+						{
+							"key": "search",
+							"value": "da",
+							"disabled": true
+						},
+						{
+							"key": "sort",
+							"value": "-email",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Add to Whitelist",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"email\": \"daniel.rodriguez@introid.com\",\n    \"group\": \"admin\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{host}}/api/v1/users/whitelist/",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"users",
+						"whitelist",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Whitelist Update",
+			"request": {
+				"method": "PATCH",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"email\": \"daniel.rodriguez@introid.com\",\n    \"group\": \"admin\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{host}}/api/v1/users/whitelist/5/",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"users",
+						"whitelist",
+						"5",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete from Whitelist",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{host}}/api/v1/users/whitelist/4/",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"users",
+						"whitelist",
+						"4",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "--- Files ---",
+			"request": {
+				"method": "OPTIONS",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"username\": \"jesus.cantu@introid.com\",\n    \"password1\": \"password\",\n    \"password2\": \"password\",\n    \"email\": \"jesus.cantu@introid.com\",\n    \"first_name\": \"Jesus\",\n    \"last_name\": \"Cantu Ramirez\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": ""
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Standard File Upload",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "file",
+							"type": "file",
+							"src": "/home/introid/Documents/test-file.txt"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{host}}/api/v1/files/upload/standard/",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"files",
+						"upload",
+						"standard",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Direct File Start",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"file_name\": \"test-file.csv\",\n    \"file_type\": \"text/csv\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{host}}/api/v1/files/upload/direct/start/",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"files",
+						"upload",
+						"direct",
+						"start",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Direct File Finish",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"file_id\": 2\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{host}}/api/v1/files/upload/direct/finish/",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"files",
+						"upload",
+						"direct",
+						"finish",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Direct File Upload Local",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "file",
+							"type": "file",
+							"src": "/home/introid/Documents/test-file.csv"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{host}}/api/v1/files/upload/direct/local/2/",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"files",
+						"upload",
+						"direct",
+						"local",
+						"2",
 						""
 					]
 				}

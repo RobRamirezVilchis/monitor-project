@@ -21,7 +21,7 @@ def filter_queryset(queryset, request, view):
 
 class SearchFilter(filters.CharFilter):
     """
-    Enable search filter for all fields in the 'search_fields' attribute.
+    Enable search filter for all fields in the `search_fields` attribute.
     Search fields can be prefixed with '^', '=', '@', or '$' to define
     the lookup expression ('istartswith', 'iexact', 'search', and 'iregex' respectively).
     If no prefix is provided, 'icontains' is used.

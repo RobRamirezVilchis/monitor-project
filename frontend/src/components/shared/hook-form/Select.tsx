@@ -71,7 +71,7 @@ export const Select = <TFieldValues extends FieldValues = FieldValues>({
               }}
               displayEmpty={displayEmpty || !!placeholder}
               className={classNames(className, {
-                "text-neutral-400": placeholder && value === "",
+                "!text-neutral-400": placeholder && value === "",
               })}
               classes={classes?.select}
             >
@@ -94,7 +94,7 @@ export const Select = <TFieldValues extends FieldValues = FieldValues>({
             value={_value}
             displayEmpty={displayEmpty || !!placeholder}
             className={classNames(className, {
-              "text-neutral-400": placeholder && _value === "",
+              "!text-neutral-400": placeholder && _value === "",
             })}
             classes={classes?.select}
           >
