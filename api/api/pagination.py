@@ -78,3 +78,32 @@ class PageNumberPagination(_PageNumberPagination):
 
         self.request = request
         return list(self.page)
+
+    def get_paginated_response_schema(self, schema):
+        return {
+            "type": "object",
+            "properties": {
+                "pagination": {
+                    "type": "object",
+                    "properties": {
+                        "page": {
+                            "type": "integer",
+                            "example": 1,
+                        },
+                        "page_size": {
+                            "type": "integer",
+                            "example": 25,
+                        },
+                        "count": {
+                            "type": "integer",
+                            "example": 100,
+                        },
+                        "pages": {
+                            "type": "integer",
+                            "example": 4,
+                        },
+                    }
+                },
+                "data": schema,
+            },
+        }

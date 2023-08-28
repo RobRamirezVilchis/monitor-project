@@ -5,7 +5,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from common.pagination import get_paginated_response
+from api.pagination import get_paginated_response
 
 from . import listeners #? Necessary to register the listeners
 from .enums import user_roles
