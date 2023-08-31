@@ -44,6 +44,10 @@ Python shell with automatic module autoreload:
 
 [IPython autoreload docs](https://ipython.org/ipython-doc/3/config/extensions/autoreload.html)
 
+### OpenAPI
+
+Generate scheme: `python manage.py spectacular --color --file schema.yml`
+
 ---
 
 Some of the code style decisions are inspired from the [Django Styleguide used in HackSoftware](https://github.com/HackSoftware/Django-Styleguide) with some modifications.

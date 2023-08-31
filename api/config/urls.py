@@ -18,6 +18,7 @@ from django.contrib import admin
 from django.conf import settings
 from django.conf.urls.static import static
 from django.urls import path, include, register_converter
+from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
 
 from core.urls.converters import ApiVersionConverter
 
@@ -31,3 +32,9 @@ urlpatterns = [
     # path("api/<api_version:version>/", include("...")),
     # re_path(r"api/(?P<version>[v1|v2|...]+)/", include("...")),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+if settings.USE_OPENAPI_SCHEMA:
+    urlpatterns += [
+        path("api/schema/", SpectacularAPIView.as_view(), name="schema"),
+        path("api/swagger/", SpectacularSwaggerView.as_view(url_name="schema"), name="swagger"),
+    ]
