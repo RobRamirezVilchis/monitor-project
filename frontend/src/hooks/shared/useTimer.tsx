@@ -3,15 +3,10 @@ import { useImmer } from "use-immer";
 
 export interface UseTimerOptions {
   /**
-   * Callback when the timer ticks (every interval)
-   * @param time Current elapsed time in milliseconds
+   * Initial time in milliseconds used on first start
+   * @default 0
    */
-  onTick?: (time: number) => void;
-  /**
-   * Callback when the timer stops
-   * @param time Total elapsed time in milliseconds
-   */
-  onStop?: (time: number) => void;
+  initialTime?: number;
   /**
    * Interval in milliseconds in which the timer will tick
    * @default 1000
@@ -37,9 +32,19 @@ export interface UseTimerOptions {
    * @default false
    */
   autoRestart?: boolean;
+  /**
+   * Callback when the timer ticks (every interval)
+   * @param time Current elapsed time in milliseconds
+   */
+  onTick?: (time: number) => void;
+  /**
+   * Callback when the timer stops
+   * @param time Total elapsed time in milliseconds
+   */
+  onStop?: (time: number) => void;
 }
 
-export type TimerStatus = "running" | "paused" | "stopped";
+export type TimerStatus = "idle" | "running" | "paused" | "stopped";
 
 export interface UseTimerReturn {
   time: {
@@ -92,6 +97,7 @@ export interface UseTimerReturn {
 }
 
 const defaultOptions: UseTimerOptions = {
+  initialTime: 0,
   interval: 1000,
   autoStart: false,
   autoReset: false,
@@ -104,8 +110,8 @@ export const useTimer = (options?: UseTimerOptions): UseTimerReturn => {
     ...options,
   }), [options]);
   const [state, setState] = useImmer({
-    time: 0,
-    status: "stopped" as TimerStatus,
+    time: opts.initialTime!,
+    status: "idle" as TimerStatus,
   });
   const _state = useRef({
     time: state.time,
@@ -113,7 +119,7 @@ export const useTimer = (options?: UseTimerOptions): UseTimerReturn => {
     autoStarted: false,
   });
   const timerIntervalRef = useRef<NodeJS.Timeout | null>(null);
-  const baseTimeRef = useRef(0);
+  const baseTimeRef = useRef(opts.initialTime!);
   const currentStartDateRef = useRef<Date | null>(null);
 
   const startDateRef = useRef<Date | null>(null); // not used for now
@@ -180,6 +186,14 @@ export const useTimer = (options?: UseTimerOptions): UseTimerReturn => {
         _state.current.time = 0;
         setState((draft) => {
           draft.time = 0;
+        });
+        break;
+      case "idle":
+        startDateRef.current = now;
+
+        _state.current.time = opts.initialTime!;
+        setState((draft) => {
+          draft.time = opts.initialTime!;
         });
         break;
     }
