@@ -4,6 +4,8 @@ DEBUG = True
 
 ALLOWED_HOSTS = ["localhost", "0.0.0.0", "127.0.0.1"] # ["*"]
 
+CSRF_TRUSTED_ORIGINS = ["http://localhost:3000"]
+
 AUTH_PASSWORD_VALIDATORS = []
 
 DATABASES = {
