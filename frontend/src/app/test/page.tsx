@@ -4,13 +4,15 @@ import { createMutation } from "@/api/helpers/createMutation";
 import { createQuery } from "@/api/helpers/createQuery";
 import { ConfirmDialogProvider } from "@/components/shared/ConfirmDialogProvider";
 import { useConfirmDialog } from "@/hooks/shared/useConfirmDialog";
+import { UseTimerOptions, useTimer } from "@/hooks/shared/useTimer";
+import { useState } from "react";
 
 const useMyQuery = createQuery({
   queryPrimaryKey: "test",
   queryKeyVariables: () => [1, { a: "str" }],
   queryFn: async (ctx, vars) => {
     const [pk, id, obj] = ctx.queryKey;
-    console.log("vars from test", vars)
+    // console.log("vars from test", vars)
     return {
       pk, id, obj,
     }
@@ -24,7 +26,7 @@ const useMyVarsQuery = createQuery({
   queryKeyVariables: ({ id }: { id: number }) => [id],
   queryFn: async (ctx, vars) => {
     const [pk, id] = ctx.queryKey;
-    console.log("vars from vars", vars)
+    // console.log("vars from vars", vars)
     return {
       pk, id
     }
@@ -97,6 +99,8 @@ const Test = () => {
   });
 
   const dialogAlt = useConfirmDialog();
+
+  
 
   return (
     <div className="p-4">
@@ -217,6 +221,8 @@ const Test = () => {
           Dialog Alt
         </button>
       </div>
+
+      <TimerExample />
     </div>
   )
 }
@@ -235,3 +241,85 @@ const Wrapper = () => {
 }
 
 export default Wrapper;
+
+const withTrailingZeros = (num: number, digits: number) => num.toString().padStart(digits, "0");
+
+const TimerExample = () => {
+  const [timerOptions, setTimerOptions] = useState<UseTimerOptions>({
+    initialTime: -5 * 1000,
+    interval: 50,
+    // autoStart: true,
+    // stopAt: 5 * 1000,
+    stopAt: -1 * 1000,
+    autoStop: -3 * 1000,
+    autoReset: -4 * 1000,
+    autoRestart: -3 * 1000,
+    onStop: (time) => console.log("onStop", time),
+  });
+  const timer = useTimer(timerOptions);
+
+  return (
+    <div className="flex gap-4 p-2 items-center">
+      <div>
+        <p>
+          Time: [{withTrailingZeros(timer.time.hours, 2)}:
+          {withTrailingZeros(timer.time.minutes, 2)}:
+          {withTrailingZeros(timer.time.seconds, 2)}.
+          {withTrailingZeros(timer.time.milliseconds, 3)}]
+        </p>
+        <p>Elapsed: {timer.time.elapsed / 1000}</p>
+        <p>Estatus: {timer.status}</p>
+      </div>
+
+      <button
+        className="bg-blue-500 text-white rounded-md p-2"
+        onClick={timer.start}
+      >
+        {timer.isPaused ? "Resume" : "Start"}
+      </button>
+
+      <button
+        className="bg-blue-500 text-white rounded-md p-2"
+        onClick={timer.pause}
+      >
+        Pause
+      </button>
+
+      <button
+        className="bg-blue-500 text-white rounded-md p-2"
+        onClick={() => timer.stop(3 * 1000)}
+      >
+        Stop
+      </button>
+
+      <button
+        className="bg-blue-500 text-white rounded-md p-2"
+        onClick={() => timer.restart(5 * 1000)}
+      >
+        Restart
+      </button>
+
+      <button
+        className="bg-blue-500 text-white rounded-md p-2"
+        onClick={() => timer.reset(10 * 1000)}
+      >
+        Reset
+      </button>
+
+      <button
+        className="bg-blue-500 text-white rounded-md p-2"
+        onClick={() => {
+          const newOptions: UseTimerOptions = {
+            onTick: (time) => console.log(time),
+            autoStart: true,
+            stopAt: 15 * 1000,
+            onStop: (time) => console.log("onStop", time),
+          };
+          setTimerOptions(newOptions);
+        }}
+      >
+        Update timer options
+      </button>
+    </div>
+  );
+}
