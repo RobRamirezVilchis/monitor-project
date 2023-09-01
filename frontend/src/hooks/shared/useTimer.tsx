@@ -136,7 +136,7 @@ export const useTimer = (options?: UseTimerOptions): UseTimerReturn => {
     });
 
     clearTimerInterval();
-    const diff = (new Date().valueOf() - currentStartDateRef.current!.valueOf());
+    const diff = new Date().valueOf() - currentStartDateRef.current!.valueOf();
     baseTimeRef.current += diff;
     currentStartDateRef.current = null;
   }, [setState]);
@@ -197,7 +197,7 @@ export const useTimer = (options?: UseTimerOptions): UseTimerReturn => {
       if (_state.current.status !== "running")
         return;
 
-      const diff = (new Date().valueOf() - currentStartDateRef.current!.valueOf());
+      const diff = new Date().valueOf() - currentStartDateRef.current!.valueOf();
       const newTime = baseTimeRef.current + diff;
       
       _state.current.time = newTime;
@@ -237,7 +237,7 @@ export const useTimer = (options?: UseTimerOptions): UseTimerReturn => {
   useEffect(() => {
     if (_state.current.status === "running") {
       _state.current.status = "paused";
-      const diff = (new Date().valueOf() - currentStartDateRef.current!.valueOf());
+      const diff = new Date().valueOf() - currentStartDateRef.current!.valueOf();
       baseTimeRef.current += diff;
       currentStartDateRef.current = null;
       start();
@@ -251,6 +251,10 @@ export const useTimer = (options?: UseTimerOptions): UseTimerReturn => {
       start();
     }
   }, [opts.autoStart, start]);
+
+  useEffect(() => {
+    return () => clearTimerInterval();
+  }, []);
 
   const result = useMemo<UseTimerReturn>(() => ({
     time: {
