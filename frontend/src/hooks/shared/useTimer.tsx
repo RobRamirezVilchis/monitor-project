@@ -116,6 +116,9 @@ const defaultOptions: UseTimerOptions = {
   autoStart: false,
 };
 
+/**
+ * Timer hook that support both incremental and decremental timers
+ */
 export const useTimer = (options?: UseTimerOptions): UseTimerReturn => {
   const opts = useMemo<UseTimerOptions>(() => ({
     ...defaultOptions,
@@ -277,10 +280,10 @@ export const useTimer = (options?: UseTimerOptions): UseTimerReturn => {
   const result = useMemo<UseTimerReturn>(() => ({
     time: {
       elapsed: state.time,
-      hours: Math.floor(state.time / 1000 / 60 / 60),
-      minutes: Math.floor(state.time / 1000 / 60) % 60,
-      seconds: Math.floor(state.time / 1000) % 60,
-      milliseconds: state.time % 1000,
+      hours: Math.floor(Math.abs(state.time / 1000 / 60 / 60)),
+      minutes: Math.floor(Math.abs(state.time / 1000 / 60) % 60),
+      seconds: Math.floor(Math.abs(state.time / 1000) % 60),
+      milliseconds: Math.abs(state.time % 1000),
     },
     start,
     pause,
