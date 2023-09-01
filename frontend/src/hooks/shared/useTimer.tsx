@@ -18,20 +18,28 @@ export interface UseTimerOptions {
    */
   autoStart?: boolean;
   /**
-   * Stop the timer when the elapsed time in milliseconds reaches this value
+   * If set, stop the timer when the elapsed time in milliseconds reaches the given value
    * @default undefined
    */
   stopAt?: number;
   /**
-   * Reset the timer automatically when the elapsed time in milliseconds reaches `stopAt`
-   * @default false
+   * Sets the initial time to the given value in milliseconds when the elapsed time reaches `stopAt`.
+   * Leaving this as undefined sets the timer at 0.
+   * @default undefined
    */
-  autoReset?: boolean;
+  autoStop?: number;
   /**
-   * Restart the timer automatically when the elapsed time in milliseconds reaches `stopAt`
-   * @default false
+   * If set, reset the timer automatically to the given time in milliseconds when the elapsed time reaches `stopAt`.
+   * This overrides `autoStop`.
+   * @default undefined
    */
-  autoRestart?: boolean;
+  autoReset?: number;
+  /**
+   * If set, restart the timer automatically to the given time in milliseconds when the elapsed time reaches `stopAt`.
+   * This overrides `autoStop` and `autoReset`.
+   * @default undefined
+   */
+  autoRestart?: number;
   /**
    * Callback when the timer ticks (every interval)
    * @param time Current elapsed time in milliseconds
@@ -106,8 +114,6 @@ const defaultOptions: UseTimerOptions = {
   initialTime: 0,
   interval: 1000,
   autoStart: false,
-  autoReset: false,
-  autoRestart: false,
 };
 
 export const useTimer = (options?: UseTimerOptions): UseTimerReturn => {
@@ -220,16 +226,16 @@ export const useTimer = (options?: UseTimerOptions): UseTimerReturn => {
       opts?.onTick?.(newTime);
 
       if (opts.stopAt !== undefined && newTime >= opts.stopAt) {
-        if (opts.autoRestart) {
+        if (opts.autoRestart !== undefined) {
           // We call stop since we want to trigger the onStop callback in here
-          stop();
+          stop(opts.autoRestart);
           start();
         }
-        else if (opts.autoReset) {
-          reset();
+        else if (opts.autoReset !== undefined) {
+          reset(opts.autoReset);
         }
         else {
-          stop();
+          stop(opts.autoStop);
         }
       }
     }, opts.interval);
