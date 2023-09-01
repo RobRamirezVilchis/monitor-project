@@ -44,7 +44,7 @@ export interface UseTimerOptions {
   onStop?: (time: number) => void;
 }
 
-export type TimerStatus = "idle" | "running" | "paused" | "stopped";
+export type TimerStatus = "running" | "paused" | "stopped";
 
 export interface UseTimerReturn {
   time: {
@@ -80,16 +80,22 @@ export interface UseTimerReturn {
   pause: () => void;
   /**
    * Stop timer
+   * @param time Initial time in milliseconds for the next start
+   * @default 0
    */
-  stop: () => void;
+  stop: (time?: number) => void;
   /**
    * Reset time to 0 without stopping the timer
+   * @param time Initial time in milliseconds for the next start
+   * @default 0
    */
-  restart: () => void;
+  restart: (time?: number) => void;
   /**
    * Stop the timer and set time to 0
+   * @param time Initial time in milliseconds for the next start
+   * @default 0
    */
-  reset: () => void;
+  reset: (time?: number) => void;
   status: TimerStatus;
   isRunning: boolean;
   isPaused: boolean;
@@ -109,9 +115,9 @@ export const useTimer = (options?: UseTimerOptions): UseTimerReturn => {
     ...defaultOptions,
     ...options,
   }), [options]);
-  const [state, setState] = useImmer({
+  const [state, setState] = useImmer<{ time: number, status: TimerStatus }>({
     time: opts.initialTime!,
-    status: "idle" as TimerStatus,
+    status: "stopped",
   });
   const _state = useRef({
     time: state.time,
@@ -147,7 +153,7 @@ export const useTimer = (options?: UseTimerOptions): UseTimerReturn => {
     currentStartDateRef.current = null;
   }, [setState]);
 
-  const stop = useCallback(() => {
+  const stop = useCallback((time?: number) => {
     if (_state.current.status !== "running" && _state.current.status !== "paused") {
       return;
     }
@@ -159,16 +165,16 @@ export const useTimer = (options?: UseTimerOptions): UseTimerReturn => {
 
     clearTimerInterval();
     endDateRef.current = new Date();
-    baseTimeRef.current = 0;
+    baseTimeRef.current = time ?? 0;
 
     opts?.onStop?.(_state.current.time);
   }, [setState, opts]);
 
-  const reset = useCallback(() => {
-    stop();
-    _state.current.time = 0;
+  const reset = useCallback((time?: number) => {
+    stop(time);
+    _state.current.time = time ?? 0;
     setState((draft) => {
-      draft.time = 0;
+      draft.time = time ?? 0;
     });
   }, [stop, setState]);
 
@@ -183,17 +189,9 @@ export const useTimer = (options?: UseTimerOptions): UseTimerReturn => {
       case "stopped":
         startDateRef.current = now;
 
-        _state.current.time = 0;
+        _state.current.time = baseTimeRef.current;
         setState((draft) => {
-          draft.time = 0;
-        });
-        break;
-      case "idle":
-        startDateRef.current = now;
-
-        _state.current.time = opts.initialTime!;
-        setState((draft) => {
-          draft.time = opts.initialTime!;
+          draft.time = baseTimeRef.current;
         });
         break;
     }
@@ -237,11 +235,11 @@ export const useTimer = (options?: UseTimerOptions): UseTimerReturn => {
     }, opts.interval);
   }, [setState, opts, reset, stop]);
 
-  const restart = useCallback(() => {
+  const restart = useCallback((time?: number) => {
     _state.current.status = "stopped";
 
     clearTimerInterval();
-    baseTimeRef.current = 0;
+    baseTimeRef.current = time ?? 0;
 
     start();
   }, [start]);
