@@ -23,20 +23,13 @@ export interface UseTimerOptions {
    */
   stopAt?: number;
   /**
-   * Sets the initial time to the given value in milliseconds when the elapsed time reaches `stopAt`.
-   * Leaving this as undefined sets the timer at 0.
-   * @default undefined
-   */
-  autoStop?: number;
-  /**
    * If set, reset the timer automatically to the given time in milliseconds when the elapsed time reaches `stopAt`.
-   * This overrides `autoStop`.
    * @default undefined
    */
   autoReset?: number;
   /**
    * If set, restart the timer automatically to the given time in milliseconds when the elapsed time reaches `stopAt`.
-   * This overrides `autoStop` and `autoReset`.
+   * This overrides `autoReset`.
    * @default undefined
    */
   autoRestart?: number;
@@ -229,20 +222,20 @@ export const useTimer = (options?: UseTimerOptions): UseTimerReturn => {
       opts?.onTick?.(newTime);
 
       if (opts.stopAt !== undefined && newTime >= opts.stopAt) {
+        stop(opts.autoRestart ?? opts.autoReset);
+
         if (opts.autoRestart !== undefined) {
-          // We call stop since we want to trigger the onStop callback in here
-          stop(opts.autoRestart);
           start();
         }
         else if (opts.autoReset !== undefined) {
-          reset(opts.autoReset);
-        }
-        else {
-          stop(opts.autoStop);
+          _state.current.time = opts.autoReset ?? 0;
+          setState((draft) => {
+            draft.time = opts.autoReset ?? 0;
+          });
         }
       }
     }, opts.interval);
-  }, [setState, opts, reset, stop]);
+  }, [setState, opts, stop]);
 
   const restart = useCallback((time?: number) => {
     _state.current.status = "stopped";
