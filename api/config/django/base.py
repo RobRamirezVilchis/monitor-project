@@ -55,6 +55,7 @@ THIRD_PARTY_APPS = [
     "allauth.socialaccount.providers.google",
     "guardian",
     "drf_standardized_errors",
+    "drf_spectacular",
 ]
 
 INSTALLED_APPS = [
@@ -199,6 +200,7 @@ REST_FRAMEWORK = {
     "EXCEPTION_HANDLER": "drf_standardized_errors.handler.exception_handler",
     "DEFAULT_PAGINATION_CLASS": "api.pagination.PageNumberPagination",
     # "PAGE_SIZE": 25,
+    "DEFAULT_SCHEMA_CLASS": "api.openapi.AutoSchema",
 }
 
 
@@ -271,5 +273,6 @@ from config.settings.email import * # noqa
 from config.settings.errors import * # noqa
 from config.settings.files_and_storages import * # noqa
 from config.settings.guardian import * # noqa
+from config.settings.openapi import * # noqa
 from config.settings.rest_auth import * # noqa
 from config.settings.session import * # noqa

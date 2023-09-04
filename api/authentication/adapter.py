@@ -2,11 +2,14 @@ from allauth.account.adapter import DefaultAccountAdapter
 from allauth.socialaccount.adapter import app_settings, DefaultSocialAccountAdapter
 from allauth.socialaccount.providers.google.views import GoogleOAuth2Adapter as DefaultGoogleOAuth2Adapter
 from allauth.socialaccount.providers.oauth2.client import OAuth2Error
+from allauth.utils import build_absolute_uri
 from django.conf import settings
 from django.contrib.sites.shortcuts import get_current_site
 from django.core.mail import EmailMessage, EmailMultiAlternatives
+from django.http import HttpResponseRedirect
 from django.template import TemplateDoesNotExist
 from django.template.loader import render_to_string
+from django.urls import reverse
 import jwt
 
 from .services import get_frontend_url
@@ -68,8 +71,26 @@ class AccountAdapter(DefaultAccountAdapter):
             msg.content_subtype = "html"  # Main content is now text/html
         return msg
 
+    def get_email_confirmation_url(self, request, emailconfirmation):
+        """Constructs the email confirmation (activation) url.
+
+        Note that if you have architected your system such that email
+        confirmations are sent outside of the request context `request`
+        can be `None` here.
+        """
+        url = reverse("api:authentication:account_confirm_email", args = [emailconfirmation.key], kwargs = { "version": "v1" })
+        ret = build_absolute_uri(request, url)
+        return ret
+    
+    def respond_user_inactive(self, request, user):
+        return HttpResponseRedirect(reverse("api:authentication:account_inactive"), kwargs = { "version": "v1" })
+
+    def respond_email_verification_sent(self, request, user):
+        return HttpResponseRedirect(reverse("api:authentication:account_email_verification_sent"), kwargs = { "version": "v1" })
+
 
 class SocialAccountAdapter(DefaultSocialAccountAdapter):
+
     def get_app(self, request, provider, config=None):
         # NOTE: Avoid loading models at top due to registry boot...
         from allauth.socialaccount.models import SocialApp
@@ -84,6 +105,14 @@ class SocialAccountAdapter(DefaultSocialAccountAdapter):
             app = SocialApp.objects.get_current(provider, request)
 
         return app
+    
+    def get_connect_redirect_url(self, request, socialaccount):
+        """
+        Returns the default URL to redirect to after successfully
+        connecting a social account.
+        """
+        url = reverse("api:authentication:socialaccount_connections", kwargs = { "version": "v1" })
+        return url
 
 
 class GoogleOAuth2Adapter(DefaultGoogleOAuth2Adapter):

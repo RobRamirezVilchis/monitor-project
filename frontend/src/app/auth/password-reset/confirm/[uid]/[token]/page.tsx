@@ -46,8 +46,8 @@ const PasswordResetConfirmation = () => {
   } = formMethods;
 
   const params = useParams();
-  const uid = params?.["uid"];
-  const token = params?.["token"];
+  const uid = params?.["uid"] ? decodeURIComponent(params["uid"] as string) : null;
+  const token = params?.["token"] ? decodeURIComponent(params["token"] as string) : null;
 
   useEffect(() => {
     if (uid && token && typeof uid === "string" && typeof token === "string") {

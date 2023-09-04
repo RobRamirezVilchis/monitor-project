@@ -32,8 +32,11 @@ class GoogleConnectView(SocialConnectView):
 
 class RegistrationKeyValidView(VerifyEmailView):
     """
+        Checks if the registration key is valid.
+
         Params: key (string)
     """
+    allowed_methods = ("GET", "OPTIONS", "HEAD")
 
     def get(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.GET)
@@ -48,11 +51,13 @@ class RegistrationKeyValidView(VerifyEmailView):
 
 class PasswordResetKeyValidView(generics.GenericAPIView):
     """
+        Checks if the password reset token is valid.
+
         Params: uid (string), token (string)
     """
     serializer_class = PasswordResetKeyValidSerializer
     permission_classes = (AllowAny,)
-    throttle_scope = 'dj_rest_auth'
+    throttle_scope = "dj_rest_auth"
 
     def get(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.GET)
