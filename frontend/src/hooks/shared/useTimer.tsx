@@ -103,22 +103,21 @@ export interface UseTimerReturn {
   isStopped: boolean;
 }
 
-const defaultOptions: UseTimerOptions = {
-  initialTime: 0,
-  interval: 1000,
-  autoStart: false,
-};
-
 /**
  * Timer hook that support both incremental and decremental timers
  */
-export const useTimer = (options?: UseTimerOptions): UseTimerReturn => {
-  const opts = useMemo<UseTimerOptions>(() => ({
-    ...defaultOptions,
-    ...options,
-  }), [options]);
+export const useTimer = ({
+  initialTime = 0, 
+  interval = 1000, 
+  autoStart = false, 
+  stopAt, 
+  autoReset, 
+  autoRestart, 
+  onTick, 
+  onStop,
+}: UseTimerOptions): UseTimerReturn => {
   const [state, setState] = useImmer<{ time: number, status: TimerStatus }>({
-    time: opts.initialTime!,
+    time: initialTime,
     status: "stopped",
   });
   const _state = useRef({
@@ -127,7 +126,7 @@ export const useTimer = (options?: UseTimerOptions): UseTimerReturn => {
     autoStarted: false,
   });
   const timerIntervalRef = useRef<NodeJS.Timeout | null>(null);
-  const baseTimeRef = useRef(opts.initialTime!);
+  const baseTimeRef = useRef(initialTime);
   const currentStartDateRef = useRef<Date | null>(null);
 
   const startDateRef = useRef<Date | null>(null); // not used for now
@@ -169,16 +168,8 @@ export const useTimer = (options?: UseTimerOptions): UseTimerReturn => {
     endDateRef.current = new Date();
     baseTimeRef.current = time ?? 0;
 
-    opts?.onStop?.(_state.current.time);
-  }, [setState, opts]);
-
-  const reset = useCallback((time?: number) => {
-    stop(time);
-    _state.current.time = time ?? 0;
-    setState((draft) => {
-      draft.time = time ?? 0;
-    });
-  }, [stop, setState]);
+    onStop?.(_state.current.time);
+  }, [setState, onStop]);
 
   const start = useCallback(() => {
     const now = new Date();
@@ -219,23 +210,23 @@ export const useTimer = (options?: UseTimerOptions): UseTimerReturn => {
         draft.time = newTime;
       });
 
-      opts?.onTick?.(newTime);
+      onTick?.(newTime);
 
-      if (opts.stopAt !== undefined && newTime >= opts.stopAt) {
-        stop(opts.autoRestart ?? opts.autoReset);
+      if (stopAt !== undefined && newTime >= stopAt) {
+        stop(autoRestart ?? autoReset);
 
-        if (opts.autoRestart !== undefined) {
+        if (autoRestart !== undefined) {
           start();
         }
-        else if (opts.autoReset !== undefined) {
-          _state.current.time = opts.autoReset ?? 0;
+        else if (autoReset !== undefined) {
+          _state.current.time = autoReset ?? 0;
           setState((draft) => {
-            draft.time = opts.autoReset ?? 0;
+            draft.time = autoReset ?? 0;
           });
         }
       }
-    }, opts.interval);
-  }, [setState, opts, stop]);
+    }, interval);
+  }, [setState, stop, onTick, interval, stopAt, autoReset, autoRestart]);
 
   const restart = useCallback((time?: number) => {
     _state.current.status = "stopped";
@@ -245,6 +236,14 @@ export const useTimer = (options?: UseTimerOptions): UseTimerReturn => {
 
     start();
   }, [start]);
+
+  const reset = useCallback((time?: number) => {
+    stop(time);
+    _state.current.time = time ?? 0;
+    setState((draft) => {
+      draft.time = time ?? 0;
+    });
+  }, [stop, setState]);
 
   /* eslint-disable react-hooks/exhaustive-deps */
   //? If the timer is running and the options change, update the timer interval
@@ -256,15 +255,15 @@ export const useTimer = (options?: UseTimerOptions): UseTimerReturn => {
       currentStartDateRef.current = null;
       start();
     }
-  }, [opts]);
+  }, [initialTime, interval, autoStart, stopAt, autoReset, autoRestart, onTick, onStop]);
   /* eslint-enable react-hooks/exhaustive-deps */
 
   useEffect(() => {
-    if (opts.autoStart && !_state.current.autoStarted) {
+    if (autoStart && !_state.current.autoStarted) {
       _state.current.autoStarted = true;
       start();
     }
-  }, [opts.autoStart, start]);
+  }, [autoStart, start]);
 
   useEffect(() => {
     return () => clearTimerInterval();
