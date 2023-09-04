@@ -156,7 +156,7 @@ export const useTimer = ({
     clearTimerInterval();
     let diff = new Date().valueOf() - currentStartDateRef.current!.valueOf();
     if (stopAt !== undefined)
-      diff = Math.min(diff, stopAt - baseTimeRef.current);
+      diff = Math.min(diff, stopAt);
     baseTimeRef.current += diff;
     currentStartDateRef.current = null;
   }, [setState, stopAt]);
@@ -261,7 +261,7 @@ export const useTimer = ({
       _state.current.status = "paused";
       let diff = new Date().valueOf() - currentStartDateRef.current!.valueOf();
       if (stopAt !== undefined)
-        diff = Math.min(diff, stopAt - baseTimeRef.current);
+        diff = Math.min(diff, stopAt);
       baseTimeRef.current += diff;
       currentStartDateRef.current = null;
       start();
