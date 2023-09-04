@@ -36,7 +36,7 @@ Another option to set the configuration file to be used instead of setting it th
 
 Python shell with automatic module autoreload:
 
-- Install IPython: `pip install Ipython`
+- Install IPython: `pip install Ipython` (already in the requirements/local.txt file)
 - Start Django shell: `python manage.py shell`
 - Input the following commands to enable autoreload:
     - `%load_ext autoreload`
