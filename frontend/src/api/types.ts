@@ -1,7 +1,7 @@
 export interface ApiErrorDetail {
   code: string;
   detail: string;
-  field: string | null;
+  attr: string | null;
 }
 
 export interface ApiError {
