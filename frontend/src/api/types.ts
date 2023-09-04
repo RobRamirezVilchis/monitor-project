@@ -10,11 +10,17 @@ export interface ApiError {
 }
 
 export type Paginated<T> = {
-  data: T;
+  data: T[];
   pagination?: {
     page: number;
     page_size: number;
     count: number;
     pages: number;
   }
+}
+
+export type OptionallyPaginated<T> = Paginated<T> | T[];
+
+export const isPaginated = <T>(obj: OptionallyPaginated<T>): obj is Paginated<T> => {
+  return !Array.isArray(obj) && !!obj.pagination && !!obj.data;
 }

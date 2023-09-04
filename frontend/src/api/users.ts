@@ -23,7 +23,7 @@ export async function getWhitelist(
   } : undefined;
 
   try {
-    const resp = await http.get<Paginated<WhitelistItem[]>>(
+    const resp = await http.get<Paginated<WhitelistItem>>(
       api.endpoints.users.whitelist.list, 
       {
         params,
@@ -97,7 +97,7 @@ export async function getUsersAccess(
   } : undefined;
 
   try {
-    const resp = await http.get<Paginated<UserAccess[]>>(
+    const resp = await http.get<Paginated<UserAccess>>(
       api.endpoints.users.access.list, 
       {
         params,
