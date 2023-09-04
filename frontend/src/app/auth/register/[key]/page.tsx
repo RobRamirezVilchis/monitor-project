@@ -6,7 +6,6 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import Button from "@mui/lab/LoadingButton";
 
-import http from "@/utils/http";
 import { isRegisterTokenValid, verifyAccount } from "@/api/auth";
 import logger from "@/utils/logger";
 
@@ -16,7 +15,7 @@ const RegisterActivation: NextPage = () => {
   const [accountVerified, setAccountVerified] = useState<boolean | null>(null);
 
   const params = useParams();
-  const key = params?.["key"] as string;
+  const key = params?.["key"] ? decodeURIComponent(params["key"] as string) : null;
 
   useEffect(() => {
     if (key && typeof key === "string") {
@@ -30,7 +29,7 @@ const RegisterActivation: NextPage = () => {
   const handleAccountActivation = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     setLoading(true);
     try {
-      if (tokenValid) {
+      if (tokenValid && key) {
         await verifyAccount(key, { rejectRequest: false, onError: false });
         setAccountVerified(true);
       }

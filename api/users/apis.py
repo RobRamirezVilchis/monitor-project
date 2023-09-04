@@ -27,6 +27,9 @@ class UsersWhitelistListApi(APIView):
         user = CommonUserSerializer(required=False, read_only=True)
 
     def get(self, request, *args, **kwargs):
+        """
+        Returns a list of whitelisted users.
+        """
         filters_serializer = self.FilterSerializer(data=request.query_params)
         filters_serializer.is_valid(raise_exception=True)
         qs = UserWhitelistService.list(filters=filters_serializer.validated_data)
@@ -51,6 +54,7 @@ class UsersWhitelistListApi(APIView):
 
         user = UserWhitelistService.create(serializer.validated_data)
         return Response(self.OutputSerializer(user).data, status=status.HTTP_201_CREATED)
+
 
 class UsersWhitelistDetailApi(APIView):
     
