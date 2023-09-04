@@ -5,7 +5,7 @@ import { createQuery } from "@/api/helpers/createQuery";
 import { ConfirmDialogProvider } from "@/components/shared/ConfirmDialogProvider";
 import { useConfirmDialog } from "@/hooks/shared/useConfirmDialog";
 import { UseTimerOptions, useTimer } from "@/hooks/shared/useTimer";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 
 const useMyQuery = createQuery({
   queryPrimaryKey: "test",
@@ -246,15 +246,19 @@ const withTrailingZeros = (num: number, digits: number) => num.toString().padSta
 
 const TimerExample = () => {
   const [timerOptions, setTimerOptions] = useState<UseTimerOptions>({
-    initialTime: -5 * 1000,
     interval: 50,
     // autoStart: true,
-    // stopAt: 5 * 1000,
-    stopAt: -1 * 1000,
-    autoStop: -3 * 1000,
-    autoReset: -4 * 1000,
-    autoRestart: -3 * 1000,
-    onStop: (time) => console.log("onStop", time),
+    
+    // initialTime: -5 * 1000,
+    // stopAt: 10 * 1000,
+    // autoReset: 3 * 1000,
+    // autoRestart: 5 * 1000,
+
+    // initialTime: -5 * 1000,
+    // stopAt: -1 * 1000,
+    // autoReset: -4 * 1000,
+    // autoRestart: -3 * 1000,
+    onStop: time => console.log("onStop", time),
   });
   const timer = useTimer(timerOptions);
 
