@@ -116,8 +116,16 @@ export const useTimer = ({
   onTick, 
   onStop,
 }: UseTimerOptions): UseTimerReturn => {
+  const timerIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const baseTimeRef = useRef(
+    stopAt !== undefined 
+    ? Math.min(initialTime ?? 0, stopAt) 
+    : initialTime ?? 0
+  );
+  const currentStartDateRef = useRef<Date | null>(null);
+
   const [state, setState] = useImmer<{ time: number, status: TimerStatus }>({
-    time: initialTime,
+    time: baseTimeRef.current,
     status: "stopped",
   });
   const _state = useRef({
@@ -125,9 +133,6 @@ export const useTimer = ({
     status:  state.status,
     autoStarted: false,
   });
-  const timerIntervalRef = useRef<NodeJS.Timeout | null>(null);
-  const baseTimeRef = useRef(initialTime);
-  const currentStartDateRef = useRef<Date | null>(null);
 
   const startDateRef = useRef<Date | null>(null); // not used for now
   const endDateRef = useRef<Date | null>(null); // not used for now
@@ -149,10 +154,12 @@ export const useTimer = ({
     });
 
     clearTimerInterval();
-    const diff = new Date().valueOf() - currentStartDateRef.current!.valueOf();
+    let diff = new Date().valueOf() - currentStartDateRef.current!.valueOf();
+    if (stopAt !== undefined)
+      diff = Math.min(diff, stopAt - baseTimeRef.current);
     baseTimeRef.current += diff;
     currentStartDateRef.current = null;
-  }, [setState]);
+  }, [setState, stopAt]);
 
   const stop = useCallback((time?: number) => {
     if (_state.current.status !== "running" && _state.current.status !== "paused") {
@@ -203,7 +210,9 @@ export const useTimer = ({
         return;
 
       const diff = new Date().valueOf() - currentStartDateRef.current!.valueOf();
-      const newTime = baseTimeRef.current + diff;
+      let newTime = baseTimeRef.current + diff;
+      if (stopAt !== undefined)
+        newTime = Math.min(newTime, stopAt);
       
       _state.current.time = newTime;
       setState((draft) => {
@@ -250,7 +259,9 @@ export const useTimer = ({
   useEffect(() => {
     if (_state.current.status === "running") {
       _state.current.status = "paused";
-      const diff = new Date().valueOf() - currentStartDateRef.current!.valueOf();
+      let diff = new Date().valueOf() - currentStartDateRef.current!.valueOf();
+      if (stopAt !== undefined)
+        diff = Math.min(diff, stopAt - baseTimeRef.current);
       baseTimeRef.current += diff;
       currentStartDateRef.current = null;
       start();
