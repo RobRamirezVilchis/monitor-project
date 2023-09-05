@@ -6,7 +6,7 @@ import {
   UserAccessParams,
   UserAccess
 } from "./users.types";
-import http from "@/utils/http";
+import http from "@/api/http";
 import api from ".";
 import { Paginated } from "@/api/types";
 import { Role } from "./auth.types";
