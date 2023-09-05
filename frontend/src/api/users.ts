@@ -115,5 +115,9 @@ export const getUserRoleLocalized = (group: Role) => {
   switch (group) {
     case "Admin": 
       return "Administrador";
+    case "User":
+      return "Usuario";
+    default:
+      return "";
   }
 }

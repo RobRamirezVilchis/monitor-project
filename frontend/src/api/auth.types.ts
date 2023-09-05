@@ -1,7 +1,11 @@
 import { providers } from "./auth";
 
-export type Role = 
-  | "Admin";
+export const userRoles = [
+  "Admin",
+  "User",
+] as const;
+
+export type Role =  typeof userRoles[number];
 
 export interface User {
   id?: number;

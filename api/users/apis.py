@@ -59,8 +59,8 @@ class UsersWhitelistListApi(APIView):
 class UsersWhitelistDetailApi(APIView):
     
     class UpdateInputSerializer(serializers.Serializer):
-        email = serializers.EmailField(max_length=254, required=True)
-        group = serializers.CharField(max_length=254, required=True)
+        email = serializers.EmailField(max_length=254, required=False)
+        group = serializers.CharField(max_length=254, required=False)
 
         def validate_group(self, value):
             if value not in user_roles:
@@ -69,8 +69,8 @@ class UsersWhitelistDetailApi(APIView):
 
     class OutputSerializer(serializers.Serializer):
         id = serializers.IntegerField(required=True)
-        email = serializers.EmailField(max_length=254, required=True)
-        group = serializers.CharField(max_length=254, required=True)
+        email = serializers.EmailField(max_length=254)
+        group = serializers.CharField(max_length=254)
         user = CommonUserSerializer(required=False, read_only=True)
 
     def patch(self, request, pk = None, *args, **kwargs):

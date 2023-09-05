@@ -7,6 +7,7 @@ import Button  from "@mui/lab/LoadingButton";
 import { TextInput, Select } from "../shared/hook-form/styled";
 import { CreateWhitelistItemData } from "@/api/users.types";
 import { getUserRoleLocalized } from "@/api/users";
+import { userRoles } from "@/api/auth.types";
 
 export interface NewUserFormProps {
   onSubmit: (data: CreateWhitelistItemData) => void;
@@ -59,9 +60,7 @@ export const NewUserForm: FC<NewUserFormProps> = ({ onSubmit, loading }) => {
               name="group"
               variant="filled"
               title="Rol"
-              options={[
-                { value: "Admin", label: getUserRoleLocalized("Admin") },
-              ]}
+              options={userRoles.map(role => ({ value: role, label: getUserRoleLocalized(role) }))}
               placeholder="Rol"
               disablePlaceholder
               classes={{

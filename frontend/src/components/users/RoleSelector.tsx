@@ -3,6 +3,7 @@ import Select, { SelectChangeEvent } from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
 
 import { useAuth } from "@/hooks/auth";
+import { userRoles } from "@/api/auth.types";
 import { useSnackbar } from "@/hooks/shared";
 import { useUpdateWhitelistItemMutation } from "@/api/mutations/users";
 import { WhitelistItem } from "@/api/users.types";
@@ -60,7 +61,9 @@ export const RoleSelector: FC<RoleSelectorProps> = ({ whitelistItem, value }) =>
         }
       }}
     >
-      <MenuItem value="Admin">{getUserRoleLocalized("Admin")}</MenuItem>
+      {userRoles.map((role) => (
+        <MenuItem key={role} value={role}>{getUserRoleLocalized(role)}</MenuItem>
+      ))}
     </Select>
   );
 };
