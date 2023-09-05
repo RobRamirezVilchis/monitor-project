@@ -5,7 +5,9 @@ import { createQuery } from "@/api/helpers/createQuery";
 import { ConfirmDialogProvider } from "@/components/shared/ConfirmDialogProvider";
 import { useConfirmDialog } from "@/hooks/shared/useConfirmDialog";
 import { UseTimerOptions, useTimer } from "@/hooks/shared/useTimer";
-import { useCallback, useState } from "react";
+import { useState } from "react";
+
+import http from "@/api/http";
 
 const useMyQuery = createQuery({
   queryPrimaryKey: "test",
@@ -223,6 +225,41 @@ const Test = () => {
       </div>
 
       <TimerExample />
+
+      <div>
+        <button
+          className="bg-blue-500 text-white rounded-md p-2"
+          onClick={async () => {
+            try {
+              const resp1 = http.get("/inexistent", {
+                retryDelay: 0,
+                onError: (e) => {
+                  console.log("error", new Date(), e.config._failureCount);
+                  throw e;
+                },
+                onRetry: (count, e) => {
+                  console.log("retry", count);
+                  // if (count === 2)
+                  //   throw e;
+                }
+              });
+
+              // const resp2 = http.get("/inexistent", {
+              //   retry: 3,
+              //   onError: (e) => {
+              //     console.log("error resp 2");
+              //     throw e;
+              //   },
+              // });
+            }
+            catch (e) {
+              console.log("resp error", e)
+            }
+          }}
+        >
+          Test Http
+        </button>
+      </div>
     </div>
   )
 }

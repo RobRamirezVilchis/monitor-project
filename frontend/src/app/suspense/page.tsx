@@ -2,8 +2,7 @@ import api from "@/api";
 
 import http from "@/utils/server/fetchWithCredentials";
 import { User } from "@/api/auth.types";
-
-const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+import { sleep } from "@/utils/utils";
 
 const SuspensePage = async () => {
   const { data: user } = await http<User>(`${api.baseURL}${api.endpoints.auth.user}`);

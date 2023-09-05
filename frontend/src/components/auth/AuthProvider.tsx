@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation";
 
 import api from "@/api";
 import { ApiError } from "@/api/types";
-import http from "@/utils/http";
+import http from "@/api/http";
 import {
   clearJwtStorage,
   fetchMyUser,

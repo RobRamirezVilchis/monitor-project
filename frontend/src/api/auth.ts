@@ -1,8 +1,8 @@
 import { AxiosResponse } from "axios";
 import { parseISO } from "date-fns";
-import http, { AxiosRequestConfig } from "@/utils/http";
 
 import api from ".";
+import http from "@/api/http";
 import { AuthError, User } from "./auth.types";
 import logger from "@/utils/logger";
 
@@ -23,11 +23,11 @@ export function isUserInAuthorizedRoles(
   return authorized;
 }
 
-export const fetchMyUser = async (config?: AxiosRequestConfig): Promise<AxiosResponse<User, any>> => {
+export const fetchMyUser = async (config?: Parameters<typeof http.get>[1]): Promise<AxiosResponse<User, any>> => {
   return http.get<User>(api.endpoints.auth.user, config);
 }
 
-export const getMyUser = async (config?: AxiosRequestConfig): Promise<User | null> => {
+export const getMyUser = async (config?: Parameters<typeof http.get>[1]): Promise<User | null> => {
   try {
     const resp = await fetchMyUser(config);
     if (resp.status === 200)
@@ -46,12 +46,12 @@ export const updateMyInfo = (
     first_name?: string,
     last_name?: string,
   },
-  config?: AxiosRequestConfig
+  config?: Parameters<typeof http.patch>[2]
 ) => {
   return http.patch<User>(api.endpoints.auth.user, data, config);
 };
 
-export const deleteMyAccount = (config?: AxiosRequestConfig) => {
+export const deleteMyAccount = (config?: Parameters<typeof http.delete>[1]) => {
   return http.delete(api.endpoints.auth.user, config);
 };
 
@@ -64,11 +64,11 @@ export interface RegisterUserData {
   last_name: string;
 }
 
-export const registerUser = (data: RegisterUserData, config?: AxiosRequestConfig) => {
+export const registerUser = (data: RegisterUserData, config?: Parameters<typeof http.post>[2]) => {
   return http.post(api.endpoints.auth.register, data, config);
 };
 
-export const isRegisterTokenValid = async (key: string, config?: AxiosRequestConfig) => {
+export const isRegisterTokenValid = async (key: string, config?: Parameters<typeof http.get>[1]) => {
   try {
     const resp = await http.get(api.endpoints.auth.registerTokenValidity, { ...config, params: { key } });
     return true;
@@ -77,15 +77,15 @@ export const isRegisterTokenValid = async (key: string, config?: AxiosRequestCon
   return false;
 };
 
-export const verifyAccount = (key: string, config?: AxiosRequestConfig) => {
+export const verifyAccount = (key: string, config?: Parameters<typeof http.post>[2]) => {
   return http.post(api.endpoints.auth.registerVerifyEmail, { key }, config);
 };
 
-export const resendActivationEmail = (email: string, config?: AxiosRequestConfig) => {
+export const resendActivationEmail = (email: string, config?: Parameters<typeof http.post>[2]) => {
   return http.post(api.endpoints.auth.registerResendEmail, { email }, config);
 };
 
-export const getConnectedSocialAccounts = async (config?: AxiosRequestConfig) => {
+export const getConnectedSocialAccounts = async (config?: Parameters<typeof http.get>[1]) => {
   try {
     const resp = await http.get(api.endpoints.auth.connectedSocialAccounts, config);
     return resp.data;
@@ -95,11 +95,11 @@ export const getConnectedSocialAccounts = async (config?: AxiosRequestConfig) =>
   }
 };
 
-export const disconnectSocialAccount = (socialAccountId: number, config?: AxiosRequestConfig) => {
+export const disconnectSocialAccount = (socialAccountId: number, config?: Parameters<typeof http.post>[2]) => {
   return http.post(api.endpoints.auth.disconnectSocialAccount(socialAccountId), undefined, config);
 }
 
-export const requestPasswordReset = (email: string, config?: AxiosRequestConfig) => {
+export const requestPasswordReset = (email: string, config?: Parameters<typeof http.post>[2]) => {
   return http.post(api.endpoints.auth.passwordResetRequest, { email }, config);
 };
 
@@ -108,7 +108,7 @@ export const confirmPasswordReset = (
   token: string,
   newPassword1: string,
   newPassword2: string,
-  config?: AxiosRequestConfig
+  config?: Parameters<typeof http.post>[2]
 ) => {
   return http.post(api.endpoints.auth.passwordResetConfirm, 
     { uid, token, new_password1: newPassword1, new_password2: newPassword2 },
@@ -116,7 +116,7 @@ export const confirmPasswordReset = (
   );
 };
 
-export const isPasswordResetTokenValid = async (uid: string, token: string, config?: AxiosRequestConfig) => {
+export const isPasswordResetTokenValid = async (uid: string, token: string, config?: Parameters<typeof http.get>[1]) => {
   try {
     const resp = await http.get(api.endpoints.auth.passwordResetValidity, { ...config, params: { uid, token } });
     return true;
@@ -125,7 +125,7 @@ export const isPasswordResetTokenValid = async (uid: string, token: string, conf
   return false;
 };
 
-export const changePassword = (newPassword1: string, newPassword2: string, config?: AxiosRequestConfig) => {
+export const changePassword = (newPassword1: string, newPassword2: string, config?: Parameters<typeof http.post>[2]) => {
   return http.post(api.endpoints.auth.passwordChange, 
     { new_password1: newPassword1, new_password2: newPassword2 },
     config

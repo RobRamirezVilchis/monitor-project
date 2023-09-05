@@ -45,7 +45,7 @@ const PasswordResetRequest = () => {
           setError("Ha ocurrido un problema, por favor intente más tarde");
         else if (e.response?.data.type === "validation_error") {
           for (const error of e.response?.data.errors ?? []) {
-            if (error.field === "email") {
+            if (error.attr === "email") {
               setError("Ingrese un email válido");
             } 
           }
