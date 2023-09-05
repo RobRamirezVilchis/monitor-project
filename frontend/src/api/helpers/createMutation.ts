@@ -81,7 +81,7 @@ export function createMutation<TData = unknown, TError = unknown, TVariables = v
       ...options,
       onMutate: async (variables) => {
         const pCtx = await useMutationOptions?.onMutate?.(variables);
-        return options?.onMutate?.(variables, pCtx as any);
+        return options?.onMutate?.(variables, pCtx as any) ?? pCtx;
       },
       onSuccess: (data, variables, context) => {
         return Promise.all([
