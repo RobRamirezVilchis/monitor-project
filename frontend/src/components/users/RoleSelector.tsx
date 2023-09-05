@@ -33,6 +33,7 @@ export const RoleSelector: FC<RoleSelectorProps> = ({ whitelistItem, value }) =>
       data: {
         group,
       },
+      optimistic: true,
     });
   };
 
