@@ -1,7 +1,12 @@
 import { useCallback, useEffect, useMemo, useRef } from "react";
 import { useImmer } from "use-immer";
+import localforage from "localforage";
 
 export interface UseTimerOptions {
+  /**
+   * Key to use for persisting the timer state in localStorage
+   */
+  key?: string;
   /**
    * Initial time in milliseconds used on first start
    * @default 0
@@ -101,12 +106,20 @@ export interface UseTimerReturn {
   isRunning: boolean;
   isPaused: boolean;
   isStopped: boolean;
+  loading: boolean;
+}
+
+export interface TimerStorageData {
+  elapsed: number;
+  status: TimerStatus;
+  currentTimestamp: string | null;
 }
 
 /**
  * Timer hook that support both incremental and decremental timers
  */
 export const useTimer = ({
+  key,
   initialTime = 0, 
   interval = 1000, 
   autoStart = false, 
@@ -122,16 +135,18 @@ export const useTimer = ({
     ? Math.min(initialTime ?? 0, stopAt) 
     : initialTime ?? 0
   );
-  const currentStartDateRef = useRef<Date | null>(null);
+  const currentTimestampRef = useRef<Date | null>(null);
 
-  const [state, setState] = useImmer<{ time: number, status: TimerStatus }>({
+  const [state, setState] = useImmer<{ time: number, status: TimerStatus, loading: boolean }>({
     time: baseTimeRef.current,
     status: "stopped",
+    loading: key !== undefined,
   });
   const _state = useRef({
     time: state.time,
     status:  state.status,
     autoStarted: false,
+    loading: state.loading,
   });
 
   const startDateRef = useRef<Date | null>(null); // not used for now
@@ -154,12 +169,22 @@ export const useTimer = ({
     });
 
     clearTimerInterval();
-    let diff = new Date().valueOf() - currentStartDateRef.current!.valueOf();
+    let diff = new Date().valueOf() - currentTimestampRef.current!.valueOf();
     if (stopAt !== undefined)
       diff = Math.min(diff, stopAt);
     baseTimeRef.current += diff;
-    currentStartDateRef.current = null;
-  }, [setState, stopAt]);
+    currentTimestampRef.current = null;
+
+    if (key !== undefined) {
+      const storageKey = getTimerKey(key);
+      const timerStorage: TimerStorageData = {
+        elapsed: _state.current.time,
+        status: "paused",
+        currentTimestamp: null,
+      };
+      localforage.setItem<TimerStorageData>(storageKey, timerStorage);
+    }
+  }, [setState, stopAt, key]);
 
   const stop = useCallback((time?: number) => {
     if (_state.current.status !== "running" && _state.current.status !== "paused") {
@@ -176,7 +201,17 @@ export const useTimer = ({
     baseTimeRef.current = time ?? 0;
 
     onStop?.(_state.current.time);
-  }, [setState, onStop]);
+
+    if (key !== undefined) {
+      const storageKey = getTimerKey(key);
+      const timerStorage: TimerStorageData = {
+        elapsed: _state.current.time,
+        status: "stopped",
+        currentTimestamp: null,
+      };
+      localforage.setItem<TimerStorageData>(storageKey, timerStorage);
+    }
+  }, [setState, onStop, key]);
 
   const start = useCallback(() => {
     const now = new Date();
@@ -196,8 +231,18 @@ export const useTimer = ({
         break;
     }
 
-    currentStartDateRef.current = now;
+    currentTimestampRef.current = now;
     endDateRef.current = null;
+
+    if (key !== undefined && !_state.current.loading) {
+      const storageKey = getTimerKey(key);
+      const timerStorage: TimerStorageData = {
+        elapsed: _state.current.time,
+        status: "running",
+        currentTimestamp: currentTimestampRef.current.toISOString(),
+      };
+      localforage.setItem<TimerStorageData>(storageKey, timerStorage);
+    }
 
     _state.current.status = "running";
     setState((draft) => {
@@ -209,7 +254,7 @@ export const useTimer = ({
       if (_state.current.status !== "running")
         return;
 
-      const diff = new Date().valueOf() - currentStartDateRef.current!.valueOf();
+      const diff = new Date().valueOf() - currentTimestampRef.current!.valueOf();
       let newTime = baseTimeRef.current + diff;
       if (stopAt !== undefined)
         newTime = Math.min(newTime, stopAt);
@@ -235,7 +280,7 @@ export const useTimer = ({
         }
       }
     }, interval);
-  }, [setState, stop, onTick, interval, stopAt, autoReset, autoRestart]);
+  }, [setState, stop, onTick, interval, stopAt, autoReset, autoRestart, key]);
 
   const restart = useCallback((time?: number) => {
     _state.current.status = "stopped";
@@ -252,29 +297,72 @@ export const useTimer = ({
     setState((draft) => {
       draft.time = time ?? 0;
     });
-  }, [stop, setState]);
+
+    if (key !== undefined) {
+      const storageKey = getTimerKey(key);
+      const timerStorage: TimerStorageData = {
+        elapsed: _state.current.time,
+        status: "stopped",
+        currentTimestamp: null,
+      };
+      localforage.setItem<TimerStorageData>(storageKey, timerStorage);
+    }
+  }, [stop, setState, key]);
 
   /* eslint-disable react-hooks/exhaustive-deps */
   //? If the timer is running and the options change, update the timer interval
   useEffect(() => {
     if (_state.current.status === "running") {
       _state.current.status = "paused";
-      let diff = new Date().valueOf() - currentStartDateRef.current!.valueOf();
+      let diff = new Date().valueOf() - currentTimestampRef.current!.valueOf();
       if (stopAt !== undefined)
         diff = Math.min(diff, stopAt);
       baseTimeRef.current += diff;
-      currentStartDateRef.current = null;
+      currentTimestampRef.current = null;
       start();
     }
-  }, [initialTime, interval, autoStart, stopAt, autoReset, autoRestart, onTick, onStop]);
+  }, [initialTime, interval, autoStart, stopAt, autoReset, autoRestart, key, onTick, onStop]);
   /* eslint-enable react-hooks/exhaustive-deps */
 
+  // Check if there is a timer persisted in storage and restore it
   useEffect(() => {
-    if (autoStart && !_state.current.autoStarted) {
+    if (key !== undefined) {
+      (async () => {
+        const storageKey = getTimerKey(key);
+        const timerStorage = await localforage.getItem<TimerStorageData>(storageKey);
+
+        if (timerStorage) {
+          baseTimeRef.current = timerStorage.elapsed;
+          currentTimestampRef.current = timerStorage.currentTimestamp ? new Date(timerStorage.currentTimestamp) : null;
+          
+          if (timerStorage.status === "running") {
+            start();
+            _state.current.loading = true;
+          }
+          else {
+            _state.current.time = baseTimeRef.current;
+            _state.current.status = timerStorage.status;
+            setState((draft) => {
+              draft.time = _state.current.time;
+              draft.status = _state.current.status;
+            });
+            if (timerStorage.status === "stopped") baseTimeRef.current = 0;
+          }
+        }
+        _state.current.loading = false;
+        setState((draft) => {
+          draft.loading = false;
+        });
+      })();
+    }
+  }, [setState, key, stopAt, start]);
+
+  useEffect(() => {
+    if (autoStart && !_state.current.autoStarted && (key === undefined || !state.loading)) {
       _state.current.autoStarted = true;
       start();
     }
-  }, [autoStart, start]);
+  }, [autoStart, key, state.loading, start]);
 
   useEffect(() => {
     return () => clearTimerInterval();
@@ -297,7 +385,14 @@ export const useTimer = ({
     isRunning: state.status === "running",
     isPaused: state.status === "paused",
     isStopped: state.status === "stopped",
+    loading: state.loading,
   }), [state, start, pause, stop, restart, reset]);
 
   return result;
+}
+
+function getTimerKey(timerName: string) {
+  if (!timerName)
+    return "timer"; // global key
+  return `timer-${timerName}`;
 }
