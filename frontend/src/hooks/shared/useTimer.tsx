@@ -170,8 +170,6 @@ export const useTimer = ({
 
     clearTimerInterval();
     let diff = new Date().valueOf() - currentTimestampRef.current!.valueOf();
-    if (stopAt !== undefined)
-      diff = Math.min(diff, stopAt);
     baseTimeRef.current += diff;
     currentTimestampRef.current = null;
 
@@ -184,7 +182,7 @@ export const useTimer = ({
       };
       localforage.setItem<TimerStorageData>(storageKey, timerStorage);
     }
-  }, [setState, stopAt, key]);
+  }, [setState, key]);
 
   const stop = useCallback((time?: number) => {
     if (_state.current.status !== "running" && _state.current.status !== "paused") {
