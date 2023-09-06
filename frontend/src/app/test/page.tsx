@@ -74,7 +74,7 @@ const Test = () => {
   
   if (query.data || query2.data) {
     // console.log(query.queryPrimaryKey, query.data, query.variables)
-    console.log(query2.queryPrimaryKey, query2.data, query2.variables)
+    // console.log(query2.queryPrimaryKey, query2.data, query2.variables)
   }
 
   const dialog = useConfirmDialog({
@@ -283,18 +283,20 @@ const withTrailingZeros = (num: number, digits: number) => num.toString().padSta
 
 const TimerExample = () => {
   const [timerOptions, setTimerOptions] = useState<UseTimerOptions>({
+    key: "test",
+
     interval: 50,
     // autoStart: true,
     
-    // initialTime: -5 * 1000,
+    // initialTime: 5 * 1000,
     // stopAt: 10 * 1000,
-    // autoReset: 3 * 1000,
-    // autoRestart: 5 * 1000,
+    // autoReset: 0 * 1000,
+    // autoRestart: 0 * 1000,
 
     // initialTime: -5 * 1000,
-    // stopAt: -1 * 1000,
-    // autoReset: -4 * 1000,
-    // autoRestart: -3 * 1000,
+    // stopAt: 0 * 1000,
+    // autoReset: -5 * 1000,
+    // autoRestart: -5 * 1000,
     onStop: time => console.log("onStop", time),
   });
   const timer = useTimer(timerOptions);
@@ -308,8 +310,15 @@ const TimerExample = () => {
           {withTrailingZeros(timer.time.seconds, 2)}.
           {withTrailingZeros(timer.time.milliseconds, 3)}]
         </p>
+        <p>{timer.loading ? "---" : (
+          <>{withTrailingZeros(timer.time.hours, 2)}:
+          {withTrailingZeros(timer.time.minutes, 2)}:
+          {withTrailingZeros(timer.time.seconds, 2)}.
+          {withTrailingZeros(timer.time.milliseconds, 3)}</>
+        )}</p>
         <p>Elapsed: {timer.time.elapsed / 1000}</p>
         <p>Estatus: {timer.status}</p>
+        <p>Loading: {timer.loading ? "True" : "False"}</p>
       </div>
 
       <button
@@ -328,21 +337,24 @@ const TimerExample = () => {
 
       <button
         className="bg-blue-500 text-white rounded-md p-2"
-        onClick={() => timer.stop(3 * 1000)}
+        onClick={() => timer.stop()}
+        // onClick={() => timer.stop(3 * 1000)}
       >
         Stop
       </button>
 
       <button
         className="bg-blue-500 text-white rounded-md p-2"
-        onClick={() => timer.restart(5 * 1000)}
+        onClick={() => timer.restart()}
+        // onClick={() => timer.restart(5 * 1000)}
       >
         Restart
       </button>
 
       <button
         className="bg-blue-500 text-white rounded-md p-2"
-        onClick={() => timer.reset(10 * 1000)}
+        onClick={() => timer.reset()}
+        // onClick={() => timer.reset(10 * 1000)}
       >
         Reset
       </button>
