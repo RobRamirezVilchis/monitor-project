@@ -24,7 +24,7 @@ interface UpdateWhitelistItemMutationsVariables {
 
 export const useUpdateWhitelistItemMutation = createMutation({
   mutationKey: ["users-whitelist-update"],
-  mutationFn: ({ id, data, optimistic }: UpdateWhitelistItemMutationsVariables & { optimistic?: boolean }) => 
+  mutationFn: ({ id, data }: UpdateWhitelistItemMutationsVariables & { optimistic?: boolean }) => 
     updateWhitelistItem(id, data),
   // Optimistic update:
   // https://tanstack.com/query/latest/docs/react/guides/optimistic-updates
