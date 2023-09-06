@@ -312,7 +312,7 @@ export const useTimer = ({
   /* eslint-disable react-hooks/exhaustive-deps */
   //? If the timer is running and the options change, update the timer interval
   useEffect(() => {
-    if (_state.current.status === "running") {
+    if (_state.current.status === "running" && !_state.current.loading) {
       _state.current.status = "paused";
       let diff = new Date().valueOf() - currentTimestampRef.current!.valueOf();
       if (stopAt !== undefined)
@@ -321,7 +321,7 @@ export const useTimer = ({
       currentTimestampRef.current = null;
       start();
     }
-  }, [initialTime, interval, autoStart, stopAt, autoReset, autoRestart, key, onTick, onStop]);
+  }, [initialTime, interval, autoStart, stopAt, autoReset, autoRestart, key, onTick, onStop, start]);
   /* eslint-enable react-hooks/exhaustive-deps */
 
   // Check if there is a timer persisted in storage and restore it
@@ -330,9 +330,15 @@ export const useTimer = ({
       (async () => {
         const storageKey = getTimerKey(key);
         const timerStorage = await localforage.getItem<TimerStorageData>(storageKey);
-
+        
         if (timerStorage) {
-          baseTimeRef.current = timerStorage.elapsed;
+          baseTimeRef.current = timerStorage.elapsed + 
+            (timerStorage.status === "stopped" && timerStorage.elapsed === 0 
+              ? initialTime ?? 0 
+              : 0);
+          baseTimeRef.current = stopAt !== undefined 
+            ? Math.min(baseTimeRef.current, stopAt) 
+            : baseTimeRef.current;
           currentTimestampRef.current = timerStorage.currentTimestamp ? new Date(timerStorage.currentTimestamp) : null;
           
           if (timerStorage.status === "running") {
@@ -346,7 +352,7 @@ export const useTimer = ({
               draft.time = _state.current.time;
               draft.status = _state.current.status;
             });
-            if (timerStorage.status === "stopped") baseTimeRef.current = 0;
+            if (timerStorage.status === "stopped" && timerStorage.elapsed !== 0) baseTimeRef.current = 0;
           }
         }
         _state.current.loading = false;
@@ -355,7 +361,7 @@ export const useTimer = ({
         });
       })();
     }
-  }, [setState, key, stopAt, start]);
+  }, [setState, key, stopAt, initialTime, start]);
 
   useEffect(() => {
     if (autoStart && !_state.current.autoStarted && (key === undefined || !state.loading)) {
