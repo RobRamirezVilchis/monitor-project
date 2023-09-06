@@ -275,6 +275,16 @@ export const useTimer = ({
           setState((draft) => {
             draft.time = autoReset ?? 0;
           });
+
+          if (key !== undefined) {
+            const storageKey = getTimerKey(key);
+            const timerStorage: TimerStorageData = {
+              elapsed: _state.current.time,
+              status: "stopped",
+              currentTimestamp: null,
+            };
+            localforage.setItem<TimerStorageData>(storageKey, timerStorage);
+          }
         }
       }
     }, interval);
@@ -362,7 +372,7 @@ export const useTimer = ({
   }, [setState, key, stopAt, initialTime, start]);
 
   useEffect(() => {
-    if (autoStart && !_state.current.autoStarted && (key === undefined || !state.loading)) {
+    if (autoStart && !_state.current.autoStarted && (key === undefined || !state.loading) && _state.current.status === "stopped") {
       _state.current.autoStarted = true;
       start();
     }
