@@ -1,25 +1,25 @@
 "use client";
 
 import { GridCallbackDetails, GridColDef, GridFilterModel } from "@mui/x-data-grid";
-import { useDebounce, useQueryState } from "@/hooks/shared";
+import { useEffect, useState } from "react";
 import Button from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";
 
 import { ConfirmDialogProvider } from "@/components/shared/ConfirmDialogProvider";
 import { DataGrid, GridToolbarWithSearch } from "@/components/shared/DataGrid";
 import { DeleteUserAction } from "@/components/users/Actions";
+import { getUserRoleLocalized } from "@/api/users";
 import { NewUserForm } from "@/components/users/NewUserForm";
 import { RoleSelector } from "@/components/users/RoleSelector";
 import { useAddToWhitelistMutation } from "@/api/mutations/users";
+import { useDebounce, useQueryState } from "@/hooks/shared";
+import { User } from "@/api/auth.types"; 
 import { UserAvatar } from "@/components/shared/UserAvatar";
 import { useSnackbar } from "@/hooks/shared";
-import { useState } from "react";
 import { useWhitelistQuery } from "@/api/queries/users";
 import { WhitelistItem } from "@/api/users.types";
 
 import AddIcon from '@mui/icons-material/Add';
-import { getUserRoleLocalized } from "@/api/users";
-import { User } from "@/api/auth.types";
 
 const UsersPage = () => {
   const pagination = useQueryState({
@@ -65,6 +65,37 @@ const UsersPage = () => {
   });
   const [newUserFormOpen, setNewUserFormOpen] = useState(false);
 
+  //* Prefetch adjacent pages
+  useEffect(() => {
+    if (usersWhitelistQuery.data && usersWhitelistQuery.data.pagination && !usersWhitelistQuery.isPreviousData) {
+      const paginationInfo = usersWhitelistQuery.data.pagination;
+      if (paginationInfo.page > 1) {
+        useWhitelistQuery.prefetch({
+          variables: {
+            filters: usersWhitelistQuery.variables.filters,
+            pagination: {
+              page: paginationInfo.page - 1,
+              page_size: usersWhitelistQuery.variables.pagination?.page_size,
+            }
+          },
+          staleTime: 5 * 60 * 1000,
+        });
+      }
+      if (paginationInfo.page < paginationInfo.pages) {
+        useWhitelistQuery.prefetch({
+          variables: {
+            filters: usersWhitelistQuery.variables.filters,
+            pagination: {
+              page: paginationInfo.page + 1,
+              page_size: usersWhitelistQuery.variables.pagination?.page_size,
+            }
+          },
+          staleTime: 5 * 60 * 1000,
+        });
+      }
+    }
+  }, [usersWhitelistQuery.data, usersWhitelistQuery.isPreviousData, usersWhitelistQuery.variables.filters, usersWhitelistQuery.variables.pagination?.page_size]);
+  
   const onFilterModelChange = (model: GridFilterModel, details: GridCallbackDetails<"filter">) => {
     debounceFilters({
       search: model.quickFilterValues?.[0] || undefined,

@@ -1,10 +1,13 @@
 import { useCallback } from "react";
 import {
+  FetchQueryOptions,
   InvalidateQueryFilters,
   QueryClient,
   QueryFilters,
   QueryFunctionContext,
   QueryKey,
+  RefetchOptions,
+  RefetchQueryFilters,
   SetDataOptions,
   Updater,
   useQuery,
@@ -90,7 +93,6 @@ export type UseCreatedQuery<
 > = TVariables extends undefined
   ? <TRData = TData>(options?: QueryOptions<TVariables, TQueryFnData,  TError, TRData, TQueryKey>) => UseCreatedQueryResult<TVariables, TQueryFnData, TRData, TError> 
   : <TRData = TData>(options: QueryOptions<TVariables, TQueryFnData,  TError, TRData, TQueryKey>) => UseCreatedQueryResult<TVariables, TQueryFnData, TRData, TError>
-
 
 export function createQuery<
   TVariables = undefined, 
@@ -178,6 +180,42 @@ export function createQuery<
     return useQueryOptions.queryClient.getQueryData<TQueryFnData>(queryKey, filters)
   }) as any;
 
+  const prefetch: (
+    TVariables extends undefined
+    ? ((options?: FetchQueryOptions<TQueryFnData, TError, TData, UnionFlatten<string, TQueryKeyVariables>>) => Promise<TQueryFnData>)
+    : ((options: FetchQueryOptions<TQueryFnData, TError, TData, UnionFlatten<string, TQueryKeyVariables>> & { variables: TVariables }) => Promise<TQueryFnData>)
+  ) =
+  ((opts?: any) => {
+    if (!useQueryOptions.queryClient) {
+      throw new Error("queryClient is not defined.");
+    }
+
+    const { variables, ...options } = opts || {};
+    const queryKey = queryKeyFn(variables);
+    return useQueryOptions.queryClient.prefetchQuery<TQueryFnData, TError, TData, UnionFlatten<string, TQueryKeyVariables>>(
+      queryKey, ctx => queryFn(ctx, variables), options
+    );
+  }) as any;
+
+  const refetch: (
+    TVariables extends undefined
+    ? ((filters?: Omit<RefetchQueryFilters<TQueryFnData>, "queryKey">, options?: RefetchOptions) => Promise<TQueryFnData>)
+    : ((filters: Omit<RefetchQueryFilters<TQueryFnData>, "queryKey"> & { variables: TVariables }, options?: RefetchOptions) => Promise<TQueryFnData>)
+  ) =
+  ((_filters?: any, options?: any) => {
+    if (!useQueryOptions.queryClient) {
+      throw new Error("queryClient is not defined.");
+    }
+
+    const { variables, ...filters } = _filters || {};
+    const queryKey = queryKeyFn(variables);
+    return useQueryOptions.queryClient.refetchQueries<TQueryFnData>({
+      queryKey,
+      ...filters
+    }, options);
+  }) as any;
+
+
   const useCreatedQuery: UseCreatedQuery<TVariables, TQueryFnData, TError, TData, UnionFlatten<string, TQueryKeyVariables>> = 
   ((options: any) => {
     const queryClient = useQueryClient({ context: useQueryOptions?.context });
@@ -233,5 +271,7 @@ export function createQuery<
     invalidate,
     setData,
     getData,
+    prefetch,
+    refetch,
   });
 }

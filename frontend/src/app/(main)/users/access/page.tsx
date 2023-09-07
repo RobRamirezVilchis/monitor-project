@@ -1,16 +1,16 @@
 "use client";
 
 import { GridCallbackDetails, GridColDef, GridFilterModel } from "@mui/x-data-grid";
-import { useDebounce, useQueryState } from "@/hooks/shared";
 import { parseISO, parse, format as formatDate } from "date-fns";
+import { useDebounce, useQueryState } from "@/hooks/shared";
+import { useEffect, useState } from "react";
 
-import { useUsersAccessQuery } from "@/api/queries/users";
-import { UserAccess } from "@/api/users.types";
 import { DataGrid, GridToolbarWithSearch } from "@/components/shared/DataGrid";
 import { DatePicker } from "@/components/shared/hook-form/styled";
 import { User } from "@/api/auth.types";
+import { UserAccess } from "@/api/users.types";
 import { UserAvatar } from "@/components/shared/UserAvatar";
-import { useState } from "react";
+import { useUsersAccessQuery } from "@/api/queries/users";
 
 function localDatetimeToLocalDateStr(datetime: Date | null) {
   return datetime ? formatDate(datetime, "yyyy-MM-dd") : "";
@@ -102,6 +102,37 @@ const UsersAccessPage = () => {
       }
     },
   });
+
+  //* Prefetch adjacent pages
+  useEffect(() => {
+    if (usersAccessQuery.data && usersAccessQuery.data.pagination && !usersAccessQuery.isPreviousData) {
+      const paginationInfo = usersAccessQuery.data.pagination;
+      if (paginationInfo.page > 1) {
+        useUsersAccessQuery.prefetch({
+          variables: {
+            filters: usersAccessQuery.variables.filters,
+            pagination: {
+              page: paginationInfo.page - 1,
+              page_size: usersAccessQuery.variables.pagination?.page_size,
+            }
+          },
+          staleTime: 5 * 60 * 1000,
+        });
+      }
+      if (paginationInfo.page < paginationInfo.pages) {
+        useUsersAccessQuery.prefetch({
+          variables: {
+            filters: usersAccessQuery.variables.filters,
+            pagination: {
+              page: paginationInfo.page + 1,
+              page_size: usersAccessQuery.variables.pagination?.page_size,
+            }
+          },
+          staleTime: 5 * 60 * 1000,
+        });
+      }
+    }
+  }, [usersAccessQuery.data, usersAccessQuery.isPreviousData, usersAccessQuery.variables.filters, usersAccessQuery.variables.pagination?.page_size]);
 
   const onFilterModelChange = (model: GridFilterModel, details: GridCallbackDetails<"filter">) => {
     debounceFilters({
