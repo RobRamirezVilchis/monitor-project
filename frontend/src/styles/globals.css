@@ -1,6 +1,10 @@
-@tailwind base;
+@layer {
+  @tailwind base;
+}
 @tailwind components;
 @tailwind utilities;
+
+/* Wrapping @tailwind base in a @layer is optional? */
 
 @layer base {
   html,
