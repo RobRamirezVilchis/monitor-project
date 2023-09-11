@@ -11,12 +11,14 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 
 import {
+  Autocomplete,
   Checkbox,
   Chip,
   ColorInput,
   ColorPicker,
   FileInput,
   JsonInput,
+  MultiSelect,
   NativeSelect,
   NumberInput,
   PasswordInput,
@@ -24,8 +26,10 @@ import {
   Radio,
   Rating,
   SegmentedControl,
+  Select,
   Slider,
   Switch,
+  TagsInput,
   Textarea,
   TextInput,
 } from "@/components/ui/hook-form/core";
@@ -48,15 +52,24 @@ const schema = z.object({
   switch: z.boolean(),
   textarea: z.string().nonempty("The textarea is required"),
   text: z.string().nonempty("The text is required"),
-}).refine(v => v.checkbox === true, {
+
+  autocomplete: z.string().nonempty("The autocomplete is required"),
+  multiselect: z.array(z.string()).nonempty("The multiselect is required"),
+  select: z.string().nonempty("The select is required"),
+  tags: z.array(z.string()).nonempty("The tags is required"),
+
+}).partial(/* To reach .refine on validation fails */).refine(({checkbox}) => checkbox, {
   message: "You must check the checkbox",
   path: ["checkbox"],
-}).refine(v => v.switch === true, {
-  message: "You must turn on the switch",
+}).refine(({radio}) => radio, { 
+  message: "You must check the radio",
+  path: ["radio"],
+}).refine(({switch: s}) => s, {
+  message: "You must check the switch",
   path: ["switch"],
 });
 
-type Form = z.infer<typeof schema>;
+type Form = Required<z.infer<typeof schema>>;
 
 const AppMantineUIPage = () => {
   const {
@@ -84,6 +97,11 @@ const AppMantineUIPage = () => {
       slider: 0,
       switch: false,
       text: "",
+
+      autocomplete: "",
+      multiselect: [],
+      select: "",
+      tags: [],
     },
     resolver: zodResolver(schema),
   });
@@ -301,6 +319,88 @@ const AppMantineUIPage = () => {
             </Fieldset>
           </Fieldset>
 
+          <Fieldset legend="Combobox"
+            classNames={{ 
+              root: "flex flex-col gap-3",
+              legend: "px-2" 
+            }}
+          >
+            <Fieldset legend="Autocomplete" classNames={{ legend: "px-2 font-semibold" }}>
+              <Autocomplete
+                name="autocomplete"
+                control={control}
+                label="Autocomplete"
+                placeholder="Enter something"
+                data={[
+                  "Option 1",
+                  {
+                    group: "Group",
+                    items: [
+                      "Option 2",
+                      "Option 3",
+                    ],
+                  },
+                ]}
+              />
+            </Fieldset>
+
+            <Fieldset legend="MultiSelect" classNames={{ legend: "px-2 font-semibold" }}>
+              <MultiSelect
+                name="multiselect"
+                control={control}
+                label="MultiSelect"
+                placeholder="Enter something"
+                data={[
+                  "Option 1",
+                  {
+                    group: "Group",
+                    items: [
+                      "Option 2",
+                      "Option 3",
+                    ],
+                  },
+                ]}
+              />
+            </Fieldset>
+
+            <Fieldset legend="Select" classNames={{ legend: "px-2 font-semibold" }}>
+              <Select
+                name="select"
+                control={control}
+                label="Select"
+                placeholder="Enter something"
+                data={[
+                  "Option 1",
+                  {
+                    group: "Group",
+                    items: [
+                      "Option 2",
+                      "Option 3",
+                    ],
+                  },
+                ]}
+              />
+            </Fieldset>
+
+            <Fieldset legend="TagsInput" classNames={{ legend: "px-2 font-semibold" }}>
+              <TagsInput
+                name="tags"
+                control={control}
+                label="TagsInput"
+                placeholder="Enter something"
+                data={[
+                  {
+                    group: "Suggestions",
+                    items: [
+                      "Tag 1",
+                      "Tag 2",
+                      "Tag 3",
+                    ],
+                  },
+                ]}
+              />
+            </Fieldset>
+          </Fieldset>
 
 
           <div className="flex gap-4">
@@ -358,4 +458,9 @@ const ExampleValidValues: Form = {
   switch: true,
   textarea: "Textarea",
   text: "John Doe",
+
+  autocomplete: "Option 1",
+  multiselect: ["Option 1"],
+  select: "Option 1",
+  tags: ["Tag 1"],
 };
