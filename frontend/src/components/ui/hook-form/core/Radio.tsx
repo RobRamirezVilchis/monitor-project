@@ -5,6 +5,7 @@ import {
   type GroupProps as _GroupProps,
 } from "@mantine/core";
 import { FieldValues, useController } from "react-hook-form";
+import { mergeRefs } from "@mantine/hooks";
 
 import { FormInputProps } from "@/components/ui/hook-form/base";
 
@@ -22,7 +23,7 @@ const Radio = <
   defaultValue,
   onChange: _onChange,
   onBlur: _onBlur,
-  ref: _ref,
+  inputRef,
   ...props
 }: RadioProps<TFieldValues>) => {
   const {
@@ -49,7 +50,7 @@ const Radio = <
         onBlur();
         _onBlur?.(...args);
       }}
-      ref={((el: HTMLInputElement) => ref?.(el)) && _ref}
+      ref={mergeRefs(ref, inputRef)}
       error={fieldState.error?.message}
     />
   )
@@ -69,7 +70,7 @@ export const RadioGroup = <
   defaultValue,
   onChange: _onChange,
   onBlur: _onBlur,
-  ref: _ref,
+  inputRef,
   ...props
 }: RadioGroupProps<TFieldValues>) => {
   const {
@@ -96,7 +97,7 @@ export const RadioGroup = <
         onBlur();
         _onBlur?.(...args);
       }}
-      ref={((el: HTMLInputElement) => ref?.(el)) && _ref}
+      ref={((el: HTMLInputElement) => ref?.(el)) && inputRef}
       error={fieldState.error?.message}
     />
   )

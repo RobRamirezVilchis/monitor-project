@@ -3,6 +3,7 @@ import {
   type CheckboxProps as _CheckboxProps,
 } from "@mantine/core";
 import { FieldValues, useController } from "react-hook-form";
+import { mergeRefs } from "@mantine/hooks";
 
 import { FormInputProps } from "@/components/ui/hook-form/base";
 
@@ -20,7 +21,7 @@ const Checkbox = <
   defaultValue,
   onChange: _onChange,
   onBlur: _onBlur,
-  ref: _ref,
+  inputRef,
   ...props
 }: CheckboxProps<TFieldValues>) => {
   const {
@@ -47,7 +48,7 @@ const Checkbox = <
         onBlur();
         _onBlur?.(...args);
       }}
-      ref={((el: HTMLInputElement) => ref?.(el)) && _ref}
+      ref={mergeRefs(ref, inputRef)}
       error={fieldState.error?.message}
     />
   )

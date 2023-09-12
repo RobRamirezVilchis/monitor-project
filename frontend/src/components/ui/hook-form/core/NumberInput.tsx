@@ -3,6 +3,7 @@ import {
   type NumberInputProps as _NumberInputProps,
 } from "@mantine/core";
 import { FieldValues, useController } from "react-hook-form";
+import { mergeRefs } from "@mantine/hooks";
 
 import { FormInputProps } from "@/components/ui/hook-form/base";
 
@@ -20,7 +21,7 @@ const NumberInput = <
   defaultValue,
   onChange: _onChange,
   onBlur: _onBlur,
-  ref: _ref,
+  inputRef,
   ...props
 }: NumberInputProps<TFieldValues>) => {
   const {
@@ -47,7 +48,7 @@ const NumberInput = <
         onBlur();
         _onBlur?.(...args);
       }}
-      ref={((el: HTMLDivElement) => ref?.(el)) && _ref}
+      ref={mergeRefs(ref, inputRef)}
       error={fieldState.error?.message}
     />
   );

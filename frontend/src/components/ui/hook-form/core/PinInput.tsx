@@ -3,6 +3,7 @@ import {
   type PinInputProps as _PinInputProps,
 } from "@mantine/core";
 import { FieldValues, useController } from "react-hook-form";
+import { mergeRefs } from "@mantine/hooks";
 
 import { FormInputProps } from "@/components/ui/hook-form/base";
 
@@ -20,7 +21,7 @@ const PinInput = <
   defaultValue,
   onChange: _onChange,
   onBlur: _onBlur,
-  ref: _ref,
+  inputRef,
   ...props
 }: PinInputProps<TFieldValues>) => {
   const {
@@ -47,8 +48,9 @@ const PinInput = <
         onBlur();
         _onBlur?.(...args);
       }}
-      ref={((el: HTMLInputElement) => ref?.(el)) && _ref}
+      ref={mergeRefs(ref, inputRef)}
       error={!!fieldState.error?.message}
+      itemRef="data-mantine-pin-input"
     />
   );
 }

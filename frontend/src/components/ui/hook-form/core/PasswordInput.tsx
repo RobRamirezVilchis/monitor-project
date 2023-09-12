@@ -3,6 +3,7 @@ import {
   type PasswordInputProps as _PasswordInputProps,
 } from "@mantine/core";
 import { FieldValues, useController } from "react-hook-form";
+import { mergeRefs } from "@mantine/hooks";
 
 import { FormInputProps } from "@/components/ui/hook-form/base";
 
@@ -23,7 +24,7 @@ const PasswordInput = <
   defaultValue,
   onChange: _onChange,
   onBlur: _onBlur,
-  ref: _ref,
+  inputRef,
   ...props
 }: PasswordInputProps<TFieldValues>) => {
   const {
@@ -51,7 +52,7 @@ const PasswordInput = <
         onBlur();
         _onBlur?.(...args);
       }}
-      ref={((el: HTMLInputElement) => ref?.(el)) && _ref}
+      ref={mergeRefs(ref, inputRef)}
       error={fieldState.error?.message}
     />
   );

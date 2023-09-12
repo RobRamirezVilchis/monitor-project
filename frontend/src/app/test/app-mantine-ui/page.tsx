@@ -1,6 +1,8 @@
 "use client";
 
 import {
+  Autocomplete as _Autocomplete,
+  Select as _Select,
   Button,
   Divider,
   Fieldset,
@@ -33,11 +35,13 @@ import {
   Textarea,
   TextInput,
 } from "@/components/ui/hook-form/core";
+import { useState } from "react";
 
 const schema = z.object({
   checkbox: z.boolean(),
   chip: z.boolean(),
-  color: z.string().nonempty("The color is required"),
+  colorInput: z.string().nonempty("The color is required"),
+  colorPicker: z.string().nonempty("The color is required"),
   files: z.union([z.custom<File>(), z.array(z.custom<File>()), z.null()]),
   json: z.string().nonempty("The json is required"),
   selectNative: z.string().nonempty("The selectNative is required"),
@@ -78,12 +82,14 @@ const AppMantineUIPage = () => {
     handleSubmit,
     reset,
     watch,
+    setFocus,
   } = useForm<Form>({
     mode: "onTouched",
     defaultValues: {
       checkbox: false,
       chip: false,
-      color: "",
+      colorInput: "",
+      colorPicker: "",
       files: null,
       json: "",
       selectNative: "",
@@ -106,6 +112,8 @@ const AppMantineUIPage = () => {
     resolver: zodResolver(schema),
   });
   const values = watch(); //! WARNING: This will rerender on every value change!!!
+
+  const [focusName, setFocusName] = useState<string | null>("");
 
   const onValid = (values: Form) => {
     console.log(values);
@@ -154,7 +162,7 @@ const AppMantineUIPage = () => {
 
             <Fieldset legend="ColorInput" classNames={{ legend: "px-2 font-semibold" }}>
               <ColorInput
-                name="color"
+                name="colorInput"
                 control={control}
                 label="Color"
                 placeholder="Pick a color"
@@ -163,7 +171,7 @@ const AppMantineUIPage = () => {
 
             <Fieldset legend="ColorPicker" classNames={{ legend: "px-2 font-semibold" }}>
               <ColorPicker
-                name="color"
+                name="colorPicker"
                 control={control}
                 placeholder="Pick a color"
               />
@@ -411,6 +419,46 @@ const AppMantineUIPage = () => {
               Example valid values
             </Button>
           </div>
+
+            <div className="mt-[100vh] flex gap-2 items-center">
+              <Button
+                type="button"
+                onClick={() => {
+                  setFocus(focusName as any);
+                }}
+              >
+                Focus
+              </Button>
+              <_Select
+                value={focusName}
+                onChange={setFocusName}
+                className="flex-1"
+                data={[
+                  "checkbox",
+                  "chip",
+                  "colorInput",
+                  "colorPicker",
+                  "files",
+                  "json",
+                  "selectNative",
+                  "number",
+                  "password",
+                  "pin",
+                  "radio",
+                  "radioGroup",
+                  "rating",
+                  "segmented",
+                  "slider",
+                  "switch",
+                  "textarea",
+                  "text",
+                  "autocomplete",
+                  "multiselect",
+                  "select",
+                  "tags",
+                ]}
+              />
+          </div>
         </form>
 
         <div>
@@ -443,7 +491,8 @@ export default AppMantineUIPage;
 const ExampleValidValues: Form = {
   checkbox: true,
   chip: true,
-  color: "#000000",
+  colorInput: "#000000",
+  colorPicker: "#000000",
   files: null,
   json: "{}",
   selectNative: "Option1",

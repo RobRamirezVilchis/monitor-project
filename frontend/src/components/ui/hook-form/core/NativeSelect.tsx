@@ -3,6 +3,7 @@ import {
   type NativeSelectProps as _NativeSelectProps,
 } from "@mantine/core";
 import { FieldValues, useController } from "react-hook-form";
+import { mergeRefs } from "@mantine/hooks";
 
 import { FormInputProps } from "@/components/ui/hook-form/base";
 
@@ -20,7 +21,7 @@ const NativeSelect = <
   defaultValue,
   onChange: _onChange,
   onBlur: _onBlur,
-  ref: _ref,
+  inputRef,
   ...props
 }: NativeSelectProps<TFieldValues>) => {
   const {
@@ -47,7 +48,7 @@ const NativeSelect = <
         onBlur();
         _onBlur?.(...args);
       }}
-      ref={((el: HTMLSelectElement) => ref?.(el)) && _ref}
+      ref={mergeRefs(ref, inputRef)}
       error={fieldState.error?.message}
     />
   );

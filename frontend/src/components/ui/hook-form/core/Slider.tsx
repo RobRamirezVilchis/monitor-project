@@ -3,6 +3,7 @@ import {
   type SliderProps as _SliderProps,
 } from "@mantine/core";
 import { FieldValues, useController } from "react-hook-form";
+import { mergeRefs } from "@mantine/hooks";
 
 import { FormInputProps } from "@/components/ui/hook-form/base";
 
@@ -20,7 +21,7 @@ const Slider = <
   defaultValue,
   onChange: _onChange,
   onBlur: _onBlur,
-  ref: _ref,
+  inputRef,
   ...props
 }: SliderProps<TFieldValues>) => {
   const {
@@ -46,7 +47,7 @@ const Slider = <
         onBlur();
         _onBlur?.(...args);
       }}
-      ref={((el: HTMLDivElement) => ref?.(el)) && _ref}
+      ref={mergeRefs(ref, inputRef)}
     />
   );
 }

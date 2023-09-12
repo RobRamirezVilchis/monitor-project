@@ -1,8 +1,9 @@
 import { 
-    ColorPicker as _ColorPicker,
-    type ColorPickerProps as _ColorPickerProps,
-  } from "@mantine/core";
-  import { FieldValues, useController } from "react-hook-form";
+  ColorPicker as _ColorPicker,
+  type ColorPickerProps as _ColorPickerProps,
+} from "@mantine/core";
+import { FieldValues, useController } from "react-hook-form";
+import { mergeRefs } from "@mantine/hooks";
   
   import { FormInputProps } from "@/components/ui/hook-form/base";
   
@@ -20,7 +21,7 @@ import {
     defaultValue,
     onChange: _onChange,
     onBlur: _onBlur,
-    ref: _ref,
+    inputRef,
     ...props
   }: ColorPickerProps<TFieldValues>) => {
     const {
@@ -46,7 +47,7 @@ import {
           onBlur();
           _onBlur?.(...args);
         }}
-        ref={((el: HTMLDivElement) => ref?.(el)) && _ref}
+        ref={mergeRefs(ref, inputRef)}
       />
     );
   }

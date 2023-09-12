@@ -1,8 +1,9 @@
 import { 
-    ColorInput as _ColorInput,
-    type ColorInputProps as _ColorInputProps,
-  } from "@mantine/core";
-  import { FieldValues, useController } from "react-hook-form";
+  ColorInput as _ColorInput,
+  type ColorInputProps as _ColorInputProps,
+} from "@mantine/core";
+import { FieldValues, useController } from "react-hook-form";
+import { mergeRefs } from "@mantine/hooks";
   
   import { FormInputProps } from "@/components/ui/hook-form/base";
   
@@ -20,7 +21,7 @@ import {
     defaultValue,
     onChange: _onChange,
     onBlur: _onBlur,
-    ref: _ref,
+    inputRef,
     ...props
   }: ColorInputProps<TFieldValues>) => {
     const {
@@ -47,7 +48,7 @@ import {
           onBlur();
           _onBlur?.(...args);
         }}
-        ref={((el: HTMLInputElement) => ref?.(el)) && _ref}
+        ref={mergeRefs(ref, inputRef)}
         error={fieldState.error?.message}
       />
     );

@@ -3,6 +3,7 @@ import {
   type TextareaProps as _TexaAreaProps,
 } from "@mantine/core";
 import { FieldValues, useController } from "react-hook-form";
+import { mergeRefs } from "@mantine/hooks";
 
 import { FormInputProps } from "@/components/ui/hook-form/base";
 
@@ -20,7 +21,7 @@ const Textarea = <
   defaultValue,
   onChange: _onChange,
   onBlur: _onBlur,
-  ref: _ref,
+  inputRef,
   ...props
 }: TextareaProps<TFieldValues>) => {
   const {
@@ -47,7 +48,7 @@ const Textarea = <
         onBlur();
         _onBlur?.(...args);
       }}
-      ref={((el: HTMLTextAreaElement) => ref?.(el)) && _ref}
+      ref={mergeRefs(ref, inputRef)}
       error={fieldState.error?.message}
     />
   );

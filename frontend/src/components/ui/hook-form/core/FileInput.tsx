@@ -3,6 +3,7 @@ import {
   type FileInputProps as _FileInputProps,
 } from "@mantine/core";
 import { FieldValues, useController } from "react-hook-form";
+import { mergeRefs } from "@mantine/hooks";
 
 import { FormInputProps } from "@/components/ui/hook-form/base";
 
@@ -22,7 +23,7 @@ const FileInput = <
   defaultValue,
   onChange: _onChange,
   onBlur: _onBlur,
-  ref: _ref,
+  inputRef,
   ...props
 }: FileInputProps<Multiple, TFieldValues>) => {
   const {
@@ -49,7 +50,7 @@ const FileInput = <
         onBlur();
         _onBlur?.(...args);
       }}
-      ref={((el: HTMLButtonElement) => ref?.(el)) && _ref}
+      ref={mergeRefs(ref, inputRef)}
       error={fieldState.error?.message}
     />
   );

@@ -3,6 +3,7 @@ import {
   type SegmentedControlProps as _SegmentedControlProps,
 } from "@mantine/core";
 import { FieldValues, useController } from "react-hook-form";
+import { mergeRefs } from "@mantine/hooks";
 
 import { FormInputProps } from "@/components/ui/hook-form/base";
 
@@ -20,7 +21,7 @@ const SegmentedControl = <
   defaultValue,
   onChange: _onChange,
   onBlur: _onBlur,
-  ref: _ref,
+  inputRef,
   ...props
 }: SegmentedControlProps<TFieldValues>) => {
   const {
@@ -46,7 +47,7 @@ const SegmentedControl = <
         onBlur();
         _onBlur?.(...args);
       }}
-      ref={((el: HTMLDivElement) => ref?.(el)) && _ref}
+      ref={mergeRefs(ref, inputRef)}
     />
   );
 }

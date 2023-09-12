@@ -7,8 +7,8 @@ export type FormInputProps<
   TRef = HTMLInputElement,
   TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
 > = Omit<UseControllerProps<TFieldValues, TName>,"control"> 
-& Omit<TInputProps, "name" | "defaultValue">
+& Omit<TInputProps, "name" | "defaultValue" | "ref">
 & {
   control: Control<TFieldValues>;
-  ref?: Ref<TRef>;
+  inputRef?: Ref<TRef>;
 };
