@@ -7,6 +7,7 @@ import {
   Divider,
   Fieldset,
   Radio as _Radio,
+  ActionIcon,
 } from "@mantine/core";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -35,7 +36,21 @@ import {
   Textarea,
   TextInput,
 } from "@/components/ui/hook-form/core";
-import { useState } from "react";
+import {
+  DateInput,
+  DatePicker,
+  DatePickerInput,
+  DateTimePicker,
+  MonthPicker,
+  MonthPickerInput,
+  TimeInput,
+  YearPicker,
+  YearPickerInput,
+} from "@/components/ui/hook-form/dates";
+import { useRef, useState } from "react";
+import { DatePickerValue } from "@mantine/dates";
+
+import AccessTimeIcon from '@mui/icons-material/AccessTime';
 
 const schema = z.object({
   checkbox: z.boolean(),
@@ -62,6 +77,21 @@ const schema = z.object({
   select: z.string().nonempty("The select is required"),
   tags: z.array(z.string()).nonempty("The tags is required"),
 
+  dateInput: z.nullable(z.date()),
+  datePicker: z.nullable(z.date()),
+  datePickerMultiple: z.custom<DatePickerValue<"multiple">>(),
+  datePickerInput: z.custom<DatePickerValue<"range">>(),
+  dateTimePicker: z.nullable(z.date()),
+  monthPicker: z.nullable(z.date()),
+  monthPickerMultiple: z.custom<DatePickerValue<"multiple">>(),
+  monthPickerRange: z.custom<DatePickerValue<"range">>(),
+  monthPickerInput: z.nullable(z.date()),
+  timeInput: z.string().regex(/^[\d]{2}:[\d]{2}/, "The time is required"),
+  yearPicker: z.nullable(z.date()),
+  yearPickerMultiple: z.custom<DatePickerValue<"multiple">>(),
+  yearPickerRange: z.custom<DatePickerValue<"range">>(),
+  yearPickerInput: z.nullable(z.date()),
+
 }).partial(/* To reach .refine on validation fails */).refine(({checkbox}) => checkbox, {
   message: "You must check the checkbox",
   path: ["checkbox"],
@@ -71,6 +101,30 @@ const schema = z.object({
 }).refine(({switch: s}) => s, {
   message: "You must check the switch",
   path: ["switch"],
+}).refine(({dateInput}) => dateInput !== null, {
+  message: "You must select a date",
+  path: ["dateInput"],
+}).refine(({datePicker}) => datePicker !== null, {
+  message: "You must select a date",
+  path: ["datePicker"],
+}).refine(({datePickerInput}) => datePickerInput && datePickerInput.every(x => !!x), {
+  message: "You must select a date range",
+  path: ["datePickerInput"],
+}).refine(({dateTimePicker}) => dateTimePicker !== null, {
+  message: "You must select a date and time",
+  path: ["dateTimePicker"],
+}).refine(({monthPicker}) => monthPicker !== null, {
+  message: "You must select a month",
+  path: ["monthPicker"],
+}).refine(({monthPickerInput}) => monthPickerInput !== null, {
+  message: "You must select a month range",
+  path: ["monthPickerInput"],
+}).refine(({yearPicker}) => yearPicker !== null, {
+  message: "You must select a year",
+  path: ["yearPicker"],
+}).refine(({yearPickerInput}) => yearPickerInput !== null, {
+  message: "You must select a year range",
+  path: ["yearPickerInput"],
 });
 
 type Form = Required<z.infer<typeof schema>>;
@@ -108,12 +162,37 @@ const AppMantineUIPage = () => {
       multiselect: [],
       select: "",
       tags: [],
+
+      dateInput: null,
+      datePicker: null,
+      datePickerMultiple: [],
+      datePickerInput: [null, null],
+      dateTimePicker: null,
+      monthPicker: null,
+      monthPickerMultiple: [],
+      monthPickerRange: [null, null],
+      monthPickerInput: null,
+      timeInput: "",
+      yearPicker: null,
+      yearPickerMultiple: [],
+      yearPickerRange: [null, null],
+      yearPickerInput: null,
     },
     resolver: zodResolver(schema),
   });
   const values = watch(); //! WARNING: This will rerender on every value change!!!
 
   const [focusName, setFocusName] = useState<string | null>("");
+
+  //* Time Input props:
+  const timeInputRef = useRef<HTMLInputElement>(null);
+
+  const pickerControl = (
+    <ActionIcon variant="subtle" color="gray" onClick={() => timeInputRef.current?.showPicker()}>
+      <AccessTimeIcon fontSize="small" />
+    </ActionIcon>
+  );
+  //* -----------------
 
   const onValid = (values: Form) => {
     console.log(values);
@@ -410,6 +489,133 @@ const AppMantineUIPage = () => {
             </Fieldset>
           </Fieldset>
 
+          <Fieldset legend="Dates"
+            classNames={{ 
+              root: "flex flex-col gap-3",
+              legend: "px-2" 
+            }}
+          >
+            <Fieldset legend="DateInput" classNames={{ legend: "px-2 font-semibold" }}>
+              <DateInput
+                name="dateInput"
+                control={control}
+                label="DateInput"
+                placeholder="Enter something"
+              />
+            </Fieldset>
+
+            <Fieldset legend="DatePicker" classNames={{ legend: "px-2 font-semibold" }}>
+              <DatePicker
+                name="datePicker"
+                control={control}
+                placeholder="Enter something"
+              />
+            </Fieldset>
+
+            <Fieldset legend="DatePicker (multiple)" classNames={{ legend: "px-2 font-semibold" }}>
+              <DatePicker
+                name="datePickerMultiple"
+                control={control}
+                type="multiple"
+              />
+            </Fieldset>
+
+            <Fieldset legend="DatePickerInput (range)" classNames={{ legend: "px-2 font-semibold" }}>
+              <DatePickerInput
+                type="range"
+                name="datePickerInput"
+                control={control}
+                label="DatePickerInput"
+                placeholder="Enter something"
+              />
+            </Fieldset>
+
+            <Fieldset legend="DateTimePicker" classNames={{ legend: "px-2 font-semibold" }}>
+              <DateTimePicker
+                name="dateTimePicker"
+                control={control}
+                label="DateTimePicker"
+                placeholder="Enter something"
+              />
+            </Fieldset>
+
+            <Fieldset legend="MonthPicker" classNames={{ legend: "px-2 font-semibold" }}>
+              <MonthPicker
+                name="monthPicker"
+                control={control}
+              />
+            </Fieldset>
+
+            <Fieldset legend="MonthPicker (multiple)" classNames={{ legend: "px-2 font-semibold" }}>
+              <MonthPicker
+                name="monthPickerMultiple"
+                control={control}
+                type="multiple"
+              />
+            </Fieldset>
+
+            <Fieldset legend="MonthPicker (range)" classNames={{ legend: "px-2 font-semibold" }}>
+              <MonthPicker
+                name="monthPickerRange"
+                control={control}
+                type="range"
+              />
+            </Fieldset>
+
+            <Fieldset legend="MonthPickerInput" classNames={{ legend: "px-2 font-semibold" }}>
+              <MonthPickerInput
+                name="monthPickerInput"
+                control={control}
+                label="MonthPickerInput"
+                placeholder="Enter something"
+              />
+            </Fieldset>
+
+            <Fieldset legend="YearPicker" classNames={{ legend: "px-2 font-semibold" }}>
+              <YearPicker
+                name="yearPicker"
+                control={control}
+              />
+            </Fieldset>
+
+            <Fieldset legend="YearPicker (multiple)" classNames={{ legend: "px-2 font-semibold" }}>
+              <YearPicker
+                name="yearPickerMultiple"
+                control={control}
+                type="multiple"
+              />
+            </Fieldset>
+
+            <Fieldset legend="YearPicker (range)" classNames={{ legend: "px-2 font-semibold" }}>
+              <YearPicker
+                name="yearPickerRange"
+                control={control}
+                type="range"
+              />
+            </Fieldset>
+
+            <Fieldset legend="YearPickerInput" classNames={{ legend: "px-2 font-semibold" }}>
+              <YearPickerInput
+                name="yearPickerInput"
+                control={control}
+                label="YearPickerInput"
+                placeholder="Enter something"
+              />
+            </Fieldset>
+
+            <Fieldset legend="TimeInput" classNames={{ legend: "px-2 font-semibold" }}>
+              <TimeInput
+                name="timeInput"
+                control={control}
+                label="TimeInput"
+                placeholder="Enter something"
+                inputRef={timeInputRef}
+                rightSection={pickerControl}
+              />
+            </Fieldset>
+
+          </Fieldset>
+
 
           <div className="flex gap-4">
             <Button type="submit">
@@ -512,4 +718,19 @@ const ExampleValidValues: Form = {
   multiselect: ["Option 1"],
   select: "Option 1",
   tags: ["Tag 1"],
+
+  dateInput: new Date(),
+  datePicker: new Date(),
+  datePickerMultiple: [new Date()],
+  datePickerInput: [new Date(), new Date()],
+  dateTimePicker: new Date(),
+  monthPicker: new Date(),
+  monthPickerMultiple: [new Date()],
+  monthPickerRange: [new Date(), new Date()],
+  monthPickerInput: new Date(),
+  timeInput: "12:00",
+  yearPicker: new Date(),
+  yearPickerMultiple: [new Date()],
+  yearPickerRange: [new Date(), new Date()],
+  yearPickerInput: new Date(),
 };
