@@ -7,9 +7,6 @@ import { mergeRefs } from "@mantine/hooks";
 
 import { FormInputProps } from "@/components/ui/hook-form/base";
 
-import VisibilityIcon from '@mui/icons-material/Visibility';
-import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
-
 export type PasswordInputProps<
   TFieldValues extends FieldValues = FieldValues,
 > = FormInputProps<TFieldValues, _PasswordInputProps>;
@@ -40,7 +37,6 @@ const PasswordInput = <
 
   return (
     <_PasswordInput
-      visibilityToggleIcon={MuiVisibilityToggleIcon}
       {...field}
       {...props}
       value={value}
@@ -59,11 +55,3 @@ const PasswordInput = <
 }
 
 export default PasswordInput;
-
-export const MuiVisibilityToggleIcon = ({
-  reveal
-}: { reveal: boolean }) => {
-  return reveal 
-    ? <VisibilityOffIcon fontSize="small" /> 
-    : <VisibilityIcon    fontSize="small" />;
-}

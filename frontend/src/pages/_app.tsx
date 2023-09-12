@@ -3,24 +3,15 @@ import "@/styles/globals.css";
 
 import type { AppProps } from "next/app";
 import Head from "next/head";
-import { MantineProvider, createTheme } from '@mantine/core';
+import { MantineProvider } from '@mantine/core';
 import { QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
-import { Roboto_Flex as Roboto } from "next/font/google";
 import { SnackbarProvider } from "notistack";
 
 import { AuthProvider } from "@/components/auth/AuthProvider";
+import defaultTheme from "@/components/ui/themes/default";
 import defaultQueryClient from "@/api/clients/defaultQueryClient";
-
-const roboto = Roboto({
-  weight: ["400", "500", "600", "700"],
-  style: ["normal"],
-  subsets: ["latin"],
-});
-
-const theme = createTheme({
-  fontFamily: roboto.style.fontFamily,
-});
+import fonts from "@/components/ui/fonts";
 
 export default function App({ Component, pageProps }: AppProps) {
 
@@ -34,11 +25,11 @@ export default function App({ Component, pageProps }: AppProps) {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <MantineProvider theme={theme}>
+      <MantineProvider theme={defaultTheme}>
         <QueryClientProvider client={defaultQueryClient}>
           <AuthProvider defaultSetCallbackUrlParam={false}>
             <SnackbarProvider maxSnack={5} dense autoHideDuration={10000}>
-              <div id="__app" className={roboto.className}>
+              <div id="__app" className={fonts.roboto.className}>
                 <Component {...pageProps} />
               </div>
             </SnackbarProvider>

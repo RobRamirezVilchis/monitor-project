@@ -4,20 +4,13 @@ import "@/styles/globals.css";
 
 import { ColorSchemeScript } from "@mantine/core";
 import { Metadata } from "next";
-import { Roboto_Flex as Roboto } from "next/font/google";
 
 import { Providers } from "./Providers";
+import fonts from "@/components/ui/fonts";
 
 interface RootLayoutProps {
   children: React.ReactNode
 }
-
-const roboto = Roboto({
-  weight: ["400", "500", "600", "700"],
-  style: ["normal"],
-  subsets: ["latin"],
-  display: "swap",
-});
 
 export const metadata: Metadata = {
   title: "App Title",
@@ -33,7 +26,7 @@ const RootLayout = ({
     <head>
       <ColorSchemeScript />
     </head>
-    <body className={roboto.className} suppressHydrationWarning>
+    <body className={fonts.roboto.className} suppressHydrationWarning>
       <Providers>
         {children}
       </Providers>
