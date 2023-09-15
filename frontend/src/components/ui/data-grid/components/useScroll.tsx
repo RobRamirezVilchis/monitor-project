@@ -1,4 +1,4 @@
-import { TouchEventHandler, UIEventHandler, WheelEventHandler, useCallback, useMemo, useRef } from "react";
+import { RefObject, TouchEventHandler, UIEventHandler, WheelEventHandler, useCallback, useMemo, useRef } from "react";
 
 import { clamp, closeToZero, lerp2, mapValue, easeOutCubic } from "@/utils/math";
 import { ScrollOrientation } from "./Scroll";
@@ -15,7 +15,7 @@ export const useScroll = ({
   orientation = "vertical",
 }: UseScrollOptions) => {
   const scrollRef = useRef<HTMLDivElement>(null);
-  const contentRef = useRef<HTMLDivElement>(null);
+  const contentRefs = useRef<RefObject<HTMLDivElement>[]>([]);
 
   const scrollInfo = useRef({
     start: 0,
@@ -32,14 +32,28 @@ export const useScroll = ({
     end: 0,
   });
 
+  const syncTranslation = useCallback((element: RefObject<HTMLDivElement>) => {
+    if (!contentRefs.current.includes(element))
+      contentRefs.current.push(element);
+  }, []);
+
+  const desyncTanslation = useCallback((element: RefObject<HTMLDivElement>) => {
+    const found = contentRefs.current.findIndex(ref => ref === element);
+    if (found !== -1)
+      contentRefs.current.splice(found, 1);
+  }, []);
+
   // Scrollbar Events ----------------------------------------------------------
   const onScroll = useCallback<UIEventHandler<HTMLDivElement>>((e) => {
-    if (!contentRef.current) return;
+    if (contentRefs.current.length === 0) return;
 
-    const { x, y } = getTranslateXY(contentRef.current);
-    contentRef.current!.style.transform = orientation === "vertical"
-      ? `translate(${x}px, -${e.currentTarget.scrollTop}px)`
-      : `translate(-${e.currentTarget.scrollLeft}px, ${y}px)`;
+    for (let element of contentRefs.current) {
+      if (!element.current) continue;
+      const { x, y } = getTranslateXY(element.current);
+      element.current.style.transform = orientation === "vertical"
+        ? `translate(${x}px, -${e.currentTarget.scrollTop}px)`
+        : `translate(-${e.currentTarget.scrollLeft}px, ${y}px)`;
+    }
   }, [orientation]);
   
   // Content Events ------------------------------------------------------------
@@ -143,13 +157,14 @@ export const useScroll = ({
 
   const value = useMemo(() => ({
     scrollRef,
-    contentRef,
     onScroll,
     onWheel,
     onTouchStart,
     onTouchMove,
     onTouchEnd,
-  }), [onScroll, onWheel, onTouchStart, onTouchMove, onTouchEnd]);
+    syncScroll: syncTranslation,
+    desyncScroll: desyncTanslation,
+  }), [onScroll, onWheel, onTouchStart, onTouchMove, onTouchEnd, syncTranslation, desyncTanslation]);
   return value;
 }
 

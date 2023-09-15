@@ -1,6 +1,5 @@
 import { useRef, useState } from "react";
 
-import { mergeRefs } from "@/hooks/utils/refs";
 import { useScrollContext } from "./components/ScrollProvider";
 import Scroll from "@/components/ui/data-grid/components/Scroll";
 import { useIsomorphicLayoutEffect } from "@/hooks/shared/useIsomorphicLayoutEffect";
@@ -15,7 +14,11 @@ const DataGridBody = () => {
   });
   
   useIsomorphicLayoutEffect(() => {
+    xScroll.syncScroll(contentRef);
+    yScroll.syncScroll(contentRef);
+
     if (!contentRef.current) return;
+
     contentResizeObserverRef.current = new ResizeObserver((entries, observer) => {
       const content = entries[0].target as HTMLDivElement;
       setContentRect({ 
@@ -25,10 +28,15 @@ const DataGridBody = () => {
     });
     contentResizeObserverRef.current.observe(contentRef.current);
 
-    return () => contentResizeObserverRef.current?.disconnect();
+    return () => {
+      contentResizeObserverRef.current?.disconnect();
+      xScroll.desyncScroll(contentRef);
+      yScroll.desyncScroll(contentRef);
+    };
   }, []);
 
 
+  // Wrapper
   return (
     <div className="grid flex-col border"
       style={{
@@ -60,7 +68,7 @@ const DataGridBody = () => {
             overflowAnchor: "none",
             overflow: "hidden",
           }}
-          ref={mergeRefs(contentRef, xScroll.contentRef, yScroll.contentRef)}
+          ref={contentRef}
           onWheel={e => {
             xScroll.onWheel(e);
             yScroll.onWheel(e);
