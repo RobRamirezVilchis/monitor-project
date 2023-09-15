@@ -1,9 +1,33 @@
+import { useRef, useState } from "react";
+
 import { mergeRefs } from "@/hooks/utils/refs";
 import { useScrollContext } from "./components/ScrollProvider";
 import Scroll from "@/components/ui/data-grid/components/Scroll";
+import { useIsomorphicLayoutEffect } from "@/hooks/shared/useIsomorphicLayoutEffect";
 
 const DataGridBody = () => {
   const { xScroll, yScroll } = useScrollContext();
+  const contentRef = useRef<HTMLDivElement>(null);
+  const contentResizeObserverRef = useRef<ResizeObserver>();
+  const [contentRect, setContentRect] = useState({ 
+    width: 0, 
+    height: 0,
+  });
+  
+  useIsomorphicLayoutEffect(() => {
+    if (!contentRef.current) return;
+    contentResizeObserverRef.current = new ResizeObserver((entries, observer) => {
+      const content = entries[0].target as HTMLDivElement;
+      setContentRect({ 
+        width: content.offsetWidth ?? 0, 
+        height: content.offsetHeight ?? 0
+      });
+    });
+    contentResizeObserverRef.current.observe(contentRef.current);
+
+    return () => contentResizeObserverRef.current?.disconnect();
+  }, []);
+
 
   return (
     <div className="grid flex-col border"
@@ -24,19 +48,19 @@ const DataGridBody = () => {
           height: "100%",
           overflow: "hidden",
           overflowAnchor: "none", // for virtualization
-          touchAction: "pan-down",
+          touchAction: "pan-down", // for mobile browser refresh gesture
         }}
       >
         {/* Content */}
         <div
           style={{
             width: "1500px",
-            height: "10000px",
+            height: "500px",
             border: "1px solid red",
             overflowAnchor: "none",
             overflow: "hidden",
           }}
-          ref={mergeRefs(xScroll.contentRef, yScroll.contentRef)}
+          ref={mergeRefs(contentRef, xScroll.contentRef, yScroll.contentRef)}
           onWheel={e => {
             xScroll.onWheel(e);
             yScroll.onWheel(e);
@@ -57,8 +81,8 @@ const DataGridBody = () => {
          Content
         </div>
       </div>
-      <Scroll orientation="vertical" virtualSize={10000} ref={yScroll.scrollRef} onScroll={yScroll.onScroll} />
-      <Scroll orientation="horizontal" virtualSize={1500} ref={xScroll.scrollRef} onScroll={xScroll.onScroll} />
+      <Scroll orientation="vertical" virtualSize={contentRect.height} ref={yScroll.scrollRef} onScroll={yScroll.onScroll} />
+      <Scroll orientation="horizontal" virtualSize={contentRect.width} ref={xScroll.scrollRef} onScroll={xScroll.onScroll} />
     </div>
   );
 }
