@@ -1,13 +1,15 @@
 import { DetailedHTMLProps, FC, HTMLAttributes, forwardRef } from "react";
 import { Property } from "csstype";
 
+export type ScrollOrientation = "horizontal" | "vertical";
+
 export interface ScrollProps 
   extends DetailedHTMLProps<HTMLAttributes<HTMLDivElement>, HTMLDivElement> {
   /**
    * The orientation of the scroll area.
    * @default "vertical"
    */
-  orientation: "horizontal" | "vertical";
+  orientation: ScrollOrientation;
   /**
    * The size of the scroll.
    * If a `number` is provided, px units will be used.
