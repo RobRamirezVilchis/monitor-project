@@ -1,10 +1,10 @@
-import { ScrollProvider } from "./components/ScrollProvider";
+import { ScrollsProvider } from "./ScrollsProvider";
 import DataGridBody from "./DataGridBody";
 import DataGridColumnHeaders from "./DataGridColumnHeaders";
 
 const DataGrid = () => {
   return (
-    <ScrollProvider>
+    <ScrollsProvider>
       <div
         style={{
           width: "100%",
@@ -17,7 +17,7 @@ const DataGrid = () => {
         <DataGridColumnHeaders />
         <DataGridBody />
       </div>
-    </ScrollProvider>
+    </ScrollsProvider>
   );
 };
 

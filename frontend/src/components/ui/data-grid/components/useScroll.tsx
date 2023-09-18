@@ -11,6 +11,8 @@ export interface UseScrollOptions {
   orientation: ScrollOrientation;
 }
 
+// TODO: Add support for mouse wheel click scrolling
+
 export const useScroll = ({
   orientation = "vertical",
 }: UseScrollOptions) => {
@@ -32,12 +34,12 @@ export const useScroll = ({
     end: 0,
   });
 
-  const syncTranslation = useCallback((element: RefObject<HTMLDivElement>) => {
+  const syncScroll = useCallback((element: RefObject<HTMLDivElement>) => {
     if (!contentRefs.current.includes(element))
       contentRefs.current.push(element);
   }, []);
 
-  const desyncTanslation = useCallback((element: RefObject<HTMLDivElement>) => {
+  const desyncScroll = useCallback((element: RefObject<HTMLDivElement>) => {
     const found = contentRefs.current.findIndex(ref => ref === element);
     if (found !== -1)
       contentRefs.current.splice(found, 1);
@@ -162,9 +164,9 @@ export const useScroll = ({
     onTouchStart,
     onTouchMove,
     onTouchEnd,
-    syncScroll: syncTranslation,
-    desyncScroll: desyncTanslation,
-  }), [onScroll, onWheel, onTouchStart, onTouchMove, onTouchEnd, syncTranslation, desyncTanslation]);
+    syncScroll,
+    desyncScroll,
+  }), [onScroll, onWheel, onTouchStart, onTouchMove, onTouchEnd, syncScroll, desyncScroll]);
   return value;
 }
 

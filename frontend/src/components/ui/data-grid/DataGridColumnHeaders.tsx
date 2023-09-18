@@ -1,10 +1,10 @@
 import { useRef } from "react";
-import { useScrollContext } from "./components/ScrollProvider";
+import { useScrollsContext } from "./ScrollsProvider";
 import { useIsomorphicLayoutEffect } from "@/hooks/shared/useIsomorphicLayoutEffect";
 
 const DataGridColumnHeaders = () => {
   const headersRef = useRef<HTMLDivElement>(null);
-  const { xScroll } = useScrollContext();
+  const { xScroll } = useScrollsContext();
 
   useIsomorphicLayoutEffect(() => {
     xScroll.syncScroll(headersRef);

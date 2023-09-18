@@ -1,57 +1,59 @@
-import { ReactNode, RefObject, createContext, useContext, useEffect, useRef } from "react";
+import { ReactNode, createContext, useContext } from "react";
 
-import { useScroll, UseScrollReturn } from "./useScroll";
+import { useScroll, UseScrollReturn } from "./components/useScroll";
 
 // Context --------------------------------------------------------------------
-export interface ScrollContextProps {
+export interface ScrollsContextProps {
   xScroll: UseScrollReturn;
   yScroll: UseScrollReturn;
 }
 
-export const ScrollContext = createContext<ScrollContextProps>({
+export const ScrollsContext = createContext<ScrollsContextProps>({
   xScroll: {
     scrollRef: { current: null },
-    contentRef: { current: null },
     onScroll: () => {},
     onWheel: () => {},
     onTouchStart: () => {},
     onTouchMove: () => {},
     onTouchEnd: () => {},
+    syncScroll: () => {},
+    desyncScroll: () => {},
   },
   yScroll: {
     scrollRef: { current: null },
-    contentRef: { current: null },
     onScroll: () => {},
     onWheel: () => {},
     onTouchStart: () => {},
     onTouchMove: () => {},
     onTouchEnd: () => {},
+    syncScroll: () => {},
+    desyncScroll: () => {},
   },
 });
 
 // Provider -------------------------------------------------------------------
-export interface ScrollProviderProps {
+export interface ScrollsProviderProps {
   children: ReactNode;
 }
 
-export const ScrollProvider = ({ 
+export const ScrollsProvider = ({ 
   children,
-}: ScrollProviderProps) => {
+}: ScrollsProviderProps) => {
   const xScroll = useScroll({ orientation: "horizontal" });
   const yScroll = useScroll({ orientation: "vertical" });
 
-  const value: ScrollContextProps = {
+  const value: ScrollsContextProps = {
     yScroll,
     xScroll,
   };
 
   return (
-    <ScrollContext.Provider value={value}>
+    <ScrollsContext.Provider value={value}>
       {children}
-    </ScrollContext.Provider>
+    </ScrollsContext.Provider>
   );
 };
 
-export const useScrollContext = () => {
-  return useContext(ScrollContext);
+export const useScrollsContext = () => {
+  return useContext(ScrollsContext);
 }

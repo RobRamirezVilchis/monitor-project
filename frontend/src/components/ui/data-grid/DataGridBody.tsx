@@ -1,11 +1,11 @@
 import { useRef, useState } from "react";
 
-import { useScrollContext } from "./components/ScrollProvider";
+import { useScrollsContext } from "./ScrollsProvider";
 import Scroll from "@/components/ui/data-grid/components/Scroll";
 import { useIsomorphicLayoutEffect } from "@/hooks/shared/useIsomorphicLayoutEffect";
 
 const DataGridBody = () => {
-  const { xScroll, yScroll } = useScrollContext();
+  const { xScroll, yScroll } = useScrollsContext();
   const contentRef = useRef<HTMLDivElement>(null);
   const contentResizeObserverRef = useRef<ResizeObserver>();
   const [contentRect, setContentRect] = useState({ 
