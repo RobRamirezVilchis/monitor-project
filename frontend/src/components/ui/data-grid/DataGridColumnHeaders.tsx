@@ -1,11 +1,6 @@
 import { useRef } from "react";
 import { 
-  useReactTable, 
   flexRender, 
-  ColumnDef, 
-  Row, 
-  getCoreRowModel, 
-  createColumnHelper,
   Table,
 } from "@tanstack/react-table";
 
