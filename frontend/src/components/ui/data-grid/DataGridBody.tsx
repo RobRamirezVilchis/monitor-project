@@ -9,9 +9,10 @@ import {
   Table, 
 } from "@tanstack/react-table";
 
-import { useScrollsContext } from "./ScrollsProvider";
-import Scroll from "@/components/ui/data-grid/components/Scroll";
 import { useIsomorphicLayoutEffect } from "@/hooks/shared/useIsomorphicLayoutEffect";
+import { useScrollsContext } from "./ScrollsProvider";
+import LoadingOverlay from "@/components/ui/data-grid/components/LoadingOverlay";
+import Scroll from "@/components/ui/data-grid/components/Scroll";
 
 export interface DataGridBodyProps<TData extends unknown> {
   table: Table<TData>;
@@ -64,6 +65,7 @@ const DataGridBody = <TData extends unknown>({
         gridTemplateRows: "1fr auto",
         overflow: "hidden",
         overflowAnchor: "none", // for virtualization
+        position: "relative",
       }}
     >
       {/* Viewport */}
@@ -127,6 +129,8 @@ const DataGridBody = <TData extends unknown>({
       </div>
       <Scroll orientation="vertical" virtualSize={contentRect.height} ref={yScroll.scrollRef} onScroll={yScroll.onScroll} />
       <Scroll orientation="horizontal" virtualSize={contentRect.width} ref={xScroll.scrollRef} onScroll={xScroll.onScroll} />
+
+      {false ? <LoadingOverlay /> : null}
     </div>
   );
 }
