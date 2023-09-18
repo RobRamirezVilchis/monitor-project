@@ -1,10 +1,25 @@
 import { useRef, useState } from "react";
+import { 
+  useReactTable, 
+  flexRender, 
+  ColumnDef, 
+  Row, 
+  getCoreRowModel, 
+  createColumnHelper,
+  Table, 
+} from "@tanstack/react-table";
 
 import { useScrollsContext } from "./ScrollsProvider";
 import Scroll from "@/components/ui/data-grid/components/Scroll";
 import { useIsomorphicLayoutEffect } from "@/hooks/shared/useIsomorphicLayoutEffect";
 
-const DataGridBody = () => {
+export interface DataGridBodyProps<TData extends unknown> {
+  table: Table<TData>;
+}
+
+const DataGridBody = <TData extends unknown>({
+  table,
+}: DataGridBodyProps<TData>) => {
   const { xScroll, yScroll } = useScrollsContext();
   const contentRef = useRef<HTMLDivElement>(null);
   const contentResizeObserverRef = useRef<ResizeObserver>();
@@ -35,13 +50,15 @@ const DataGridBody = () => {
     };
   }, []);
 
+  const rowModel = table.getRowModel();
 
   // Wrapper
   return (
     <div className="grid flex-col border"
       style={{
-        height: "100%",
+        // height: "100%",
         width: "100%",
+        flex: 1,
         display: "grid",
         gridTemplateColumns: "1fr auto",
         gridTemplateRows: "1fr auto",
@@ -58,35 +75,54 @@ const DataGridBody = () => {
           overflowAnchor: "none", // for virtualization
           touchAction: "pan-down", // for mobile browser refresh gesture
         }}
+        onWheel={e => {
+          xScroll.onWheel(e);
+          yScroll.onWheel(e);
+        }}
+        onTouchStart={e => {
+          xScroll.onTouchStart(e);
+          yScroll.onTouchStart(e);
+        }}
+        onTouchMove={e => {
+          xScroll.onTouchMove(e);
+          yScroll.onTouchMove(e);
+        }}
+        onTouchEnd={e => {
+          xScroll.onTouchEnd(e);
+          yScroll.onTouchEnd(e);
+        }}
       >
         {/* Content */}
         <div
           style={{
-            width: "1500px",
-            height: "500px",
-            border: "1px solid red",
-            overflowAnchor: "none",
             overflow: "hidden",
+            overflowAnchor: "none", // for virtualization
+            touchAction: "pan-down", // for mobile browser refresh gesture
+            display: "flex",
+            flexDirection: "column",
+            width: table.getTotalSize(),
           }}
           ref={contentRef}
-          onWheel={e => {
-            xScroll.onWheel(e);
-            yScroll.onWheel(e);
-          }}
-          onTouchStart={e => {
-            xScroll.onTouchStart(e);
-            yScroll.onTouchStart(e);
-          }}
-          onTouchMove={e => {
-            xScroll.onTouchMove(e);
-            yScroll.onTouchMove(e);
-          }}
-          onTouchEnd={e => {
-            xScroll.onTouchEnd(e);
-            yScroll.onTouchEnd(e);
-          }}
         >
-         Content
+          {/* Rows */}
+          {rowModel.rows.map(row => (
+            <div key={row.id}
+              style={{
+                display: "flex",
+              }}
+            >
+              {/* Cells */}
+              {row.getVisibleCells().map(cell => (
+                <div key={cell.id}
+                  style={{
+                    width: cell.column.getSize(),
+                  }}
+                >
+                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                </div>
+              ))}
+            </div>
+          ))}
         </div>
       </div>
       <Scroll orientation="vertical" virtualSize={contentRect.height} ref={yScroll.scrollRef} onScroll={yScroll.onScroll} />
@@ -96,3 +132,4 @@ const DataGridBody = () => {
 }
 
 export default DataGridBody;
+
