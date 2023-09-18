@@ -50,9 +50,8 @@ const DataGridBody = <TData extends unknown>({
 
   // Wrapper
   return (
-    <div className="grid flex-col border"
+    <div
       style={{
-        // height: "100%",
         width: "100%",
         flex: 1,
         display: "grid",

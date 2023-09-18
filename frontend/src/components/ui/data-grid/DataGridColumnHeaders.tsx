@@ -6,6 +6,7 @@ import {
 
 import { useScrollsContext } from "./ScrollsProvider";
 import { useIsomorphicLayoutEffect } from "@/hooks/shared/useIsomorphicLayoutEffect";
+import ResizeHandler from "./components/ResizeHandler";
 
 export interface DataGridColumnHeadersProps<TData extends unknown> {
   table: Table<TData>;
@@ -29,14 +30,12 @@ const DataGridColumnHeaders = <TData extends unknown>({
 
   // Viewport
   return (
-    <div className="grid flex-col"
+    <div
       style={{
         width: "100%",
         overflow: "hidden",
         overflowAnchor: "none", // for virtualization
         touchAction: "pan-down", // for mobile browser refresh gesture
-
-        backgroundColor: "cyan",
       }}
       onWheel={xScroll.onWheel}
       onTouchStart={xScroll.onTouchStart}
@@ -46,7 +45,6 @@ const DataGridColumnHeaders = <TData extends unknown>({
       {/* Columns */}
       <div
         ref={headersRef}
-        className="bg-red-100"
         style={{
           width: table.getTotalSize(),
           overflow: "hidden",
@@ -57,23 +55,28 @@ const DataGridColumnHeaders = <TData extends unknown>({
           <div key={group.id}
             style={{
               display: "flex",
-              // width: "100%",
-              border: "1px solid black",
+              
+              borderBottom: "1px solid black",
             }}
           >
             {/* Headers */}
             {group.headers.map(header => (
+              // Header Cell
               <div key={header.id} 
                 style={{ 
+                  position: "relative",
                   width: header.getSize(),
-                  border: !header.isPlaceholder ? "1px solid black" : undefined,
+
+                  borderRight: "1px solid black",
                 }}
               >
                 {
-                  !header.isPlaceholder 
+                  !header.isPlaceholder
                   ? flexRender(header.column.columnDef.header, header.getContext())
                   : null
                 }
+                {/* Resize Handler */}
+                {header.column.getCanResize() ? <ResizeHandler header={header} /> : null}
               </div>
             ))}
           </div>
