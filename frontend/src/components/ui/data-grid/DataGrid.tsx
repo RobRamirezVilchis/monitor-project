@@ -5,6 +5,7 @@ import DataGridBody from "./DataGridBody";
 import DataGridColumnHeaders from "./DataGridColumnHeaders";
 import DataGridFooter from "./DataGridFooter";
 import DataGridHeader from "./DataGridHeader";
+import ColumnVisibility from "./components/ColumnVisibility";
 
 export interface DataGridProps<TData extends unknown> {
   table: Table<TData>;
@@ -26,7 +27,13 @@ const DataGrid = <TData extends unknown>({
         }}
         className="border border-blue-500"
       >
-        <DataGridHeader />
+        {/* Temp layout for header */}
+        <div className="flex gap-2">
+          <DataGridHeader />
+          <div className="flex-1 flex justify-end">
+            <ColumnVisibility table={table} />
+          </div>
+        </div>
         <DataGridColumnHeaders table={table} />
         <DataGridBody table={table} />
         <DataGridFooter />

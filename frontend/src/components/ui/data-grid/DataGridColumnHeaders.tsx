@@ -7,6 +7,7 @@ import {
 import { useScrollsContext } from "./ScrollsProvider";
 import { useIsomorphicLayoutEffect } from "@/hooks/shared/useIsomorphicLayoutEffect";
 import ResizeHandler from "./components/ResizeHandler";
+import ColumnSort from "./components/ColumnSort";
 
 export interface DataGridColumnHeadersProps<TData extends unknown> {
   table: Table<TData>;
@@ -66,6 +67,9 @@ const DataGridColumnHeaders = <TData extends unknown>({
                 style={{ 
                   position: "relative",
                   width: header.getSize(),
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 4,
 
                   borderRight: "1px solid black",
                 }}
@@ -75,6 +79,8 @@ const DataGridColumnHeaders = <TData extends unknown>({
                   ? flexRender(header.column.columnDef.header, header.getContext())
                   : null
                 }
+                {/* Sort Action */}
+                {header.column.getCanSort() ? <ColumnSort header={header} /> : null}
                 {/* Resize Handler */}
                 {header.column.getCanResize() ? <ResizeHandler header={header} /> : null}
               </div>
