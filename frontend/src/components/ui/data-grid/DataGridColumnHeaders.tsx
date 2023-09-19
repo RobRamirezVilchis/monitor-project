@@ -63,6 +63,7 @@ const DataGridColumnHeaders = <TData extends unknown>({
         overflowAnchor: "none", // for virtualization
         touchAction: "pan-down", // for mobile browser refresh gesture
       }}
+      // TODO: Ignore events if resizing or reordering
       onWheel={xScroll.onWheel}
       onTouchStart={xScroll.onTouchStart}
       onTouchMove={xScroll.onTouchMove}
