@@ -19,8 +19,14 @@ const ResizeHandler = <TData extends unknown, TValue>({
         cursor: "col-resize",
         touchAction: "none",
       }}
-      onMouseDown={header.getResizeHandler()}
-      onTouchStart={header.getResizeHandler()}
+      onMouseDown={e => {
+        e.stopPropagation();
+        header.getResizeHandler()(e);
+      }}
+      onTouchStart={e => {
+        e.stopPropagation();
+        header.getResizeHandler()(e);
+      }}
     >
     </div>
   )

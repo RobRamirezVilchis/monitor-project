@@ -1,13 +1,15 @@
-import { useRef } from "react";
+import { useCallback, useRef } from "react";
 import { 
   flexRender, 
   Table,
 } from "@tanstack/react-table";
+import { DndContext, DragEndEvent, UniqueIdentifier } from "@dnd-kit/core";
 
 import { useScrollsContext } from "./ScrollsProvider";
 import { useIsomorphicLayoutEffect } from "@/hooks/shared/useIsomorphicLayoutEffect";
 import ResizeHandler from "./components/ResizeHandler";
 import ColumnSort from "./components/ColumnSort";
+import DndColumnHeader from "./components/DndColumnHeader";
 
 export interface DataGridColumnHeadersProps<TData extends unknown> {
   table: Table<TData>;
@@ -21,6 +23,8 @@ const DataGridColumnHeaders = <TData extends unknown>({
 
   const headerGroups = table.getHeaderGroups();
 
+  const columnOrder = useRef(table.getAllFlatColumns().map(c => c.id));
+
   useIsomorphicLayoutEffect(() => {
     xScroll.syncScroll(headersRef);
 
@@ -28,6 +32,26 @@ const DataGridColumnHeaders = <TData extends unknown>({
       xScroll.desyncScroll(headersRef);
     };
   }, []);
+
+  const onHeaderDragEnd = useCallback((e: DragEndEvent) => {
+    const { active, over } = e;
+    if (!active || !over || active.id === over.id) {
+      return;
+    }
+
+    const activeIndex = columnOrder.current.findIndex(id => id === active.id);
+    const overIndex = columnOrder.current.findIndex(id => id === over?.id);
+    if (activeIndex === -1 || overIndex === -1) {
+      return;
+    }
+
+    const newColumnOrder = [...columnOrder.current];
+    newColumnOrder[activeIndex] = over.id as string;
+    newColumnOrder[overIndex] = active.id as string;
+
+    columnOrder.current = newColumnOrder;
+    table.setColumnOrder(newColumnOrder);
+  }, [table]);
 
   // Viewport
   return (
@@ -44,6 +68,9 @@ const DataGridColumnHeaders = <TData extends unknown>({
       onTouchEnd={xScroll.onTouchEnd}
     >
       {/* Columns */}
+      <DndContext
+        onDragEnd={onHeaderDragEnd}
+      >
       <div
         ref={headersRef}
         style={{
@@ -63,7 +90,9 @@ const DataGridColumnHeaders = <TData extends unknown>({
             {/* Headers */}
             {group.headers.map(header => (
               // Header Cell
-              <div key={header.id} 
+              <DndColumnHeader // was <div />
+                dndId={header.id}
+                key={header.id} 
                 style={{ 
                   position: "relative",
                   width: header.getSize(),
@@ -73,6 +102,11 @@ const DataGridColumnHeaders = <TData extends unknown>({
 
                   borderRight: "1px solid black",
                 }}
+                disabled={
+                  header.isPlaceholder 
+                  || header.subHeaders.length > 0
+                  || header.column.getIsResizing()
+                }
               >
                 {
                   !header.isPlaceholder
@@ -80,14 +114,17 @@ const DataGridColumnHeaders = <TData extends unknown>({
                   : null
                 }
                 {/* Sort Action */}
-                {header.column.getCanSort() ? <ColumnSort header={header} /> : null}
+                {header.column.getCanSort() && header.subHeaders.length === 0 
+                  ? <ColumnSort header={header} /> 
+                  : null}
                 {/* Resize Handler */}
                 {header.column.getCanResize() ? <ResizeHandler header={header} /> : null}
-              </div>
+              </DndColumnHeader>
             ))}
           </div>
         ))}
       </div>
+      </DndContext>
     </div>
   )
 }
