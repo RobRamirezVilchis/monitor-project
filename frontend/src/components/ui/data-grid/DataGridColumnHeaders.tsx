@@ -10,6 +10,7 @@ import { useIsomorphicLayoutEffect } from "@/hooks/shared/useIsomorphicLayoutEff
 import ResizeHandler from "./components/ResizeHandler";
 import ColumnSort from "./components/ColumnSort";
 import DndColumnHeader from "./components/DndColumnHeader";
+import ColumnFilter from "./components/ColumnFilter";
 
 export interface DataGridColumnHeadersProps<TData extends unknown> {
   table: Table<TData>;
@@ -119,6 +120,8 @@ const DataGridColumnHeaders = <TData extends unknown>({
                   : null}
                 {/* Resize Handler */}
                 {header.column.getCanResize() ? <ResizeHandler header={header} /> : null}
+
+                {!header.isPlaceholder && header.column.getCanFilter() ? <ColumnFilter header={header} table={table} /> : null}
               </DndColumnHeader>
             ))}
           </div>

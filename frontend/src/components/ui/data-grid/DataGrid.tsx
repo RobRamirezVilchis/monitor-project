@@ -6,6 +6,7 @@ import DataGridColumnHeaders from "./DataGridColumnHeaders";
 import DataGridFooter from "./DataGridFooter";
 import DataGridHeader from "./DataGridHeader";
 import ColumnVisibility from "./components/ColumnVisibility";
+import QuickFilter from "./components/QuickFilter";
 
 export interface DataGridProps<TData extends unknown> {
   table: Table<TData>;
@@ -31,8 +32,9 @@ const DataGrid = <TData extends unknown>({
         {/* Temp layout for header */}
         <div className="flex gap-2">
           <DataGridHeader />
-          <div className="flex-1 flex justify-end">
+          <div className="flex-1 flex justify-end items-end">
             <ColumnVisibility table={table} />
+            <QuickFilter table={table} />
           </div>
         </div>
         <DataGridColumnHeaders table={table} />
