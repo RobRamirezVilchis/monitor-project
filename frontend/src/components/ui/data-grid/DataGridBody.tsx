@@ -1,6 +1,7 @@
-import { useRef, useState } from "react";
+import { Fragment, useRef, useState } from "react";
 import { 
   flexRender, 
+  Row, 
   Table, 
 } from "@tanstack/react-table";
 
@@ -11,10 +12,11 @@ import Scroll from "@/components/ui/data-grid/components/Scroll";
 
 export interface DataGridBodyProps<TData extends unknown> {
   table: Table<TData>;
+  renderSubComponent?: (row: Row<TData>) => React.ReactNode;
 }
 
 const DataGridBody = <TData extends unknown>({
-  table,
+  table, renderSubComponent,
 }: DataGridBodyProps<TData>) => {
   const { xScroll, yScroll } = useScrollsContext();
   const contentRef = useRef<HTMLDivElement>(null);
@@ -102,7 +104,8 @@ const DataGridBody = <TData extends unknown>({
         >
           {/* Rows */}
           {rowModel.rows.map(row => (
-            <div key={row.id}
+          <Fragment key={row.id}>
+            <div
               style={{
                 display: "flex",
               }}
@@ -118,6 +121,18 @@ const DataGridBody = <TData extends unknown>({
                 </div>
               ))}
             </div>
+
+            {/* Expandable SubComponent */}
+            {renderSubComponent && row.getIsExpanded() ? (
+              <div
+              style={{
+                display: "flex",
+              }}
+            >
+              {renderSubComponent(row)}
+            </div>
+            ) : null}
+          </Fragment>
           ))}
         </div>
       </div>

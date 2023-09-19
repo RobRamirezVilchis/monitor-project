@@ -1,4 +1,4 @@
-import { Table } from "@tanstack/react-table";
+import { Row, Table } from "@tanstack/react-table";
 
 import { ScrollsProvider } from "./ScrollsProvider";
 import DataGridBody from "./DataGridBody";
@@ -9,10 +9,11 @@ import ColumnVisibility from "./components/ColumnVisibility";
 
 export interface DataGridProps<TData extends unknown> {
   table: Table<TData>;
+  renderSubComponent?: (row: Row<TData>) => React.ReactNode;
 }
 
 const DataGrid = <TData extends unknown>({
-  table,
+  table, renderSubComponent,
 }: DataGridProps<TData>) => {
   // TODO: Memoize a construct columns function for custom column definitions
 
@@ -35,7 +36,7 @@ const DataGrid = <TData extends unknown>({
           </div>
         </div>
         <DataGridColumnHeaders table={table} />
-        <DataGridBody table={table} />
+        <DataGridBody table={table} renderSubComponent={renderSubComponent} />
         <DataGridFooter />
       </div>
     </ScrollsProvider>
