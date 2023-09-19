@@ -44,7 +44,7 @@ const ColumnVisibility = <TData extends unknown>({
 
             <Button
               variant="subtle"
-              disabled={!table.getIsAllColumnsVisible()}
+              disabled={!table.getIsSomeColumnsVisible()}
               onClick={() => table.toggleAllColumnsVisible(false)}
             >
               Ocultar todo
