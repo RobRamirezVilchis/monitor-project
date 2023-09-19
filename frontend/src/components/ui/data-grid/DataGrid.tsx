@@ -7,6 +7,8 @@ import DataGridFooter from "./DataGridFooter";
 import DataGridHeader from "./DataGridHeader";
 import ColumnVisibility from "./components/ColumnVisibility";
 import QuickFilter from "./components/QuickFilter";
+import DataGridBodyVirtualized from "./DataGridBodyVirtualized";
+import DataGridColumnHeadersVirtualized from "./DataGridColumnHeadersVirtualized";
 
 export interface DataGridProps<TData extends unknown> {
   table: Table<TData>;
@@ -38,7 +40,9 @@ const DataGrid = <TData extends unknown>({
           </div>
         </div>
         <DataGridColumnHeaders table={table} />
-        <DataGridBody table={table} renderSubComponent={renderSubComponent} />
+        {/* <DataGridColumnHeadersVirtualized table={table} /> */}
+        {/* <DataGridBody table={table} renderSubComponent={renderSubComponent} /> */}
+        <DataGridBodyVirtualized table={table} renderSubComponent={renderSubComponent} />
         <DataGridFooter />
       </div>
     </ScrollsProvider>
