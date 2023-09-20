@@ -21,7 +21,6 @@ const DataGridBodyVirtualized = <TData extends unknown>({
 }: DataGridBodyVirtualizedProps<TData>) => {
   const { xScroll, yScroll } = useScrollsContext();
   const contentRef = useRef<HTMLDivElement>(null);
-  const contentResizeObserverRef = useRef<ResizeObserver>();
   const [contentRect, setContentRect] = useState({ 
     width: 0, 
     height: 0,
@@ -50,17 +49,17 @@ const DataGridBodyVirtualized = <TData extends unknown>({
 
     if (!contentRef.current) return;
 
-    contentResizeObserverRef.current = new ResizeObserver((entries, observer) => {
+    const resizeObserver = new ResizeObserver((entries, observer) => {
       const content = entries[0].target as HTMLDivElement;
       setContentRect({ 
         width: content.offsetWidth ?? 0, 
         height: content.offsetHeight ?? 0
       });
     });
-    contentResizeObserverRef.current.observe(contentRef.current);
+    resizeObserver.observe(contentRef.current);
 
     return () => {
-      contentResizeObserverRef.current?.disconnect();
+      resizeObserver.disconnect();
       xScroll.desyncScroll(contentRef);
       yScroll.desyncScroll(contentRef);
     };
@@ -131,10 +130,12 @@ const DataGridBodyVirtualized = <TData extends unknown>({
                 <div
                   style={{
                     display: "flex",
+                    // width: table.getTotalSize(),
                     
                     position: "absolute",
                     height: `${virtualRow.size}px`,
                     transform: `translateY(${virtualRow.start}px)`,
+                    width: xVirtualizer.getTotalSize(),
                   }}
                 >
                   {/* Cells */}
@@ -149,6 +150,7 @@ const DataGridBodyVirtualized = <TData extends unknown>({
                           width: `${virtualCol.size}px`,
                           position: "absolute",
                           transform: `translateX(${virtualCol.start}px)`,
+                          height: "100%",
                         }}
                       >
                         {flexRender(cell.column.columnDef.cell, cell.getContext())}
