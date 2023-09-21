@@ -1,22 +1,23 @@
-import { Header, Table } from "@tanstack/react-table";
+import { Header } from "@tanstack/react-table";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 import { useDebounce } from "@/hooks/shared";
+import type { DataGridInstance } from "../types";
 
 export interface ColumnFilterProps<TData extends unknown, TValue> {
   header: Header<TData, TValue>;
-  table: Table<TData>;
+  instance: DataGridInstance<TData>;
 }
 
 const ColumnFilter = <TData extends unknown, TValue>({
-  header, table,
+  header, instance,
 }: ColumnFilterProps<TData, TValue>) => {
   const [firstValue, setFirstValue] = useState<TValue | undefined>(undefined);
   
   useEffect(() => {
-    setFirstValue(table.getPreFilteredRowModel().flatRows[0].getValue(header.column.id));
-  }, [table, header.column.id]);
-  // const firstValue = table.getPreFilteredRowModel().flatRows[0].getValue(header.column.id);
+    setFirstValue(instance.getPreFilteredRowModel().flatRows[0].getValue(header.column.id));
+  }, [instance, header.column.id]);
+  // const firstValue = instance.getPreFilteredRowModel().flatRows[0].getValue(header.column.id);
   // const columnFilterValue = header.column.getFilterValue();
   // const uniqueValues = header.column.getFacetedUniqueValues();
 

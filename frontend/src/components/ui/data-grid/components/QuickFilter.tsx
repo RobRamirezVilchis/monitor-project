@@ -1,19 +1,19 @@
 import { useCallback } from "react";
-import { Table } from "@tanstack/react-table";
 
 import { useDebounce } from "@/hooks/shared";
+import type { DataGridInstance } from "../types";
 
 export interface QuickFilterProps<TData extends unknown> {
-  table: Table<TData>;
+  instance: DataGridInstance<TData>;
 }
 
 const QuickFilter = <TData extends unknown>({
-  table,
+  instance,
 }: QuickFilterProps<TData>) => {
   const debounce = useDebounce({
     callback: useCallback((searchQuery: string) => {
-      table.setGlobalFilter(searchQuery);
-    }, [table]),
+      instance.setGlobalFilter(searchQuery);
+    }, [instance]),
     debounceTime: 500,
   });
 

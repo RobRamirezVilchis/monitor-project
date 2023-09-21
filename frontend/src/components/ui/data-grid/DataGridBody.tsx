@@ -1,145 +1,136 @@
-import { Fragment, useRef, useState } from "react";
+import { CSSProperties, ReactNode, useState } from "react";
 import { 
-  flexRender, 
   Row, 
-  Table, 
 } from "@tanstack/react-table";
+import clsx from "clsx";
+
+import gridBodyStyles from "./DataGridBody.module.css";
 
 import { useIsomorphicLayoutEffect } from "@/hooks/shared/useIsomorphicLayoutEffect";
-import { useScrollsContext } from "./ScrollsProvider";
+import { useDataGridContext } from "./DataGridContext";
+import type { DataGridDensity, DataGridInstance } from "./types";
+import DataGridRow, {
+  type DataGridRowClassNames,
+  type DataGridRowStyles,
+} from "./DataGridRow";
 import LoadingOverlay from "@/components/ui/data-grid/components/LoadingOverlay";
 import Scroll from "@/components/ui/data-grid/components/Scroll";
 
+export interface DataGridBodyClassNames {
+  root?: string;
+  viewport?: string;
+  rowsContainer?: string;
+  row?: DataGridRowClassNames;
+}
+
+export interface DataGridBodyStyles {
+  root?: CSSProperties;
+  viewport?: CSSProperties;
+  rowsContainer?: CSSProperties;
+  row?: DataGridRowStyles;
+}
+
 export interface DataGridBodyProps<TData extends unknown> {
-  table: Table<TData>;
-  renderSubComponent?: (row: Row<TData>) => React.ReactNode;
+  instance: DataGridInstance<TData>;
+  loading?: boolean;
+  density?: DataGridDensity;
+  classNames?: DataGridBodyClassNames;
+  styles?: DataGridBodyStyles;
+  renderSubComponent?: (row: Row<TData>) => ReactNode;
 }
 
 const DataGridBody = <TData extends unknown>({
-  table, renderSubComponent,
+  instance, 
+  loading,
+  density = "normal",
+  classNames,
+  styles,
+  renderSubComponent,
 }: DataGridBodyProps<TData>) => {
-  const { xScroll, yScroll } = useScrollsContext();
-  const contentRef = useRef<HTMLDivElement>(null);
-  const contentResizeObserverRef = useRef<ResizeObserver>();
+  const { mainXScroll, mainYScroll } = useDataGridContext();
   const [contentRect, setContentRect] = useState({ 
     width: 0, 
     height: 0,
   });
   
   useIsomorphicLayoutEffect(() => {
-    xScroll.syncScroll(contentRef);
-    yScroll.syncScroll(contentRef);
+    mainXScroll.syncScroll(instance.refs.content.main);
+    mainYScroll.syncScroll(instance.refs.content.main);
 
-    if (!contentRef.current) return;
+    if (!instance.refs.content.main.current) return;
 
-    contentResizeObserverRef.current = new ResizeObserver((entries, observer) => {
+    const contentResizeObserver = new ResizeObserver((entries, observer) => {
       const content = entries[0].target as HTMLDivElement;
       setContentRect({ 
         width: content.offsetWidth ?? 0, 
         height: content.offsetHeight ?? 0
       });
     });
-    contentResizeObserverRef.current.observe(contentRef.current);
+    contentResizeObserver.observe(instance.refs.content.main.current);
 
     return () => {
-      contentResizeObserverRef.current?.disconnect();
-      xScroll.desyncScroll(contentRef);
-      yScroll.desyncScroll(contentRef);
+      contentResizeObserver.disconnect();
+      mainXScroll.desyncScroll(instance.refs.content.main);
+      mainYScroll.desyncScroll(instance.refs.content.main);
     };
-  }, []);
+  }, [instance.refs.content, mainXScroll, mainYScroll]);
 
-  const rowModel = table.getRowModel();
+  const rowModel = instance.getRowModel();
 
   // Wrapper
   return (
     <div
-      style={{
-        width: "100%",
-        flex: 1,
-        display: "grid",
-        gridTemplateColumns: "1fr auto",
-        gridTemplateRows: "1fr auto",
-        overflow: "hidden",
-        overflowAnchor: "none", // for virtualization
-        position: "relative",
-      }}
+      className={clsx("DataGridBody-root", gridBodyStyles.root, classNames?.root)}
+      style={styles?.root}
     >
       {/* Viewport */}
       <div
-        style={{
-          width: "100%",
-          height: "100%",
-          overflow: "hidden",
-          overflowAnchor: "none", // for virtualization
-          touchAction: "pan-down", // for mobile browser refresh gesture
-        }}
+        className={clsx("DataGridBody-viewport", gridBodyStyles.viewport, classNames?.viewport)}
+        style={styles?.viewport}
         onWheel={e => {
-          xScroll.onWheel(e);
-          yScroll.onWheel(e);
+          mainXScroll.onWheel(e);
+          mainYScroll.onWheel(e);
         }}
         onTouchStart={e => {
-          xScroll.onTouchStart(e);
-          yScroll.onTouchStart(e);
+          mainXScroll.onTouchStart(e);
+          mainYScroll.onTouchStart(e);
         }}
         onTouchMove={e => {
-          xScroll.onTouchMove(e);
-          yScroll.onTouchMove(e);
+          mainXScroll.onTouchMove(e);
+          mainYScroll.onTouchMove(e);
         }}
         onTouchEnd={e => {
-          xScroll.onTouchEnd(e);
-          yScroll.onTouchEnd(e);
+          mainXScroll.onTouchEnd(e);
+          mainYScroll.onTouchEnd(e);
         }}
       >
         {/* Content */}
         <div
+          className={clsx("DataGridBody-rowsContainer", gridBodyStyles.rowsContainer, classNames?.rowsContainer)}
           style={{
-            overflow: "hidden",
-            overflowAnchor: "none", // for virtualization
-            touchAction: "pan-down", // for mobile browser refresh gesture
-            display: "flex",
-            flexDirection: "column",
-            width: table.getTotalSize(),
+            ...styles?.rowsContainer,
+            width: instance.getTotalSize(),
           }}
-          ref={contentRef}
+          ref={instance.refs.content.main}
         >
           {/* Rows */}
-          {rowModel.rows.map(row => (
-          <Fragment key={row.id}>
-            <div
-              style={{
-                display: "flex",
-              }}
-            >
-              {/* Cells */}
-              {row.getVisibleCells().map(cell => (
-                <div key={cell.id}
-                  style={{
-                    width: cell.column.getSize(),
-                  }}
-                >
-                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                </div>
-              ))}
-            </div>
-
-            {/* Expandable SubComponent */}
-            {renderSubComponent && row.getIsExpanded() ? (
-              <div
-              style={{
-                display: "flex",
-              }}
-            >
-              {renderSubComponent(row)}
-            </div>
-            ) : null}
-          </Fragment>
+          {rowModel.rows.map((row, rowIdx) => (
+            <DataGridRow 
+              key={row.id} 
+              row={row} 
+              rowIndex={rowIdx}
+              density={density}
+              renderSubComponent={renderSubComponent} 
+              classNames={classNames?.row} 
+              styles={styles?.row} 
+            />
           ))}
         </div>
       </div>
-      <Scroll orientation="vertical" virtualSize={contentRect.height} ref={yScroll.scrollRef} onScroll={yScroll.onScroll} />
-      <Scroll orientation="horizontal" virtualSize={contentRect.width} ref={xScroll.scrollRef} onScroll={xScroll.onScroll} />
+      <Scroll orientation="vertical" virtualSize={contentRect.height} ref={mainYScroll.scrollRef} onScroll={mainYScroll.onScroll} />
+      <Scroll orientation="horizontal" virtualSize={contentRect.width} ref={mainXScroll.scrollRef} onScroll={mainXScroll.onScroll} />
 
-      {false ? <LoadingOverlay /> : null}
+      {loading ? <LoadingOverlay /> : null}
     </div>
   );
 }

@@ -25,3 +25,7 @@ export type ReducerAction<T extends string, P = undefined> = {
 } & (P extends undefined ? {} : { payload: P });
 
 export type Reducer<S, A extends ReducerAction<any, any>> = (state: S, action: A) => S;
+
+export type PartialKeys<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
+
+export type RequiredKeys<T, K extends keyof T> = Omit<T, K> & Required<Pick<T, K>>;

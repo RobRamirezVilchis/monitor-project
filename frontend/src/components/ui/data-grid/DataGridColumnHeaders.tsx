@@ -1,36 +1,56 @@
-import { useCallback, useRef } from "react";
+import { CSSProperties, useCallback, useRef } from "react";
 import { 
   flexRender, 
-  Table,
 } from "@tanstack/react-table";
-import { DndContext, DragEndEvent, UniqueIdentifier } from "@dnd-kit/core";
+import { DndContext, DragEndEvent } from "@dnd-kit/core";
+import clsx from "clsx";
 
-import { useScrollsContext } from "./ScrollsProvider";
+import gridColumnHeadersStyles from "./DataGridColumnHeaders.module.css";
+
+import { useDataGridContext } from "./DataGridContext";
 import { useIsomorphicLayoutEffect } from "@/hooks/shared/useIsomorphicLayoutEffect";
+import type { DataGridInstance } from "./types";
 import ResizeHandler from "./components/ResizeHandler";
 import ColumnSort from "./components/ColumnSort";
 import DndColumnHeader from "./components/DndColumnHeader";
 import ColumnFilter from "./components/ColumnFilter";
 
+export interface DataGridColumnHeadersClassNames {
+  root?: string;
+  headersContainer?: string;
+  headerRow?: string;
+  headerCell?: string;
+}
+
+export interface DataGridColumnHeadersStyles {
+  root?: CSSProperties;
+  headersContainer?: CSSProperties;
+  headerRow?: CSSProperties;
+  headerCell?: CSSProperties;
+}
+
 export interface DataGridColumnHeadersProps<TData extends unknown> {
-  table: Table<TData>;
+  instance: DataGridInstance<TData>;
+  classNames?: DataGridColumnHeadersClassNames;
+  styles?: DataGridColumnHeadersStyles;
 }
 
 const DataGridColumnHeaders = <TData extends unknown>({
-  table,
+  instance,
+  classNames,
+  styles,
 }: DataGridColumnHeadersProps<TData>) => {
-  const headersRef = useRef<HTMLDivElement>(null);
-  const { xScroll } = useScrollsContext();
+  const { mainXScroll } = useDataGridContext();
 
-  const headerGroups = table.getHeaderGroups();
+  const headerGroups = instance.getHeaderGroups();
 
-  const columnOrder = useRef(table.getAllFlatColumns().map(c => c.id));
+  const columnOrder = useRef(instance.getAllFlatColumns().map(c => c.id));
 
   useIsomorphicLayoutEffect(() => {
-    xScroll.syncScroll(headersRef);
+    mainXScroll.syncScroll(instance.refs.columnHeader.main);
 
     return () => {
-      xScroll.desyncScroll(headersRef);
+      mainXScroll.desyncScroll(instance.refs.columnHeader.main);
     };
   }, []);
 
@@ -51,33 +71,30 @@ const DataGridColumnHeaders = <TData extends unknown>({
     newColumnOrder[overIndex] = active.id as string;
 
     columnOrder.current = newColumnOrder;
-    table.setColumnOrder(newColumnOrder);
-  }, [table]);
+    instance.setColumnOrder(newColumnOrder);
+  }, [instance]);
 
   // Viewport
   return (
     <div
-      style={{
-        width: "100%",
-        overflow: "hidden",
-        overflowAnchor: "none", // for virtualization
-        touchAction: "pan-down", // for mobile browser refresh gesture
-      }}
+      className={clsx("DataGridColumnHeaders-root DataGridColumnHeaders-viewport", gridColumnHeadersStyles.root, classNames?.root)}
+      style={styles?.root}
       // TODO: Ignore events if resizing or reordering
-      onWheel={xScroll.onWheel}
-      onTouchStart={xScroll.onTouchStart}
-      onTouchMove={xScroll.onTouchMove}
-      onTouchEnd={xScroll.onTouchEnd}
+      onWheel={mainXScroll.onWheel}
+      onTouchStart={mainXScroll.onTouchStart}
+      onTouchMove={mainXScroll.onTouchMove}
+      onTouchEnd={mainXScroll.onTouchEnd}
     >
       {/* Columns */}
       <DndContext
         onDragEnd={onHeaderDragEnd}
       >
       <div
-        ref={headersRef}
+        ref={instance.refs.columnHeader.main}
+        className={clsx("DataGridColumnHeaders-headersContainer", gridColumnHeadersStyles.headersContainer, classNames?.headersContainer)}
         style={{
-          width: table.getTotalSize(),
-          overflow: "hidden",
+          ...styles?.headersContainer,
+          width: instance.getTotalSize(),
         }}
       >
         {/* Groups */}
@@ -122,7 +139,7 @@ const DataGridColumnHeaders = <TData extends unknown>({
                 {/* Resize Handler */}
                 {header.column.getCanResize() ? <ResizeHandler header={header} /> : null}
 
-                {!header.isPlaceholder && header.column.getCanFilter() ? <ColumnFilter header={header} table={table} /> : null}
+                {!header.isPlaceholder && header.column.getCanFilter() ? <ColumnFilter header={header} instance={instance} /> : null}
               </DndColumnHeader>
             ))}
           </div>

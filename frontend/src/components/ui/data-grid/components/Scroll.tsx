@@ -1,7 +1,7 @@
 import { DetailedHTMLProps, HTMLAttributes, forwardRef, useRef, useState } from "react";
 import { Property } from "csstype";
 
-import { mergeRefs } from "@/hooks/utils/refs";
+import { mergeRefs } from "@/hooks/utils/useMergedRef";
 import { useIsomorphicLayoutEffect } from "@/hooks/shared/useIsomorphicLayoutEffect";
 
 export type ScrollOrientation = "horizontal" | "vertical";

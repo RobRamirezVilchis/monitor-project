@@ -1,15 +1,15 @@
-import { Table } from "@tanstack/react-table";
-
 import { ActionIcon, Button, Popover, Switch } from "@mantine/core";
+
+import type { DataGridInstance } from "../types";
 
 import VisibilityIcon from '@mui/icons-material/Visibility';
 
 export interface ColumnVisibilityProps<TData extends unknown> {
-  table: Table<TData>;
+  instance: DataGridInstance<TData>;
 }
 
 const ColumnVisibility = <TData extends unknown>({
-  table,
+  instance,
 }: ColumnVisibilityProps<TData>) => {
 
   return (
@@ -23,7 +23,7 @@ const ColumnVisibility = <TData extends unknown>({
       <Popover.Dropdown classNames={{ dropdown: "p-2" }}>
         <div>
           <div className="flex flex-col gap-1">
-            {table.getAllLeafColumns().map(column => (
+            {instance.getAllLeafColumns().map(column => (
               <Switch 
                 key={column.id} 
                 label={column.id}
@@ -36,16 +36,16 @@ const ColumnVisibility = <TData extends unknown>({
           <div className="flex gap-1">
             <Button
               variant="subtle"
-              disabled={table.getIsAllColumnsVisible()}
-              onClick={() => table.toggleAllColumnsVisible(true)}
+              disabled={instance.getIsAllColumnsVisible()}
+              onClick={() => instance.toggleAllColumnsVisible(true)}
             >
               Mostrar todo
             </Button>
 
             <Button
               variant="subtle"
-              disabled={!table.getIsSomeColumnsVisible()}
-              onClick={() => table.toggleAllColumnsVisible(false)}
+              disabled={!instance.getIsSomeColumnsVisible()}
+              onClick={() => instance.toggleAllColumnsVisible(false)}
             >
               Ocultar todo
             </Button>

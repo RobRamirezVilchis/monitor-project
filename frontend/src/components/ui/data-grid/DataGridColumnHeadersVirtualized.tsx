@@ -147,7 +147,7 @@ const DataGridColumnHeadersVirtualized = <TData extends unknown>({
                   {/* Resize Handler */}
                   {header.column.getCanResize() ? <ResizeHandler header={header} /> : null}
 
-                  {!header.isPlaceholder && header.column.getCanFilter() ? <ColumnFilter header={header} table={table} /> : null}
+                  {!header.isPlaceholder && header.column.getCanFilter() ? <ColumnFilter header={header} instance={table} /> : null}
                 </DndColumnHeader>
               )
             })}

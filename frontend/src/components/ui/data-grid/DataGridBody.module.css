@@ -1,0 +1,26 @@
+.root {
+    display: grid;
+    flex: 1;
+    grid-template-columns: 1fr auto;
+    grid-template-rows: 1fr auto;
+    overflow-anchor: none; /* for virtualization */
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+}
+
+.viewport {
+    height: 100%;
+    overflow-anchor: none; /* for virtualization */
+    overflow: hidden;
+    touch-action: pan-down; /* for mobile browser refresh gesture */
+    width: 100%;
+}
+
+.rows-container {
+    display: flex;
+    flex-direction: column;
+    overflow-anchor: none; /* for virtualization */
+    overflow: hidden;
+    touch-action: pan-down; /* for mobile browser refresh gesture */
+}

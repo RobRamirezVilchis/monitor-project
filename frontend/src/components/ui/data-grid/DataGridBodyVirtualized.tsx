@@ -2,22 +2,22 @@ import { Fragment, useRef, useState } from "react";
 import { 
   flexRender, 
   Row, 
-  Table, 
 } from "@tanstack/react-table";
 import { useVirtualizer } from "@tanstack/react-virtual";
 
 import { useIsomorphicLayoutEffect } from "@/hooks/shared/useIsomorphicLayoutEffect";
 import { useScrollsContext } from "./ScrollsProvider";
+import type { DataGridInstance } from "./types";
 import LoadingOverlay from "@/components/ui/data-grid/components/LoadingOverlay";
 import Scroll from "@/components/ui/data-grid/components/Scroll";
 
 export interface DataGridBodyVirtualizedProps<TData extends unknown> {
-  table: Table<TData>;
+  instance: DataGridInstance<TData>;
   renderSubComponent?: (row: Row<TData>) => React.ReactNode;
 }
 
 const DataGridBodyVirtualized = <TData extends unknown>({
-  table, renderSubComponent,
+  instance, renderSubComponent,
 }: DataGridBodyVirtualizedProps<TData>) => {
   const { xScroll, yScroll } = useScrollsContext();
   const contentRef = useRef<HTMLDivElement>(null);
@@ -25,8 +25,8 @@ const DataGridBodyVirtualized = <TData extends unknown>({
     width: 0, 
     height: 0,
   });
-  const rowModel = table.getRowModel();
-  const leafColumns = table.getAllLeafColumns();
+  const rowModel = instance.getRowModel();
+  const leafColumns = instance.getAllLeafColumns();
   
   const xVirtualizer = useVirtualizer({
     count: leafColumns.length,
@@ -113,7 +113,7 @@ const DataGridBodyVirtualized = <TData extends unknown>({
             touchAction: "pan-down", // for mobile browser refresh gesture
             display: "flex",
             flexDirection: "column",
-            // width: table.getTotalSize(),
+            // width: instance.getTotalSize(),
 
             position: "relative",
             height: yVirtualizer.getTotalSize(),
@@ -130,7 +130,7 @@ const DataGridBodyVirtualized = <TData extends unknown>({
                 <div
                   style={{
                     display: "flex",
-                    // width: table.getTotalSize(),
+                    // width: instance.getTotalSize(),
                     
                     position: "absolute",
                     height: `${virtualRow.size}px`,
