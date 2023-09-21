@@ -13,7 +13,7 @@ import type {
   DataGridRowCellPropsStyles,
   DataGridRowClassNames,
   DataGridRowStyles,
-} from "./types";
+} from "../types";
 
 export interface DataGridContextProps {
   loading?: boolean;

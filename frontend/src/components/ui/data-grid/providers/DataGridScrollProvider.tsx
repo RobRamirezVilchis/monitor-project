@@ -1,6 +1,6 @@
 import { ReactNode, RefObject, createContext, useContext, useMemo, useRef } from "react";
 
-import { useScroll, UseScrollReturn } from "./components/useScroll";
+import { useScroll, UseScrollReturn } from "../components/useScroll";
 
 // Context --------------------------------------------------------------------
 export interface DataGridScrollContextProps {

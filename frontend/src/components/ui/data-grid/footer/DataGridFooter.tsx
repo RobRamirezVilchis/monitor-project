@@ -3,9 +3,9 @@ import clsx from "clsx";
 
 import gridFooterStyles from "./DataGridFooter.module.css";
 
-import { useDataGridContext } from "./DataGridContext";
-import { useDataGridRefsContext } from "./DataGridRefsProvider";
-import type { DataGridInstance } from "./types";
+import { useDataGridContext } from "../providers/DataGridContext";
+import { useDataGridRefsContext } from "../providers/DataGridRefsProvider";
+import type { DataGridInstance } from "../types";
 
 export interface DataGridFooterProps<TData extends RowData> {
   instance: DataGridInstance<TData>;

@@ -4,8 +4,8 @@ import clsx from "clsx";
 
 import gridRowStyles from "./DataGridRow.module.css";
 
-import { useDataGridContext } from "./DataGridContext";
-import { useDataGridDensity } from "./DensityContext";
+import { useDataGridContext } from "../providers/DataGridContext";
+import { useDataGridDensity } from "../providers/DensityContext";
 import DataGridRowCell from "./DataGridRowCell";
 
 export interface DataGridRowProps<TData extends RowData> {

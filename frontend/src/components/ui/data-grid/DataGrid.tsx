@@ -4,16 +4,15 @@ import clsx from "clsx";
 
 import gridStyles from "./DataGrid.module.css";
 
-import { DataGridContext, DataGridContextProps } from "./DataGridContext";
-import { DataGridRefsProvider } from "./DataGridRefsProvider";
-import { DataGridScrollProvider } from "./DataGridScrollProvider";
-import { DensityContext } from "./DensityContext";
-import { useScroll} from "./components/useScroll";
+import { DataGridContext, DataGridContextProps } from "./providers/DataGridContext";
+import { DataGridRefsProvider } from "./providers/DataGridRefsProvider";
+import { DataGridScrollProvider } from "./providers/DataGridScrollProvider";
+import { DensityContext } from "./providers/DensityContext";
 import type { DataGridDensity, DataGridInstance } from "./types";
-import DataGridBody from "./DataGridBody";
-import DataGridColumnHeaders from "./DataGridColumnHeaders";
-import DataGridFooter from "./DataGridFooter";
-import DataGridHeader from "./DataGridHeader";
+import DataGridBody from "./body/DataGridBody";
+import DataGridColumnHeaders from "./column-headers/DataGridColumnHeaders";
+import DataGridFooter from "./footer/DataGridFooter";
+import DataGridHeader from "./header/DataGridHeader";
 
 export interface DataGridProps<TData extends RowData> {
   instance: DataGridInstance<TData>;
@@ -36,17 +35,10 @@ const DataGrid = <TData extends RowData>({
   styles,
   renderSubComponent,
 }: DataGridProps<TData>) => {
-  const mainXScroll = useScroll({ orientation: "horizontal" });
-  const mainYScroll = useScroll({ orientation: "vertical" });
-
   const contextValue = useMemo<DataGridContextProps>(() => ({
-    mainXScroll,
-    mainYScroll,
-    density,
-    loading,
     classNames,
     styles,
-  }), [mainXScroll, mainYScroll, density, loading, classNames, styles]);
+  }), [classNames, styles]);
 
   return (
     <DataGridContext.Provider value={contextValue}>

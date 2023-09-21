@@ -1,7 +1,7 @@
 import { 
-    Table, 
-    RowData, 
-    TableOptions
+  Table, 
+  RowData, 
+  TableOptions
 } from "@tanstack/react-table";
 import { CSSProperties } from "react";
 

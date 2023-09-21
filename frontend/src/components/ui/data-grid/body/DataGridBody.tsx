@@ -4,14 +4,14 @@ import clsx from "clsx";
 
 import gridBodyStyles from "./DataGridBody.module.css";
 
-import { useDataGridContext } from "./DataGridContext";
-import { useDataGridRefsContext } from "./DataGridRefsProvider";
-import { useDataGridScrollContext } from "./DataGridScrollProvider";
+import { useDataGridContext } from "../providers/DataGridContext";
+import { useDataGridRefsContext } from "../providers/DataGridRefsProvider";
+import { useDataGridScrollContext } from "../providers/DataGridScrollProvider";
 import { useIsomorphicLayoutEffect } from "@/hooks/shared/useIsomorphicLayoutEffect";
 import DataGridRow from "./DataGridRow";
 import LoadingOverlay from "@/components/ui/data-grid/components/LoadingOverlay";
 import Scroll from "@/components/ui/data-grid/components/Scroll";
-import type { DataGridInstance } from "./types";
+import type { DataGridInstance } from "../types";
 
 export interface DataGridBodyProps<TData extends unknown> {
   instance: DataGridInstance<TData>;

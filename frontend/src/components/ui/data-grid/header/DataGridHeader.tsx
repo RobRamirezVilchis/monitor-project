@@ -3,11 +3,11 @@ import clsx from "clsx";
 
 import gridHeaderStyles from "./DataGridHeader.module.css";
 
-import { useDataGridContext } from "./DataGridContext";
-import { useDataGridRefsContext } from "./DataGridRefsProvider";
-import ColumnVisibility from "./components/ColumnVisibility";
-import QuickFilter from "./components/QuickFilter";
-import type { DataGridInstance } from "./types";
+import { useDataGridContext } from "../providers/DataGridContext";
+import { useDataGridRefsContext } from "../providers/DataGridRefsProvider";
+import ColumnVisibility from "../components/ColumnVisibility";
+import QuickFilter from "../components/QuickFilter";
+import type { DataGridInstance } from "../types";
 
 export interface DataGridHeaderProps<TData extends RowData> {
   instance: DataGridInstance<TData>;

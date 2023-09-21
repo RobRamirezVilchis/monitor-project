@@ -5,15 +5,15 @@ import clsx from "clsx";
 
 import gridColumnHeadersStyles from "./DataGridColumnHeaders.module.css";
 
-import { useDataGridContext } from "./DataGridContext";
-import { useDataGridRefsContext } from "./DataGridRefsProvider";
-import { useDataGridScrollContext } from "./DataGridScrollProvider";
+import { useDataGridContext } from "../providers/DataGridContext";
+import { useDataGridRefsContext } from "../providers/DataGridRefsProvider";
+import { useDataGridScrollContext } from "../providers/DataGridScrollProvider";
 import { useIsomorphicLayoutEffect } from "@/hooks/shared/useIsomorphicLayoutEffect";
-import ColumnFilter from "./components/ColumnFilter";
-import ColumnSort from "./components/ColumnSort";
-import DndColumnHeader from "./components/DndColumnHeader";
-import ResizeHandler from "./components/ResizeHandler";
-import type { DataGridInstance } from "./types";
+import ColumnFilter from "../components/ColumnFilter";
+import ColumnSort from "../components/ColumnSort";
+import DndColumnHeader from "./DndColumnHeader";
+import ResizeHandler from "./ResizeHandler";
+import type { DataGridInstance } from "../types";
 
 export interface DataGridColumnHeadersProps<TData extends unknown> {
   instance: DataGridInstance<TData>;

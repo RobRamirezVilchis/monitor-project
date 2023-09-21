@@ -1,6 +1,6 @@
 import { createContext, useContext, useMemo } from "react";
 
-import type { DataGridDensity } from "./types";
+import type { DataGridDensity } from "../types";
 
 export const densityFactor: Record<DataGridDensity, number> = {
   normal: 1,

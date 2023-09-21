@@ -8,10 +8,10 @@ import { useVirtualizer } from "@tanstack/react-virtual";
 
 import { useScrollsContext } from "./ScrollsProvider";
 import { useIsomorphicLayoutEffect } from "@/hooks/shared/useIsomorphicLayoutEffect";
-import ResizeHandler from "./components/ResizeHandler";
-import ColumnSort from "./components/ColumnSort";
-import DndColumnHeader from "./components/DndColumnHeader";
-import ColumnFilter from "./components/ColumnFilter";
+import ResizeHandler from "./ResizeHandler";
+import ColumnSort from "../components/ColumnSort";
+import DndColumnHeader from "./DndColumnHeader";
+import ColumnFilter from "../components/ColumnFilter";
 
 export interface DataGridColumnHeadersVirtualizedProps<TData extends unknown> {
   table: Table<TData>;

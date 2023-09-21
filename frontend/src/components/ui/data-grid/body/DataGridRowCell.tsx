@@ -3,8 +3,8 @@ import clsx from "clsx";
 
 import gridRowCellStyles from "./DataGridRowCell.module.css";
 
-import { useDataGridContext } from "./DataGridContext";
-import { useDataGridDensity } from "./DensityContext";
+import { useDataGridContext } from "../providers/DataGridContext";
+import { useDataGridDensity } from "../providers/DensityContext";
 
 export interface DataGridRowCellProps<TData extends RowData, TValue> {
   cell: Cell<TData, TValue>;
