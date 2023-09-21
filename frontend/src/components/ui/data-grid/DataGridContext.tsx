@@ -1,33 +1,44 @@
-import { createContext, useContext } from "react";
+import { CSSProperties, createContext, useContext } from "react";
 
-import { UseScrollReturn } from "./components/useScroll";
+import type { 
+  DataGridBodyClassNames,
+  DataGridBodyStyles,
+  DataGridColumnHeadersClassNames,
+  DataGridColumnHeadersStyles,
+  DataGridFooterClassNames,
+  DataGridFooterStyles,
+  DataGridHeaderClassNames,
+  DataGridHeaderStyles,
+  DataGridRowCellPropsClassNames,
+  DataGridRowCellPropsStyles,
+  DataGridRowClassNames,
+  DataGridRowStyles,
+} from "./types";
 
 export interface DataGridContextProps {
-  mainXScroll: UseScrollReturn;
-  mainYScroll: UseScrollReturn;
+  loading?: boolean;
+  classNames?: {
+    root?: string;
+    header?: DataGridHeaderClassNames,
+    columnHeaders?: DataGridColumnHeadersClassNames,
+    body?: DataGridBodyClassNames,
+    footer?: DataGridFooterClassNames,
+    row?: DataGridRowClassNames;
+    cell?: DataGridRowCellPropsClassNames;
+  };
+  styles?: {
+    root?: CSSProperties;
+    header?: DataGridHeaderStyles;
+    columnHeaders?: DataGridColumnHeadersStyles;
+    body?: DataGridBodyStyles;
+    footer?: DataGridFooterStyles;
+    row?: DataGridRowStyles;
+    cell?: DataGridRowCellPropsStyles;
+  };
 }
 
 export const DataGridContext = createContext<DataGridContextProps>({
-  mainXScroll: {
-    scrollRef: { current: null },
-    onScroll: () => {},
-    onWheel: () => {},
-    onTouchStart: () => {},
-    onTouchMove: () => {},
-    onTouchEnd: () => {},
-    syncScroll: () => {},
-    desyncScroll: () => {},
-  },
-  mainYScroll: {
-    scrollRef: { current: null },
-    onScroll: () => {},
-    onWheel: () => {},
-    onTouchStart: () => {},
-    onTouchMove: () => {},
-    onTouchEnd: () => {},
-    syncScroll: () => {},
-    desyncScroll: () => {},
-  },
+  
 });
 
 export const useDataGridContext = () => useContext(DataGridContext);

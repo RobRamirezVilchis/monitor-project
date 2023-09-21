@@ -13,30 +13,11 @@ import {
 } from "@tanstack/react-table";
 
 import type { DataGridOptions, DataGridInstance } from "./types";
-import { useMemo, useRef } from "react";
 
 const useDataGrid = <TData extends RowData>({
   enableFacetedValues,
   ...tableOptions
 }: DataGridOptions<TData>): DataGridInstance<TData> => {
-  const mainContentRef = useRef<HTMLDivElement>(null);
-  
-  const mainColumnsHeaderRef = useRef<HTMLDivElement>(null);
-  
-  const headerRef = useRef<HTMLDivElement>(null);
-  const footerRef = useRef<HTMLDivElement>(null);
-
-  const tableRefs = useMemo<DataGridInstance<TData>["refs"]>(() => ({
-    content: {
-      main: mainContentRef,
-    },
-    columnHeader: {
-      main: mainColumnsHeaderRef,
-    },
-    header: headerRef,
-    footer: footerRef,
-  }), []);
-
   const table = useReactTable<TData>({
     ...tableOptions,
     getCoreRowModel: getCoreRowModel<TData>(),
@@ -50,7 +31,6 @@ const useDataGrid = <TData extends RowData>({
     getPaginationRowModel: tableOptions.enablePagination ? getPaginationRowModel<TData>() : undefined,
   }) as DataGridInstance<TData>;
 
-  table.refs = tableRefs;
   return table;
 }
 

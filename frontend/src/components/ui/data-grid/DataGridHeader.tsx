@@ -1,36 +1,29 @@
-import { CSSProperties } from "react";
 import { RowData } from "@tanstack/react-table";
 import clsx from "clsx";
 
 import gridHeaderStyles from "./DataGridHeader.module.css";
 
-import type { DataGridInstance } from "./types";
+import { useDataGridContext } from "./DataGridContext";
+import { useDataGridRefsContext } from "./DataGridRefsProvider";
 import ColumnVisibility from "./components/ColumnVisibility";
 import QuickFilter from "./components/QuickFilter";
-
-export interface DataGridHeaderClassNames {
-  root?: string;
-}
-
-export interface DataGridHeaderStyles {
-  root?: CSSProperties;
-}
+import type { DataGridInstance } from "./types";
 
 export interface DataGridHeaderProps<TData extends RowData> {
   instance: DataGridInstance<TData>;
-  classNames?: DataGridHeaderClassNames;
-  styles?: DataGridHeaderStyles;
 }
 
 const DataGridHeader = <TData extends RowData>({
   instance,
-  classNames,
-  styles,
 }: DataGridHeaderProps<TData>) => {
+  const { classNames, styles } = useDataGridContext();
+  const { headerRef } = useDataGridRefsContext();
+
   return (
     <div
-      className={clsx("DataGridHeader-root", gridHeaderStyles.root, classNames?.root)}
-      style={styles?.root}
+      ref={headerRef}
+      className={clsx("DataGridHeader-root", gridHeaderStyles.root, classNames?.header?.root)}
+      style={styles?.header?.root}
     >
       <div className="flex-1 flex justify-end items-end">
         <ColumnVisibility instance={instance} />

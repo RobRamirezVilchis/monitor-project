@@ -1,32 +1,27 @@
-import { CSSProperties } from "react";
 import { RowData } from "@tanstack/react-table";
-
-import type { DataGridInstance } from "./types";
 import clsx from "clsx";
 
-export interface DataGridFooterClassNames {
-  root?: string;
-}
+import gridFooterStyles from "./DataGridFooter.module.css";
 
-export interface DataGridFooterStyles {
-  root?: CSSProperties;
-}
+import { useDataGridContext } from "./DataGridContext";
+import { useDataGridRefsContext } from "./DataGridRefsProvider";
+import type { DataGridInstance } from "./types";
 
 export interface DataGridFooterProps<TData extends RowData> {
   instance: DataGridInstance<TData>;
-  classNames?: DataGridFooterClassNames;
-  styles?: DataGridFooterStyles;
 }
 
 const DataGridFooter = <TData extends RowData>({
   instance,
-  classNames,
-  styles,
 }: DataGridFooterProps<TData>) => {
+  const { classNames, styles } = useDataGridContext();
+  const { footerRef } = useDataGridRefsContext();
+
   return (
     <div
-      className={clsx("DataGridFooter-root", classNames?.root)}
-      style={styles?.root}
+      ref={footerRef}
+      className={clsx("DataGridFooter-root", gridFooterStyles.root, classNames?.footer?.root)}
+      style={styles?.footer?.root}
     >
       Footer
     </div>

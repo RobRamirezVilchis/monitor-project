@@ -1,58 +1,42 @@
-import { CSSProperties, useCallback, useRef } from "react";
-import { 
-  flexRender, 
-} from "@tanstack/react-table";
 import { DndContext, DragEndEvent } from "@dnd-kit/core";
+import { flexRender } from "@tanstack/react-table";
+import { useCallback, useRef } from "react";
 import clsx from "clsx";
 
 import gridColumnHeadersStyles from "./DataGridColumnHeaders.module.css";
 
 import { useDataGridContext } from "./DataGridContext";
+import { useDataGridRefsContext } from "./DataGridRefsProvider";
+import { useDataGridScrollContext } from "./DataGridScrollProvider";
 import { useIsomorphicLayoutEffect } from "@/hooks/shared/useIsomorphicLayoutEffect";
-import type { DataGridInstance } from "./types";
-import ResizeHandler from "./components/ResizeHandler";
+import ColumnFilter from "./components/ColumnFilter";
 import ColumnSort from "./components/ColumnSort";
 import DndColumnHeader from "./components/DndColumnHeader";
-import ColumnFilter from "./components/ColumnFilter";
-
-export interface DataGridColumnHeadersClassNames {
-  root?: string;
-  headersContainer?: string;
-  headerRow?: string;
-  headerCell?: string;
-}
-
-export interface DataGridColumnHeadersStyles {
-  root?: CSSProperties;
-  headersContainer?: CSSProperties;
-  headerRow?: CSSProperties;
-  headerCell?: CSSProperties;
-}
+import ResizeHandler from "./components/ResizeHandler";
+import type { DataGridInstance } from "./types";
 
 export interface DataGridColumnHeadersProps<TData extends unknown> {
   instance: DataGridInstance<TData>;
-  classNames?: DataGridColumnHeadersClassNames;
-  styles?: DataGridColumnHeadersStyles;
 }
 
 const DataGridColumnHeaders = <TData extends unknown>({
   instance,
-  classNames,
-  styles,
 }: DataGridColumnHeadersProps<TData>) => {
-  const { mainXScroll } = useDataGridContext();
+  const { classNames, styles } = useDataGridContext();
+  const { mainScrollbars } = useDataGridScrollContext();
+  const { columnHeaderRefs } = useDataGridRefsContext();
 
   const headerGroups = instance.getHeaderGroups();
 
   const columnOrder = useRef(instance.getAllFlatColumns().map(c => c.id));
 
   useIsomorphicLayoutEffect(() => {
-    mainXScroll.syncScroll(instance.refs.columnHeader.main);
+    mainScrollbars.horizontal.syncScroll(columnHeaderRefs.main);
 
     return () => {
-      mainXScroll.desyncScroll(instance.refs.columnHeader.main);
+      mainScrollbars.horizontal.desyncScroll(columnHeaderRefs.main);
     };
-  }, []);
+  }, [mainScrollbars.horizontal, columnHeaderRefs.main]);
 
   const onHeaderDragEnd = useCallback((e: DragEndEvent) => {
     const { active, over } = e;
@@ -77,23 +61,23 @@ const DataGridColumnHeaders = <TData extends unknown>({
   // Viewport
   return (
     <div
-      className={clsx("DataGridColumnHeaders-root DataGridColumnHeaders-viewport", gridColumnHeadersStyles.root, classNames?.root)}
-      style={styles?.root}
+      className={clsx("DataGridColumnHeaders-root DataGridColumnHeaders-viewport", gridColumnHeadersStyles.root, classNames?.columnHeaders?.root)}
+      style={styles?.columnHeaders?.root}
       // TODO: Ignore events if resizing or reordering
-      onWheel={mainXScroll.onWheel}
-      onTouchStart={mainXScroll.onTouchStart}
-      onTouchMove={mainXScroll.onTouchMove}
-      onTouchEnd={mainXScroll.onTouchEnd}
+      onWheel={mainScrollbars.horizontal.onWheel}
+      onTouchStart={mainScrollbars.horizontal.onTouchStart}
+      onTouchMove={mainScrollbars.horizontal.onTouchMove}
+      onTouchEnd={mainScrollbars.horizontal.onTouchEnd}
     >
       {/* Columns */}
       <DndContext
         onDragEnd={onHeaderDragEnd}
       >
       <div
-        ref={instance.refs.columnHeader.main}
-        className={clsx("DataGridColumnHeaders-headersContainer", gridColumnHeadersStyles.headersContainer, classNames?.headersContainer)}
+        ref={columnHeaderRefs.main}
+        className={clsx("DataGridColumnHeaders-headersContainer", gridColumnHeadersStyles.headersContainer, classNames?.columnHeaders?.headersContainer)}
         style={{
-          ...styles?.headersContainer,
+          ...styles?.columnHeaders?.headersContainer,
           width: instance.getTotalSize(),
         }}
       >

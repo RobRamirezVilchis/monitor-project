@@ -1,46 +1,25 @@
-import { CSSProperties, ReactNode, useMemo } from "react";
+import { ReactNode, useMemo } from "react";
 import { Row, RowData } from "@tanstack/react-table";
 import clsx from "clsx";
 
 import gridStyles from "./DataGrid.module.css";
 
 import { DataGridContext, DataGridContextProps } from "./DataGridContext";
+import { DataGridRefsProvider } from "./DataGridRefsProvider";
+import { DataGridScrollProvider } from "./DataGridScrollProvider";
+import { DensityContext } from "./DensityContext";
 import { useScroll} from "./components/useScroll";
 import type { DataGridDensity, DataGridInstance } from "./types";
-import DataGridBody, {
-  type DataGridBodyClassNames,
-  type DataGridBodyStyles,
-} from "./DataGridBody";
-import DataGridColumnHeaders, {
-  type DataGridColumnHeadersClassNames,
-  type DataGridColumnHeadersStyles,
-} from "./DataGridColumnHeaders";
-import DataGridFooter, {
-  type DataGridFooterClassNames,
-  type DataGridFooterStyles,
-} from "./DataGridFooter";
-import DataGridHeader, {
-  type DataGridHeaderClassNames,
-  type DataGridHeaderStyles,
-} from "./DataGridHeader";
+import DataGridBody from "./DataGridBody";
+import DataGridColumnHeaders from "./DataGridColumnHeaders";
+import DataGridFooter from "./DataGridFooter";
+import DataGridHeader from "./DataGridHeader";
 
 export interface DataGridProps<TData extends RowData> {
   instance: DataGridInstance<TData>;
   loading?: boolean;
-  classNames?: {
-    root?: string;
-    header?: DataGridHeaderClassNames,
-    columnHeaders?: DataGridColumnHeadersClassNames,
-    body?: DataGridBodyClassNames,
-    footer?: DataGridFooterClassNames,
-  },
-  styles?: {
-    root?: CSSProperties;
-    header?: DataGridHeaderStyles;
-    columnHeaders?: DataGridColumnHeadersStyles;
-    body?: DataGridBodyStyles;
-    footer?: DataGridFooterStyles;
-  },
+  classNames?: DataGridContextProps["classNames"];
+  styles?: DataGridContextProps["styles"];
   renderSubComponent?: (row: Row<TData>) => ReactNode;
   /**
    * The height of each row in pixels.
@@ -63,34 +42,30 @@ const DataGrid = <TData extends RowData>({
   const contextValue = useMemo<DataGridContextProps>(() => ({
     mainXScroll,
     mainYScroll,
-  }), [mainXScroll, mainYScroll]);
+    density,
+    loading,
+    classNames,
+    styles,
+  }), [mainXScroll, mainYScroll, density, loading, classNames, styles]);
 
   return (
     <DataGridContext.Provider value={contextValue}>
-      <div className={clsx("DataGrid-root", gridStyles.root, classNames?.root)} style={styles?.root}>
-        <DataGridHeader 
-          instance={instance} 
-          classNames={classNames?.header} 
-          styles={styles?.header} 
-        />
-        <DataGridColumnHeaders 
-          instance={instance} 
-          classNames={classNames?.columnHeaders} 
-          styles={styles?.columnHeaders} 
-        />
-        <DataGridBody 
-          instance={instance}
-          loading={loading}
-          density={density}
-          renderSubComponent={renderSubComponent}
-          classNames={classNames?.body}
-          styles={styles?.body}
-        />
-        <DataGridFooter instance={instance} 
-          classNames={classNames?.footer}
-          styles={styles?.footer}
-        />
-      </div>
+      <DataGridRefsProvider>
+        <DataGridScrollProvider>
+          <DensityContext.Provider value={density}>
+            <div className={clsx("DataGrid-root", gridStyles.root, classNames?.root)} style={styles?.root}>
+              <DataGridHeader instance={instance} />
+              <DataGridColumnHeaders instance={instance} />
+              <DataGridBody 
+                instance={instance}
+                loading={loading}
+                renderSubComponent={renderSubComponent}
+              />
+              <DataGridFooter instance={instance} />
+            </div>
+          </DensityContext.Provider>
+        </DataGridScrollProvider>
+      </DataGridRefsProvider>
     </DataGridContext.Provider>
   );
 };
