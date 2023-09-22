@@ -7,8 +7,9 @@ import gridHeaderCellStyles from "./DataGridColumnHeaderCell.module.css";
 
 import { useDataGridContext } from "../providers/DataGridContext";
 import { useDataGridDensity } from "../providers/DensityContext";
-import ColumnSortingToggle from "../components/ColumnSortingToggle";
+import ColumnDragHandle from "../components/ColumnDragHandle";
 import ColumnMenu from "../components/ColumnMenu";
+import ColumnSortingToggle from "../components/ColumnSortingToggle";
 import ResizeHandler from "./ResizeHandler";
 
 import { IconGripHorizontal } from "@tabler/icons-react";
@@ -71,29 +72,7 @@ const DataGridColumnHeaderCell = <TData extends RowData, TValue>({
                 style={styles?.columnHeaderCell?.actions}
               >
                 {header.column.getCanSort() ? <ColumnSortingToggle header={header} /> : null}
-
-                {draggableCtx ? (
-                  <span
-                    onTouchStart={e => e.stopPropagation()}
-                    onTouchMove={e => e.stopPropagation()}
-                    onTouchEnd={e => e.stopPropagation()}
-                    style={{
-                      display: "inline-flex",
-                    }}
-                  >
-                    <ActionIcon 
-                      size="xs"
-                      variant="transparent"
-                      ref={draggableCtx.setNodeRef}
-                      {...draggableCtx.listeners}
-                      {...draggableCtx.attributes}
-                      suppressHydrationWarning
-                    >
-                      <IconGripHorizontal />
-                    </ActionIcon>
-                  </span>
-                ) : null}
-
+                {draggableCtx ? <ColumnDragHandle draggableCtx={draggableCtx} /> : null}
                 <ColumnMenu header={header} />
               </div>) 
             : null}
