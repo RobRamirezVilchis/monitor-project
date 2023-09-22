@@ -15,7 +15,8 @@ export const useDataGridDensity = () => {
   const ctx = useMemo(() => ({
     value: density,
     factor: densityFactor[density],
-    height: Math.floor(52 * (densityFactor[density] ?? 1)),
+    rowHeight: Math.floor(52 * (densityFactor[density] ?? 1)),
+    headerHeight: Math.floor(56 * (densityFactor[density] ?? 1)),
   }), [density]);
 
   return ctx;

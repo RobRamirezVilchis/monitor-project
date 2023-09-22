@@ -20,7 +20,7 @@ const DataGridRow = <TData extends RowData>({
   renderSubComponent,
 }: DataGridRowProps<TData>) => {
   const { classNames, styles } = useDataGridContext();
-  const { height } = useDataGridDensity();
+  const { rowHeight } = useDataGridDensity();
 
   return (
     <Fragment>
@@ -28,9 +28,9 @@ const DataGridRow = <TData extends RowData>({
         className={clsx("DataGridRow-root", gridRowStyles.root, classNames?.row?.root)}
         style={{
           ...styles?.row?.root,
-          height,
-          minHeight: height,
-          maxHeight: height,
+          height: rowHeight,
+          minHeight: rowHeight,
+          maxHeight: rowHeight,
         }}
         data-id={(row.original as any)?.id ?? undefined}
         data-row-index={rowIndex}

@@ -2,6 +2,7 @@
     padding: 0 8px;
     position: relative;
     user-select: none;
+    overflow: hidden;
 }
 
 .content {
@@ -19,7 +20,7 @@
     align-items: center;
     display: flex;
     gap: 0.25rem;
-    justify-content: start;
+    justify-content: flex-start;
     width: 100%;
 }
 
@@ -28,16 +29,31 @@
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+    flex: 1;
 }
 
 .actions {
     align-items: center;
-    display: flex;
     gap: 0.25rem;
+    display: flex;
 }
+
+/* .root:hover .actions {
+    display: flex;
+} */
 
 .filter {
     align-items: center;
     display: none;
     gap: 0.25rem;
+}
+
+.overlay {
+    border: 2px solid black;
+    background: rgb(0 0 0 / 0.1);
+    transform: translateX(-50%);
+}
+
+.draggableOver {
+    outline: 2px dashed rgb(25, 131, 202);
 }

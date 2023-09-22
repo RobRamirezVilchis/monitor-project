@@ -1,4 +1,3 @@
-import { ActionIcon } from "@mantine/core";
 import { Header, RowData, flexRender } from "@tanstack/react-table";
 import { useDraggable, useDroppable } from "@dnd-kit/core";
 import clsx from "clsx";
@@ -6,54 +5,55 @@ import clsx from "clsx";
 import gridHeaderCellStyles from "./DataGridColumnHeaderCell.module.css";
 
 import { useDataGridContext } from "../providers/DataGridContext";
-import { useDataGridDensity } from "../providers/DensityContext";
 import ColumnSortingToggle from "../components/ColumnSortingToggle";
 import ColumnMenu from "../components/ColumnMenu";
 import ResizeHandler from "./ResizeHandler";
 
 import { IconGripHorizontal } from "@tabler/icons-react";
+import { ActionIcon } from "@mantine/core";
 
-export interface DataGridColumnHeaderCellProps<TData extends RowData, TValue> {
+export interface DataGridColumnHeaderCellDndProps<TData extends RowData, TValue> {
   header: Header<TData, TValue>;
-  draggableCtx?: ReturnType<typeof useDraggable>; 
-  droppableCtx?: ReturnType<typeof useDroppable>;
-  isOverlay?: boolean;
 }
 
-const DataGridColumnHeaderCell = <TData extends RowData, TValue>({
+const DataGridColumnHeaderCellDnd = <TData extends RowData, TValue>({
   header,
-  draggableCtx,
-  droppableCtx,
-  isOverlay,
-}: DataGridColumnHeaderCellProps<TData, TValue>) => {
+}: DataGridColumnHeaderCellDndProps<TData, TValue>) => {
   const { classNames, styles } = useDataGridContext();
-  const { headerHeight } = useDataGridDensity();
   
+  const { isDragging, setNodeRef: setDraggableNodeRef, transform, attributes, listeners } = useDraggable({
+    id: header.id,
+    data: header,
+  });
+
+  const { setNodeRef: setDroppableNodeRef } = useDroppable({
+    id: header.id,
+  });
+
   return (
     <div
-      className={clsx(
-        "DataGridColumnHeaderCell-root", 
-        gridHeaderCellStyles.root,
-        {
-          [gridHeaderCellStyles.overlay]: isOverlay,
-          [gridHeaderCellStyles.draggableOver]: droppableCtx?.isOver,
-        },
-        classNames?.columnHeaderCell?.root
-      )}
+      className={clsx("DataGridColumnHeaderCell-root", gridHeaderCellStyles.root, classNames?.columnHeaderCell?.root)}
       style={{
         ...styles?.columnHeaderCell?.root,
         width: header.getSize(),
-        height: headerHeight,
       }}
 
-      ref={droppableCtx?.setNodeRef}
+      ref={setDroppableNodeRef}
     >
       {/* Content */}
       {!header.isPlaceholder ? (
         <div
           className={clsx("DataGridColumnHeaderCell-content", gridHeaderCellStyles.content, classNames?.columnHeaderCell?.content)}
-          style={styles?.columnHeaderCell?.content}
+          // style={styles?.columnHeaderCell?.content}
+          style={{
+            ...styles?.columnHeaderCell?.content,
+            opacity: isDragging ? 0.5 : 1,
+            // transform: transform 
+            //   ? `translate(${transform.x}px, ${transform.y}px`
+            //   : undefined,
+          }}
         >
+          {/* <DataGridColumnHeaderCellContent header={header} /> */}
           <div
             className={clsx("DataGridColumnHeaderCell-contentLabel", gridHeaderCellStyles.contentLabel, classNames?.columnHeaderCell?.contentLabel)}
             style={styles?.columnHeaderCell?.content}
@@ -72,27 +72,25 @@ const DataGridColumnHeaderCell = <TData extends RowData, TValue>({
               >
                 {header.column.getCanSort() ? <ColumnSortingToggle header={header} /> : null}
 
-                {draggableCtx ? (
-                  <span
-                    onTouchStart={e => e.stopPropagation()}
-                    onTouchMove={e => e.stopPropagation()}
-                    onTouchEnd={e => e.stopPropagation()}
-                    style={{
-                      display: "inline-flex",
-                    }}
+                <span
+                  onTouchStart={e => e.stopPropagation()}
+                  onTouchMove={e => e.stopPropagation()}
+                  onTouchEnd={e => e.stopPropagation()}
+                  style={{
+                    display: "inline-flex",
+                  }}
+                >
+                  <ActionIcon 
+                    size="xs"
+                    variant="transparent"
+                    ref={setDraggableNodeRef}
+                    {...listeners}
+                    {...attributes}
+                    suppressHydrationWarning
                   >
-                    <ActionIcon 
-                      size="xs"
-                      variant="transparent"
-                      ref={draggableCtx.setNodeRef}
-                      {...draggableCtx.listeners}
-                      {...draggableCtx.attributes}
-                      suppressHydrationWarning
-                    >
-                      <IconGripHorizontal />
-                    </ActionIcon>
-                  </span>
-                ) : null}
+                    <IconGripHorizontal />
+                  </ActionIcon>
+                </span>
 
                 <ColumnMenu header={header} />
               </div>) 
@@ -110,9 +108,9 @@ const DataGridColumnHeaderCell = <TData extends RowData, TValue>({
         </div>
       ) : null}
       
-      {!isOverlay && header.column.getCanResize() ? <ResizeHandler header={header} /> : null}
+      {header.column.getCanResize() ? <ResizeHandler header={header} /> : null}
     </div>
   );
 }
 
-export default DataGridColumnHeaderCell;
+export default DataGridColumnHeaderCellDnd;

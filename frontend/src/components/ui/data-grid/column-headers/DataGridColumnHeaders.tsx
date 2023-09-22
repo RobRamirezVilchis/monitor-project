@@ -1,5 +1,18 @@
-import { DndContext, DragEndEvent } from "@dnd-kit/core";
-import { useCallback, useRef } from "react";
+import { 
+  CollisionDetection,
+  DndContext, 
+  DragEndEvent, 
+  DragOverlay, 
+  DragStartEvent ,
+  KeyboardSensor,
+  MouseSensor,
+  pointerWithin, 
+  rectIntersection,
+  TouchSensor,
+  useSensor,
+  useSensors,
+} from "@dnd-kit/core";
+import { useCallback, useRef, useState } from "react";
 import clsx from "clsx";
 
 import gridColumnHeadersStyles from "./DataGridColumnHeaders.module.css";
@@ -10,6 +23,7 @@ import { useDataGridScrollContext } from "../providers/DataGridScrollProvider";
 import { useIsomorphicLayoutEffect } from "@/hooks/shared/useIsomorphicLayoutEffect";
 import type { DataGridInstance } from "../types";
 import DataGridColumnHeaderGroup from "./DataGridColumnHeaderGroup";
+import DataGridColumnHeaderCell from "./DataGridColumnHeaderCell";
 
 export interface DataGridColumnHeadersProps<TData extends unknown> {
   instance: DataGridInstance<TData>;
@@ -21,10 +35,24 @@ const DataGridColumnHeaders = <TData extends unknown>({
   const { classNames, styles } = useDataGridContext();
   const { mainScrollbars } = useDataGridScrollContext();
   const { columnHeaderRefs } = useDataGridRefsContext();
+  const [draggedHeader, setDraggedHeader] = useState<any | null>(null);
+  const columnOrder = useRef(instance.getAllFlatColumns().map(c => c.id));
+  const sensors = useSensors(
+    useSensor(MouseSensor, {
+      activationConstraint: {
+        distance: 5,
+      },
+    }), 
+    useSensor(TouchSensor, {
+      activationConstraint: {
+        delay: 250,
+        tolerance: 5,
+      },
+    }), 
+    useSensor(KeyboardSensor),
+  );
 
   const headerGroups = instance.getHeaderGroups();
-
-  const columnOrder = useRef(instance.getAllFlatColumns().map(c => c.id));
 
   useIsomorphicLayoutEffect(() => {
     mainScrollbars.horizontal.syncScroll(columnHeaderRefs.main);
@@ -34,7 +62,12 @@ const DataGridColumnHeaders = <TData extends unknown>({
     };
   }, [mainScrollbars.horizontal, columnHeaderRefs.main]);
 
+  const onHeaderDragStart = useCallback((e: DragStartEvent) => {
+    setDraggedHeader(e.active.data.current);
+  }, []);
+
   const onHeaderDragEnd = useCallback((e: DragEndEvent) => {
+    setDraggedHeader(null);
     const { active, over } = e;
     if (!active || !over || active.id === over.id) {
       return;
@@ -59,7 +92,6 @@ const DataGridColumnHeaders = <TData extends unknown>({
     <div
       className={clsx("DataGridColumnHeaders-root DataGridColumnHeaders-viewport", gridColumnHeadersStyles.root, classNames?.columnHeaders?.root)}
       style={styles?.columnHeaders?.root}
-      // TODO: Ignore events if resizing or reordering
       onWheel={mainScrollbars.horizontal.onWheel}
       onTouchStart={mainScrollbars.horizontal.onTouchStart}
       onTouchMove={mainScrollbars.horizontal.onTouchMove}
@@ -67,6 +99,9 @@ const DataGridColumnHeaders = <TData extends unknown>({
     >
       {/* Columns */}
       <DndContext
+        sensors={sensors}
+        collisionDetection={collisionDetectionAlgorithm}
+        onDragStart={onHeaderDragStart}
         onDragEnd={onHeaderDragEnd}
       >
         <div
@@ -80,16 +115,30 @@ const DataGridColumnHeaders = <TData extends unknown>({
           {/* Groups */}
           {headerGroups.map(group => (
             <DataGridColumnHeaderGroup key={group.id} group={group} />
-            // disabled={
-            // header.isPlaceholder 
-            //  || header.subHeaders.length > 0
-            //  || header.column.getIsResizing()
-            // }
           ))}
         </div>
+
+        <DragOverlay dropAnimation={null}>
+          {draggedHeader ? (
+            <DataGridColumnHeaderCell header={draggedHeader} isOverlay />
+          ) : null}
+        </DragOverlay>
       </DndContext>
     </div>
   )
 }
 
 export default DataGridColumnHeaders;
+
+const collisionDetectionAlgorithm: CollisionDetection = (args) => {
+  // First, let's see if there are any collisions with the pointer
+  const pointerCollisions = pointerWithin(args);
+  
+  // Collision detection algorithms return an array of collisions
+  if (pointerCollisions.length > 0) {
+    return pointerCollisions;
+  }
+  
+  // If there are no collisions with the pointer, return rectangle intersections
+  return rectIntersection(args);
+};

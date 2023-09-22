@@ -14,7 +14,7 @@ const DataGridRowCell = <TData extends RowData, TValue>({
   cell,
 }: DataGridRowCellProps<TData, TValue>) => {
   const { classNames, styles } = useDataGridContext();
-  const { height } = useDataGridDensity();
+  const { rowHeight } = useDataGridDensity();
   
   const value = cell.getValue();
   const title = typeof value === "string" || typeof value === "number"
@@ -26,9 +26,9 @@ const DataGridRowCell = <TData extends RowData, TValue>({
       className={clsx("DataGridRowCell-root", gridRowCellStyles.root, classNames?.cell?.root)}
       style={{
         ...styles?.cell?.root,
-        height,
-        minHeight: height,
-        maxHeight: height,
+        height: rowHeight,
+        minHeight: rowHeight,
+        maxHeight: rowHeight,
         width: cell.column.getSize(),
       }}
       title={title}
