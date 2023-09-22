@@ -1,5 +1,8 @@
 import { Header } from "@tanstack/react-table";
 
+import resizeHandlerStyles from "./ResizeHandler.module.css";
+import clsx from "clsx";
+
 interface ResizeHandlerProps<TData extends unknown, TValue> {
   header: Header<TData, TValue>;
 }
@@ -9,16 +12,7 @@ const ResizeHandler = <TData extends unknown, TValue>({
 }: ResizeHandlerProps<TData, TValue>) => {
   return (
     <div
-      style={{
-        position: "absolute",
-        top: 0,
-        right: 0,
-        bottom: 0,
-        background: "blue",
-        width: 2,
-        cursor: "col-resize",
-        touchAction: "none",
-      }}
+      className={clsx(resizeHandlerStyles.root)}
       onMouseDown={e => {
         e.stopPropagation();
         header.getResizeHandler()(e);

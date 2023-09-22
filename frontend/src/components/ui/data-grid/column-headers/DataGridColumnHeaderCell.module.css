@@ -1,0 +1,43 @@
+.root {
+    padding: 0 8px;
+    position: relative;
+    user-select: none;
+}
+
+.content {
+    align-items: center;
+    align-items: flex-start;
+    display: flex;
+    flex-direction: column;
+    gap: 0.125rem;
+    height: 100%;
+    justify-content: center;
+    width: 100%;
+}
+
+.contentLabel {
+    align-items: center;
+    display: flex;
+    gap: 0.25rem;
+    justify-content: start;
+    width: 100%;
+}
+
+.label {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.actions {
+    align-items: center;
+    display: flex;
+    gap: 0.25rem;
+}
+
+.filter {
+    align-items: center;
+    display: none;
+    gap: 0.25rem;
+}

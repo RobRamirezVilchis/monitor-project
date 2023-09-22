@@ -85,9 +85,9 @@ const DataGridBody = <TData extends unknown>({
       >
         {/* Content */}
         <div
-          className={clsx("DataGridBody-rowsContainer", gridBodyStyles.rowsContainer, classNames?.body?.rowsContainer)}
+          className={clsx("DataGridBody-rowsContainer", gridBodyStyles.rowsContainer, classNames?.body?.container)}
           style={{
-            ...styles?.body?.rowsContainer,
+            ...styles?.body?.container,
             width: instance.getTotalSize(),
           }}
           ref={contentRefs.main}

@@ -35,28 +35,49 @@ export interface DataGridFooterStyles {
 
 export interface DataGridColumnHeadersClassNames {
   root?: string;
-  headersContainer?: string;
-  headerRow?: string;
-  headerCell?: string;
+  container?: string;
 }
 
 export interface DataGridColumnHeadersStyles {
   root?: CSSProperties;
-  headersContainer?: CSSProperties;
-  headerRow?: CSSProperties;
-  headerCell?: CSSProperties;
+  container?: CSSProperties;
+}
+
+export interface DataGridColumnHeaderGroupClassNames {
+  root?: string;
+}
+
+export interface DataGridColumnHeaderGroupStyles {
+  root?: CSSProperties;
+}
+
+export interface DataGridColumnHeaderCellClassNames {
+  root?: string;
+  content?: string;
+  contentLabel?: string;
+  label?: string;
+  actions?: string;
+  filter?: string;
+}
+
+export interface DataGridColumnHeaderCellStyles {
+  root?: CSSProperties;
+  content?: CSSProperties;
+  label?: CSSProperties;
+  actions?: CSSProperties;
+  filters?: CSSProperties;
 }
 
 export interface DataGridBodyClassNames {
   root?: string;
   viewport?: string;
-  rowsContainer?: string;
+  container?: string;
 }
 
 export interface DataGridBodyStyles {
   root?: CSSProperties;
   viewport?: CSSProperties;
-  rowsContainer?: CSSProperties;
+  container?: CSSProperties;
 }
 
 export interface DataGridRowClassNames {

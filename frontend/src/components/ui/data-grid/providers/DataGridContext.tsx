@@ -3,6 +3,10 @@ import { CSSProperties, createContext, useContext } from "react";
 import type { 
   DataGridBodyClassNames,
   DataGridBodyStyles,
+  DataGridColumnHeaderCellClassNames,
+  DataGridColumnHeaderCellStyles,
+  DataGridColumnHeaderGroupClassNames,
+  DataGridColumnHeaderGroupStyles,
   DataGridColumnHeadersClassNames,
   DataGridColumnHeadersStyles,
   DataGridFooterClassNames,
@@ -21,6 +25,8 @@ export interface DataGridContextProps {
     root?: string;
     header?: DataGridHeaderClassNames,
     columnHeaders?: DataGridColumnHeadersClassNames,
+    columnHeaderGroup?: DataGridColumnHeaderGroupClassNames,
+    columnHeaderCell?: DataGridColumnHeaderCellClassNames,
     body?: DataGridBodyClassNames,
     footer?: DataGridFooterClassNames,
     row?: DataGridRowClassNames;
@@ -30,6 +36,8 @@ export interface DataGridContextProps {
     root?: CSSProperties;
     header?: DataGridHeaderStyles;
     columnHeaders?: DataGridColumnHeadersStyles;
+    columnHeaderGroup?: DataGridColumnHeaderGroupStyles;
+    columnHeaderCell?: DataGridColumnHeaderCellStyles;
     body?: DataGridBodyStyles;
     footer?: DataGridFooterStyles;
     row?: DataGridRowStyles;

@@ -4,11 +4,6 @@
     white-space: nowrap;
     align-items: center;
     justify-content: flex-start;
-    border-right: 1px solid #e0e0e0;
-}
-
-.root:last-of-type {
-    border-right: none;
 }
 
 .content {

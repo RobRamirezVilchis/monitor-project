@@ -16,7 +16,6 @@ const DataGridRowCell = <TData extends RowData, TValue>({
   const { classNames, styles } = useDataGridContext();
   const { height } = useDataGridDensity();
   
-  const content = flexRender(cell.column.columnDef.cell, cell.getContext());
   const value = cell.getValue();
   const title = typeof value === "string" || typeof value === "number"
     ? value.toString()
@@ -38,7 +37,7 @@ const DataGridRowCell = <TData extends RowData, TValue>({
         className={clsx("DataGridRowCell-content", gridRowCellStyles.content, classNames?.cell?.content)}
         style={styles?.cell?.content}
       >
-        {content}
+        {flexRender(cell.column.columnDef.cell, cell.getContext())}
       </div>
     </div>
   )

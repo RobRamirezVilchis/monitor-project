@@ -23,7 +23,7 @@ const DataGridRow = <TData extends RowData>({
   const { height } = useDataGridDensity();
 
   return (
-    <Fragment key={row.id}>
+    <Fragment>
       <div
         className={clsx("DataGridRow-root", gridRowStyles.root, classNames?.row?.root)}
         style={{
