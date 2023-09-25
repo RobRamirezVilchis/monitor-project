@@ -18,6 +18,8 @@ const DataGridFooter = <TData extends RowData>({
   const { classNames, styles } = useDataGridContext();
   const { footerRef } = useDataGridRefsContext();
 
+  const selectedRowModel = instance.getSelectedRowModel();
+
   return (
     <div
       ref={footerRef}
@@ -26,8 +28,12 @@ const DataGridFooter = <TData extends RowData>({
     >
       {/* TODO: Use css module */}
       <div className="flex gap-2 w-full p-2">
-        <div className="flex-1">
-          n Rows Selected
+        <div className="flex-1 flex gap-2">
+          {selectedRowModel.rows.length > 0 ? (
+            <span>
+              {selectedRowModel.rows.length} rows selected
+            </span>
+          ) : null}
         </div>
 
         <div>
