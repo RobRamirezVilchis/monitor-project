@@ -1,10 +1,11 @@
+import { RowData } from "@tanstack/react-table";
 import { ActionIcon, Button, Popover, Switch } from "@mantine/core";
 
 import type { DataGridInstance } from "../types";
 
-import VisibilityIcon from '@mui/icons-material/Visibility';
+import { IconColumns } from "@tabler/icons-react";
 
-export interface ColumnVisibilityProps<TData extends unknown> {
+export interface ColumnVisibilityProps<TData extends RowData> {
   instance: DataGridInstance<TData>;
 }
 
@@ -15,8 +16,11 @@ const ColumnVisibility = <TData extends unknown>({
   return (
     <Popover position="bottom-end">
       <Popover.Target>
-        <ActionIcon variant="outlined" radius="xl">
-          <VisibilityIcon fontSize="small" />
+        <ActionIcon 
+          variant="transparent" 
+          radius="xl"
+        >
+          <IconColumns />
         </ActionIcon>
       </Popover.Target>
       

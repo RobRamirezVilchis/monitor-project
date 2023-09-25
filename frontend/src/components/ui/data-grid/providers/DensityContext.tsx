@@ -8,10 +8,18 @@ export const densityFactor: Record<DataGridDensity, number> = {
   comfortable: 1.3,
 };
 
-export const DensityContext = createContext<DataGridDensity>("normal");
+export const DensityContext = createContext<{
+  density: DataGridDensity;
+  setDensity: (density: DataGridDensity) => void;
+  toggleDensity: () => void;
+}>({
+  density: "normal",
+  setDensity: () => {},
+  toggleDensity: () => {},
+});
 
 export const useDataGridDensity = () => {
-  const density = useContext(DensityContext);
+  const { density, setDensity, toggleDensity } = useContext(DensityContext);
   const ctx = useMemo(() => ({
     value: density,
     factor: densityFactor[density],
@@ -19,5 +27,11 @@ export const useDataGridDensity = () => {
     headerHeight: Math.floor(56 * (densityFactor[density] ?? 1)),
   }), [density]);
 
-  return ctx;
+  const densityCtx = useMemo(() => ({
+    ...ctx,
+    setDensity,
+    toggleDensity,
+  }), [ctx, setDensity, toggleDensity]);
+
+  return densityCtx;
 };

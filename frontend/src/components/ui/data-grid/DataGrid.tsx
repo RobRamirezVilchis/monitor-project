@@ -1,4 +1,4 @@
-import { ReactNode, useMemo } from "react";
+import { ReactNode, useMemo, useState } from "react";
 import { Row, RowData } from "@tanstack/react-table";
 import clsx from "clsx";
 
@@ -40,11 +40,30 @@ const DataGrid = <TData extends RowData>({
     styles,
   }), [classNames, styles]);
 
+  const [_density, _setDensity] = useState<DataGridDensity>(density);
+
+  const densityCtx = useMemo(() => ({
+    density: _density,
+    setDensity: _setDensity,
+    toggleDensity: () => {
+      _setDensity(prev => {
+        switch (prev) {
+          case "normal":
+            return "compact";
+          case "compact":
+            return "comfortable";
+          case "comfortable":
+            return "normal";
+        }
+      });
+    },
+  }), [_density]);
+
   return (
     <DataGridContext.Provider value={contextValue}>
       <DataGridRefsProvider>
         <DataGridScrollProvider>
-          <DensityContext.Provider value={density}>
+          <DensityContext.Provider value={densityCtx}>
             <div className={clsx("DataGrid-root", gridStyles.root, classNames?.root)} style={styles?.root}>
               <DataGridHeader instance={instance} />
               <DataGridColumnHeaders instance={instance} />

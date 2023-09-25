@@ -1,4 +1,5 @@
 import { useCallback } from "react";
+import { TextInput } from "@mantine/core";
 
 import { useDebounce } from "@/hooks/shared";
 import type { DataGridInstance } from "../types";
@@ -19,12 +20,9 @@ const QuickFilter = <TData extends unknown>({
 
   return (
     <div className="px-2">
-      <input 
+      <TextInput
         placeholder="Search..."
         onChange={(e) => debounce(e.target.value)}
-        style={{
-          borderBottom: "1px solid #ccc",
-        }}
       />
     </div>
   );
