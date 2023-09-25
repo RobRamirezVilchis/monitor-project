@@ -6,6 +6,7 @@ import gridFooterStyles from "./DataGridFooter.module.css";
 import { useDataGridContext } from "../providers/DataGridContext";
 import { useDataGridRefsContext } from "../providers/DataGridRefsProvider";
 import type { DataGridInstance } from "../types";
+import GridPagination from "../components/GridPagination";
 
 export interface DataGridFooterProps<TData extends RowData> {
   instance: DataGridInstance<TData>;
@@ -23,7 +24,16 @@ const DataGridFooter = <TData extends RowData>({
       className={clsx("DataGridFooter-root", gridFooterStyles.root, classNames?.footer?.root)}
       style={styles?.footer?.root}
     >
-      Footer
+      {/* TODO: Use css module */}
+      <div className="flex gap-2 w-full p-2">
+        <div className="flex-1">
+          n Rows Selected
+        </div>
+
+        <div>
+          <GridPagination instance={instance} />
+        </div>
+      </div>
     </div>
   )
 }
