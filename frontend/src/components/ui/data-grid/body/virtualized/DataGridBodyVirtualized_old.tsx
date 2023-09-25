@@ -7,7 +7,7 @@ import { useVirtualizer } from "@tanstack/react-virtual";
 
 import { useIsomorphicLayoutEffect } from "@/hooks/shared/useIsomorphicLayoutEffect";
 import { useScrollsContext } from "./ScrollsProvider";
-import type { DataGridInstance } from "../types";
+import type { DataGridInstance } from "../../types";
 import LoadingOverlay from "@/components/ui/data-grid/components/LoadingOverlay";
 import Scroll from "@/components/ui/data-grid/components/Scroll";
 
