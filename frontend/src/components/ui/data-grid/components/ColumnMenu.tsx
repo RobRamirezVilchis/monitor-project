@@ -6,6 +6,7 @@ import {
   IconDotsVertical,
   IconSortAscending,
   IconSortDescending,
+  IconEyeOff,
 } from "@tabler/icons-react";
 
 export interface ColumnMenuProps<TData extends unknown, TValue> {
@@ -50,7 +51,15 @@ const ColumnMenu = <TData extends unknown, TValue>({
         >
           Clear Sort
         </Menu.Item>
+        
         <Menu.Divider />
+
+        <Menu.Item
+          onClick={() => header.column.toggleVisibility()}
+          leftSection={<IconEyeOff />}
+        >
+          Hide Column
+        </Menu.Item>
       </Menu.Dropdown>
     </Menu>
   )

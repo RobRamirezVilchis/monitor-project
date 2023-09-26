@@ -74,7 +74,7 @@ const DataGridRow = <TData extends RowData>({
       </div>
 
       {/* Expandable SubComponent */}
-      {instance.options?.renderSubComponent && row.getIsExpanded() ? (
+      {instance.options.enableExpanding && row.getCanExpand() && instance.options?.renderSubComponent && row.getIsExpanded() ? (
         <div
           style={{
             display: "flex",
