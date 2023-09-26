@@ -1,13 +1,9 @@
-import { ReactNode, useState } from "react";
+import { ReactNode, useEffect, useState } from "react";
 import { Row } from "@tanstack/react-table";
 import clsx from "clsx";
 
 import gridBodyStyles from "./DataGridBody.module.css";
 
-import { useDataGridContext } from "../providers/DataGridContext";
-import { useDataGridRefsContext } from "../providers/DataGridRefsProvider";
-import { useDataGridScrollContext } from "../providers/DataGridScrollProvider";
-import { useIsomorphicLayoutEffect } from "@/hooks/shared/useIsomorphicLayoutEffect";
 import DataGridRow from "./DataGridRow";
 import LoadingOverlay from "@/components/ui/data-grid/components/LoadingOverlay";
 import Scroll from "@/components/ui/data-grid/components/Scroll";
@@ -16,27 +12,22 @@ import type { DataGridInstance } from "../types";
 export interface DataGridBodyProps<TData extends unknown> {
   instance: DataGridInstance<TData>;
   loading?: boolean;
-  renderSubComponent?: (row: Row<TData>) => ReactNode;
 }
 
 const DataGridBody = <TData extends unknown>({
   instance, 
   loading,
-  renderSubComponent,
 }: DataGridBodyProps<TData>) => {
-  const { classNames, styles } = useDataGridContext();
-  const { mainScrollbars } = useDataGridScrollContext();
-  const { contentRefs } = useDataGridRefsContext();
   const [contentRect, setContentRect] = useState({ 
     width: 0, 
     height: 0,
   });
   
-  useIsomorphicLayoutEffect(() => {
-    mainScrollbars.horizontal.syncScroll(contentRefs.main);
-    mainScrollbars.vertical.syncScroll(contentRefs.main);
+  useEffect(() => {
+    instance.scrolls.main.horizontal.current?.syncScroll(instance.refs.content.main);
+    instance.scrolls.main.vertical.current?.syncScroll(instance.refs.content.main);
 
-    if (!contentRefs.main.current) return;
+    if (!instance.refs.content.main.current) return;
 
     const contentResizeObserver = new ResizeObserver((entries, observer) => {
       const content = entries[0].target as HTMLDivElement;
@@ -45,62 +36,60 @@ const DataGridBody = <TData extends unknown>({
         height: content.offsetHeight ?? 0
       });
     });
-    contentResizeObserver.observe(contentRefs.main.current);
+    contentResizeObserver.observe(instance.refs.content.main.current);
 
     return () => {
       contentResizeObserver.disconnect();
-      mainScrollbars.horizontal.desyncScroll(contentRefs.main);
-      mainScrollbars.vertical.desyncScroll(contentRefs.main);
+      instance.scrolls.main.horizontal.current?.desyncScroll(instance.refs.content.main);
+      instance.scrolls.main.vertical.current?.desyncScroll(instance.refs.content.main);
     };
-  }, [contentRefs.main, mainScrollbars.horizontal, mainScrollbars.vertical]);
+  }, [instance.refs, instance.scrolls]);
 
   const rowModel = instance.getRowModel();
 
   // Wrapper
   return (
     <div
-      className={clsx("DataGridBody-root", gridBodyStyles.root, classNames?.body?.root)}
-      style={styles?.body?.root}
+      className={clsx("DataGridBody-root", gridBodyStyles.root, instance.options.classNames?.body?.root)}
+      style={instance.options.styles?.body?.root}
     >
       {/* Viewport */}
       <div
-        className={clsx("DataGridBody-viewport", gridBodyStyles.viewport, classNames?.body?.viewport)}
-        style={styles?.body?.viewport}
+        className={clsx("DataGridBody-viewport", gridBodyStyles.viewport, instance.options.classNames?.body?.viewport)}
+        style={instance.options.styles?.body?.viewport}
         onWheel={e => {
-          mainScrollbars.horizontal.onWheel(e);
-          mainScrollbars.vertical.onWheel(e);
+          instance.scrolls.main.horizontal.current?.onWheel(e);
+          instance.scrolls.main.vertical.current?.onWheel(e);
         }}
         onTouchStart={e => {
-          mainScrollbars.horizontal.onTouchStart(e);
-          mainScrollbars.vertical.onTouchStart(e);
+          instance.scrolls.main.horizontal.current?.onTouchStart(e);
+          instance.scrolls.main.vertical.current?.onTouchStart(e);
         }}
         onTouchMove={e => {
-          mainScrollbars.horizontal.onTouchMove(e);
-          mainScrollbars.vertical.onTouchMove(e);
+          instance.scrolls.main.horizontal.current?.onTouchMove(e);
+          instance.scrolls.main.vertical.current?.onTouchMove(e);
         }}
         onTouchEnd={e => {
-          mainScrollbars.horizontal.onTouchEnd(e);
-          mainScrollbars.vertical.onTouchEnd(e);
+          instance.scrolls.main.horizontal.current?.onTouchEnd(e);
+          instance.scrolls.main.vertical.current?.onTouchEnd(e);
         }}
       >
         {/* Content */}
         <div
-          className={clsx("DataGridBody-rowsContainer", gridBodyStyles.rowsContainer, classNames?.body?.container)}
+          className={clsx("DataGridBody-rowsContainer", gridBodyStyles.rowsContainer, instance.options.classNames?.body?.container)}
           style={{
-            ...styles?.body?.container,
+            ...instance.options.styles?.body?.container,
             width: instance.getTotalSize(),
           }}
-          ref={contentRefs.main}
+          ref={instance.refs.content.main}
         >
           {/* Rows */}
           {rowModel.rows.map((row, rowIdx) => (
             <DataGridRow 
               key={row.id} 
+              instance={instance}
               row={row} 
               rowIndex={rowIdx}
-              renderSubComponent={renderSubComponent} 
-              // classNames={classNames?.row}
-              // styles={styles?.row}
             />
           ))}
         </div>
@@ -109,14 +98,14 @@ const DataGridBody = <TData extends unknown>({
       <Scroll
         orientation="vertical"
         virtualSize={contentRect.height}
-        ref={mainScrollbars.vertical.scrollRef}
-        onScroll={mainScrollbars.vertical.onScroll} 
+        ref={instance.scrolls.main.vertical.current?.scrollRef}
+        onScroll={instance.scrolls.main.vertical.current?.onScroll} 
       />
       <Scroll
         orientation="horizontal"
         virtualSize={contentRect.width}
-        ref={mainScrollbars.horizontal.scrollRef}
-        onScroll={mainScrollbars.horizontal.onScroll}
+        ref={instance.scrolls.main.horizontal.current?.scrollRef}
+        onScroll={instance.scrolls.main.horizontal.current?.onScroll}
       />
 
       {loading ? <LoadingOverlay /> : null}

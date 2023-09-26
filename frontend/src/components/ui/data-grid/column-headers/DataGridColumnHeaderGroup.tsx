@@ -3,27 +3,25 @@ import clsx from "clsx";
 
 import gridHeaderGroupStyles from "./DataGridColumnHeaderGroup.module.css";
 
-import { useDataGridContext } from "../providers/DataGridContext";
-import { useDataGridDensity } from "../providers/DensityContext";
 import DataGridColumnHeaderCell from "./DataGridColumnHeaderCell";
 import DataGridColumnHeaderCellDnd from "./DataGridColumnHeaderCellDnd";
+import { DataGridInstance } from "../types";
 
 export interface DataGridColumnHeaderGroupProps<TData extends RowData> {
+  instance: DataGridInstance<TData>;
   group: HeaderGroup<TData>;
 }
 
 const DataGridColumnHeaderGroup = <TData extends RowData>({
+  instance,
   group,
 }: DataGridColumnHeaderGroupProps<TData>) => {
-  const { classNames, styles } = useDataGridContext();
-  const { headerHeight } = useDataGridDensity();
-
   return (
     <div
-      className={clsx("DataGridColumnHeaderGroup-root", gridHeaderGroupStyles.root, classNames?.columnHeaderGroup?.root)}
+      className={clsx("DataGridColumnHeaderGroup-root", gridHeaderGroupStyles.root, instance.options.classNames?.columnHeaderGroup?.root)}
       style={{
-        ...styles?.columnHeaderGroup?.root,
-        height: headerHeight,
+        ...instance.options.styles?.columnHeaderGroup?.root,
+        height: instance.density.headerHeight,
       }}
     >
       {/* Headers */}
@@ -32,7 +30,8 @@ const DataGridColumnHeaderGroup = <TData extends RowData>({
         <DataGridColumnHeaderCellDnd key={header.id} header={header}>
           {(draggableCtx, droppableCtx) => (
             <DataGridColumnHeaderCell key={header.id} 
-              header={header} 
+              header={header}
+              instance={instance}
               draggableCtx={draggableCtx} 
               droppableCtx={droppableCtx} 
             />
@@ -40,8 +39,10 @@ const DataGridColumnHeaderGroup = <TData extends RowData>({
         </DataGridColumnHeaderCellDnd>
       ) : (
         // Header Cell
-        <DataGridColumnHeaderCell key={header.id} 
+        <DataGridColumnHeaderCell
+          key={header.id} 
           header={header} 
+          instance={instance}
         />
       ))}
     </div>

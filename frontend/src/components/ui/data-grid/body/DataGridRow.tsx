@@ -4,33 +4,30 @@ import clsx from "clsx";
 
 import gridRowStyles from "./DataGridRow.module.css";
 
-import { useDataGridContext } from "../providers/DataGridContext";
-import { useDataGridDensity } from "../providers/DensityContext";
+import { DataGridInstance } from "../types";
 import DataGridRowCell from "./DataGridRowCell";
 
 export interface DataGridRowProps<TData extends RowData> {
+  instance: DataGridInstance<TData>;
   row: Row<TData>;
   rowIndex: number;
   renderSubComponent?: (row: Row<TData>) => React.ReactNode;
 }
 
 const DataGridRow = <TData extends RowData>({
+  instance,
   row,
   rowIndex,
-  renderSubComponent,
 }: DataGridRowProps<TData>) => {
-  const { classNames, styles } = useDataGridContext();
-  const { rowHeight } = useDataGridDensity();
-
   return (
     <Fragment>
       <div
-        className={clsx("DataGridRow-root", gridRowStyles.root, classNames?.row?.root)}
+        className={clsx("DataGridRow-root", gridRowStyles.root, instance.options.classNames?.row?.root)}
         style={{
-          ...styles?.row?.root,
-          height: rowHeight,
-          minHeight: rowHeight,
-          maxHeight: rowHeight,
+          ...instance.options.styles?.row?.root,
+          height: instance.density.rowHeight,
+          minHeight: instance.density.rowHeight,
+          maxHeight: instance.density.rowHeight,
         }}
         data-id={(row.original as any)?.id ?? undefined}
         data-row-index={rowIndex}
@@ -39,22 +36,21 @@ const DataGridRow = <TData extends RowData>({
         {row.getVisibleCells().map(cell => (
           <DataGridRowCell 
             key={cell.id}
+            instance={instance}
             cell={cell}
-            // classNames={classNames?.row?.cell} 
-            // styles={styles?.row?.cell} 
           />
         ))}
       </div>
 
       {/* Expandable SubComponent */}
-      {renderSubComponent && row.getIsExpanded() ? (
+      {instance.options?.renderSubComponent && row.getIsExpanded() ? (
         <div
-        style={{
-          display: "flex",
-        }}
-      >
-        {renderSubComponent(row)}
-      </div>
+          style={{
+            display: "flex",
+          }}
+        >
+          {instance.options.renderSubComponent(row)}
+        </div>
       ) : null}
     </Fragment>
   )

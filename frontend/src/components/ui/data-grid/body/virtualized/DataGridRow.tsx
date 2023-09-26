@@ -4,11 +4,11 @@ import clsx from "clsx";
 
 import gridRowStyles from "./DataGridRow.module.css";
 
-import { useDataGridContext } from "../../providers/DataGridContext";
-import { useDataGridDensity } from "../../providers/DensityContext";
+import { DataGridInstance } from "../../types";
 import DataGridRowCell from "./DataGridRowCell";
 
 export interface DataGridRowProps<TData extends RowData> {
+  instance: DataGridInstance<TData>;
   row: Row<TData>;
   rowIndex: number;
   renderSubComponent?: (row: Row<TData>) => React.ReactNode;
@@ -16,37 +16,43 @@ export interface DataGridRowProps<TData extends RowData> {
 }
 
 const DataGridRow = <TData extends RowData>({
+  instance,
   row,
   rowIndex,
   renderSubComponent,
   style,
 }: DataGridRowProps<TData>) => {
-  const { classNames, styles } = useDataGridContext();
-  const { rowHeight } = useDataGridDensity();
-
   return (
     <Fragment>
       <div
-        className={clsx("DataGridRow-root", gridRowStyles.root, classNames?.row?.root)}
+        className={clsx("DataGridRow-root", gridRowStyles.root, instance.options.classNames?.row?.root)}
         style={{
-          ...styles?.row?.root,
-          height: rowHeight,
-          minHeight: rowHeight,
-          maxHeight: rowHeight,
+          ...instance.options.styles?.row?.root,
+          height: instance.density.rowHeight,
+          minHeight: instance.density.rowHeight,
+          maxHeight: instance.density.rowHeight,
           ...style,
         }}
         data-id={(row.original as any)?.id ?? undefined}
         data-row-index={rowIndex}
       >
         {/* Cells */}
-        {row.getVisibleCells().map(cell => (
-          <DataGridRowCell 
-            key={cell.id}
-            cell={cell}
-            // classNames={classNames?.row?.cell} 
-            // styles={styles?.row?.cell} 
-          />
-        ))}
+        {instance.scrolls.virtualizers.columns.current?.getVirtualItems().map(virtualColumn => {
+          const cell = row.getVisibleCells()[virtualColumn.index];
+          return (
+            <DataGridRowCell 
+              key={cell.id}
+              instance={instance}
+              cell={cell}
+              style={{
+                width: `${virtualColumn.size}px`,
+                position: "absolute",
+                transform: `translateX(${virtualColumn.start}px)`,
+                height: "100%",
+              }}
+            />
+          )
+        })}
       </div>
 
       {/* Expandable SubComponent */}

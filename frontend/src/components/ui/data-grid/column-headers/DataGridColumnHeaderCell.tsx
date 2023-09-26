@@ -5,16 +5,15 @@ import clsx from "clsx";
 
 import gridHeaderCellStyles from "./DataGridColumnHeaderCell.module.css";
 
-import { useDataGridContext } from "../providers/DataGridContext";
-import { useDataGridDensity } from "../providers/DensityContext";
+import { DataGridInstance } from "../types";
 import ColumnDragHandle from "../components/ColumnDragHandle";
 import ColumnMenu from "../components/ColumnMenu";
 import ColumnSortingToggle from "../components/ColumnSortingToggle";
 import ResizeHandler from "./ResizeHandler";
 
-import { IconGripHorizontal } from "@tabler/icons-react";
 
 export interface DataGridColumnHeaderCellProps<TData extends RowData, TValue> {
+  instance: DataGridInstance<TData>;
   header: Header<TData, TValue>;
   draggableCtx?: ReturnType<typeof useDraggable>; 
   droppableCtx?: ReturnType<typeof useDroppable>;
@@ -22,14 +21,12 @@ export interface DataGridColumnHeaderCellProps<TData extends RowData, TValue> {
 }
 
 const DataGridColumnHeaderCell = <TData extends RowData, TValue>({
+  instance,
   header,
   draggableCtx,
   droppableCtx,
   isOverlay,
 }: DataGridColumnHeaderCellProps<TData, TValue>) => {
-  const { classNames, styles } = useDataGridContext();
-  const { headerHeight } = useDataGridDensity();
-  
   return (
     <div
       className={clsx(
@@ -39,12 +36,12 @@ const DataGridColumnHeaderCell = <TData extends RowData, TValue>({
           [gridHeaderCellStyles.overlay]: isOverlay,
           [gridHeaderCellStyles.draggableOver]: droppableCtx?.isOver,
         },
-        classNames?.columnHeaderCell?.root
+        instance.options.classNames?.columnHeaderCell?.root
       )}
       style={{
-        ...styles?.columnHeaderCell?.root,
+        ...instance.options.styles?.columnHeaderCell?.root,
         width: header.getSize(),
-        height: headerHeight,
+        height: instance.density.headerHeight,
       }}
 
       ref={droppableCtx?.setNodeRef}
@@ -52,24 +49,24 @@ const DataGridColumnHeaderCell = <TData extends RowData, TValue>({
       {/* Content */}
       {!header.isPlaceholder ? (
         <div
-          className={clsx("DataGridColumnHeaderCell-content", gridHeaderCellStyles.content, classNames?.columnHeaderCell?.content)}
-          style={styles?.columnHeaderCell?.content}
+          className={clsx("DataGridColumnHeaderCell-content", gridHeaderCellStyles.content, instance.options.classNames?.columnHeaderCell?.content)}
+          style={instance.options.styles?.columnHeaderCell?.content}
         >
           <div
-            className={clsx("DataGridColumnHeaderCell-contentLabel", gridHeaderCellStyles.contentLabel, classNames?.columnHeaderCell?.contentLabel)}
-            style={styles?.columnHeaderCell?.content}
+            className={clsx("DataGridColumnHeaderCell-contentLabel", gridHeaderCellStyles.contentLabel, instance.options.classNames?.columnHeaderCell?.contentLabel)}
+            style={instance.options.styles?.columnHeaderCell?.content}
           >
             <div
-              className={clsx("DataGridColumnHeaderCell-label", gridHeaderCellStyles.label, classNames?.columnHeaderCell?.label)}
-              style={styles?.columnHeaderCell?.label}
+              className={clsx("DataGridColumnHeaderCell-label", gridHeaderCellStyles.label, instance.options.classNames?.columnHeaderCell?.label)}
+              style={instance.options.styles?.columnHeaderCell?.label}
             >
               {flexRender(header.column.columnDef.header, header.getContext())}
             </div>
 
             {header.subHeaders.length === 0 ? (
               <div
-                className={clsx("DataGridColumnHeaderCell-actions", gridHeaderCellStyles.actions, classNames?.columnHeaderCell?.actions)}
-                style={styles?.columnHeaderCell?.actions}
+                className={clsx("DataGridColumnHeaderCell-actions", gridHeaderCellStyles.actions, instance.options.classNames?.columnHeaderCell?.actions)}
+                style={instance.options.styles?.columnHeaderCell?.actions}
               >
                 {header.column.getCanSort() ? <ColumnSortingToggle header={header} /> : null}
                 {draggableCtx ? <ColumnDragHandle draggableCtx={draggableCtx} /> : null}
@@ -80,8 +77,8 @@ const DataGridColumnHeaderCell = <TData extends RowData, TValue>({
 
           {header.column.getCanFilter() && header.subHeaders.length === 0 ? (
             <div
-              className={clsx("DataGridColumnHeaderCell-filter", gridHeaderCellStyles.filter, classNames?.columnHeaderCell?.filter)}
-              style={styles?.columnHeaderCell?.filters}
+              className={clsx("DataGridColumnHeaderCell-filter", gridHeaderCellStyles.filter, instance.options.classNames?.columnHeaderCell?.filter)}
+              style={instance.options.styles?.columnHeaderCell?.filters}
             >
               Filters
             </div>

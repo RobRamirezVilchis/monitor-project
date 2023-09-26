@@ -17,9 +17,6 @@ import clsx from "clsx";
 
 import gridColumnHeadersStyles from "./DataGridColumnHeaders.module.css";
 
-import { useDataGridContext } from "../providers/DataGridContext";
-import { useDataGridRefsContext } from "../providers/DataGridRefsProvider";
-import { useDataGridScrollContext } from "../providers/DataGridScrollProvider";
 import { useIsomorphicLayoutEffect } from "@/hooks/shared/useIsomorphicLayoutEffect";
 import type { DataGridInstance } from "../types";
 import DataGridColumnHeaderGroup from "./DataGridColumnHeaderGroup";
@@ -32,9 +29,6 @@ export interface DataGridColumnHeadersProps<TData extends unknown> {
 const DataGridColumnHeaders = <TData extends unknown>({
   instance,
 }: DataGridColumnHeadersProps<TData>) => {
-  const { classNames, styles } = useDataGridContext();
-  const { mainScrollbars } = useDataGridScrollContext();
-  const { columnHeaderRefs } = useDataGridRefsContext();
   const [draggedHeader, setDraggedHeader] = useState<any | null>(null);
   const columnOrder = useRef(instance.getAllFlatColumns().map(c => c.id));
   const sensors = useSensors(
@@ -55,12 +49,12 @@ const DataGridColumnHeaders = <TData extends unknown>({
   const headerGroups = instance.getHeaderGroups();
 
   useIsomorphicLayoutEffect(() => {
-    mainScrollbars.horizontal.syncScroll(columnHeaderRefs.main);
+    instance.scrolls.main.horizontal.current?.syncScroll(instance.refs.columnHeader.main);
 
     return () => {
-      mainScrollbars.horizontal.desyncScroll(columnHeaderRefs.main);
+      instance.scrolls.main.horizontal.current?.desyncScroll(instance.refs.columnHeader.main);
     };
-  }, [mainScrollbars.horizontal, columnHeaderRefs.main]);
+  }, [instance.scrolls.main.horizontal, instance.refs.columnHeader.main]);
 
   const onHeaderDragStart = useCallback((e: DragStartEvent) => {
     setDraggedHeader(e.active.data.current);
@@ -90,12 +84,12 @@ const DataGridColumnHeaders = <TData extends unknown>({
   // Viewport
   return (
     <div
-      className={clsx("DataGridColumnHeaders-root DataGridColumnHeaders-viewport", gridColumnHeadersStyles.root, classNames?.columnHeaders?.root)}
-      style={styles?.columnHeaders?.root}
-      onWheel={mainScrollbars.horizontal.onWheel}
-      onTouchStart={mainScrollbars.horizontal.onTouchStart}
-      onTouchMove={mainScrollbars.horizontal.onTouchMove}
-      onTouchEnd={mainScrollbars.horizontal.onTouchEnd}
+      className={clsx("DataGridColumnHeaders-root DataGridColumnHeaders-viewport", gridColumnHeadersStyles.root, instance.options.classNames?.columnHeaders?.root)}
+      style={instance.options.styles?.columnHeaders?.root}
+      onWheel={instance.scrolls.main.horizontal.current?.onWheel}
+      onTouchStart={instance.scrolls.main.horizontal.current?.onTouchStart}
+      onTouchMove={instance.scrolls.main.horizontal.current?.onTouchMove}
+      onTouchEnd={instance.scrolls.main.horizontal.current?.onTouchEnd}
     >
       {/* Columns */}
       <DndContext
@@ -105,22 +99,30 @@ const DataGridColumnHeaders = <TData extends unknown>({
         onDragEnd={onHeaderDragEnd}
       >
         <div
-          ref={columnHeaderRefs.main}
-          className={clsx("DataGridColumnHeaders-headersContainer", gridColumnHeadersStyles.headersContainer, classNames?.columnHeaders?.container)}
+          ref={instance.refs.columnHeader.main}
+          className={clsx("DataGridColumnHeaders-headersContainer", gridColumnHeadersStyles.headersContainer, instance.options.classNames?.columnHeaders?.container)}
           style={{
-            ...styles?.columnHeaders?.container,
+            ...instance.options.styles?.columnHeaders?.container,
             width: instance.getTotalSize(),
           }}
         >
           {/* Groups */}
           {headerGroups.map(group => (
-            <DataGridColumnHeaderGroup key={group.id} group={group} />
+            <DataGridColumnHeaderGroup 
+              key={group.id} 
+              instance={instance}
+              group={group} 
+            />
           ))}
         </div>
 
         <DragOverlay dropAnimation={null}>
           {draggedHeader ? (
-            <DataGridColumnHeaderCell header={draggedHeader} isOverlay />
+            <DataGridColumnHeaderCell 
+              instance={instance} 
+              header={draggedHeader} 
+              isOverlay 
+            />
           ) : null}
         </DragOverlay>
       </DndContext>

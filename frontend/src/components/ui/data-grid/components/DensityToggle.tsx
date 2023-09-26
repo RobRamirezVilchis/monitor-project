@@ -6,7 +6,6 @@ import {
   IconBaselineDensityLarge,
 } from "@tabler/icons-react";
 import { DataGridInstance } from "../types";
-import { useDataGridDensity } from "../providers/DensityContext";
 import { ActionIcon } from "@mantine/core";
 
 export interface DensityToggleProps<TData extends RowData> {
@@ -16,17 +15,15 @@ export interface DensityToggleProps<TData extends RowData> {
 const DensityToggle = <TData extends RowData>({
   instance,
 }: DensityToggleProps<TData>) => {
-  const { value, toggleDensity } = useDataGridDensity();
-
   return (
     <ActionIcon
       radius="xl"
       variant="transparent"
-      onClick={toggleDensity}
+      onClick={() => instance.density.toggle()}
     >
-      {value === "compact" && <IconBaselineDensitySmall onClick={toggleDensity} />}
-      {value === "normal" && <IconBaselineDensityMedium onClick={toggleDensity} />}
-      {value === "comfortable" && <IconBaselineDensityLarge onClick={toggleDensity} />}
+      {instance.density.value === "compact" && <IconBaselineDensitySmall onClick={() => instance.density.toggle()} />}
+      {instance.density.value === "normal" && <IconBaselineDensityMedium onClick={() => instance.density.toggle()} />}
+      {instance.density.value === "comfortable" && <IconBaselineDensityLarge onClick={() => instance.density.toggle()} />}
     </ActionIcon>
   )
 }

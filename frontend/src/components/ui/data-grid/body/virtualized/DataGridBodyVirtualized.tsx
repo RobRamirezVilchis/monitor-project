@@ -1,20 +1,14 @@
-import { ReactNode, useEffect, useRef, useState } from "react";
+import { ReactNode, useState } from "react";
 import { Row } from "@tanstack/react-table";
-import { useVirtualizer } from "@tanstack/react-virtual";
 import clsx from "clsx";
 
 import gridBodyStyles from "./DataGridBody.module.css";
 
-import { useDataGridContext } from "../../providers/DataGridContext";
-import { useDataGridDensity } from "../../providers/DensityContext";
-import { useDataGridRefsContext } from "../../providers/DataGridRefsProvider";
-import { useDataGridScrollContext } from "../../providers/DataGridScrollProvider";
 import { useIsomorphicLayoutEffect } from "@/hooks/shared/useIsomorphicLayoutEffect";
 import type { DataGridInstance } from "../../types";
 import DataGridRow from "./DataGridRow";
 import LoadingOverlay from "@/components/ui/data-grid/components/LoadingOverlay";
 import Scroll from "@/components/ui/data-grid/components/Scroll";
-import { useHorizontalVirtualizer, useVerticalVirtualizer } from "../../providers/DataGridVirtualizerProvider";
 
 export interface DataGridBodyVirtualizedProps<TData extends unknown> {
   instance: DataGridInstance<TData>;
@@ -27,10 +21,6 @@ const DataGridBodyVirtualized = <TData extends unknown>({
   loading,
   renderSubComponent,
 }: DataGridBodyVirtualizedProps<TData>) => {
-  const { rowHeight } = useDataGridDensity();
-  const { classNames, styles } = useDataGridContext();
-  const { mainScrollbars } = useDataGridScrollContext();
-  const { contentRefs } = useDataGridRefsContext();
   const [contentRect, setContentRect] = useState({ 
     width: 0, 
     height: 0,
@@ -46,19 +36,19 @@ const DataGridBodyVirtualized = <TData extends unknown>({
   //   horizontal: true,
   // });
 
-  const prevRowHeight = useRef(rowHeight);
-  const yVirtualizer = useVirtualizer({
-    count: rowModel.rows.length,
-    overscan: 1,
-    getScrollElement: () => mainScrollbars.vertical.scrollRef.current,
-    estimateSize: () => rowHeight,
-  });
+  // const prevRowHeight = useRef(rowHeight);
+  // const yVirtualizer = useVirtualizer({
+  //   count: rowModel.rows.length,
+  //   overscan: 1,
+  //   getScrollElement: () => mainScrollbars.vertical.scrollRef.current,
+  //   estimateSize: () => rowHeight,
+  // });
   
   useIsomorphicLayoutEffect(() => {
-    mainScrollbars.horizontal.syncScroll(contentRefs.main);
-    mainScrollbars.vertical.syncScroll(contentRefs.main);
+    instance.scrolls.main.horizontal.current?.syncScroll(instance.refs.content.main);
+    instance.scrolls.main.vertical.current?.syncScroll(instance.refs.content.main);
 
-    if (!contentRefs.main.current) return;
+    if (!instance.refs.content.main.current) return;
 
     const contentResizeObserver = new ResizeObserver((entries, observer) => {
       const content = entries[0].target as HTMLDivElement;
@@ -67,14 +57,14 @@ const DataGridBodyVirtualized = <TData extends unknown>({
         height: content.offsetHeight ?? 0
       });
     });
-    contentResizeObserver.observe(contentRefs.main.current);
+    contentResizeObserver.observe(instance.refs.content.main.current);
 
     return () => {
       contentResizeObserver.disconnect();
-      mainScrollbars.horizontal.desyncScroll(contentRefs.main);
-      mainScrollbars.vertical.desyncScroll(contentRefs.main);
+      instance.scrolls.main.horizontal.current?.desyncScroll(instance.refs.content.main);
+      instance.scrolls.main.vertical.current?.desyncScroll(instance.refs.content.main);
     };
-  }, [contentRefs.main, mainScrollbars.horizontal, mainScrollbars.vertical]);
+  }, [instance.refs.content, instance.scrolls.main]);
 
   // useEffect(() => {
   //   if (prevRowHeight.current === rowHeight) return;
@@ -85,47 +75,49 @@ const DataGridBodyVirtualized = <TData extends unknown>({
   // Wrapper
   return (
     <div
-      className={clsx("DataGridBody-root", gridBodyStyles.root, classNames?.body?.root)}
-      style={styles?.body?.root}
+      className={clsx("DataGridBody-root", gridBodyStyles.root, instance.options.classNames?.body?.root)}
+      style={instance.options.styles?.body?.root}
     >
       {/* Viewport */}
       <div
-        className={clsx("DataGridBody-viewport", gridBodyStyles.viewport, classNames?.body?.viewport)}
-        style={styles?.body?.viewport}
+        className={clsx("DataGridBody-viewport", gridBodyStyles.viewport, instance.options.classNames?.body?.viewport)}
+        style={instance.options.styles?.body?.viewport}
         onWheel={e => {
-          mainScrollbars.horizontal.onWheel(e);
-          mainScrollbars.vertical.onWheel(e);
+          instance.scrolls.main.horizontal.current?.onWheel(e);
+          instance.scrolls.main.vertical.current?.onWheel(e);
         }}
         onTouchStart={e => {
-          mainScrollbars.horizontal.onTouchStart(e);
-          mainScrollbars.vertical.onTouchStart(e);
+          instance.scrolls.main.horizontal.current?.onTouchStart(e);
+          instance.scrolls.main.vertical.current?.onTouchStart(e);
         }}
         onTouchMove={e => {
-          mainScrollbars.horizontal.onTouchMove(e);
-          mainScrollbars.vertical.onTouchMove(e);
+          instance.scrolls.main.horizontal.current?.onTouchMove(e);
+          instance.scrolls.main.vertical.current?.onTouchMove(e);
         }}
         onTouchEnd={e => {
-          mainScrollbars.horizontal.onTouchEnd(e);
-          mainScrollbars.vertical.onTouchEnd(e);
+          instance.scrolls.main.horizontal.current?.onTouchEnd(e);
+          instance.scrolls.main.vertical.current?.onTouchEnd(e);
         }}
       >
         {/* Content */}
         <div
-          className={clsx("DataGridBody-rowsContainer", gridBodyStyles.rowsContainer, classNames?.body?.container)}
+          className={clsx("DataGridBody-rowsContainer", gridBodyStyles.rowsContainer, instance.options.classNames?.body?.container)}
           style={{
-            ...styles?.body?.container,
-            width: instance.getTotalSize(),
-            height: yVirtualizer?.getTotalSize(),
+            ...instance.options.styles?.body?.container,
+            // width: instance.getTotalSize(),
+            height: instance.scrolls.virtualizers.rows.current?.getTotalSize(),
+            width: instance.scrolls.virtualizers.columns.current?.getTotalSize(),
           }}
-          ref={contentRefs.main}
+          ref={instance.refs.content.main}
         >
           {/* Rows */}
-          {yVirtualizer?.getVirtualItems().map(virtualRow => {
+          {instance.scrolls.virtualizers.rows.current?.getVirtualItems().map(virtualRow => {
             const row = rowModel.rows[virtualRow.index];
 
             return (
               <DataGridRow 
                 key={row.id} 
+                instance={instance}
                 row={row} 
                 rowIndex={virtualRow.index}
                 renderSubComponent={renderSubComponent} 
@@ -135,6 +127,7 @@ const DataGridBodyVirtualized = <TData extends unknown>({
                   position: "absolute",
                   height: virtualRow.size,
                   transform: `translateY(${virtualRow.start}px)`,
+                  width: instance.scrolls.virtualizers.columns.current?.getTotalSize(),
                 }}
               />
             )
@@ -145,14 +138,14 @@ const DataGridBodyVirtualized = <TData extends unknown>({
       <Scroll
         orientation="vertical"
         virtualSize={contentRect.height}
-        ref={mainScrollbars.vertical.scrollRef}
-        onScroll={mainScrollbars.vertical.onScroll} 
+        ref={instance.scrolls.main.vertical.current?.scrollRef}
+        onScroll={instance.scrolls.main.vertical.current?.onScroll} 
       />
       <Scroll
         orientation="horizontal"
         virtualSize={contentRect.width}
-        ref={mainScrollbars.horizontal.scrollRef}
-        onScroll={mainScrollbars.horizontal.onScroll}
+        ref={instance.scrolls.main.horizontal.current?.scrollRef}
+        onScroll={instance.scrolls.main.horizontal.current?.onScroll}
       />
 
       {loading ? <LoadingOverlay /> : null}
