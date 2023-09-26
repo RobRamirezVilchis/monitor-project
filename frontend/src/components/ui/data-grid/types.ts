@@ -45,10 +45,10 @@ export interface FacetedValuesOptions {
 }
 
 export interface VirtualizationOptions {
-  enableRowVirtualization?: boolean;
-  rowVirtualizerProps?: Partial<VirtualizerOptions<HTMLDivElement, Element>>;
+  enableRowsVirtualization?: boolean;
+  rowsVirtualizerProps?: Partial<VirtualizerOptions<HTMLDivElement, Element>>;
   enableColumnsVirtualization?: boolean;
-  columnVirtualizerProps?: Partial<VirtualizerOptions<HTMLDivElement, Element>>;
+  columnsVirtualizerProps?: Partial<VirtualizerOptions<HTMLDivElement, Element>>;
 }
 
 interface FeatureOptions<TData extends RowData> extends 

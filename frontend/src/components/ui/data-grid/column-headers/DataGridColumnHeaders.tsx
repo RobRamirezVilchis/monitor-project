@@ -56,6 +56,19 @@ const DataGridColumnHeaders = <TData extends unknown>({
     };
   }, [instance.scrolls.main.horizontal, instance.refs.columnHeader.main]);
 
+  useIsomorphicLayoutEffect(() => {
+    if (instance.options.enableColumnsVirtualization) {
+      const columnHeaderResizeObserver = new ResizeObserver((entries, observer) => {
+        instance.scrolls.virtualizers.columns.current?.measure();
+      });
+      columnHeaderResizeObserver.observe(instance.refs.columnHeader.main.current!);
+
+      return () => {
+        columnHeaderResizeObserver.disconnect();
+      }
+    }
+  }, [instance.options.enableColumnsVirtualization, instance.refs.columnHeader.main, instance.scrolls.virtualizers.columns]);
+
   const onHeaderDragStart = useCallback((e: DragStartEvent) => {
     setDraggedHeader(e.active.data.current);
   }, []);

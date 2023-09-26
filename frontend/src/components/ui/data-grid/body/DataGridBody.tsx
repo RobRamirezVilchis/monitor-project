@@ -1,13 +1,13 @@
-import { ReactNode, useEffect, useState } from "react";
-import { Row } from "@tanstack/react-table";
+import { useState } from "react";
 import clsx from "clsx";
 
 import gridBodyStyles from "./DataGridBody.module.css";
 
+import { useIsomorphicLayoutEffect } from "@/hooks/shared/useIsomorphicLayoutEffect";
+import type { DataGridInstance } from "../types";
 import DataGridRow from "./DataGridRow";
 import LoadingOverlay from "@/components/ui/data-grid/components/LoadingOverlay";
 import Scroll from "@/components/ui/data-grid/components/Scroll";
-import type { DataGridInstance } from "../types";
 
 export interface DataGridBodyProps<TData extends unknown> {
   instance: DataGridInstance<TData>;
@@ -23,7 +23,7 @@ const DataGridBody = <TData extends unknown>({
     height: 0,
   });
   
-  useEffect(() => {
+  useIsomorphicLayoutEffect(() => {
     instance.scrolls.main.horizontal.current?.syncScroll(instance.refs.content.main);
     instance.scrolls.main.vertical.current?.syncScroll(instance.refs.content.main);
 
@@ -36,7 +36,7 @@ const DataGridBody = <TData extends unknown>({
         height: content.offsetHeight ?? 0
       });
     });
-    contentResizeObserver.observe(instance.refs.content.main.current);
+    contentResizeObserver.observe(instance.refs.content.main.current!);
 
     return () => {
       contentResizeObserver.disconnect();
@@ -79,12 +79,35 @@ const DataGridBody = <TData extends unknown>({
           className={clsx("DataGridBody-rowsContainer", gridBodyStyles.rowsContainer, instance.options.classNames?.body?.container)}
           style={{
             ...instance.options.styles?.body?.container,
-            width: instance.getTotalSize(),
+            width: instance.options.enableColumnsVirtualization 
+              ? instance.scrolls.virtualizers.columns.current?.getTotalSize()
+              : instance.getTotalSize(),
+            height: instance.options.enableRowsVirtualization
+              ? instance.scrolls.virtualizers.rows.current?.getTotalSize()
+              : undefined,
           }}
           ref={instance.refs.content.main}
         >
           {/* Rows */}
-          {rowModel.rows.map((row, rowIdx) => (
+          {instance.options.enableRowsVirtualization
+          ? instance.scrolls.virtualizers.rows.current?.getVirtualItems().map(virtualRow => {
+            const row = rowModel.rows[virtualRow.index];
+            return (
+              <DataGridRow 
+                key={row.id} 
+                instance={instance}
+                row={row} 
+                rowIndex={virtualRow.index}
+                style={{
+                  // height: virtualRow.size,
+                  position : "absolute",
+                  transform: `translateY(${virtualRow.start}px)`,
+                }}
+                vRowEnd={virtualRow.end}
+              />
+            )
+          }) 
+          : rowModel.rows.map((row, rowIdx) => (
             <DataGridRow 
               key={row.id} 
               instance={instance}

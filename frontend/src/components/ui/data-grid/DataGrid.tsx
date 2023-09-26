@@ -9,8 +9,6 @@ import DataGridColumnHeaders from "./column-headers/DataGridColumnHeaders";
 import DataGridFooter from "./footer/DataGridFooter";
 import DataGridHeader from "./header/DataGridHeader";
 
-import DataGridBodyVirtualized from "./body/virtualized/DataGridBodyVirtualized";
-
 export interface DataGridProps<TData extends RowData> {
   instance: DataGridInstance<TData>;
 }
@@ -23,7 +21,7 @@ const DataGrid = <TData extends RowData>({
     <div className={clsx("DataGrid-root", gridStyles.root, instance.options.classNames?.root)} style={instance.options.styles?.root}>
       <DataGridHeader instance={instance} />
       <DataGridColumnHeaders instance={instance} />
-      <DataGridBodyVirtualized 
+      <DataGridBody
         instance={instance}
         loading={instance.options.loading}
       />

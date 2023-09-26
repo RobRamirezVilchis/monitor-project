@@ -103,20 +103,20 @@ const useDataGrid = <TData extends RowData>({
     getScrollElement: () => mainHorizontalScrollRef.current.scrollRef.current,
     estimateSize: i => leafColumns[i].getSize(),
     horizontal: true,
-    ...tableOptions.columnVirtualizerProps,
+    ...tableOptions.columnsVirtualizerProps,
   } : {
     count: 0,
     getScrollElement: () => null,
     estimateSize: () => 0,
   });
   
-  const verticalVirtualizer = useVirtualizer(tableOptions.enableRowVirtualization ? {
+  const verticalVirtualizer = useVirtualizer(tableOptions.enableRowsVirtualization ? {
     count: instance.getRowModel().rows.length,
     overscan: 1,
     getScrollElement: () => mainVerticalScrollRef.current.scrollRef.current,
     estimateSize: () => density.rowHeight,
     horizontal: false,
-    ...tableOptions.rowVirtualizerProps,    
+    ...tableOptions.rowsVirtualizerProps,    
   } : {
     count: 0,
     getScrollElement: () => null,
@@ -134,7 +134,7 @@ const useDataGrid = <TData extends RowData>({
     tableOptions.enableColumnsVirtualization ? horizontalVirtualizer : null
   );
   const verticalVirtualizerRef = useRef(
-    tableOptions.enableRowVirtualization ? verticalVirtualizer : null
+    tableOptions.enableRowsVirtualization ? verticalVirtualizer : null
   );
 
   const scrolls: DataGridInstance<TData>["scrolls"] = useMemo(() => ({
