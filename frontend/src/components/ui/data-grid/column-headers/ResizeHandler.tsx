@@ -1,7 +1,8 @@
-import { Header } from "@tanstack/react-table";
+import clsx from "clsx";
 
 import resizeHandlerStyles from "./ResizeHandler.module.css";
-import clsx from "clsx";
+
+import { Header } from "../types";
 
 interface ResizeHandlerProps<TData extends unknown, TValue> {
   header: Header<TData, TValue>;

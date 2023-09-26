@@ -1,5 +1,6 @@
-import { Header } from "@tanstack/react-table";
 import { ActionIcon } from "@mantine/core";
+
+import { Header } from "../types";
 
 import { 
   IconArrowsSort,

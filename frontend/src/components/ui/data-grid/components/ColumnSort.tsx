@@ -1,6 +1,6 @@
-import { Header } from "@tanstack/react-table";
 import { ActionIcon } from "@mantine/core";
 
+import { Header } from "../types";
 import ImportExportIcon from '@mui/icons-material/ImportExport';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';

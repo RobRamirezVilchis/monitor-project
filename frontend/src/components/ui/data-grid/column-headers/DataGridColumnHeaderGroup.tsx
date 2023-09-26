@@ -1,11 +1,11 @@
-import { RowData, HeaderGroup } from "@tanstack/react-table";
+import { RowData } from "@tanstack/react-table";
 import clsx from "clsx";
 
 import gridHeaderGroupStyles from "./DataGridColumnHeaderGroup.module.css";
 
+import { DataGridInstance, HeaderGroup } from "../types";
 import DataGridColumnHeaderCell from "./DataGridColumnHeaderCell";
 import DataGridColumnHeaderCellDnd from "./DataGridColumnHeaderCellDnd";
-import { DataGridInstance } from "../types";
 
 export interface DataGridColumnHeaderGroupProps<TData extends RowData> {
   instance: DataGridInstance<TData>;

@@ -1,8 +1,7 @@
-import { Header } from "@tanstack/react-table";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 import { useDebounce } from "@/hooks/shared";
-import type { DataGridInstance } from "../types";
+import type { DataGridInstance, Header } from "../types";
 
 export interface ColumnFilterProps<TData extends unknown, TValue> {
   header: Header<TData, TValue>;

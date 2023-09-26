@@ -1,7 +1,8 @@
-import { Header, RowData } from "@tanstack/react-table";
+import { RowData } from "@tanstack/react-table";
 import { useDraggable, useDroppable } from "@dnd-kit/core";
-
 import { ReactElement } from "react";
+
+import { Header } from "../types";
 
 export interface DataGridColumnHeaderCellDndProps<TData extends RowData, TValue> {
   children?: (

@@ -1,11 +1,10 @@
-import { ActionIcon } from "@mantine/core";
-import { Header, RowData, flexRender } from "@tanstack/react-table";
+import { RowData, flexRender } from "@tanstack/react-table";
 import { useDraggable, useDroppable } from "@dnd-kit/core";
 import clsx from "clsx";
 
 import gridHeaderCellStyles from "./DataGridColumnHeaderCell.module.css";
 
-import { DataGridInstance } from "../types";
+import { DataGridInstance, Header } from "../types";
 import ColumnDragHandle from "../components/ColumnDragHandle";
 import ColumnMenu from "../components/ColumnMenu";
 import ColumnSortingToggle from "../components/ColumnSortingToggle";

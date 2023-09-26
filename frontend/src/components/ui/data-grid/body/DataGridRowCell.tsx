@@ -1,9 +1,9 @@
-import { RowData, Cell, flexRender } from "@tanstack/react-table";
+import { RowData, flexRender } from "@tanstack/react-table";
 import clsx from "clsx";
 
 import gridRowCellStyles from "./DataGridRowCell.module.css";
 
-import { DataGridInstance } from "../types";
+import { Cell, DataGridInstance } from "../types";
 import { CSSProperties } from "react";
 
 export interface DataGridRowCellProps<TData extends RowData, TValue> {

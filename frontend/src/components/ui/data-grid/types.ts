@@ -1,8 +1,13 @@
-import { 
+import {
+  Cell as _Cell,
+  ColumnDef as _ColumnDef,
+  Column as _Column,
   RowData, 
   RequiredKeys,
   Updater,
   CoreOptions as _CoreOptions,
+  Header as _Header,
+  HeaderGroup as _HeaderGroup,
   VisibilityOptions,
   RowSelectionOptions,
   PaginationOptions as _PaginationOptions,
@@ -15,18 +20,19 @@ import {
   ColumnOrderOptions,
   PartialKeys,
   CoreInstance as _CoreInstance,
-  HeadersInstance,
-  VisibilityInstance,
+  HeadersInstance as _HeaderInstance,
+  VisibilityInstance as _VisibilityInstance,
   ColumnOrderInstance,
-  ColumnPinningInstance,
-  FiltersInstance,
-  SortingInstance,
-  GroupingInstance,
+  ColumnPinningInstance as _ColumnPinningInstance,
+  FiltersInstance as _FiltersInstance,
+  SortingInstance as _SortingInstance,
+  GroupingInstance as _GroupingInstance,
   ColumnSizingInstance,
-  ExpandedInstance,
-  PaginationInstance,
-  RowSelectionInstance,
-  Row,
+  ExpandedInstance as _ExpandedInstance,
+  PaginationInstance as _PaginationInstance,
+  RowSelectionInstance as _RowSelectionInstance,
+  Row as _Row,
+  RowModel as _RowModel,
 } from "@tanstack/react-table";
 import { CSSProperties, ReactNode, RefObject } from "react";
 import { UseScrollReturn } from "./components/useScroll";
@@ -34,7 +40,101 @@ import { Virtualizer, VirtualizerOptions } from "@tanstack/react-virtual";
 
 export type DataGridDensity = "compact" | "normal" | "comfortable";
 
-export interface CoreOptions<TData extends RowData> extends _CoreOptions<TData> {}
+// Cell ------------------------------------------------------------------------
+
+export interface Cell<TData extends RowData, TValue = unknown> extends 
+Omit<_Cell<TData, TValue>,
+  | "column"
+  | "row"
+> {
+  row: Row<TData>;
+  column: Column<TData, TValue>;
+}
+
+// Row -------------------------------------------------------------------------
+
+export interface Row<TData extends RowData> extends 
+Omit<_Row<TData>, 
+  | "subRows"
+  | "getLeafRows"
+  | "getAllCells"
+  | "getParentRow"
+  | "getParentRows"
+  | "getVisibleCells"
+  | "getLeftVisibleCells"
+  | "getCenterVisibleCells"
+  | "getRightVisibleCells"
+> {
+  subRows: Row<TData>[];
+  getLeafRows: () => Row<TData>[];
+  getAllCells: () => Cell<TData, unknown>[];
+  getParentRow: () => Row<TData> | undefined;
+  getParentRows: () => Row<TData>[];
+  getVisibleCells: () => Cell<TData, unknown>[];
+  getLeftVisibleCells: () => Cell<TData, unknown>[];
+  getCenterVisibleCells: () => Cell<TData, unknown>[];
+  getRightVisibleCells: () => Cell<TData, unknown>[];
+}
+
+export interface RowModel<TData extends RowData> {
+  rows: Row<TData>[];
+  flatRows: Row<TData>[];
+  rowsById: Record<string, Row<TData>>;
+}
+
+// ColumnDef -------------------------------------------------------------------
+
+export type ColumnDef<TData extends RowData, TValue = unknown> = _ColumnDef<TData, TValue> & {
+  customColDef?: boolean;
+}
+
+// Column ----------------------------------------------------------------------
+
+export interface Column<TData extends RowData, TValue = unknown> extends 
+Omit<_Column<TData, TValue>,
+  | "columnDef"
+  | "columns"
+  | "parent"
+  | "getFlatColumns"
+  | "getLeafColumns"
+  | "getFacetedRowModel"
+> {
+  columnDef: ColumnDef<TData, TValue>;
+  columns: Column<TData, TValue>[];
+  parent?: Column<TData, TValue>;
+  getFlatColumns: () => Column<TData, TValue>[];
+  getLeafColumns: () => Column<TData, TValue>[];
+  getFacetedRowModel: () => RowModel<TData>;
+}
+
+// Header ----------------------------------------------------------------------
+
+export interface Header<TData extends RowData, TValue = unknown> extends 
+Omit<_Header<TData, TValue>,
+  | "column"
+  | "headerGroup"
+  | "subHeaders"
+  | "getLeafHeaders"
+> {
+  column: Column<TData, TValue>;
+  headerGroup: HeaderGroup<TData>;
+  subHeaders: Header<TData, TValue>[];
+  getLeafHeaders: () => Header<TData, unknown>[];
+}
+
+export interface HeaderGroup<TData extends RowData> extends 
+Omit<_HeaderGroup<TData>,
+  | "headers"
+>{
+  headers: Header<TData, unknown>[];
+}
+
+// DataGrid Options -------------------------------------------------------------
+
+export interface CoreOptions<TData extends RowData> extends Omit<_CoreOptions<TData>, "columns" | "defaultColumn"> {
+  columns: ColumnDef<TData, any>[];
+  defaultColumn?: Partial<ColumnDef<TData, unknown>>;
+}
 
 export interface PaginationOptions extends _PaginationOptions {
   enablePagination?: boolean;
@@ -100,25 +200,168 @@ PartialKeys<DataGridOptionsResolved<TData>, "getCoreRowModel" | "state" | "onSta
   renderSubComponent?: (row: Row<TData>) => ReactNode
 }
 
+// DataGrid Instance ------------------------------------------------------------
+
 export interface CoreInstance<TData extends RowData> extends 
-Omit<_CoreInstance<TData>, "options" | "setOptions"> {
+Omit<_CoreInstance<TData>,
+  | "options"
+  | "setOptions"
+  | "getCoreRowModel"
+  | "getRowModel"
+  | "getRow"
+  | "getAllColumns"
+  | "getAllFlatColumns"
+  | "getAllLeafColumns"
+  | "getColumn"
+> {
   options: RequiredKeys<DataGridOptions<TData>, "state">;
   setOptions: (newOptions: Updater<DataGridOptionsResolved<TData>>) => void;
+  getCoreRowModel: () => RowModel<TData>;
+  getRowModel: () => RowModel<TData>;
+  getRow: (id: string) => Row<TData>;
+  getAllColumns: () => Column<TData, unknown>[];
+  getAllFlatColumns: () => Column<TData, unknown>[];
+  getAllLeafColumns: () => Column<TData, unknown>[];
+  getColumn: (columnId: string) => Column<TData, unknown> | undefined;
 }
 
-export interface DataGridInstance<TData extends RowData> extends 
-CoreInstance<TData>, 
-HeadersInstance<TData>, 
-VisibilityInstance<TData>, 
-ColumnOrderInstance<TData>, 
-ColumnPinningInstance<TData>, 
-FiltersInstance<TData>, 
-SortingInstance<TData>, 
-GroupingInstance<TData>, 
-ColumnSizingInstance, 
-ExpandedInstance<TData>, 
-PaginationInstance<TData>, 
-RowSelectionInstance<TData> {
+export interface HeadersInstance<TData extends RowData> extends 
+Omit<_HeaderInstance<TData>,
+  | "getHeaderGroups"
+  | "getLeftHeaderGroups"
+  | "getCenterHeaderGroups"
+  | "getRightHeaderGroups"
+  | "getFooterGroups"
+  | "getLeftFooterGroups"
+  | "getCenterFooterGroups"
+  | "getRightFooterGroups"
+  | "getFlatHeaders"
+  | "getLeftFlatHeaders"
+  | "getCenterFlatHeaders"
+  | "getRightFlatHeaders"
+  | "getLeafHeaders"
+  | "getLeftLeafHeaders"
+  | "getCenterLeafHeaders"
+  | "getRightLeafHeaders"
+> {
+  getHeaderGroups: () => HeaderGroup<TData>[];
+  getLeftHeaderGroups: () => HeaderGroup<TData>[];
+  getCenterHeaderGroups: () => HeaderGroup<TData>[];
+  getRightHeaderGroups: () => HeaderGroup<TData>[];
+  getFooterGroups: () => HeaderGroup<TData>[];
+  getLeftFooterGroups: () => HeaderGroup<TData>[];
+  getCenterFooterGroups: () => HeaderGroup<TData>[];
+  getRightFooterGroups: () => HeaderGroup<TData>[];
+  getFlatHeaders: () => Header<TData, unknown>[];
+  getLeftFlatHeaders: () => Header<TData, unknown>[];
+  getCenterFlatHeaders: () => Header<TData, unknown>[];
+  getRightFlatHeaders: () => Header<TData, unknown>[];
+  getLeafHeaders: () => Header<TData, unknown>[];
+  getLeftLeafHeaders: () => Header<TData, unknown>[];
+  getCenterLeafHeaders: () => Header<TData, unknown>[];
+  getRightLeafHeaders: () => Header<TData, unknown>[];
+}
+
+export interface VisibilityInstance<TData extends RowData> extends
+Omit<_VisibilityInstance<TData>,
+  | "getVisibleFlatColumns"
+  | "getVisibleLeafColumns"
+  | "getLeftVisibleLeafColumns"
+  | "getRightVisibleLeafColumns"
+  | "getCenterVisibleLeafColumns"
+> {
+  getVisibleFlatColumns: () => Column<TData, unknown>[];
+  getVisibleLeafColumns: () => Column<TData, unknown>[];
+  getLeftVisibleLeafColumns: () => Column<TData, unknown>[];
+  getRightVisibleLeafColumns: () => Column<TData, unknown>[];
+  getCenterVisibleLeafColumns: () => Column<TData, unknown>[];
+}
+
+export interface ColumnPinningInstance<TData extends RowData> extends 
+Omit<_ColumnPinningInstance<TData>,
+  | "getLeftLeafColumns"
+  | "getRightLeafColumns"
+  | "getCenterLeafColumns"
+> {
+  getLeftLeafColumns: () => Column<TData, unknown>[];
+  getRightLeafColumns: () => Column<TData, unknown>[];
+  getCenterLeafColumns: () => Column<TData, unknown>[];
+}
+
+export interface FiltersInstance<TData extends RowData> extends 
+Omit<_FiltersInstance<TData>,
+  | "getPreFilteredRowModel"
+  | "getFilteredRowModel"
+  | "getGlobalFacetedRowModel"
+> {
+  getPreFilteredRowModel: () => RowModel<TData>;
+  getFilteredRowModel: () => RowModel<TData>;
+  getGlobalFacetedRowModel: () => RowModel<TData>;
+}
+
+export interface SortingInstance<TData extends RowData> extends
+Omit<_SortingInstance<TData>,
+  | "getPreSortedRowModel"
+  | "getSortedRowModel"
+> {
+  getPreSortedRowModel: () => RowModel<TData>;
+  getSortedRowModel: () => RowModel<TData>;
+}
+
+export interface GroupingInstance<TData extends RowData> extends
+Omit<_GroupingInstance<TData>,
+  | "getPreGroupedRowModel"
+  | "getGroupedRowModel"
+> {
+  getPreGroupedRowModel: () => RowModel<TData>;
+  getGroupedRowModel: () => RowModel<TData>;
+}
+
+export interface ExpandedInstance<TData extends RowData> extends
+Omit<_ExpandedInstance<TData>,
+  | "getPreExpandedRowModel"
+  | "getExpandedRowModel"
+> {
+  getPreExpandedRowModel: () => RowModel<TData>;
+  getExpandedRowModel: () => RowModel<TData>;
+}
+
+export interface PaginationInstance<TData extends RowData> extends
+Omit<_PaginationInstance<TData>,
+  | "getPrePaginationRowModel"
+  | "getPaginationRowModel"
+> {
+  getPrePaginationRowModel: () => RowModel<TData>;
+  getPaginationRowModel: () => RowModel<TData>;
+}
+
+export interface RowSelectionInstance<TData extends RowData> extends
+Omit<_RowSelectionInstance<TData>,
+  | "getPreSelectedRowModel"
+  | "getSelectedRowModel"
+  | "getFilteredSelectedRowModel"
+  | "getGroupedSelectedRowModel"
+> {
+  getPreSelectedRowModel: () => RowModel<TData>;
+  getSelectedRowModel: () => RowModel<TData>;
+  getFilteredSelectedRowModel: () => RowModel<TData>;
+  getGroupedSelectedRowModel: () => RowModel<TData>;
+}
+
+export type DataGridInstance<TData extends RowData> = 
+& CoreInstance<TData>
+& HeadersInstance<TData>
+& VisibilityInstance<TData>
+& ColumnOrderInstance<TData>
+& ColumnPinningInstance<TData>
+& FiltersInstance<TData>
+& SortingInstance<TData>
+& GroupingInstance<TData>
+& ColumnSizingInstance
+& ExpandedInstance<TData>
+& PaginationInstance<TData>
+& RowSelectionInstance<TData> 
+& {
   refs: {
     content: {
       main: RefObject<HTMLDivElement>;

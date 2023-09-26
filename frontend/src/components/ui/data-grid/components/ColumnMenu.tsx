@@ -1,5 +1,5 @@
 import { ActionIcon, Menu } from "@mantine/core";
-import { Header } from "@tanstack/react-table";
+import { Header } from "../types";
 
 import { 
   IconArrowsSort,

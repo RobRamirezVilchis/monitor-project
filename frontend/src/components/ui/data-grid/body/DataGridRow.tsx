@@ -1,10 +1,10 @@
-import { RowData, Row } from "@tanstack/react-table";
+import { RowData } from "@tanstack/react-table";
 import { CSSProperties, Fragment } from "react";
 import clsx from "clsx";
 
 import gridRowStyles from "./DataGridRow.module.css";
 
-import { DataGridInstance } from "../types";
+import { DataGridInstance, Row } from "../types";
 import DataGridRowCell from "./DataGridRowCell";
 
 export interface DataGridRowProps<TData extends RowData> {
