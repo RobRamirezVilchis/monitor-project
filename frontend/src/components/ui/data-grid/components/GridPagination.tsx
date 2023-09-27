@@ -16,6 +16,7 @@ const GridPagination = <TData extends RowData>({
   instance,
   rowsPerPageOptions = [10, 25, 50, 100],
 }: GridPaginationProps<TData>) => {
+  const prePagination = instance.getPrePaginationRowModel();
   const pagination = instance.getState().pagination;
   const pageCount = instance.getPageCount();
 
@@ -61,7 +62,9 @@ const GridPagination = <TData extends RowData>({
         </ActionIcon>
 
         <span>
-          {pagination.pageIndex + 1} - {pageCount}
+          {pagination.pageIndex * pagination.pageSize + 1} - {
+            (pagination.pageIndex + 1) * pagination.pageSize
+          } of {prePagination.rows.length}
         </span>
 
         <ActionIcon
