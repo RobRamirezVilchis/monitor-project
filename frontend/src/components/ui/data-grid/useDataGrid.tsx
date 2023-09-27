@@ -170,14 +170,16 @@ const useDataGrid = <TData extends RowData>({
       else {
         _setDensity(prev => {
           switch (prev) {
-            case "normal":      return "compact";
-            case "compact":     return "comfortable";
-            case "comfortable": return "normal";
+            case "normal":      return "comfortable";
+            case "compact":     return "normal";
+            case "comfortable": return "compact";
           }
         });
       }
     },
   }), [_density]);
+
+  const [fullscreen, setFullscreen] = useState(false);
 
   //* Virtualization cannot be changed after initialization!!!
   const leafColumns = instance.getVisibleLeafColumns();
@@ -235,6 +237,8 @@ const useDataGrid = <TData extends RowData>({
   instance.refs = refs;
   instance.scrolls = scrolls;
   instance.density = density;
+  instance.fullscreen = fullscreen;
+  instance.setFullscreen = setFullscreen;
 
   return instance;
 }

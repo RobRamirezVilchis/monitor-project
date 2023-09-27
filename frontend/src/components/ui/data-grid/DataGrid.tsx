@@ -19,7 +19,7 @@ const DataGrid = <TData extends RowData>({
 
   return (
     <div 
-      className={clsx("DataGrid-root", gridStyles.root, instance.options.classNames?.root)} 
+      className={clsx("DataGrid-root", gridStyles.root, { [gridStyles.fullscreen]: instance.fullscreen }, instance.options.classNames?.root)} 
       style={instance.options.styles?.root}
     >
       {instance.options.hideHeader ? null : <DataGridHeader instance={instance} />}
