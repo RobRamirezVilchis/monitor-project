@@ -56,6 +56,7 @@ const DataGridRow = <TData extends RowData>({
               key={cell.id}
               instance={instance}
               cell={cell}
+              rowIndex={rowIndex}
               style={{
                 height   : "100%",
                 position : "absolute",
@@ -69,6 +70,7 @@ const DataGridRow = <TData extends RowData>({
             key={cell.id}
             instance={instance}
             cell={cell}
+            rowIndex={rowIndex}
           />
         ))}
       </div>

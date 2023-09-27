@@ -229,6 +229,8 @@ PartialKeys<DataGridOptionsResolved<TData>, "getCoreRowModel" | "state" | "onSta
    * @default true
    */
   enableColumnActions?: boolean;
+  enableRowNumbering?: boolean;
+  rowNumberingMode?: "original" | "static";
 
   hideToolbar?: boolean;
   hideQuickSearch?: boolean;
@@ -239,6 +241,7 @@ PartialKeys<DataGridOptionsResolved<TData>, "getCoreRowModel" | "state" | "onSta
   hideHeader?: boolean;
   hideFooterPagination?: boolean;
   hideFooterSelectedRowCount?: boolean;
+
   // locale?: string; // TODO: Add locale support
   slots?: {
     noRowsOverlay?: () => ReactNode;

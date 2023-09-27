@@ -1,3 +1,4 @@
+import { useEffect, useMemo, useRef, useState } from "react";
 import { 
   getCoreRowModel, 
   getExpandedRowModel,
@@ -11,14 +12,12 @@ import {
   RowData,
   useReactTable, 
 } from "@tanstack/react-table";
-import { Checkbox } from "@mantine/core";
-
-import type { DataGridOptions, DataGridInstance, DataGridDensity, ColumnDef } from "./types";
-import { useEffect, useMemo, useRef, useState } from "react";
-import { useScroll } from "./components/useScroll";
 import { useVirtualizer } from "@tanstack/react-virtual";
 
-import { IconChevronUp, IconChevronDown } from "@tabler/icons-react";
+import type { DataGridOptions, DataGridInstance, DataGridDensity, ColumnDef } from "./types";
+import { useScroll } from "./components/useScroll";
+import { createExpandableColumnDef, createRowNumberingColumnDef, createRowSelectionColumnDef } from "./reservedColumnDefs";
+
 
 export const densityFactor: Record<DataGridDensity, number> = {
   normal: 1,
@@ -45,82 +44,18 @@ const useDataGrid = <TData extends RowData>({
 
   const _columns = useMemo(() => {
     const internalColumns: ColumnDef<TData>[] = [];
-    if (tableOptions.enableRowSelection) {
-      internalColumns.push({
-        id: "__row_selection__",
-        minSize: 40,
-        maxSize: 40,
-        enableColumnFilter: false,
-        enableGlobalFilter: false,
-        enableResizing: false,
-        enableReordering: false,
-        enableColumnActions: false,
-        enableHiding: false,
-        header: (ctx) => (
-          <Checkbox 
-            checked={ctx.table.getIsAllRowsSelected()}
-            indeterminate={ctx.table.getIsSomeRowsSelected()}
-            onChange={e => {
-              ctx.table.toggleAllRowsSelected();
-            }}
-          />
-        ),
-        cell: (ctx) => (
-          <Checkbox 
-            checked={ctx.row.getIsSelected()}
-            onChange={e => {
-              ctx.row.toggleSelected();
-            }}
-          />
-        )
-      });
-    }
-    if (tableOptions.enableExpanding) {
-      internalColumns.push({
-        id: "__expandable__",
-        minSize: 40,
-        maxSize: 40,
-        enableColumnFilter: false,
-        enableGlobalFilter: false,
-        enableResizing: false,
-        enableReordering: false,
-        enableColumnActions: false,
-        enableHiding: false,
-        header: (ctx) => (
-          <button className="flex justify-center items-center"
-            onClick={ctx.table.getToggleAllRowsExpandedHandler()}
-          >
-            {ctx.table.getIsSomeRowsExpanded() ? (
-              <IconChevronUp />
-            ) : (
-              <IconChevronDown />
-            )}
-          </button>
-        ),
-        cell: (cell) => (
-          <button className="flex justify-center items-center"
-            onClick={e => {
-              const expanded = cell.row.getIsExpanded();
-              cell.table.toggleAllRowsExpanded(false);
-              if (!expanded)
-                cell.row.toggleExpanded();
-            }}
-          >
-            {cell.row.getIsExpanded() ? (
-              <IconChevronUp />
-            ) : (
-              <IconChevronDown />
-            )}
-          </button>
-        ),
-      },)
-    }
+    if (tableOptions.enableRowSelection)
+      internalColumns.push(createRowSelectionColumnDef<TData>());
+    if (tableOptions.enableExpanding)
+      internalColumns.push(createExpandableColumnDef<TData>());
+    if (tableOptions.enableRowNumbering)
+      internalColumns.push(createRowNumberingColumnDef<TData>());
 
     return [
       ...internalColumns,
       ...columns,
     ];
-  }, [columns, tableOptions.enableRowSelection, tableOptions.enableExpanding]);
+  }, [columns, tableOptions.enableRowSelection, tableOptions.enableExpanding, tableOptions.enableRowNumbering]);
 
   const instance = useReactTable<TData>({
     ...tableOptions,
