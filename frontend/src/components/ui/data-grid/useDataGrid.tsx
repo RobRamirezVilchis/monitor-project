@@ -11,11 +11,14 @@ import {
   RowData,
   useReactTable, 
 } from "@tanstack/react-table";
+import { Checkbox } from "@mantine/core";
 
-import type { DataGridOptions, DataGridInstance, DataGridDensity } from "./types";
+import type { DataGridOptions, DataGridInstance, DataGridDensity, ColumnDef } from "./types";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useScroll } from "./components/useScroll";
 import { useVirtualizer } from "@tanstack/react-virtual";
+
+import { IconChevronUp, IconChevronDown } from "@tabler/icons-react";
 
 export const densityFactor: Record<DataGridDensity, number> = {
   normal: 1,
@@ -27,7 +30,7 @@ const DENSITY_BASE_ROW_HEIGHT = 52;
 const DENSITY_BASE_HEADER_HEIGHT = 56;
 
 const useDataGrid = <TData extends RowData>({
-  enableFacetedValues,
+  columns,
   getCoreRowModel: _getCoreRowModel,
   getSortedRowModel: _getSortedRowModel,
   getExpandedRowModel: _getExpandedRowModel,
@@ -39,18 +42,99 @@ const useDataGrid = <TData extends RowData>({
   getPaginationRowModel: _getPaginationRowModel,
   ...tableOptions
 }: DataGridOptions<TData>): DataGridInstance<TData> => {
+
+  const _columns = useMemo(() => {
+    const internalColumns: ColumnDef<TData>[] = [];
+    if (tableOptions.enableRowSelection) {
+      internalColumns.push({
+        id: "__row_selection__",
+        minSize: 40,
+        maxSize: 40,
+        enableColumnFilter: false,
+        enableGlobalFilter: false,
+        enableResizing: false,
+        enableReordering: false,
+        enableColumnActions: false,
+        enableHiding: false,
+        header: (ctx) => (
+          <Checkbox 
+            checked={ctx.table.getIsAllRowsSelected()}
+            indeterminate={ctx.table.getIsSomeRowsSelected()}
+            onChange={e => {
+              ctx.table.toggleAllRowsSelected();
+            }}
+          />
+        ),
+        cell: (ctx) => (
+          <Checkbox 
+            checked={ctx.row.getIsSelected()}
+            onChange={e => {
+              ctx.row.toggleSelected();
+            }}
+          />
+        )
+      });
+    }
+    if (tableOptions.enableExpanding) {
+      internalColumns.push({
+        id: "__expandable__",
+        minSize: 40,
+        maxSize: 40,
+        enableColumnFilter: false,
+        enableGlobalFilter: false,
+        enableResizing: false,
+        enableReordering: false,
+        enableColumnActions: false,
+        enableHiding: false,
+        header: (ctx) => (
+          <button className="flex justify-center items-center"
+            onClick={ctx.table.getToggleAllRowsExpandedHandler()}
+          >
+            {ctx.table.getIsSomeRowsExpanded() ? (
+              <IconChevronUp />
+            ) : (
+              <IconChevronDown />
+            )}
+          </button>
+        ),
+        cell: (cell) => (
+          <button className="flex justify-center items-center"
+            onClick={e => {
+              const expanded = cell.row.getIsExpanded();
+              cell.table.toggleAllRowsExpanded(false);
+              if (!expanded)
+                cell.row.toggleExpanded();
+            }}
+          >
+            {cell.row.getIsExpanded() ? (
+              <IconChevronUp />
+            ) : (
+              <IconChevronDown />
+            )}
+          </button>
+        ),
+      },)
+    }
+
+    return [
+      ...internalColumns,
+      ...columns,
+    ];
+  }, [columns, tableOptions.enableRowSelection, tableOptions.enableExpanding]);
+
   const instance = useReactTable<TData>({
     ...tableOptions,
-    getCoreRowModel       : _getCoreRowModel              ?? getCoreRowModel<TData>(),
-    getExpandedRowModel   : tableOptions.enableExpanding  ? _getExpandedRowModel    ?? getExpandedRowModel<TData>()    : undefined,
-    getSortedRowModel     : tableOptions.enableSorting    ? _getSortedRowModel      ?? getSortedRowModel<TData>()      : undefined,
-    getFilteredRowModel   : tableOptions.enableFilters    ? _getFilteredRowModel    ?? getFilteredRowModel<TData>()    : undefined,
-    getFacetedRowModel    : enableFacetedValues           ? _getFacetedRowModel     ?? getFacetedRowModel<TData>()     : undefined,
-    getFacetedMinMaxValues: enableFacetedValues           ? _getFacetedMinMaxValues ?? getFacetedMinMaxValues<TData>() : undefined,
-    getFacetedUniqueValues: enableFacetedValues           ? _getFacetedUniqueValues ?? getFacetedUniqueValues<TData>() : undefined,
-    getGroupedRowModel    : tableOptions.enableGrouping   ? _getGroupedRowModel     ?? getGroupedRowModel<TData>()     : undefined,
-    getPaginationRowModel : tableOptions.enablePagination ? _getPaginationRowModel  ?? getPaginationRowModel<TData>()  : undefined,
-  }) as DataGridInstance<TData>;
+    columns: _columns,
+    getCoreRowModel       : _getCoreRowModel                 ?? getCoreRowModel<TData>(),
+    getExpandedRowModel   : tableOptions.enableExpanding     ? _getExpandedRowModel    ?? getExpandedRowModel<TData>()    : undefined,
+    getSortedRowModel     : tableOptions.enableSorting       ? _getSortedRowModel      ?? getSortedRowModel<TData>()      : undefined,
+    getFilteredRowModel   : tableOptions.enableFilters       ? _getFilteredRowModel    ?? getFilteredRowModel<TData>()    : undefined,
+    getFacetedRowModel    : tableOptions.enableFacetedValues ? _getFacetedRowModel     ?? getFacetedRowModel<TData>()     : undefined,
+    getFacetedMinMaxValues: tableOptions.enableFacetedValues ? _getFacetedMinMaxValues ?? getFacetedMinMaxValues<TData>() : undefined,
+    getFacetedUniqueValues: tableOptions.enableFacetedValues ? _getFacetedUniqueValues ?? getFacetedUniqueValues<TData>() : undefined,
+    getGroupedRowModel    : tableOptions.enableGrouping      ? _getGroupedRowModel     ?? getGroupedRowModel<TData>()     : undefined,
+    getPaginationRowModel : tableOptions.enablePagination    ? _getPaginationRowModel  ?? getPaginationRowModel<TData>()  : undefined,
+  } as any) as DataGridInstance<TData>;
 
   const headerRef = useRef<HTMLDivElement>(null);
   const mainContentRef = useRef<HTMLDivElement>(null);
