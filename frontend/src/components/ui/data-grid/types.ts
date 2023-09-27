@@ -1,38 +1,41 @@
 import {
+  AccessorColumnDef,
   Cell as _Cell,
-  ColumnDef as _ColumnDef,
   Column as _Column,
-  RowData, 
-  RequiredKeys,
-  Updater,
+  ColumnDef as _ColumnDef,
+  ColumnOrderInstance,
+  ColumnOrderOptions,
+  ColumnPinningInstance as _ColumnPinningInstance,
+  ColumnPinningOptions,
+  ColumnSizingInstance,
+  ColumnSizingOptions,
+  CoreInstance as _CoreInstance,
   CoreOptions as _CoreOptions,
+  DisplayColumnDef,
+  ExpandedInstance as _ExpandedInstance,
+  ExpandedOptions,
+  FiltersInstance as _FiltersInstance,
+  FiltersOptions,
+  GroupColumnDef as _GroupColumnDef,
+  GroupingInstance as _GroupingInstance,
+  GroupingOptions,
   Header as _Header,
   HeaderGroup as _HeaderGroup,
-  VisibilityOptions,
-  RowSelectionOptions,
-  PaginationOptions as _PaginationOptions,
-  ColumnSizingOptions,
-  ExpandedOptions,
-  GroupingOptions,
-  SortingOptions,
-  FiltersOptions,
-  ColumnPinningOptions,
-  ColumnOrderOptions,
-  PartialKeys,
-  CoreInstance as _CoreInstance,
   HeadersInstance as _HeaderInstance,
-  VisibilityInstance as _VisibilityInstance,
-  ColumnOrderInstance,
-  ColumnPinningInstance as _ColumnPinningInstance,
-  FiltersInstance as _FiltersInstance,
-  SortingInstance as _SortingInstance,
-  GroupingInstance as _GroupingInstance,
-  ColumnSizingInstance,
-  ExpandedInstance as _ExpandedInstance,
   PaginationInstance as _PaginationInstance,
-  RowSelectionInstance as _RowSelectionInstance,
+  PaginationOptions as _PaginationOptions,
+  PartialKeys,
+  RequiredKeys,
   Row as _Row,
+  RowData, 
   RowModel as _RowModel,
+  RowSelectionInstance as _RowSelectionInstance,
+  RowSelectionOptions,
+  SortingInstance as _SortingInstance,
+  SortingOptions,
+  Updater,
+  VisibilityInstance as _VisibilityInstance,
+  VisibilityOptions,
 } from "@tanstack/react-table";
 import { CSSProperties, ReactNode, RefObject } from "react";
 import { UseScrollReturn } from "./components/useScroll";
@@ -84,8 +87,19 @@ export interface RowModel<TData extends RowData> {
 
 // ColumnDef -------------------------------------------------------------------
 
-export type ColumnDef<TData extends RowData, TValue = unknown> = _ColumnDef<TData, TValue> & {
-  customColDef?: boolean;
+export type GroupColumnDef<TData extends RowData, TValue = unknown> = Omit<_GroupColumnDef<TData, TValue>, "columns"> & {
+  columns?: ColumnDef<TData, any>[];
+}
+
+export type ColumnDefBase<TData extends RowData, TValue = unknown> = DisplayColumnDef<TData, TValue> | GroupColumnDef<TData, TValue> | AccessorColumnDef<TData, TValue>;
+
+export type ColumnDef<TData extends RowData, TValue = unknown> = ColumnDefBase<TData, TValue> & {
+  enableReordering?: boolean;
+  enableColumnActions?: boolean;
+  columnActionsMenuItems?: (props: {
+    instance: DataGridInstance<TData>;
+    column: Column<TData, TValue>;
+  }) => JSX.Element[];
 }
 
 // Column ----------------------------------------------------------------------
@@ -131,7 +145,11 @@ Omit<_HeaderGroup<TData>,
 
 // DataGrid Options -------------------------------------------------------------
 
-export interface CoreOptions<TData extends RowData> extends Omit<_CoreOptions<TData>, "columns" | "defaultColumn"> {
+export interface CoreOptions<TData extends RowData> extends 
+Omit<_CoreOptions<TData>, 
+  | "columns" 
+  | "defaultColumn"
+> {
   columns: ColumnDef<TData, any>[];
   defaultColumn?: Partial<ColumnDef<TData, unknown>>;
 }
@@ -197,7 +215,18 @@ PartialKeys<DataGridOptionsResolved<TData>, "getCoreRowModel" | "state" | "onSta
     row?: DataGridRowStyles;
     cell?: DataGridRowCellPropsStyles;
   };
-  renderSubComponent?: (row: Row<TData>) => ReactNode
+  renderSubComponent?: (row: Row<TData>) => ReactNode;
+
+  /**
+   * Whether to enable column reordering.
+   * @default true
+   */
+  enableReordering?: boolean;
+  /**
+   * Whether to enable column actions.
+   * @default true
+   */
+  enableColumnActions?: boolean;
 }
 
 // DataGrid Instance ------------------------------------------------------------

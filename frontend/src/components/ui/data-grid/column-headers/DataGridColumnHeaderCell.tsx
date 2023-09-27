@@ -68,8 +68,12 @@ const DataGridColumnHeaderCell = <TData extends RowData, TValue>({
                 style={instance.options.styles?.columnHeaderCell?.actions}
               >
                 {header.column.getCanSort() ? <ColumnSortingToggle header={header} /> : null}
-                {draggableCtx ? <ColumnDragHandle draggableCtx={draggableCtx} /> : null}
-                <ColumnMenu header={header} />
+                {instance.options.enableReordering !== false && header.column.columnDef.enableReordering !== false && draggableCtx 
+                ? <ColumnDragHandle draggableCtx={draggableCtx} /> 
+                : null}
+                {instance.options.enableColumnActions !== false && header.column.columnDef.enableColumnActions !== false
+                ? <ColumnMenu instance={instance} header={header} /> 
+                : null}
               </div>) 
             : null}
           </div>

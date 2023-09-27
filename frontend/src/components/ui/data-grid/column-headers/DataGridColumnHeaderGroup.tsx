@@ -25,7 +25,9 @@ const DataGridColumnHeaderGroup = <TData extends RowData>({
       }}
     >
       {/* Headers */}
-      {group.headers.map(header => true && header.subHeaders.length === 0 ? (
+      {group.headers.map(header => header.column.columnDef.enableReordering !== false
+        // Only for leaf headers
+        && header.subHeaders.length === 0 ? (
         // Draggable Header Cell
         <DataGridColumnHeaderCellDnd key={header.id} header={header}>
           {(draggableCtx, droppableCtx) => (
