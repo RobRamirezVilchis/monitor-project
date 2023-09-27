@@ -62,13 +62,13 @@ const DataGridColumnHeaderCell = <TData extends RowData, TValue>({
               {flexRender(header.column.columnDef.header, header.getContext())}
             </div>
 
-            {header.subHeaders.length === 0 ? (
+            {header.subHeaders.length === 0 && !isOverlay ? (
               <div
                 className={clsx("DataGridColumnHeaderCell-actions", gridHeaderCellStyles.actions, instance.options.classNames?.columnHeaderCell?.actions)}
                 style={instance.options.styles?.columnHeaderCell?.actions}
               >
                 {header.column.getCanSort() ? <ColumnSortingToggle header={header} /> : null}
-                {instance.options.enableReordering !== false && header.column.columnDef.enableReordering !== false && draggableCtx 
+                {instance.options.enableColumnReordering !== false && header.column.columnDef.enableReordering !== false && draggableCtx 
                 ? <ColumnDragHandle draggableCtx={draggableCtx} /> 
                 : null}
                 {instance.options.enableColumnActions !== false && header.column.columnDef.enableColumnActions !== false

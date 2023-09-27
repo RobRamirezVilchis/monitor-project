@@ -221,7 +221,7 @@ PartialKeys<DataGridOptionsResolved<TData>, "getCoreRowModel" | "state" | "onSta
    * Whether to enable column reordering.
    * @default true
    */
-  enableReordering?: boolean;
+  enableColumnReordering?: boolean;
   /**
    * Whether to enable column actions.
    * @default true
