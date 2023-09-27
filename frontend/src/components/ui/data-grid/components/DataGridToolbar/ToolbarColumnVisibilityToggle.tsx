@@ -1,25 +1,22 @@
 import { RowData } from "@tanstack/react-table";
 import { ActionIcon, Button, Popover, Switch } from "@mantine/core";
 
-import type { DataGridInstance } from "../types";
+import type { DataGridInstance } from "../../types";
 
 import { IconColumns } from "@tabler/icons-react";
 
-export interface ColumnVisibilityProps<TData extends RowData> {
+export interface ToolbarColumnVisibilityToggleProps<TData extends RowData> {
   instance: DataGridInstance<TData>;
 }
 
-const ColumnVisibility = <TData extends unknown>({
+const ToolbarColumnVisibilityToggle = <TData extends unknown>({
   instance,
-}: ColumnVisibilityProps<TData>) => {
+}: ToolbarColumnVisibilityToggleProps<TData>) => {
 
   return (
     <Popover position="bottom-end">
       <Popover.Target>
-        <ActionIcon 
-          variant="transparent" 
-          radius="xl"
-        >
+        <ActionIcon>
           <IconColumns />
         </ActionIcon>
       </Popover.Target>
@@ -61,4 +58,4 @@ const ColumnVisibility = <TData extends unknown>({
   );
 }
 
-export default ColumnVisibility;
+export default ToolbarColumnVisibilityToggle;

@@ -3,12 +3,16 @@ import clsx from "clsx";
 
 import gridHeaderStyles from "./DataGridHeader.module.css";
 
-import ColumnVisibility from "../components/ColumnVisibility";
-import QuickFilter from "../components/QuickFilter";
+import ToolbarColumnVisibilityToggle from "../components/DataGridToolbar/ToolbarColumnVisibilityToggle";
+import ToolbarQuickFilter from "../components/DataGridToolbar/ToolbarQuickFilter";
 import type { DataGridInstance } from "../types";
 
 
-import DensityToggle from "../components/DensityToggle";
+import ToolbarDensityToggle from "../components/DataGridToolbar/ToolbarDensityToggle";
+import ToolbarFullscreenToggle from "../components/DataGridToolbar/ToolbarFullscreenToggle";
+import DataGridToolbar from "../components/DataGridToolbar/DataGridToolbar";
+import DataGridToolbarLeftContent from "../components/DataGridToolbar/DataGridToolbarLeftContent";
+import DataGridToolbarRightContent from "../components/DataGridToolbar/DataGridToolbarRightContent";
 
 export interface DataGridHeaderProps<TData extends RowData> {
   instance: DataGridInstance<TData>;
@@ -27,20 +31,31 @@ const DataGridHeader = <TData extends RowData>({
         className={clsx("DataGridHeader-contentContainer", gridHeaderStyles.contentContainer, instance.options.classNames?.header?.contentContainer)}
         style={instance.options.styles?.header?.contentContainer}
       >
-        <div
+        {/* TODO: Add custom content? */}
+        {/* <div
           className={clsx("DataGridHeader-content", gridHeaderStyles.content, instance.options.classNames?.header?.content)}
           style={instance.options.styles?.header?.content}
         >
-          <QuickFilter instance={instance} />
-        </div>
+          
+        </div> */}
 
-        <div 
-          className={clsx("DataGridHeader-toolbar", gridHeaderStyles.toolbar, instance.options.classNames?.header?.toolbar)}
-          style={instance.options.styles?.header?.toolbar}
-        >
-          <ColumnVisibility instance={instance} />
-          <DensityToggle instance={instance} />
-        </div>
+        {instance.options.hideToolbar ? null : 
+          instance.options.slots?.toolbar ? (
+            instance.options.slots.toolbar({instance})
+          ) : (
+            <DataGridToolbar instance={instance}>
+              <DataGridToolbarLeftContent instance={instance}>
+                {instance.options.hideQuickSearch ? null : <ToolbarQuickFilter instance={instance} />}
+              </DataGridToolbarLeftContent>
+  
+              <DataGridToolbarRightContent instance={instance}>
+                {instance.options.hideColumnSelector     ? null : <ToolbarColumnVisibilityToggle instance={instance} />}
+                {instance.options.hideDensitySelector    ? null : <ToolbarDensityToggle instance={instance} />}
+                {instance.options.hideFullscreenSelector ? null : <ToolbarFullscreenToggle instance={instance} />}
+              </DataGridToolbarRightContent>
+            </DataGridToolbar>
+          )
+        }
       </div>
     </div>
   )

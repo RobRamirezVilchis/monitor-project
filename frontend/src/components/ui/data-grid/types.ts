@@ -37,7 +37,7 @@ import {
   VisibilityInstance as _VisibilityInstance,
   VisibilityOptions,
 } from "@tanstack/react-table";
-import { CSSProperties, ReactNode, RefObject } from "react";
+import { CSSProperties, Dispatch, ReactNode, RefObject, SetStateAction } from "react";
 import { UseScrollReturn } from "./components/useScroll";
 import { Virtualizer, VirtualizerOptions } from "@tanstack/react-virtual";
 
@@ -195,18 +195,20 @@ PartialKeys<DataGridOptionsResolved<TData>, "getCoreRowModel" | "state" | "onSta
   density?: DataGridDensity;
   classNames?: {
     root?: string;
-    header?: DataGridHeaderClassNames,
-    columnHeaders?: DataGridColumnHeadersClassNames,
-    columnHeaderGroup?: DataGridColumnHeaderGroupClassNames,
-    columnHeaderCell?: DataGridColumnHeaderCellClassNames,
-    body?: DataGridBodyClassNames,
-    footer?: DataGridFooterClassNames,
+    header?: DataGridHeaderClassNames;
+    toolbar?: DataGridToolbarClassNames;
+    columnHeaders?: DataGridColumnHeadersClassNames;
+    columnHeaderGroup?: DataGridColumnHeaderGroupClassNames;
+    columnHeaderCell?: DataGridColumnHeaderCellClassNames;
+    body?: DataGridBodyClassNames;
+    footer?: DataGridFooterClassNames;
     row?: DataGridRowClassNames;
     cell?: DataGridRowCellPropsClassNames;
   };
   styles?: {
     root?: CSSProperties;
     header?: DataGridHeaderStyles;
+    toolbar?: DataGridToolbarStyles;
     columnHeaders?: DataGridColumnHeadersStyles;
     columnHeaderGroup?: DataGridColumnHeaderGroupStyles;
     columnHeaderCell?: DataGridColumnHeaderCellStyles;
@@ -228,8 +230,11 @@ PartialKeys<DataGridOptionsResolved<TData>, "getCoreRowModel" | "state" | "onSta
    */
   enableColumnActions?: boolean;
 
+  hideToolbar?: boolean;
+  hideQuickSearch?: boolean;
   hideColumnSelector?: boolean;
   hideDensitySelector?: boolean;
+  hideFullscreenSelector?: boolean;
   hideFooter?: boolean;
   hideHeader?: boolean;
   hideFooterPagination?: boolean;
@@ -238,6 +243,7 @@ PartialKeys<DataGridOptionsResolved<TData>, "getCoreRowModel" | "state" | "onSta
   slots?: {
     noRowsOverlay?: () => ReactNode;
     loadingOverlay?: () => ReactNode;
+    toolbar?: (props: { instance: DataGridInstance<TData> }) => ReactNode;
   };
   slotProps?: {
       
@@ -433,6 +439,8 @@ export type DataGridInstance<TData extends RowData> =
     headerHeight: number;
     toggle: (density?: DataGridDensity) => void;
   };
+  fullscreen: boolean;
+  setFullscreen: Dispatch<SetStateAction<boolean>>;
 }
 
 // Styles ----------------------------------------------------------------------
@@ -441,14 +449,24 @@ export interface DataGridHeaderClassNames {
   root?: string;
   contentContainer?: string;
   content?: string;
-  toolbar?: string;
 }
 
 export interface DataGridHeaderStyles {
   root?: CSSProperties;
   contentContainer?: CSSProperties;
   content?: CSSProperties;
-  toolbar?: CSSProperties;
+}
+
+export interface DataGridToolbarClassNames {
+  root?: string;
+  left?: string;
+  right?: string;
+}
+
+export interface DataGridToolbarStyles {
+  root?: CSSProperties;
+  left?: CSSProperties;
+  right?: CSSProperties;
 }
 
 export interface DataGridFooterClassNames {

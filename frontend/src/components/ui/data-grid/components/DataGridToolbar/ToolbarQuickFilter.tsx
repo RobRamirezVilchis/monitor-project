@@ -2,15 +2,15 @@ import { useCallback } from "react";
 import { TextInput } from "@mantine/core";
 
 import { useDebounce } from "@/hooks/shared";
-import type { DataGridInstance } from "../types";
+import type { DataGridInstance } from "../../types";
 
-export interface QuickFilterProps<TData extends unknown> {
+export interface ToolbarQuickFilterProps<TData extends unknown> {
   instance: DataGridInstance<TData>;
 }
 
-const QuickFilter = <TData extends unknown>({
+const ToolbarQuickFilter = <TData extends unknown>({
   instance,
-}: QuickFilterProps<TData>) => {
+}: ToolbarQuickFilterProps<TData>) => {
   const debounce = useDebounce({
     callback: useCallback((searchQuery: string) => {
       instance.setGlobalFilter(searchQuery);
@@ -19,13 +19,11 @@ const QuickFilter = <TData extends unknown>({
   });
 
   return (
-    <div className="px-2">
-      <TextInput
-        placeholder="Search..."
-        onChange={(e) => debounce(e.target.value)}
-      />
-    </div>
+    <TextInput
+      placeholder="Search..."
+      onChange={(e) => debounce(e.target.value)}
+    />
   );
 }
 
-export default QuickFilter;
+export default ToolbarQuickFilter;

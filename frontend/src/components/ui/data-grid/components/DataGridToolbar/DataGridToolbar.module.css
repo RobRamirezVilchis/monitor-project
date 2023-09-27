@@ -1,0 +1,21 @@
+.root {
+    align-items: center;
+    display: flex;
+    flex: 1;
+    gap: 0.25rem;
+}
+
+.left {
+    align-items: center;
+    display: flex;
+    gap: 0.25rem;
+    justify-content: flex-start;
+}
+
+.right {
+    align-items: center;
+    display: flex;
+    flex: 1;
+    gap: 0.25rem;
+    justify-content: flex-end;
+}
