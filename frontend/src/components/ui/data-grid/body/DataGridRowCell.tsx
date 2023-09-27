@@ -33,11 +33,11 @@ const DataGridRowCell = <TData extends RowData, TValue>({
         width: cell.column.getSize(),
         ...style,
       }}
-      title={title}
     >
       <div
         className={clsx("DataGridRowCell-content", gridRowCellStyles.content, instance.options.classNames?.cell?.content)}
         style={instance.options.styles?.cell?.content}
+        title={title}
       >
         {flexRender(cell.column.columnDef.cell, cell.getContext())}
       </div>

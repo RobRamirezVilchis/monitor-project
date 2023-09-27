@@ -23,12 +23,21 @@ const DataGridHeader = <TData extends RowData>({
       className={clsx("DataGridHeader-root", gridHeaderStyles.root, instance.options.classNames?.header?.root)}
       style={instance.options.styles?.header?.root}
     >
-      <div className="flex gap-2 w-full p-2 items-center">
-        <div>
+      <div 
+        className={clsx("DataGridHeader-contentContainer", gridHeaderStyles.contentContainer, instance.options.classNames?.header?.contentContainer)}
+        style={instance.options.styles?.header?.contentContainer}
+      >
+        <div
+          className={clsx("DataGridHeader-content", gridHeaderStyles.content, instance.options.classNames?.header?.content)}
+          style={instance.options.styles?.header?.content}
+        >
           <QuickFilter instance={instance} />
         </div>
 
-        <div className="flex-1 flex justify-end items-center">
+        <div 
+          className={clsx("DataGridHeader-toolbar", gridHeaderStyles.toolbar, instance.options.classNames?.header?.toolbar)}
+          style={instance.options.styles?.header?.toolbar}
+        >
           <ColumnVisibility instance={instance} />
           <DensityToggle instance={instance} />
         </div>

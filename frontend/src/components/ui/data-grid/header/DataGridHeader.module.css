@@ -2,3 +2,27 @@
     display: flex;
     gap: 2;
 }
+
+.contentContainer {
+    align-items: center;
+    display: flex;
+    justify-content: flex-start;
+    gap: 0.25rem;
+    width: 100%;
+    padding: 0.5rem;
+}
+
+.content {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.toolbar {
+    align-items: center;
+    display: flex;
+    flex: 1;
+    gap: 0.25rem;
+    justify-content: flex-end;
+}

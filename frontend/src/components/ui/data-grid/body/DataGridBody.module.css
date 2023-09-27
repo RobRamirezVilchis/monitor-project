@@ -18,10 +18,15 @@
     width: 100%;
 }
 
-.rows-container {
+.rowsContainer {
     display: flex;
     flex-direction: column;
     overflow-anchor: none; /* for virtualization */
     overflow: hidden;
     touch-action: pan-down; /* for mobile browser refresh gesture */
+}
+
+.overlay {
+    position: absolute;
+    inset: 0;
 }

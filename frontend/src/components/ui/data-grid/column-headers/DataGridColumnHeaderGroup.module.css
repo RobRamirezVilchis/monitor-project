@@ -2,7 +2,3 @@
     display: flex;
     border-bottom: 1px solid #e0e0e0;
 }
-
-.root:last-of-type {
-    border-bottom: 2px solid #7e7e7e;
-}

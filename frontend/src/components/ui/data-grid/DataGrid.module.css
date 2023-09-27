@@ -1,6 +1,7 @@
 .root {
+    border: 1px solid #e0e0e0;
+    border-radius: 0.25rem;
     display: flex;
     flex-direction: column;
-    height: 100%;
     width: 100%;
 }
