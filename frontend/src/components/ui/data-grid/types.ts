@@ -227,6 +227,21 @@ PartialKeys<DataGridOptionsResolved<TData>, "getCoreRowModel" | "state" | "onSta
    * @default true
    */
   enableColumnActions?: boolean;
+
+  hideColumnSelector?: boolean;
+  hideDensitySelector?: boolean;
+  hideFooter?: boolean;
+  hideHeader?: boolean;
+  hideFooterPagination?: boolean;
+  hideFooterSelectedRowCount?: boolean;
+  // locale?: string; // TODO: Add locale support
+  slots?: {
+    noRowsOverlay?: () => ReactNode;
+    loadingOverlay?: () => ReactNode;
+  };
+  slotProps?: {
+      
+  };
 }
 
 // DataGrid Instance ------------------------------------------------------------
@@ -424,18 +439,30 @@ export type DataGridInstance<TData extends RowData> =
 
 export interface DataGridHeaderClassNames {
   root?: string;
+  contentContainer?: string;
+  content?: string;
+  toolbar?: string;
 }
 
 export interface DataGridHeaderStyles {
   root?: CSSProperties;
+  contentContainer?: CSSProperties;
+  content?: CSSProperties;
+  toolbar?: CSSProperties;
 }
 
 export interface DataGridFooterClassNames {
   root?: string;
+  contentContainer?: string;
+  content?: string;
+  pagination?: string;
 }
 
 export interface DataGridFooterStyles {
   root?: CSSProperties;
+  contentContainer?: CSSProperties;
+  content?: CSSProperties;
+  pagination?: CSSProperties;
 }
 
 export interface DataGridColumnHeadersClassNames {

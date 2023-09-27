@@ -118,7 +118,15 @@ const DataGridBody = <TData extends unknown>({
           ))}
         </div>
 
-        {!loading && rowModel.rows.length === 0 ? <EmptyOverlay /> : null}
+        {!loading && rowModel.rows.length === 0 ? (
+          <div className={clsx("DataGridBody-overlay DataGridBody-overlayEmpty", gridBodyStyles.overlay)}>
+            {instance.options.slots?.noRowsOverlay ? (
+              instance.options.slots.noRowsOverlay()
+            ) : (
+              <EmptyOverlay />
+            )}
+          </div>
+        ) : null}
       </div>
       
       <Scroll
@@ -134,7 +142,15 @@ const DataGridBody = <TData extends unknown>({
         onScroll={instance.scrolls.main.horizontal.current?.onScroll}
       />
 
-      {loading ? <LoadingOverlay /> : null}
+      {loading ? (
+        <div className={clsx("DataGridBody-overlay DataGridBody-overlayLoading", gridBodyStyles.overlay)}>
+          {instance.options.slots?.loadingOverlay ? (
+            instance.options.slots.loadingOverlay()
+          ) : (
+            <LoadingOverlay />
+          )}
+        </div>
+      ) : null}
     </div>
   );
 }

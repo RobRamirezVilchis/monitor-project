@@ -33,6 +33,7 @@ const ColumnVisibility = <TData extends unknown>({
                 label={column.id}
                 checked={column.getIsVisible()} 
                 onChange={() => column.toggleVisibility()}
+                disabled={column.getCanHide() === false}
               />
             ))}
           </div>

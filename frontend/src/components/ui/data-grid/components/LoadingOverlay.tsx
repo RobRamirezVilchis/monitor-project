@@ -63,12 +63,11 @@ const LoadingOverlay = () => {
       </style>
       <div
         style={{
-          position: "absolute",
-          backgroundColor: "rgba(0, 0, 0, 0.15)",
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          inset: 0,
+          backgroundColor: "rgb(0 0 0 / 0.15)",
+          display: "grid",
+          placeItems: "center",
+          width: "100%",
+          height: "100%",
         }}
       >
         <div

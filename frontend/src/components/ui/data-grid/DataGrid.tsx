@@ -18,14 +18,17 @@ const DataGrid = <TData extends RowData>({
 }: DataGridProps<TData>) => {
 
   return (
-    <div className={clsx("DataGrid-root", gridStyles.root, instance.options.classNames?.root)} style={instance.options.styles?.root}>
-      <DataGridHeader instance={instance} />
+    <div 
+      className={clsx("DataGrid-root", gridStyles.root, instance.options.classNames?.root)} 
+      style={instance.options.styles?.root}
+    >
+      {instance.options.hideHeader ? null : <DataGridHeader instance={instance} />}
       <DataGridColumnHeaders instance={instance} />
       <DataGridBody
         instance={instance}
         loading={instance.options.loading}
       />
-      <DataGridFooter instance={instance} />
+      {instance.options.hideFooter ? null : <DataGridFooter instance={instance} />}
     </div>
   );
 };
