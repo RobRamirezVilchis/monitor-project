@@ -1,5 +1,8 @@
 import { RowData } from "@tanstack/react-table";
-import { ActionIcon } from "@mantine/core";
+import { ActionIcon, Tooltip } from "@mantine/core";
+import clsx from "clsx";
+
+import buttonStyles from "../BaseButton.module.css";
 
 import { DataGridInstance } from "../../types";
 
@@ -17,11 +20,25 @@ const ToolbarFullscreenToggle = <TData extends RowData>({
   instance,
 }: ToolbarFullscreenToggleProps<TData>) => {
   return (
-    <ActionIcon
-      onClick={() => instance.setFullscreen(prev => !prev)}
+    <Tooltip 
+      withinPortal 
+      openDelay={250}
+      {...instance.options.slotProps?.baseTooltipProps}
+      label="Toggle Fullscreen" 
     >
-      {instance.fullscreen ? <IconMinimize /> : <IconMaximize />}
-    </ActionIcon>
+      <ActionIcon
+        color="black"
+        variant="transparent"
+        {...instance.options.slotProps?.baseActionIconProps}
+        className={clsx(buttonStyles.root, instance.options.slotProps?.baseActionIconProps?.className)}
+        onClick={e => {
+          instance.setFullscreen(prev => !prev);
+          instance.options.slotProps?.baseActionIconProps?.onClick?.(e);
+        }}
+      >
+        {instance.fullscreen ? <IconMinimize /> : <IconMaximize />}
+      </ActionIcon>
+    </Tooltip>
   )
 }
 

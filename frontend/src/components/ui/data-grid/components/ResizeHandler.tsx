@@ -2,13 +2,15 @@ import clsx from "clsx";
 
 import resizeHandlerStyles from "./ResizeHandler.module.css";
 
-import { Header } from "../types";
+import { DataGridInstance, Header } from "../types";
 
 interface ResizeHandlerProps<TData extends unknown, TValue> {
+  instance: DataGridInstance<TData>;
   header: Header<TData, TValue>;
 }
 
 const ResizeHandler = <TData extends unknown, TValue>({
+  instance,
   header,
 }: ResizeHandlerProps<TData, TValue>) => {
   return (

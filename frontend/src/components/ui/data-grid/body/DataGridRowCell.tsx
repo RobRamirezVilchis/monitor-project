@@ -24,11 +24,14 @@ const DataGridRowCell = <TData extends RowData, TValue>({
   const title = typeof value === "string" || typeof value === "number"
     ? value.toString()
     : undefined;
+  const columnDef = cell.column.columnDef;
 
   const onClick = useCallback<MouseEventHandler<HTMLDivElement>>((e) => {
     e.currentTarget.setAttribute("tabindex", "0");
     e.currentTarget.focus();
     e.currentTarget.classList.add("DataGridRowCell--focused");
+    if (instance.options.classNames?.cell?.focused)
+      e.currentTarget.classList.add(instance.options.classNames?.cell?.focused);
 
     instance.options.onCellClick?.(cell as any, instance, e as any);
   }, [cell, instance]);
@@ -40,13 +43,16 @@ const DataGridRowCell = <TData extends RowData, TValue>({
   const onBlur = useCallback<FocusEventHandler<HTMLDivElement>>((e) => {
     e.currentTarget.setAttribute("tabindex", "-1");
     e.currentTarget.classList.remove("DataGridRowCell--focused");
-  }, []); 
+    if (instance.options.classNames?.cell?.focused)
+      e.currentTarget.classList.remove(instance.options.classNames?.cell?.focused);
+  }, [instance]);
 
   return (
     <div
-      className={clsx("DataGridRowCell-root", gridRowCellStyles.root, instance.options.classNames?.cell?.root)}
+      className={clsx("DataGridRowCell-root", gridRowCellStyles.root, instance.options.classNames?.cell?.root, columnDef.cellClassNames?.root)}
       style={{
         ...instance.options.styles?.cell?.root,
+        ...columnDef.cellStyles?.root,
         height: instance.density.rowHeight,
         minHeight: instance.density.rowHeight,
         maxHeight: instance.density.rowHeight,
@@ -58,8 +64,11 @@ const DataGridRowCell = <TData extends RowData, TValue>({
       onBlur={onBlur}
     >
       <div
-        className={clsx("DataGridRowCell-content", gridRowCellStyles.content, instance.options.classNames?.cell?.content)}
-        style={instance.options.styles?.cell?.content}
+        className={clsx("DataGridRowCell-content", gridRowCellStyles.content, instance.options.classNames?.cell?.content, columnDef.cellClassNames?.content)}
+        style={{
+          ...instance.options.styles?.cell?.content,
+          ...columnDef.cellStyles?.content,
+        }}
         title={title}
       >
         {instance.options.enableRowNumbering && cell.column.id === ROW_NUMBER_COLUMN_ID ? (

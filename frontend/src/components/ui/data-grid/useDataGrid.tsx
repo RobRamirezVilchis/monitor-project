@@ -28,47 +28,48 @@ export const densityFactor: Record<DataGridDensity, number> = {
 const DENSITY_BASE_ROW_HEIGHT = 52;
 const DENSITY_BASE_HEADER_HEIGHT = 56;
 
-const useDataGrid = <TData extends RowData>({
-  columns,
-  getCoreRowModel: _getCoreRowModel,
-  getSortedRowModel: _getSortedRowModel,
-  getExpandedRowModel: _getExpandedRowModel,
-  getFilteredRowModel: _getFilteredRowModel,
-  getFacetedRowModel: _getFacetedRowModel,
-  getFacetedMinMaxValues: _getFacetedMinMaxValues,
-  getFacetedUniqueValues: _getFacetedUniqueValues,
-  getGroupedRowModel: _getGroupedRowModel,
-  getPaginationRowModel: _getPaginationRowModel,
-  ...tableOptions
-}: DataGridOptions<TData>): DataGridInstance<TData> => {
+const useDataGrid = <TData extends RowData>(options: DataGridOptions<TData>): DataGridInstance<TData> => {
+  const {
+    columns: _columns,
+    getCoreRowModel: _getCoreRowModel,
+    getSortedRowModel: _getSortedRowModel,
+    getExpandedRowModel: _getExpandedRowModel,
+    getFilteredRowModel: _getFilteredRowModel,
+    getFacetedRowModel: _getFacetedRowModel,
+    getFacetedMinMaxValues: _getFacetedMinMaxValues,
+    getFacetedUniqueValues: _getFacetedUniqueValues,
+    getGroupedRowModel: _getGroupedRowModel,
+    getPaginationRowModel: _getPaginationRowModel,
+    ...tableOptions
+  } = options;
 
-  const _columns = useMemo(() => {
+  const columns = useMemo(() => {
     const internalColumns: ColumnDef<TData>[] = [];
-    if (tableOptions.enableRowSelection)
-      internalColumns.push(createRowSelectionColumnDef<TData>());
-    if (tableOptions.enableExpanding)
-      internalColumns.push(createExpandableColumnDef<TData>());
-    if (tableOptions.enableRowNumbering)
-      internalColumns.push(createRowNumberingColumnDef<TData>());
+    if (options.enableRowSelection)
+      internalColumns.push(createRowSelectionColumnDef<TData>(options));
+    if (options.enableExpanding)
+      internalColumns.push(createExpandableColumnDef<TData>(options));
+    if (options.enableRowNumbering)
+      internalColumns.push(createRowNumberingColumnDef<TData>(options));
 
     return [
       ...internalColumns,
-      ...columns,
+      ..._columns,
     ];
-  }, [columns, tableOptions.enableRowSelection, tableOptions.enableExpanding, tableOptions.enableRowNumbering]);
+  }, [_columns, options]);
 
   const instance = useReactTable<TData>({
     ...tableOptions,
-    columns: _columns,
+    columns,
     getCoreRowModel       : _getCoreRowModel                 ?? getCoreRowModel<TData>(),
-    getExpandedRowModel   : tableOptions.enableExpanding     ? _getExpandedRowModel    ?? getExpandedRowModel<TData>()    : undefined,
-    getSortedRowModel     : tableOptions.enableSorting       ? _getSortedRowModel      ?? getSortedRowModel<TData>()      : undefined,
-    getFilteredRowModel   : tableOptions.enableFilters       ? _getFilteredRowModel    ?? getFilteredRowModel<TData>()    : undefined,
-    getFacetedRowModel    : tableOptions.enableFacetedValues ? _getFacetedRowModel     ?? getFacetedRowModel<TData>()     : undefined,
-    getFacetedMinMaxValues: tableOptions.enableFacetedValues ? _getFacetedMinMaxValues ?? getFacetedMinMaxValues<TData>() : undefined,
-    getFacetedUniqueValues: tableOptions.enableFacetedValues ? _getFacetedUniqueValues ?? getFacetedUniqueValues<TData>() : undefined,
-    getGroupedRowModel    : tableOptions.enableGrouping      ? _getGroupedRowModel     ?? getGroupedRowModel<TData>()     : undefined,
-    getPaginationRowModel : tableOptions.enablePagination    ? _getPaginationRowModel  ?? getPaginationRowModel<TData>()  : undefined,
+    getExpandedRowModel   : options.enableExpanding     ? _getExpandedRowModel    ?? getExpandedRowModel<TData>()    : undefined,
+    getSortedRowModel     : options.enableSorting       ? _getSortedRowModel      ?? getSortedRowModel<TData>()      : undefined,
+    getFilteredRowModel   : options.enableFilters       ? _getFilteredRowModel    ?? getFilteredRowModel<TData>()    : undefined,
+    getFacetedRowModel    : options.enableFacetedValues ? _getFacetedRowModel     ?? getFacetedRowModel<TData>()     : undefined,
+    getFacetedMinMaxValues: options.enableFacetedValues ? _getFacetedMinMaxValues ?? getFacetedMinMaxValues<TData>() : undefined,
+    getFacetedUniqueValues: options.enableFacetedValues ? _getFacetedUniqueValues ?? getFacetedUniqueValues<TData>() : undefined,
+    getGroupedRowModel    : options.enableGrouping      ? _getGroupedRowModel     ?? getGroupedRowModel<TData>()     : undefined,
+    getPaginationRowModel : options.enablePagination    ? _getPaginationRowModel  ?? getPaginationRowModel<TData>()  : undefined,
   } as any) as DataGridInstance<TData>;
 
   const headerRef = useRef<HTMLDivElement>(null);
@@ -92,7 +93,7 @@ const useDataGrid = <TData extends RowData>({
     footer: footerRef,
   }), []);
 
-  const [_density, _setDensity] = useState<DataGridDensity>(tableOptions.density ?? "normal");
+  const [_density, _setDensity] = useState<DataGridDensity>(options.density ?? "normal");
 
   const density = useMemo(() => ({
     value: _density,
@@ -118,26 +119,26 @@ const useDataGrid = <TData extends RowData>({
 
   //* Virtualization cannot be changed after initialization!!!
   const leafColumns = instance.getVisibleLeafColumns();
-  const horizontalVirtualizer = useVirtualizer(tableOptions.enableColumnsVirtualization ? {
+  const horizontalVirtualizer = useVirtualizer(options.enableColumnsVirtualization ? {
     count: leafColumns.length,
     overscan: 1,
     getScrollElement: () => mainHorizontalScrollRef.current.scrollRef.current,
     estimateSize: i => leafColumns[i].getSize(),
     horizontal: true,
-    ...tableOptions.columnsVirtualizerProps,
+    ...options.columnsVirtualizerProps,
   } : {
     count: 0,
     getScrollElement: () => null,
     estimateSize: () => 0,
   });
   
-  const verticalVirtualizer = useVirtualizer(tableOptions.enableRowsVirtualization ? {
+  const verticalVirtualizer = useVirtualizer(options.enableRowsVirtualization ? {
     count: instance.getRowModel().rows.length,
     overscan: 1,
     getScrollElement: () => mainVerticalScrollRef.current.scrollRef.current,
     estimateSize: () => density.rowHeight,
     horizontal: false,
-    ...tableOptions.rowsVirtualizerProps,    
+    ...options.rowsVirtualizerProps,    
   } : {
     count: 0,
     getScrollElement: () => null,
@@ -152,10 +153,10 @@ const useDataGrid = <TData extends RowData>({
   }, [density.value, verticalVirtualizer]);
 
   const horizontalVirtualizerRef = useRef(
-    tableOptions.enableColumnsVirtualization ? horizontalVirtualizer : null
+    options.enableColumnsVirtualization ? horizontalVirtualizer : null
   );
   const verticalVirtualizerRef = useRef(
-    tableOptions.enableRowsVirtualization ? verticalVirtualizer : null
+    options.enableRowsVirtualization ? verticalVirtualizer : null
   );
 
   const scrolls: DataGridInstance<TData>["scrolls"] = useMemo(() => ({

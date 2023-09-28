@@ -38,8 +38,20 @@ import {
   VisibilityOptions,
 } from "@tanstack/react-table";
 import { CSSProperties, Dispatch, ReactNode, RefObject, SetStateAction, MouseEvent } from "react";
-import { UseScrollReturn } from "./components/useScroll";
 import { Virtualizer, VirtualizerOptions } from "@tanstack/react-virtual";
+import { 
+  ActionIconProps, 
+  ButtonProps, 
+  CheckboxProps, 
+  ElementProps,
+  MenuItemProps, 
+  SelectProps, 
+  SwitchProps, 
+  TextInputProps, 
+  TooltipProps,
+} from "@mantine/core";
+
+import { UseScrollReturn } from "./components/useScroll";
 
 export type DataGridDensity = "compact" | "normal" | "comfortable";
 
@@ -100,6 +112,10 @@ export type ColumnDef<TData extends RowData, TValue = unknown> = ColumnDefBase<T
     instance: DataGridInstance<TData>;
     column: Column<TData, TValue>;
   }) => JSX.Element[];
+  cellClassNames?: DataGridRowCellClassNames;
+  cellStyles?: DataGridRowCellStyles;
+  headerClassNames?: DataGridColumnHeaderCellClassNames;
+  headerStyles?: DataGridColumnHeaderCellStyles;
 }
 
 // Column ----------------------------------------------------------------------
@@ -203,7 +219,7 @@ PartialKeys<DataGridOptionsResolved<TData>, "getCoreRowModel" | "state" | "onSta
     body?: DataGridBodyClassNames;
     footer?: DataGridFooterClassNames;
     row?: DataGridRowClassNames;
-    cell?: DataGridRowCellPropsClassNames;
+    cell?: DataGridRowCellClassNames;
   };
   styles?: {
     root?: CSSProperties;
@@ -215,7 +231,7 @@ PartialKeys<DataGridOptionsResolved<TData>, "getCoreRowModel" | "state" | "onSta
     body?: DataGridBodyStyles;
     footer?: DataGridFooterStyles;
     row?: DataGridRowStyles;
-    cell?: DataGridRowCellPropsStyles;
+    cell?: DataGridRowCellStyles;
   };
   renderSubComponent?: (row: Row<TData>) => ReactNode;
 
@@ -250,7 +266,17 @@ PartialKeys<DataGridOptionsResolved<TData>, "getCoreRowModel" | "state" | "onSta
     pagination?: (props: { instance: DataGridInstance<TData>; }) => ReactNode;
   };
   slotProps?: {
-      
+    baseActionIconProps?: ActionIconProps & ElementProps<"button">;
+    baseButtonProps?: ButtonProps & ElementProps<"button">;
+    baseCheckboxProps?: CheckboxProps;
+    baseMenuItemProps?: MenuItemProps & ElementProps<"button">;
+    baseSelectProps?: SelectProps;
+    baseSwitchProps?: SwitchProps;
+    baseTextInputProps?: TextInputProps;
+    baseTooltipProps?: Omit<TooltipProps, "children" | "label">;
+    scroll?: {
+      thickness?: number;
+    }
   };
 
   onCellClick?: (cell: Cell<TData>, instance: DataGridInstance<TData>, event: MouseEvent<HTMLDivElement, MouseEvent>) => void;
@@ -510,18 +536,24 @@ export interface DataGridColumnHeaderGroupStyles {
   root?: CSSProperties;
 }
 
-export interface DataGridColumnHeaderCellClassNames {
+export interface DataGridColumnHeaderCellBaseClassNames {
   root?: string;
   content?: string;
   contentLabel?: string;
   label?: string;
+}
+
+export interface DataGridColumnHeaderCellClassNames extends DataGridColumnHeaderCellBaseClassNames {
   actions?: string;
   filter?: string;
+  dragOverlay?: DataGridColumnHeaderCellBaseClassNames;
+  dragIsOver?: DataGridColumnHeaderCellBaseClassNames;
 }
 
 export interface DataGridColumnHeaderCellStyles {
   root?: CSSProperties;
   content?: CSSProperties;
+  contentLabel?: CSSProperties;
   label?: CSSProperties;
   actions?: CSSProperties;
   filters?: CSSProperties;
@@ -541,18 +573,22 @@ export interface DataGridBodyStyles {
 
 export interface DataGridRowClassNames {
   root?: string;
+  selected?: string;
 }
 
 export interface DataGridRowStyles {
   root?: CSSProperties;
+  // selected?: CSSProperties;
 }
 
-export interface DataGridRowCellPropsClassNames {
+export interface DataGridRowCellClassNames {
   root?: string;
   content?: string;
+  focused?: string;
 }
 
-export interface DataGridRowCellPropsStyles {
+export interface DataGridRowCellStyles {
   root?: CSSProperties;
   content?: CSSProperties;
+  // focused?: CSSProperties;
 }

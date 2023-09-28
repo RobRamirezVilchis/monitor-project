@@ -1,5 +1,8 @@
-import { ActionIcon, Menu } from "@mantine/core";
+import { ActionIcon, Menu, Tooltip } from "@mantine/core";
 import { DataGridInstance, Header } from "../types";
+import clsx from "clsx";
+
+import buttonStyles from "./BaseButton.module.css";
 
 import { 
   IconArrowsSort,
@@ -30,25 +33,37 @@ const ColumnMenu = <TData extends unknown, TValue>({
   const sortMenuItems = [
     <Menu.Item
       key="sort-asc"
-      onClick={() => header.column.toggleSorting(false)}
       leftSection={<IconSortAscending />}
       disabled={sorted === "asc"}
+      {...instance.options.slotProps?.baseMenuItemProps}
+      onClick={e => {
+        header.column.toggleSorting(false);
+        instance.options.slotProps?.baseMenuItemProps?.onClick?.(e);
+      }}
     >
       Sort Ascending
     </Menu.Item>,
     <Menu.Item
       key="sort-desc"
-      onClick={() => header.column.toggleSorting(true)}
       leftSection={<IconSortDescending />}
       disabled={sorted === "desc"}
+      {...instance.options.slotProps?.baseMenuItemProps}
+      onClick={e => {
+        header.column.toggleSorting(true);
+        instance.options.slotProps?.baseMenuItemProps?.onClick?.(e);
+      }}
     >
       Sort Descending
     </Menu.Item>,
     <Menu.Item
       key="sort-clear"
-      onClick={() => header.column.clearSorting()}
       leftSection={<IconArrowsSort />}
       disabled={sorted === false || sorted === undefined}
+      {...instance.options.slotProps?.baseMenuItemProps}
+      onClick={e => {
+        header.column.clearSorting();
+        instance.options.slotProps?.baseMenuItemProps?.onClick?.(e);
+      }}
     >
       Clear Sort
     </Menu.Item>,
@@ -57,8 +72,12 @@ const ColumnMenu = <TData extends unknown, TValue>({
   const visibilityMenuItems = [
     <Menu.Item
       key="hide-column"
-      onClick={() => header.column.toggleVisibility()}
       leftSection={<IconEyeOff />}
+      {...instance.options.slotProps?.baseMenuItemProps}
+      onClick={e => {
+        header.column.toggleVisibility();
+        instance.options.slotProps?.baseMenuItemProps?.onClick?.(e);
+      }}
     >
       Hide Column
     </Menu.Item>,
@@ -85,12 +104,22 @@ const ColumnMenu = <TData extends unknown, TValue>({
   return (
     <Menu>
       <Menu.Target>
-        <ActionIcon
-          size="xs"
-          variant="transparent"
+        <Tooltip
+          withinPortal
+          openDelay={250}
+          {...instance.options.slotProps?.baseTooltipProps}
+          label="Menu"
         >
-          <IconDotsVertical />
-        </ActionIcon>
+          <ActionIcon
+            color="black"
+            size="xs"
+            variant="transparent"
+            {...instance.options.slotProps?.baseActionIconProps}
+            className={clsx(buttonStyles.root, instance.options.slotProps?.baseActionIconProps?.className)}
+          >
+            <IconDotsVertical />
+          </ActionIcon>
+        </Tooltip>
       </Menu.Target>
 
       <Menu.Dropdown>

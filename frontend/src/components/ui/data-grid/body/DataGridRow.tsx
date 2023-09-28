@@ -42,7 +42,7 @@ const DataGridRow = <TData extends RowData>({
     <Fragment>
       <div
         className={clsx("DataGridRow-root", gridRowStyles.root, {
-          [`DataGridRow--selected ${gridRowStyles["--selected"]}`]: row.getIsSelected(),
+          [`DataGridRow--selected ${gridRowStyles["--selected"]} ${instance.options.classNames?.row?.selected}`]: row.getIsSelected(),
         }, instance.options.classNames?.row?.root)}
         style={{
           ...instance.options.styles?.row?.root,

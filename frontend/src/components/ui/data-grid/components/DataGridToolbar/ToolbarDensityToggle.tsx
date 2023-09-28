@@ -1,5 +1,8 @@
 import { RowData } from "@tanstack/react-table";
-import { ActionIcon } from "@mantine/core";
+import { ActionIcon, Tooltip } from "@mantine/core";
+import clsx from "clsx";
+
+import buttonStyles from "../BaseButton.module.css";
 
 import { DataGridInstance } from "../../types";
 
@@ -17,13 +20,27 @@ const ToolbarDensityToggle = <TData extends RowData>({
   instance,
 }: ToolbarDensityToggleProps<TData>) => {
   return (
-    <ActionIcon
-      onClick={() => instance.density.toggle()}
+    <Tooltip 
+      withinPortal 
+      openDelay={250}
+      {...instance.options.slotProps?.baseTooltipProps}
+      label="Toggle Density" 
     >
-      {instance.density.value === "compact" && <IconBaselineDensitySmall />}
-      {instance.density.value === "normal" && <IconBaselineDensityMedium />}
-      {instance.density.value === "comfortable" && <IconBaselineDensityLarge />}
-    </ActionIcon>
+      <ActionIcon
+        color="black"
+        variant="transparent"
+        {...instance.options.slotProps?.baseActionIconProps}
+        className={clsx(buttonStyles.root, instance.options.slotProps?.baseActionIconProps?.className)}
+        onClick={e => {
+          instance.density.toggle()
+          instance.options.slotProps?.baseActionIconProps?.onClick?.(e);
+        }}
+      >
+        {instance.density.value === "compact" && <IconBaselineDensitySmall />}
+        {instance.density.value === "normal" && <IconBaselineDensityMedium />}
+        {instance.density.value === "comfortable" && <IconBaselineDensityLarge />}
+      </ActionIcon>
+    </Tooltip>
   )
 }
 

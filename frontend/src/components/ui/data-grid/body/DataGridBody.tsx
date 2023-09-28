@@ -133,13 +133,15 @@ const DataGridBody = <TData extends unknown>({
         orientation="vertical"
         virtualSize={contentRect.height}
         ref={instance.scrolls.main.vertical.current?.scrollRef}
-        onScroll={instance.scrolls.main.vertical.current?.onScroll} 
+        onScroll={instance.scrolls.main.vertical.current?.onScroll}
+        thickness={instance.options.slotProps?.scroll?.thickness}
       />
       <Scroll
         orientation="horizontal"
         virtualSize={contentRect.width}
         ref={instance.scrolls.main.horizontal.current?.scrollRef}
         onScroll={instance.scrolls.main.horizontal.current?.onScroll}
+        thickness={instance.options.slotProps?.scroll?.thickness}
       />
 
       {loading ? (

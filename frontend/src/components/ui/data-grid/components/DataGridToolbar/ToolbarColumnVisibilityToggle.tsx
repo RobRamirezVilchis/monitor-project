@@ -1,5 +1,8 @@
 import { RowData } from "@tanstack/react-table";
-import { ActionIcon, Button, Popover, Switch } from "@mantine/core";
+import { ActionIcon, Button, Popover, Switch, Tooltip } from "@mantine/core";
+import clsx from "clsx";
+
+import buttonStyles from "../BaseButton.module.css";
 
 import type { DataGridInstance } from "../../types";
 
@@ -16,9 +19,21 @@ const ToolbarColumnVisibilityToggle = <TData extends unknown>({
   return (
     <Popover position="bottom-end">
       <Popover.Target>
-        <ActionIcon>
-          <IconColumns />
-        </ActionIcon>
+        <Tooltip 
+          openDelay={250}
+          withinPortal 
+          {...instance.options.slotProps?.baseTooltipProps}
+          label="Show/Hide Columns"
+        >
+          <ActionIcon
+            color="black"
+            variant="transparent"
+            {...instance.options.slotProps?.baseActionIconProps}
+            className={clsx(buttonStyles.root, instance.options.slotProps?.baseActionIconProps?.className)}
+          >
+            <IconColumns />
+          </ActionIcon>
+        </Tooltip>
       </Popover.Target>
       
       <Popover.Dropdown classNames={{ dropdown: "p-2" }}>
@@ -26,6 +41,7 @@ const ToolbarColumnVisibilityToggle = <TData extends unknown>({
           <div className="flex flex-col gap-1">
             {instance.getAllLeafColumns().map(column => (
               <Switch 
+                {...instance.options.slotProps?.baseSwitchProps}
                 key={column.id} 
                 label={column.id}
                 checked={column.getIsVisible()} 
@@ -38,16 +54,24 @@ const ToolbarColumnVisibilityToggle = <TData extends unknown>({
           <div className="flex gap-1">
             <Button
               variant="subtle"
+              {...instance.options.slotProps?.baseButtonProps}
+              onClick={e => {
+                instance.toggleAllColumnsVisible(true);
+                instance.options.slotProps?.baseButtonProps?.onClick?.(e);
+              }}
               disabled={instance.getIsAllColumnsVisible()}
-              onClick={() => instance.toggleAllColumnsVisible(true)}
             >
               Mostrar todo
             </Button>
 
             <Button
               variant="subtle"
+              {...instance.options.slotProps?.baseButtonProps}
+              onClick={e => {
+                instance.toggleAllColumnsVisible(false);
+                instance.options.slotProps?.baseButtonProps?.onClick?.(e);
+              }}
               disabled={!instance.getIsSomeColumnsVisible()}
-              onClick={() => instance.toggleAllColumnsVisible(false)}
             >
               Ocultar todo
             </Button>

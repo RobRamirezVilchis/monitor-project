@@ -21,7 +21,11 @@ const ToolbarQuickFilter = <TData extends unknown>({
   return (
     <TextInput
       placeholder="Search..."
-      onChange={(e) => debounce(e.target.value)}
+      {...instance.options.slotProps?.baseTextInputProps}
+      onChange={e => {
+        debounce(e.target.value);
+        instance.options.slotProps?.baseTextInputProps?.onChange?.(e);
+      }}
     />
   );
 }

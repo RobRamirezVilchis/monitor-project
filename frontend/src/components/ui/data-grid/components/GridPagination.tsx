@@ -1,6 +1,8 @@
 import { RowData } from "@tanstack/react-table";
 import { ActionIcon, Select } from "@mantine/core";
 
+import buttonStyles from "./BaseButton.module.css";
+
 import { DataGridInstance } from "../types";
 
 import { ChevronLeft, ChevronRight } from "@mui/icons-material";
@@ -31,10 +33,12 @@ const GridPagination = <TData extends RowData>({
         <span>Rows per page</span>
         <span className="w-20">
           <Select
+            {...instance.options.slotProps?.baseSelectProps}
             data={rppOptions}
             value={pagination.pageSize.toString()}
             onChange={(value) => {
               value !== null && instance.setPageSize(Number(value));
+              instance.options.slotProps?.baseSelectProps?.onChange?.(value);
             }}
           />
         </span>
@@ -42,21 +46,31 @@ const GridPagination = <TData extends RowData>({
 
       <div className="flex items-center gap-1">
         <ActionIcon
+          color="black"
           variant="transparent"
+          className={buttonStyles.root}
           radius="xl"
-          color="gray"
-          onClick={() => instance.setPageIndex(0)}
           disabled={pagination.pageIndex === 0}
+          {...instance.options.slotProps?.baseActionIconProps}
+          onClick={e => {
+            instance.setPageIndex(0);
+            instance.options.slotProps?.baseActionIconProps?.onClick?.(e);
+          }}
         >
           <IconChevronsLeft />
         </ActionIcon>
 
         <ActionIcon
+          color="black"
           variant="transparent"
+          className={buttonStyles.root}
           radius="xl"
-          color="gray"
-          onClick={() => instance.previousPage()}
           disabled={!instance.getCanPreviousPage()}
+          {...instance.options.slotProps?.baseActionIconProps}
+          onClick={e => {
+            instance.previousPage();
+            instance.options.slotProps?.baseActionIconProps?.onClick?.(e);
+          }}
         >
           <ChevronLeft />
         </ActionIcon>
@@ -68,21 +82,31 @@ const GridPagination = <TData extends RowData>({
         </span>
 
         <ActionIcon
+          color="black"
           variant="transparent"
+          className={buttonStyles.root}
           radius="xl"
-          color="gray"
-          onClick={() => instance.nextPage()}
           disabled={!instance.getCanNextPage()}
+          {...instance.options.slotProps?.baseActionIconProps}
+          onClick={e => {
+            instance.nextPage();
+            instance.options.slotProps?.baseActionIconProps?.onClick?.(e);
+          }}
         >
           <ChevronRight />
         </ActionIcon>
 
         <ActionIcon
+          color="black"
           variant="transparent"
+          className={buttonStyles.root}
           radius="xl"
-          color="gray"
-          onClick={() => instance.setPageIndex(pageCount - 1)}
           disabled={pagination.pageIndex === pageCount - 1}
+          {...instance.options.slotProps?.baseActionIconProps}
+          onClick={e => {
+            instance.setPageIndex(pageCount - 1);
+            instance.options.slotProps?.baseActionIconProps?.onClick?.(e);
+          }}
         >
           <IconChevronsRight />
         </ActionIcon>
