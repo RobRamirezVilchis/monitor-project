@@ -3,16 +3,16 @@ import clsx from "clsx";
 
 import gridHeaderStyles from "./DataGridHeader.module.css";
 
-import ToolbarColumnVisibilityToggle from "../components/DataGridToolbar/ToolbarColumnVisibilityToggle";
-import ToolbarQuickFilter from "../components/DataGridToolbar/ToolbarQuickFilter";
+import ToolbarColumnVisibilityToggle from "../components/data-grid-toolbar/ToolbarColumnVisibilityToggle";
+import ToolbarQuickFilter from "../components/data-grid-toolbar/ToolbarQuickFilter";
 import type { DataGridInstance } from "../types";
 
 
-import ToolbarDensityToggle from "../components/DataGridToolbar/ToolbarDensityToggle";
-import ToolbarFullscreenToggle from "../components/DataGridToolbar/ToolbarFullscreenToggle";
-import DataGridToolbar from "../components/DataGridToolbar/DataGridToolbar";
-import DataGridToolbarLeftContent from "../components/DataGridToolbar/DataGridToolbarLeftContent";
-import DataGridToolbarRightContent from "../components/DataGridToolbar/DataGridToolbarRightContent";
+import ToolbarDensityToggle from "../components/data-grid-toolbar/ToolbarDensityToggle";
+import ToolbarFullscreenToggle from "../components/data-grid-toolbar/ToolbarFullscreenToggle";
+import DataGridToolbar from "../components/data-grid-toolbar/DataGridToolbar";
+import DataGridToolbarLeftContent from "../components/data-grid-toolbar/DataGridToolbarLeftContent";
+import DataGridToolbarRightContent from "../components/data-grid-toolbar/DataGridToolbarRightContent";
 
 export interface DataGridHeaderProps<TData extends RowData> {
   instance: DataGridInstance<TData>;
