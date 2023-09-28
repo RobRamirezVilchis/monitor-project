@@ -37,7 +37,7 @@ import {
   VisibilityInstance as _VisibilityInstance,
   VisibilityOptions,
 } from "@tanstack/react-table";
-import { CSSProperties, Dispatch, ReactNode, RefObject, SetStateAction } from "react";
+import { CSSProperties, Dispatch, ReactNode, RefObject, SetStateAction, MouseEvent } from "react";
 import { UseScrollReturn } from "./components/useScroll";
 import { Virtualizer, VirtualizerOptions } from "@tanstack/react-virtual";
 
@@ -252,6 +252,11 @@ PartialKeys<DataGridOptionsResolved<TData>, "getCoreRowModel" | "state" | "onSta
   slotProps?: {
       
   };
+
+  onCellClick?: (cell: Cell<TData>, instance: DataGridInstance<TData>, event: MouseEvent<HTMLDivElement, MouseEvent>) => void;
+  onCellDoubleClick?: (cell: Cell<TData>, instance: DataGridInstance<TData>, event: MouseEvent<HTMLDivElement, MouseEvent>) => void;
+  onRowClick?: (row: Row<TData>, instance: DataGridInstance<TData>, event: MouseEvent<HTMLDivElement, MouseEvent>) => void;
+  onRowDoubleClick?: (row: Row<TData>, instance: DataGridInstance<TData>, event: MouseEvent<HTMLDivElement, MouseEvent>) => void;
 }
 
 // DataGrid Instance ------------------------------------------------------------

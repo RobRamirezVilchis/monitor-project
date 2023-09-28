@@ -1,5 +1,5 @@
 import { RowData } from "@tanstack/react-table";
-import { CSSProperties, Fragment } from "react";
+import { CSSProperties, Fragment, MouseEventHandler, useCallback } from "react";
 import clsx from "clsx";
 
 import gridRowStyles from "./DataGridRow.module.css";
@@ -30,10 +30,20 @@ const DataGridRow = <TData extends RowData>({
 }: DataGridRowProps<TData>) => {
   const visibleCells = row.getVisibleCells();
 
+  const onClick = useCallback<MouseEventHandler<HTMLDivElement>>((e) => {
+    instance.options.onRowClick?.(row as any, instance, e as any);
+  }, [row, instance]);
+
+  const onDoubleClick = useCallback<MouseEventHandler<HTMLDivElement>>((e) => {
+    instance.options.onRowDoubleClick?.(row as any, instance, e as any);
+  }, [row, instance]);
+
   return (
     <Fragment>
       <div
-        className={clsx("DataGridRow-root", gridRowStyles.root, instance.options.classNames?.row?.root)}
+        className={clsx("DataGridRow-root", gridRowStyles.root, {
+          [`DataGridRow--selected ${gridRowStyles["--selected"]}`]: row.getIsSelected(),
+        }, instance.options.classNames?.row?.root)}
         style={{
           ...instance.options.styles?.row?.root,
           height: instance.density.rowHeight,
@@ -46,6 +56,8 @@ const DataGridRow = <TData extends RowData>({
         }}
         data-id={(row.original as any)?.id ?? undefined}
         data-row-index={rowIndex}
+        onClick={onClick}
+        onDoubleClick={onDoubleClick}
       >
         {/* Cells */}
         {instance.options.enableColumnsVirtualization

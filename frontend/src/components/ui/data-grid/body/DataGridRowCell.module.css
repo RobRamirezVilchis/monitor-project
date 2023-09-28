@@ -10,3 +10,7 @@
     overflow: hidden;
     text-overflow: ellipsis;
 }
+
+.root:focus {
+    box-shadow: inset 0 0 0 1px rgb(25 118 210); /* to overcome container clipping outlines */
+}

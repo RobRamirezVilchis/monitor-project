@@ -1,4 +1,4 @@
-import { CSSProperties } from "react";
+import { CSSProperties, FocusEventHandler, MouseEventHandler, useCallback } from "react";
 import { RowData, flexRender } from "@tanstack/react-table";
 import clsx from "clsx";
 
@@ -25,6 +25,23 @@ const DataGridRowCell = <TData extends RowData, TValue>({
     ? value.toString()
     : undefined;
 
+  const onClick = useCallback<MouseEventHandler<HTMLDivElement>>((e) => {
+    e.currentTarget.setAttribute("tabindex", "0");
+    e.currentTarget.focus();
+    e.currentTarget.classList.add("DataGridRowCell--focused");
+
+    instance.options.onCellClick?.(cell as any, instance, e as any);
+  }, [cell, instance]);
+
+  const onDoubleClick = useCallback<MouseEventHandler<HTMLDivElement>>((e) => {
+    instance.options.onCellDoubleClick?.(cell as any, instance, e as any);
+  }, [cell, instance]);
+
+  const onBlur = useCallback<FocusEventHandler<HTMLDivElement>>((e) => {
+    e.currentTarget.setAttribute("tabindex", "-1");
+    e.currentTarget.classList.remove("DataGridRowCell--focused");
+  }, []); 
+
   return (
     <div
       className={clsx("DataGridRowCell-root", gridRowCellStyles.root, instance.options.classNames?.cell?.root)}
@@ -36,6 +53,9 @@ const DataGridRowCell = <TData extends RowData, TValue>({
         width: cell.column.getSize(),
         ...style,
       }}
+      onClick={onClick}
+      onDoubleClick={onDoubleClick}
+      onBlur={onBlur}
     >
       <div
         className={clsx("DataGridRowCell-content", gridRowCellStyles.content, instance.options.classNames?.cell?.content)}
