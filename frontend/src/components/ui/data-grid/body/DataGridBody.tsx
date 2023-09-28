@@ -7,7 +7,7 @@ import { useIsomorphicLayoutEffect } from "@/hooks/shared/useIsomorphicLayoutEff
 import type { DataGridInstance } from "../types";
 import DataGridRow from "./DataGridRow";
 import NoRowsOverlay from "../components/NoRowsOverlay";
-import LoadingOverlay from "@/components/ui/data-grid/components/LoadingOverlay";
+import SpinnerLoadingOverlay from "@/components/ui/data-grid/components/SpinnerLoadingOverlay";
 import Scroll from "@/components/ui/data-grid/components/Scroll";
 
 export interface DataGridBodyProps<TData extends unknown> {
@@ -150,7 +150,7 @@ const DataGridBody = <TData extends unknown>({
           {instance.options.slots?.loadingOverlay ? (
             instance.options.slots.loadingOverlay()
           ) : (
-            <LoadingOverlay />
+            <SpinnerLoadingOverlay />
           )}
         </div>
       ) : null}
