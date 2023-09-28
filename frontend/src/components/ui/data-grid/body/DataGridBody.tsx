@@ -88,6 +88,7 @@ const DataGridBody = <TData extends unknown>({
               : undefined,
           }}
           ref={instance.refs.content.main}
+          role="rowgroup"
         >
           {/* Rows */}
           {instance.options.enableRowsVirtualization

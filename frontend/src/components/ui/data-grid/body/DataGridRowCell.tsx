@@ -62,6 +62,7 @@ const DataGridRowCell = <TData extends RowData, TValue>({
       onClick={onClick}
       onDoubleClick={onDoubleClick}
       onBlur={onBlur}
+      role="cell"
     >
       <div
         className={clsx("DataGridRowCell-content", gridRowCellStyles.content, instance.options.classNames?.cell?.content, columnDef.cellClassNames?.content)}

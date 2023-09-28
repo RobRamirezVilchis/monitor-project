@@ -23,6 +23,7 @@ const DataGridColumnHeaderGroup = <TData extends RowData>({
         ...instance.options.styles?.columnHeaderGroup?.root,
         height: instance.density.headerHeight,
       }}
+      role="row"
     >
       {/* Headers */}
       {group.headers.map(header => header.column.columnDef.enableReordering !== false

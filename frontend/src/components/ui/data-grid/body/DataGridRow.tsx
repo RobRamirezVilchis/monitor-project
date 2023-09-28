@@ -58,6 +58,7 @@ const DataGridRow = <TData extends RowData>({
         data-row-index={rowIndex}
         onClick={onClick}
         onDoubleClick={onDoubleClick}
+        role="row"
       >
         {/* Cells */}
         {instance.options.enableColumnsVirtualization

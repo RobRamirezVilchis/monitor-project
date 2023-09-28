@@ -103,6 +103,7 @@ const DataGridColumnHeaders = <TData extends unknown>({
       onTouchStart={instance.scrolls.main.horizontal.current?.onTouchStart}
       onTouchMove={instance.scrolls.main.horizontal.current?.onTouchMove}
       onTouchEnd={instance.scrolls.main.horizontal.current?.onTouchEnd}
+      role="rowgroup"
     >
       {/* Columns */}
       <DndContext

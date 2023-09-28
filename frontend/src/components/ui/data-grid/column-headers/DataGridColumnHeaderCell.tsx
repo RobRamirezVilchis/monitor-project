@@ -48,6 +48,7 @@ const DataGridColumnHeaderCell = <TData extends RowData, TValue>({
       }}
 
       ref={droppableCtx?.setNodeRef}
+      role="columnheader"
     >
       {/* Content */}
       {!header.isPlaceholder ? (

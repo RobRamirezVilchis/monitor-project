@@ -21,6 +21,7 @@ const DataGrid = <TData extends RowData>({
     <div 
       className={clsx("DataGrid-root", gridStyles.root, { [gridStyles.fullscreen]: instance.fullscreen }, instance.options.classNames?.root)} 
       style={instance.options.styles?.root}
+      role="grid"
     >
       {instance.options.hideHeader ? null : <DataGridHeader instance={instance} />}
       <DataGridColumnHeaders instance={instance} />
