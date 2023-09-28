@@ -1,6 +1,6 @@
 import { IconPrinterOff } from "@tabler/icons-react";
 
-const EmptyOverlay = () => {
+const NoRowsOverlay = () => {
 
   return (
     <div
@@ -28,4 +28,4 @@ const EmptyOverlay = () => {
   );
 }
 
-export default EmptyOverlay;
+export default NoRowsOverlay;

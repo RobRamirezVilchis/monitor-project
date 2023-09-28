@@ -246,7 +246,8 @@ PartialKeys<DataGridOptionsResolved<TData>, "getCoreRowModel" | "state" | "onSta
   slots?: {
     noRowsOverlay?: () => ReactNode;
     loadingOverlay?: () => ReactNode;
-    toolbar?: (props: { instance: DataGridInstance<TData> }) => ReactNode;
+    toolbar?: (props: { instance: DataGridInstance<TData>; }) => ReactNode;
+    pagination?: (props: { instance: DataGridInstance<TData>; }) => ReactNode;
   };
   slotProps?: {
       
@@ -254,6 +255,51 @@ PartialKeys<DataGridOptionsResolved<TData>, "getCoreRowModel" | "state" | "onSta
 }
 
 // DataGrid Instance ------------------------------------------------------------
+
+export type DataGridInstance<TData extends RowData> = 
+& CoreInstance<TData>
+& HeadersInstance<TData>
+& VisibilityInstance<TData>
+& ColumnOrderInstance<TData>
+& ColumnPinningInstance<TData>
+& FiltersInstance<TData>
+& SortingInstance<TData>
+& GroupingInstance<TData>
+& ColumnSizingInstance
+& ExpandedInstance<TData>
+& PaginationInstance<TData>
+& RowSelectionInstance<TData> 
+& {
+  refs: {
+    content: {
+      main: RefObject<HTMLDivElement>;
+    };
+    columnHeader: {
+      main: RefObject<HTMLDivElement>;
+    };
+    header: RefObject<HTMLDivElement>;
+    footer: RefObject<HTMLDivElement>;
+  };
+  scrolls: {
+    main: {
+      horizontal: RefObject<UseScrollReturn>;
+      vertical: RefObject<UseScrollReturn>;
+    };
+    virtualizers: {
+      columns: RefObject<Virtualizer<HTMLDivElement, Element> | null>;
+      rows: RefObject<Virtualizer<HTMLDivElement, Element> | null>;
+    }
+  };
+  density: {
+    value: DataGridDensity;
+    factor: number;
+    rowHeight: number;
+    headerHeight: number;
+    toggle: (density?: DataGridDensity) => void;
+  };
+  fullscreen: boolean;
+  setFullscreen: Dispatch<SetStateAction<boolean>>;
+}
 
 export interface CoreInstance<TData extends RowData> extends 
 Omit<_CoreInstance<TData>,
@@ -399,51 +445,6 @@ Omit<_RowSelectionInstance<TData>,
   getSelectedRowModel: () => RowModel<TData>;
   getFilteredSelectedRowModel: () => RowModel<TData>;
   getGroupedSelectedRowModel: () => RowModel<TData>;
-}
-
-export type DataGridInstance<TData extends RowData> = 
-& CoreInstance<TData>
-& HeadersInstance<TData>
-& VisibilityInstance<TData>
-& ColumnOrderInstance<TData>
-& ColumnPinningInstance<TData>
-& FiltersInstance<TData>
-& SortingInstance<TData>
-& GroupingInstance<TData>
-& ColumnSizingInstance
-& ExpandedInstance<TData>
-& PaginationInstance<TData>
-& RowSelectionInstance<TData> 
-& {
-  refs: {
-    content: {
-      main: RefObject<HTMLDivElement>;
-    };
-    columnHeader: {
-      main: RefObject<HTMLDivElement>;
-    };
-    header: RefObject<HTMLDivElement>;
-    footer: RefObject<HTMLDivElement>;
-  };
-  scrolls: {
-    main: {
-      horizontal: RefObject<UseScrollReturn>;
-      vertical: RefObject<UseScrollReturn>;
-    };
-    virtualizers: {
-      columns: RefObject<Virtualizer<HTMLDivElement, Element> | null>;
-      rows: RefObject<Virtualizer<HTMLDivElement, Element> | null>;
-    }
-  };
-  density: {
-    value: DataGridDensity;
-    factor: number;
-    rowHeight: number;
-    headerHeight: number;
-    toggle: (density?: DataGridDensity) => void;
-  };
-  fullscreen: boolean;
-  setFullscreen: Dispatch<SetStateAction<boolean>>;
 }
 
 // Styles ----------------------------------------------------------------------

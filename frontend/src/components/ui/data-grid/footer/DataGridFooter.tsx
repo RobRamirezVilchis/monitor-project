@@ -40,7 +40,7 @@ const DataGridFooter = <TData extends RowData>({
           className={clsx("DataGridFooter-pagination", gridFooterStyles.pagination, instance.options.classNames?.footer?.pagination)}
           style={instance.options.styles?.footer?.pagination}
         >
-          <GridPagination instance={instance} />
+          {instance.options.slots?.pagination ? instance.options.slots.pagination({ instance }) : <GridPagination instance={instance} />}
         </div>
       </div>
     </div>

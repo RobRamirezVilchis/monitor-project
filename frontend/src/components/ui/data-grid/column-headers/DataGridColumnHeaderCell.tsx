@@ -8,7 +8,7 @@ import { DataGridInstance, Header } from "../types";
 import ColumnDragHandle from "../components/ColumnDragHandle";
 import ColumnMenu from "../components/ColumnMenu";
 import ColumnSortingToggle from "../components/ColumnSortingToggle";
-import ResizeHandler from "./ResizeHandler";
+import ResizeHandler from "../components/ResizeHandler";
 
 
 export interface DataGridColumnHeaderCellProps<TData extends RowData, TValue> {

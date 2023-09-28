@@ -6,7 +6,7 @@ import gridBodyStyles from "./DataGridBody.module.css";
 import { useIsomorphicLayoutEffect } from "@/hooks/shared/useIsomorphicLayoutEffect";
 import type { DataGridInstance } from "../types";
 import DataGridRow from "./DataGridRow";
-import EmptyOverlay from "../components/EmptyOverlay";
+import NoRowsOverlay from "../components/NoRowsOverlay";
 import LoadingOverlay from "@/components/ui/data-grid/components/LoadingOverlay";
 import Scroll from "@/components/ui/data-grid/components/Scroll";
 
@@ -123,7 +123,7 @@ const DataGridBody = <TData extends unknown>({
             {instance.options.slots?.noRowsOverlay ? (
               instance.options.slots.noRowsOverlay()
             ) : (
-              <EmptyOverlay />
+              <NoRowsOverlay />
             )}
           </div>
         ) : null}
