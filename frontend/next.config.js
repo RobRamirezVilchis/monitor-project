@@ -22,6 +22,13 @@ const nextConfig = {
 
     return config;
   },
+  experimental: {
+    optimizePackageImports: [
+      "@mantine/core",
+      "@mantine/dates",
+      "@tabler/icons-react",
+    ],
+  },
 }
 
 module.exports = nextConfig

@@ -4,6 +4,8 @@ import { NavLink } from "@/components/shared";
 import { useAuth } from "@/hooks/auth";
 import { getOrRefreshAccessToken } from "@/api/auth";
 import Link from "next/link";
+import { Button } from "@mantine/core";
+import { notifications } from "@mantine/notifications";
 
 const Home = () => {
   const { user, loading, login, logout, isAuthorized } = useAuth({
@@ -13,7 +15,7 @@ const Home = () => {
   });
 
   return (
-    <main>
+    <section className="p-4">
       {!user && loading ? <div>Loading...</div> : null}
       {user ? `User: ${user.email}, authorized: ${isAuthorized}` : null}
 
@@ -77,7 +79,20 @@ const Home = () => {
           Test
         </NavLink>
       </div>
-    </main>
+
+      <div>
+        <Button
+          onClick={() => {
+            notifications.show({
+              title: "Success",
+              message: "This is success notification",
+            })
+          }}
+        >
+          Success Notification
+        </Button>
+      </div>
+    </section>
   )
 }
 
