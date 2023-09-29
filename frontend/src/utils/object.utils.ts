@@ -49,7 +49,7 @@ export const setPropValueByString = (obj: any, str: string, value: any, numericK
       if (i === indexes.length - 1)
         curr = value;
       else {
-        if (numericKeysForArraysOnly && indexes[i + 1].match(/\d+/))
+        if (numericKeysForArraysOnly && indexes[i + 1].match(/^\d+$/))
           curr = [];
         else
           curr = {};

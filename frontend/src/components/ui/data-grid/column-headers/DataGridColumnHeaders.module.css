@@ -1,0 +1,10 @@
+.root {
+    width: 100%;
+    overflow: hidden;
+    overflow-anchor: none; /* for virtualization */
+    touch-action: pan-down; /* for mobile browser refresh gesture */
+}
+
+.headersContainer {
+    overflow: hidden;
+}

@@ -1,0 +1,12 @@
+.root {
+    position: absolute;
+    top: 50%;
+    right: 0;
+    transform: translate(50%, -50%);
+    background-color: #a8a8a8;
+    width: 0.25rem;
+    cursor: col-resize;
+    touch-action: none;
+    border-radius: 0.25rem;
+    height: 80%;
+}
