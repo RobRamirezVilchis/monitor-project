@@ -3,16 +3,15 @@ import clsx from "clsx";
 
 import gridHeaderStyles from "./DataGridHeader.module.css";
 
+import type { DataGridInstance } from "../types";
 import ToolbarColumnVisibilityToggle from "../components/data-grid-toolbar/ToolbarColumnVisibilityToggle";
 import ToolbarQuickFilter from "../components/data-grid-toolbar/ToolbarQuickFilter";
-import type { DataGridInstance } from "../types";
-
-
-import ToolbarDensityToggle from "../components/data-grid-toolbar/ToolbarDensityToggle";
-import ToolbarFullscreenToggle from "../components/data-grid-toolbar/ToolbarFullscreenToggle";
 import DataGridToolbar from "../components/data-grid-toolbar/DataGridToolbar";
 import DataGridToolbarLeftContent from "../components/data-grid-toolbar/DataGridToolbarLeftContent";
 import DataGridToolbarRightContent from "../components/data-grid-toolbar/DataGridToolbarRightContent";
+import ToolbarFullscreenToggle from "../components/data-grid-toolbar/ToolbarFullscreenToggle";
+import ToolbarDensityToggle from "../components/data-grid-toolbar/ToolbarDensityToggle";
+import ToolbarFilterToggle from "../components/data-grid-toolbar/ToolbarFIlterToggle";
 
 export interface DataGridHeaderProps<TData extends RowData> {
   instance: DataGridInstance<TData>;
@@ -49,9 +48,10 @@ const DataGridHeader = <TData extends RowData>({
               </DataGridToolbarLeftContent>
   
               <DataGridToolbarRightContent instance={instance}>
-                {instance.options.hideColumnSelector     ? null : <ToolbarColumnVisibilityToggle instance={instance} />}
-                {instance.options.hideDensitySelector    ? null : <ToolbarDensityToggle instance={instance} />}
-                {instance.options.hideFullscreenSelector ? null : <ToolbarFullscreenToggle instance={instance} />}
+                {instance.options.hideColumnFiltersSelector ? null : <ToolbarFilterToggle instance={instance} />}
+                {instance.options.hideColumnSelector        ? null : <ToolbarColumnVisibilityToggle instance={instance} />}
+                {instance.options.hideDensitySelector       ? null : <ToolbarDensityToggle instance={instance} />}
+                {instance.options.hideFullscreenSelector    ? null : <ToolbarFullscreenToggle instance={instance} />}
               </DataGridToolbarRightContent>
             </DataGridToolbar>
           )

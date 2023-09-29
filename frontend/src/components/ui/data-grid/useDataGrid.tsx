@@ -116,6 +116,7 @@ const useDataGrid = <TData extends RowData>(options: DataGridOptions<TData>): Da
   }), [_density]);
 
   const [fullscreen, setFullscreen] = useState(false);
+  const [columnFiltersOpen, setColumnFiltersOpen] = useState(false);
 
   //* Virtualization cannot be changed after initialization!!!
   const leafColumns = instance.getVisibleLeafColumns();
@@ -175,6 +176,8 @@ const useDataGrid = <TData extends RowData>(options: DataGridOptions<TData>): Da
   instance.density = density;
   instance.fullscreen = fullscreen;
   instance.setFullscreen = setFullscreen;
+  instance.columnFiltersOpen = columnFiltersOpen;
+  instance.setColumnFiltersOpen = setColumnFiltersOpen;
 
   return instance;
 }

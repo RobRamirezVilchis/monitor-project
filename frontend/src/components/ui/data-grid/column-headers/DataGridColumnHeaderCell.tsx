@@ -6,6 +6,7 @@ import gridHeaderCellStyles from "./DataGridColumnHeaderCell.module.css";
 
 import { DataGridInstance, Header } from "../types";
 import ColumnDragHandle from "../components/ColumnDragHandle";
+import ColumnFilter from "../components/filters/ColumnFilter";
 import ColumnMenu from "../components/ColumnMenu";
 import ColumnSortingToggle from "../components/ColumnSortingToggle";
 import ResizeHandler from "../components/ResizeHandler";
@@ -36,6 +37,7 @@ const DataGridColumnHeaderCell = <TData extends RowData, TValue>({
         {
           [`${gridHeaderCellStyles.overlay} ${instance.options.classNames?.columnHeaderCell?.dragOverlay?.root}`]: isOverlay,
           [`${gridHeaderCellStyles.draggableOver} ${instance.options.classNames?.columnHeaderCell?.dragIsOver?.root}`]: droppableCtx?.isOver,
+          [`${gridHeaderCellStyles.verticalPadding}`]: instance.columnFiltersOpen,
         },
         instance.options.classNames?.columnHeaderCell?.root,
         columnDef.headerClassNames?.root,
@@ -44,7 +46,7 @@ const DataGridColumnHeaderCell = <TData extends RowData, TValue>({
         ...instance.options.styles?.columnHeaderCell?.root,
         ...columnDef.headerStyles?.root,
         width: header.getSize(),
-        height: instance.density.headerHeight,
+        minHeight: instance.density.headerHeight,
       }}
 
       ref={droppableCtx?.setNodeRef}
@@ -106,13 +108,15 @@ const DataGridColumnHeaderCell = <TData extends RowData, TValue>({
 
           {header.column.getCanFilter() && header.subHeaders.length === 0 ? (
             <div
-              className={clsx("DataGridColumnHeaderCell-filter", gridHeaderCellStyles.filter, instance.options.classNames?.columnHeaderCell?.filter, columnDef.headerClassNames?.filter)}
+              className={clsx("DataGridColumnHeaderCell-filter", {
+                [`${gridHeaderCellStyles["filter--closed"]}`]: !instance.columnFiltersOpen,
+              }, gridHeaderCellStyles.filter, instance.options.classNames?.columnHeaderCell?.filter, columnDef.headerClassNames?.filter)}
               style={{
                 ...instance.options.styles?.columnHeaderCell?.filters,
                 ...columnDef.headerStyles?.filters,  
               }}
             >
-              Filters
+              <ColumnFilter header={header} instance={instance} />
             </div>
           ) : null}
         </div>

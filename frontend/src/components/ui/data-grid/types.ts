@@ -55,6 +55,19 @@ import { UseScrollReturn } from "./components/useScroll";
 
 export type DataGridDensity = "compact" | "normal" | "comfortable";
 
+export type FilterVariant = 
+  | "text"
+  | "autocomplete"
+  | "multi-autocomplete"
+  | "select"
+  | "multi-select"
+  | "number"
+  | "range"
+  | "range-slider"
+  | "date"
+  | "date-range"
+  | "checkbox";
+
 // Cell ------------------------------------------------------------------------
 
 export interface Cell<TData extends RowData, TValue = unknown> extends 
@@ -116,6 +129,7 @@ export type ColumnDef<TData extends RowData, TValue = unknown> = ColumnDefBase<T
   cellStyles?: DataGridRowCellStyles;
   headerClassNames?: DataGridColumnHeaderCellClassNames;
   headerStyles?: DataGridColumnHeaderCellStyles;
+  filterVariant?: FilterVariant;
 }
 
 // Column ----------------------------------------------------------------------
@@ -257,6 +271,7 @@ PartialKeys<DataGridOptionsResolved<TData>, "getCoreRowModel" | "state" | "onSta
   hideHeader?: boolean;
   hideFooterPagination?: boolean;
   hideFooterSelectedRowCount?: boolean;
+  hideColumnFiltersSelector?: boolean;
 
   // locale?: string; // TODO: Add locale support
   slots?: {
@@ -330,6 +345,8 @@ export type DataGridInstance<TData extends RowData> =
   };
   fullscreen: boolean;
   setFullscreen: Dispatch<SetStateAction<boolean>>;
+  columnFiltersOpen: boolean;
+  setColumnFiltersOpen: Dispatch<SetStateAction<boolean>>;
 }
 
 export interface CoreInstance<TData extends RowData> extends 
