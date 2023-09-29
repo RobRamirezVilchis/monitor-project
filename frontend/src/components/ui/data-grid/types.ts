@@ -273,7 +273,7 @@ PartialKeys<DataGridOptionsResolved<TData>, "getCoreRowModel" | "state" | "onSta
   hideFooterSelectedRowCount?: boolean;
   hideColumnFiltersSelector?: boolean;
 
-  // locale?: string; // TODO: Add locale support
+  localization?: Partial<DataGridLocalization>;
   slots?: {
     noRowsOverlay?: () => ReactNode;
     loadingOverlay?: () => ReactNode;
@@ -347,6 +347,7 @@ export type DataGridInstance<TData extends RowData> =
   setFullscreen: Dispatch<SetStateAction<boolean>>;
   columnFiltersOpen: boolean;
   setColumnFiltersOpen: Dispatch<SetStateAction<boolean>>;
+  localization: DataGridLocalization;
 }
 
 export interface CoreInstance<TData extends RowData> extends 
@@ -493,6 +494,12 @@ Omit<_RowSelectionInstance<TData>,
   getSelectedRowModel: () => RowModel<TData>;
   getFilteredSelectedRowModel: () => RowModel<TData>;
   getGroupedSelectedRowModel: () => RowModel<TData>;
+}
+
+// Localization ----------------------------------------------------------------
+
+export interface DataGridLocalization {
+
 }
 
 // Styles ----------------------------------------------------------------------

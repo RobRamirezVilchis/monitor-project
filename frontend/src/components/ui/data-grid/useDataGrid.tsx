@@ -17,7 +17,7 @@ import { useVirtualizer } from "@tanstack/react-virtual";
 import type { DataGridOptions, DataGridInstance, DataGridDensity, ColumnDef } from "./types";
 import { useScroll } from "./components/useScroll";
 import { createExpandableColumnDef, createRowNumberingColumnDef, createRowSelectionColumnDef } from "./reservedColumnDefs";
-
+import { en } from "./locales/en";
 
 export const densityFactor: Record<DataGridDensity, number> = {
   normal: 1,
@@ -171,6 +171,11 @@ const useDataGrid = <TData extends RowData>(options: DataGridOptions<TData>): Da
     },
   }), []);
 
+  const localization = useMemo(() => ({
+    ...en,
+    ...options.localization,
+  }), [options.localization]);
+
   instance.refs = refs;
   instance.scrolls = scrolls;
   instance.density = density;
@@ -178,6 +183,7 @@ const useDataGrid = <TData extends RowData>(options: DataGridOptions<TData>): Da
   instance.setFullscreen = setFullscreen;
   instance.columnFiltersOpen = columnFiltersOpen;
   instance.setColumnFiltersOpen = setColumnFiltersOpen;
+  instance.localization = localization;
 
   return instance;
 }
