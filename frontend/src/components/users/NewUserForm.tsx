@@ -4,7 +4,7 @@ import z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Button  from "@mui/lab/LoadingButton";
 
-import { TextInput, Select } from "../shared/hook-form/styled";
+import { TextInput, Select } from "../shared/mui.old/hook-form/styled";
 import { CreateWhitelistItemData } from "@/api/users.types";
 import { getUserRoleLocalized } from "@/api/users";
 import { userRoles } from "@/api/auth.types";

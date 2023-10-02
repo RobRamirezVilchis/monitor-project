@@ -1,12 +1,22 @@
 "use client";
 
-import { FC, ReactNode } from "react";
+import { FC, Key, ReactNode } from "react";
 import { AppShell, Burger, Indicator } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import Link from "next/link";
 
-import { NavMenuItem, NavLink, ProfileFloatingMenu } from "@/components/shared";
+import { NavLink, ProfileFloatingMenu } from "@/components/shared";
+import { Role } from "@/api/auth.types";
 import { withAuth } from "@/components/auth/withAuth";
+
+export interface NavMenuItem {
+  id: Key,
+  label: string,
+  href?: string,
+  rolesWhitelist?: Role[];
+  rolesBlacklist?: Role[];
+  badgeCount?: number;
+}
 
 interface MainLayoutProps {
   children?: ReactNode;
@@ -28,7 +38,7 @@ const links: NavMenuItem[] = [
 ];
 
 const MainLayout: FC<MainLayoutProps> = ({ children }) => { 
-  const [opened, { toggle }] = useDisclosure(false);
+  const [opened, { toggle, close }] = useDisclosure(false);
 
   return (
     <AppShell
@@ -94,6 +104,7 @@ const MainLayout: FC<MainLayoutProps> = ({ children }) => {
               root: "hover:text-blue-600 px-2 py-2.5 flex justify-center items-center",
               active: "bg-blue-50 text-blue-600",
             }}
+            onClick={close}
           >
             <Indicator
               label={

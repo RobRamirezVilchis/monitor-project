@@ -49,7 +49,7 @@ const Chip = <
       }}
       ref={mergeRefs(ref, inputRef)}
     />
-  )
+  );
 }
 
 export default Chip;

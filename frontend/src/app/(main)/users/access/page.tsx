@@ -6,7 +6,7 @@ import { useDebounce, useQueryState } from "@/hooks/shared";
 import { useEffect, useState } from "react";
 
 import { DataGrid, GridToolbarWithSearch } from "@/components/shared/DataGrid";
-import { DatePicker } from "@/components/shared/hook-form/styled";
+import { DatePicker } from "@/components/shared/mui.old/hook-form/styled";
 import { User } from "@/api/auth.types";
 import { UserAccess } from "@/api/users.types";
 import { UserAvatar } from "@/components/shared/UserAvatar";

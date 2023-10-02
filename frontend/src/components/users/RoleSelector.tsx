@@ -8,7 +8,7 @@ import { useSnackbar } from "@/hooks/shared";
 import { useUpdateWhitelistItemMutation } from "@/api/mutations/users";
 import { WhitelistItem } from "@/api/users.types";
 import { getUserRoleLocalized } from "@/api/users";
-import { selectMenuSx } from "@/components/shared/hook-form/styled";
+import { selectMenuSx } from "@/components/shared/mui.old/hook-form/styled";
 
 export interface RoleSelectorProps {
   whitelistItem: WhitelistItem;

@@ -49,7 +49,7 @@ const TextInput = <
         _onBlur?.(...args);
       }}
       ref={mergeRefs(ref, inputRef)}
-      error={fieldState.error?.message}
+      error={props.error || fieldState.error?.message}
     />
   );
 }

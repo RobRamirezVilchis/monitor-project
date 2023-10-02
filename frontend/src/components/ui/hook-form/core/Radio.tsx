@@ -51,9 +51,9 @@ const Radio = <
         _onBlur?.(...args);
       }}
       ref={mergeRefs(ref, inputRef)}
-      error={fieldState.error?.message}
+      error={props.error || fieldState.error?.message}
     />
-  )
+  );
 }
 
 export type RadioGroupProps<
@@ -98,9 +98,9 @@ export const RadioGroup = <
         _onBlur?.(...args);
       }}
       ref={((el: HTMLInputElement) => ref?.(el)) && inputRef}
-      error={fieldState.error?.message}
+      error={props.error || fieldState.error?.message}
     />
-  )
+  );
 }
 
 export default Object.assign(Radio, {

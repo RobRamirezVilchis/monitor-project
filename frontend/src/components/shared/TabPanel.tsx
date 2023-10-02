@@ -1,5 +1,5 @@
 import React from "react";
-import classNames from "classnames";
+import clsx from "clsx";
 
 export interface TabPanelProps {
   children?: React.ReactNode;
@@ -30,7 +30,7 @@ export const TabPanel: React.FC<TabPanelProps> = ({
     >
       {!unmount ? (
         <div 
-          className={classNames(classes?.tabContainer, {
+          className={clsx(classes?.tabContainer, {
             hidden: value !== index,
           })}
         >
