@@ -125,10 +125,10 @@ const UsersPage = () => {
       <div className="flex-[1_0_0] overflow-y-hidden pb-1 pr-1">
         <ConfirmDialogProvider 
           outsideClickClose
-          confirmButtonProps={{
+          confirmProps={{
             color: "error",
           }}
-          cancelButtonProps={{
+          cancelProps={{
             color: "primary",
           }}
           dialogProps={{

@@ -1,53 +1,50 @@
 import { useCallback, useContext } from "react";
-import { ConfirmDialogContext, ConfirmDialogOpenOptions } from "@/components/shared/ConfirmDialogProvider";
+import { ConfirmDialogContext, ConfirmDialogOptions } from "@/components/shared/ConfirmDialogProvider";
 
-export interface UseConfirmDialogOptions extends ConfirmDialogOpenOptions {
+import { deepMerge } from "@/utils/object.utils";
+
+export interface UseConfirmDialogOptions extends Omit<ConfirmDialogOptions, "onConfirm" | "onCancel"> {
   /**
    * The function to execute when the confirm button is clicked.
    * Throwing an error will prevent the dialog from closing.
    * @returns A promise if the dialog should close when the promise resolves.
+   * @throws An error if the dialog should not close.
    */
-  onConfirm?: () => Promise<any>;
+  onConfirm?: () => void | Promise<void>;
+  /**
+   * The function to execute on confirm if no error is thrown.
+   */
+  onSuccess?: () => void;
+  /**
+   * The function to execute on confirm if an error is thrown.
+   */
   onError?: (e: any) => void;
 }
 
 export const useConfirmDialog = (confirmDialogOptions?: UseConfirmDialogOptions) => {
-  const { open, close, isLoading, isOpen, setLoading } = useContext(ConfirmDialogContext);
+  const { open, close, isLoading, isOpen } = useContext(ConfirmDialogContext);
 
   const confirm = useCallback((options?: UseConfirmDialogOptions) => {
-    const content = {
-      ...confirmDialogOptions?.content,
-      ...options?.content,
-    };
-
-    const callbacks = {
-      ...confirmDialogOptions?.callbacks,
-      ...options?.callbacks,
-    };
-
+    const openOptions = deepMerge(
+      deepMerge({}, confirmDialogOptions, ["title", "content"]), 
+      options,
+      ["title", "content"]
+    );
     open({
-      content,
-      callbacks: {
-        ...callbacks,
-        onConfirmClick: async () => {
-          callbacks?.onConfirmClick?.();
-          
-          const onConfirm = options?.onConfirm ?? confirmDialogOptions?.onConfirm;
-          const onError = options?.onError ?? confirmDialogOptions?.onError;
-
-          setLoading(true);
-          try {
-            await onConfirm?.();
-            close();
-          }
-          catch (e) {
-            onError?.(e);
-          }
-          setLoading(false);
-        },
+      ...openOptions,
+      onConfirm: async () => {
+        try {
+          await openOptions?.onConfirm?.();
+          openOptions?.onSuccess?.();
+          return true;
+        }
+        catch (e) {
+          openOptions?.onError?.(e);
+        }
+        return false;
       },
     });
-  }, [confirmDialogOptions, open, setLoading, close]);
+  }, [confirmDialogOptions, open]);
 
   return {
     confirm,

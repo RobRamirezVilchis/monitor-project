@@ -27,11 +27,11 @@ export const DeleteUserAction: FC<ActionsProps> = ({ whitelistItem }) => {
   });
 
   const { confirm } = useConfirmDialog({
-    content: {
-      title: "Eliminar usuario",
-      body: "¿Está seguro de eliminar este usuario?",
-      confirmLabel: "Eliminar",
-      cancelLabel: "Cancelar",
+    title: "Eliminar usuario",
+    content: "¿Está seguro de eliminar este usuario?",
+    labels: {
+      confirm: "Eliminar",
+      cancel: "Cancelar",
     },
     onConfirm: () => deleteWhitelistItemMutation.mutateAsync(whitelistItem.id),
   });
