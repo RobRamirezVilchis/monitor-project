@@ -11,11 +11,11 @@ import { DeleteUserAction } from "@/components/users/Actions";
 import { getUserRoleLocalized } from "@/api/users";
 import { NewUserForm } from "@/components/users/NewUserForm";
 import { RoleSelector } from "@/components/users/RoleSelector";
+import { showSuccessNotification, showErrorNotification } from "@/components/ui/notifications";
 import { useAddToWhitelistMutation } from "@/api/mutations/users";
 import { useDebounce, useQueryState } from "@/hooks/shared";
 import { User } from "@/api/auth.types"; 
 import { UserAvatar } from "@/components/shared/UserAvatar";
-import { useSnackbar } from "@/hooks/shared";
 import { useWhitelistQuery } from "@/api/queries/users";
 import { WhitelistItem } from "@/api/users.types";
 
@@ -55,13 +55,16 @@ const UsersPage = () => {
       },
     },
   });
-  const { enqueueSnackbar } = useSnackbar();
   const addToWhitelistMutation = useAddToWhitelistMutation({
     onSuccess: () => {
-      enqueueSnackbar("Usuario agregado correctamente.", { variant: "success" });
+      showSuccessNotification({
+        message: "Usuario agregado correctamente.",
+      });
       setNewUserFormOpen(false);
     },
-    onError: () => enqueueSnackbar("Error al agregar el usuario.", { variant: "error" }),
+    onError: () => showErrorNotification({
+      message: "Error al agregar el usuario.",
+    }),
   });
   const [newUserFormOpen, setNewUserFormOpen] = useState(false);
 

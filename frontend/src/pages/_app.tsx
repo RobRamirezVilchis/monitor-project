@@ -3,10 +3,10 @@ import "@/styles/globals.css";
 
 import type { AppProps } from "next/app";
 import Head from "next/head";
-import { MantineProvider } from '@mantine/core';
+import { MantineProvider } from "@mantine/core";
+import { Notifications } from "@mantine/notifications";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
-import { SnackbarProvider } from "notistack";
 
 import { AuthProvider } from "@/components/auth/AuthProvider";
 import defaultTheme from "@/components/ui/themes/default";
@@ -26,13 +26,12 @@ export default function App({ Component, pageProps }: AppProps) {
       </Head>
 
       <MantineProvider theme={defaultTheme}>
+        <Notifications limit={5} autoClose={10000} position="bottom-right" zIndex={1000} />
         <QueryClientProvider client={defaultQueryClient}>
           <AuthProvider defaultSetCallbackUrlParam={false}>
-            <SnackbarProvider maxSnack={5} dense autoHideDuration={10000}>
-              <div id="__app" className={fonts.roboto.className}>
-                <Component {...pageProps} />
-              </div>
-            </SnackbarProvider>
+            <div id="__app" className={fonts.roboto.className}>
+              <Component {...pageProps} />
+            </div>
             <ReactQueryDevtools initialIsOpen={false} />
           </AuthProvider>
         </QueryClientProvider>

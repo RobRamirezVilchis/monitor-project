@@ -6,7 +6,6 @@ import { MantineProvider } from "@mantine/core";
 import { Notifications } from "@mantine/notifications";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
-import { SnackbarProvider } from "notistack";
 
 import { AuthProvider } from "@/components/auth/AuthProvider";
 import defaultTheme from "@/components/ui/themes/default";
@@ -28,10 +27,7 @@ export const Providers: React.FC<ProvidersProps> = ({ children }) => {
       <Notifications limit={5} autoClose={10000} position="bottom-right" zIndex={1000} />
       <QueryClientProvider client={defaultQueryClient}>
         <AuthProvider defaultSetCallbackUrlParam={false}>
-          {/* TODO: Remove SnackbarProvider after notifications full support */}
-          {/* <SnackbarProvider maxSnack={5} dense autoHideDuration={10000}> */}
-            {children}
-          {/* </SnackbarProvider> */}
+          {children}
         </AuthProvider>
 
         <ReactQueryDevtools initialIsOpen={false} />

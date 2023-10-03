@@ -14,7 +14,7 @@ import {
   RegisterUserData,
 } from "@/api/auth";
 import { TextInput, PasswordInput, MeteredPasswordInput } from "@/components/ui/core";
-import { useSnackbar } from "@/hooks/shared";
+import { showSuccessNotification, showErrorNotification } from "@/components/ui/notifications";
 
 const schema = z.object({
   first_name: z.string().nonempty("El nombre es requerido"),
@@ -32,7 +32,6 @@ const schema = z.object({
 
 const Register = () => {
   const [loading, setLoading] = useState(false);
-  const { enqueueSnackbar } = useSnackbar();
   const router = useRouter();
   const formMethods = useForm<RegisterUserData>({
     mode: "onTouched",
@@ -60,25 +59,19 @@ const Register = () => {
         const data = { ...values, username: values.email };
         await registerUser(data, { rejectRequest: false, onError: false });
 
-        enqueueSnackbar(
-          <div>
-            <strong className="font-bold">Usuario registrado con éxito</strong>{" "}
-            <br />
-            <span>
-              Se ha enviado un correo de activación al tu bandeja de entrada.
-            </span>
-          </div>,
-          { variant: "success" }
-        );
+        showSuccessNotification({
+          title: "Usuario registrado con éxito",
+          message: "Se ha enviado un correo de activación al tu bandeja de entrada.",
+        });
         router.push("/auth/login");
       } catch (e) {
         const err = e as AxiosError;
 
         if (err.status === 500) {
-          enqueueSnackbar(
-            "Ha ocurrido un error con el servidor. Por favor intenta de nuevo más tarde.",
-            { variant: "error" }
-          );
+          showErrorNotification({
+            title: "Error el servidor",
+            message: "Por favor intenta de nuevo más tarde.",
+          });
           return;
         }
 
@@ -88,16 +81,10 @@ const Register = () => {
             x.includes("already exists")
           );
           if (alreadyExists) {
-            enqueueSnackbar(
-              <div>
-                <strong className="font-bold">
-                  Error al registrar al usuario
-                </strong>{" "}
-                <br />
-                <span>El usuario ya se encuentra registrado.</span>
-              </div>,
-              { variant: "error" }
-            );
+            showErrorNotification({
+              title: "Error al registrar usuario",
+              message: "El usuario ya se encuentra registrado.",
+            });
             return;
           }
         }
@@ -106,30 +93,18 @@ const Register = () => {
             x.includes("too common")
           );
           if (commonPassword) {
-            enqueueSnackbar(
-              <div>
-                <strong className="font-bold">Contraseña muy común</strong>{" "}
-                <br />
-                <span>
-                  La contraseña utilizada es muy común y es propensa a ser
-                  fácilmente descifrada, por favor intenta con una diferente.
-                </span>
-              </div>,
-              { variant: "error" }
-            );
+            showErrorNotification({
+              title: "Contraseña muy común",
+              message: "La contraseña utilizada es muy común y es propensa a ser fácilmente descifrada, por favor intenta con una diferente.",
+            });
             return;
           }
         }
 
-        enqueueSnackbar(
-          <div>
-            <strong className="font-bold">Credenciales invalidas</strong> <br />
-            <span>
-              Los datos ingresados contienen errores, por favor corrígelos.
-            </span>
-          </div>,
-          { variant: "error" }
-        );
+        showErrorNotification({
+          title: "Credenciales invalidas",
+          message: "Los datos ingresados contienen errores, por favor corrígelos.",
+        });
       } finally {
         setLoading(false);
       }

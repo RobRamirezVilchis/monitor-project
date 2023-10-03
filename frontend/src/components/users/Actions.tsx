@@ -1,10 +1,10 @@
 import { FC } from "react";
 
 import { GridActionsCellTooltipItem } from "@/components/shared/GridActionsCellTooltipItem";
+import { showSuccessNotification, showErrorNotification } from "@/components/ui/notifications";
 import { useAuth } from "@/hooks/auth";
 import { useConfirmDialog } from "@/hooks/shared/useConfirmDialog";
 import { useDeleteWhitelistItemMutation } from "@/api/mutations/users";
-import { useSnackbar } from "@/hooks/shared";
 import { WhitelistItem } from "@/api/users.types";
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 
@@ -17,10 +17,13 @@ export const DeleteUserAction: FC<ActionsProps> = ({ whitelistItem }) => {
     skipAll: true,
     triggerAuthentication: false,
   });
-  const { enqueueSnackbar } = useSnackbar();
   const deleteWhitelistItemMutation = useDeleteWhitelistItemMutation({
-    onSuccess: () => enqueueSnackbar("Usuario eliminado correctamente.", { variant: "success" }),
-    onError: () => enqueueSnackbar("Ocurrió un error al eliminar el usuario. Por favor intenta de nuevo más tarde.", { variant: "error" }),
+    onSuccess: () => showSuccessNotification({
+      message: "Usuario eliminado correctamente.",
+    }),
+    onError: () => showErrorNotification({
+      message: "Ocurrió un error al eliminar el usuario. Por favor intenta de nuevo más tarde.",
+    }),
   });
 
   const { confirm } = useConfirmDialog({

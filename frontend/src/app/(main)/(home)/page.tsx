@@ -5,7 +5,12 @@ import { useAuth } from "@/hooks/auth";
 import { getOrRefreshAccessToken } from "@/api/auth";
 import Link from "next/link";
 import { Button } from "@mantine/core";
-import { notifications } from "@mantine/notifications";
+import { 
+  showSuccessNotification,
+  showErrorNotification,
+  showWarningNotification,
+  showInfoNotification,
+} from "@/components/ui/notifications";
 
 const Home = () => {
   const { user, loading, login, logout, isAuthorized } = useAuth({
@@ -80,16 +85,41 @@ const Home = () => {
         </NavLink>
       </div>
 
-      <div>
+      <div className="flex gap-2">
         <Button
-          onClick={() => {
-            notifications.show({
-              title: "Success",
-              message: "This is success notification",
-            })
-          }}
+          onClick={() => showSuccessNotification({
+            title: "Success notification",
+            message: "Success notification",
+          })}
         >
           Success Notification
+        </Button>
+
+        <Button
+          onClick={() => showErrorNotification({
+            title: "Error notification",
+            message: "Error notification",
+          })}
+        >
+          Error Notification
+        </Button>
+
+        <Button
+          onClick={() => showWarningNotification({
+            title: "Warning notification",
+            message: "Warning notification",
+          })}
+        >
+          Warning Notification
+        </Button>
+
+        <Button
+          onClick={() => showInfoNotification({
+            title: "Info notification",
+            message: "Info notification",
+          })}
+        >
+          Info Notification
         </Button>
       </div>
     </section>

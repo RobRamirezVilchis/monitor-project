@@ -2,9 +2,9 @@ import { FC } from "react";
 import Select, { SelectChangeEvent } from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
 
+import { showSuccessNotification, showErrorNotification } from "@/components/ui/notifications";
 import { useAuth } from "@/hooks/auth";
 import { userRoles } from "@/api/auth.types";
-import { useSnackbar } from "@/hooks/shared";
 import { useUpdateWhitelistItemMutation } from "@/api/mutations/users";
 import { WhitelistItem } from "@/api/users.types";
 import { getUserRoleLocalized } from "@/api/users";
@@ -20,10 +20,13 @@ export const RoleSelector: FC<RoleSelectorProps> = ({ whitelistItem, value }) =>
     skipAll: true,
     triggerAuthentication: false,
   });
-  const { enqueueSnackbar } = useSnackbar();
   const updateWhitelistItemMutation = useUpdateWhitelistItemMutation({
-    onSuccess: () => enqueueSnackbar("Rol actualizado correctamente.", { variant: "success" }),
-    onError: () => enqueueSnackbar("Ocurrió un error al actualizar el rol. Por favor intenta de nuevo más tarde.", { variant: "error" }),
+    onSuccess: () => showSuccessNotification({
+      message: "Rol actualizado correctamente.",
+    }),
+    onError: () => showErrorNotification({
+      message: "Ocurrió un error al actualizar el rol. Por favor intenta de nuevo más tarde.",
+    }),
   });
 
   const onSelectChange = (e: SelectChangeEvent<string>) => {
