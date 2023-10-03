@@ -23,10 +23,9 @@ export const ProfileFloatingMenu = () => {
     redirectIfNotAuthenticated: false,
     redirectIfNotAuthorized: false,
   });
-  // const [open, setOpen] = useState(false);
   const [open, { toggle, close }] = useDisclosure(false);
   const queryClient = useQueryClient();
-  const fallbackAvatarBackground = useMemo(
+  const fallbackAvatarColor = useMemo(
     () => !user?.extra?.picture ? randomColor() : "#000",
     [user?.extra?.picture]  
   );
@@ -53,7 +52,7 @@ export const ProfileFloatingMenu = () => {
           <ActionIcon
             onClick={toggle}
           >
-            <UserAvatar user={user} fallbackBgColor={fallbackAvatarBackground} />
+            <UserAvatar user={user} fallbackColor={fallbackAvatarColor} />
           </ActionIcon>
         </Tooltip>
       </Popover.Target>
@@ -63,7 +62,7 @@ export const ProfileFloatingMenu = () => {
           {isAuthenticated && !loading ? (
             <>
               <div className="flex flex-col gap-3 justify-center items-center">
-                <UserAvatar user={user} fallbackBgColor={fallbackAvatarBackground} />
+                <UserAvatar user={user} fallbackColor={fallbackAvatarColor} />
                 <div className="flex flex-col gap-1 justify-center items-center">
                   <span className="text-base font-semibold">
                     {user?.first_name} {user?.last_name}

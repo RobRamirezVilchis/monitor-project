@@ -1,37 +1,37 @@
-import Avatar, { AvatarProps } from "@mui/material/Avatar";
+import { Avatar, AvatarProps } from "@mantine/core";
 import { FC, useMemo } from "react";
 
 import { User } from "@/api/auth.types";
-import { randomColor, colorContrast } from "@/utils/color";
+import { 
+  randomColor, 
+  // colorContrast,
+} from "@/utils/color";
 
 export interface UserAvatarProps extends AvatarProps {
   user: User | null;
-  fallbackBgColor?: string;
+  fallbackColor?: string;
 }
 
-export const UserAvatar: FC<UserAvatarProps> = ({ user, fallbackBgColor, ...avatarProps }) => {
-  const backgroundColor = useMemo(
-    () => !user?.extra?.picture ? (fallbackBgColor || randomColor()) : "#000", 
-    [user?.extra?.picture, fallbackBgColor]
-  );
+export const UserAvatar: FC<UserAvatarProps> = ({ user, fallbackColor, ...avatarProps }) => {
   const color = useMemo(
-    () => !user?.extra?.picture ? colorContrast(backgroundColor) : "#000", 
-    [user?.extra?.picture, backgroundColor]
+    () => !user?.extra?.picture ? (fallbackColor || randomColor()) : "#000", 
+    [user?.extra?.picture, fallbackColor]
   );
+  // const color = useMemo(
+  //   () => !user?.extra?.picture ? colorContrast(backgroundColor) : "#000", 
+  //   [user?.extra?.picture, backgroundColor]
+  // );
 
   return (
     <Avatar
       {...avatarProps}
       src={user?.extra?.picture}
-      imgProps={{
+      alt={`${user?.first_name} ${user?.last_name}`}
+      imageProps={{
         referrerPolicy: "no-referrer",
         className: "w-full h-full object-cover",
       }}
-      alt={`${user?.first_name} ${user?.last_name}`}
-      sx={user?.extra?.picture ? {} : { 
-        backgroundColor,
-        color,
-      }}
+      color={color}
     >
       {
         user 

@@ -212,7 +212,7 @@ const cols: GridColDef<UserAccess>[] = [
     renderCell: params => params.row.user ? (
       <UserAvatar
         user={params.row.user as User}
-        className="!w-8 !h-8 !text-base"
+        size="sm"
       />
     ) : null,
   },

@@ -20,7 +20,7 @@ const Home = () => {
   });
 
   return (
-    <section className="p-4">
+    <section className="h-full w-full p-4">
       {!user && loading ? <div>Loading...</div> : null}
       {user ? `User: ${user.email}, authorized: ${isAuthorized}` : null}
 
@@ -85,7 +85,7 @@ const Home = () => {
         </NavLink>
       </div>
 
-      <div className="flex gap-2">
+      <div className="flex gap-2 flex-wrap">
         <Button
           onClick={() => showSuccessNotification({
             title: "Success notification",

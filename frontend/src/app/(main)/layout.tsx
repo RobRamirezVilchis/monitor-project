@@ -38,20 +38,29 @@ const links: NavMenuItem[] = [
 ];
 
 const MainLayout: FC<MainLayoutProps> = ({ children }) => { 
-  const [opened, { toggle, close }] = useDisclosure(false);
+  const [isOpen, { toggle, close }] = useDisclosure(false);
 
   return (
     <AppShell
       header={{ 
         height: { base: 50, sm: 60 },
       }}
-      navbar={{ width: 300, breakpoint: "sm", collapsed: { desktop: true, mobile: !opened } }}
+      navbar={{ 
+        width: 300, 
+        breakpoint: "sm", 
+        collapsed: { 
+          desktop: true, 
+          mobile: !isOpen 
+        },
+      }}
       classNames={{
+        root: "h-full",
         header: "bg-neutral-800 text-white flex items-center gap-1 px-3 py-2",
+        main: "h-full min-h-full",
       }}
     >
       <AppShell.Header>
-        <Burger color="white" opened={opened} onClick={toggle} hiddenFrom="sm" size="sm" />
+        <Burger color="white" opened={isOpen} onClick={toggle} hiddenFrom="sm" size="sm" />
         <div className="flex-1 hidden md:flex justify-between items-center gap-1">
           <Link href="/">
             <span className="h-7">Logo</span>

@@ -48,7 +48,7 @@ export const ProfileFloatingMenu = () => {
   return (<>
     <Tooltip title="Yo" disableInteractive>
       <IconButton className="!p-0" onClick={onUserMenuButtonClick}>
-        <UserAvatar user={user} fallbackBgColor={fallbackAvatarBackground} />
+        <UserAvatar user={user} fallbackColor={fallbackAvatarBackground} />
       </IconButton>
     </Tooltip>
 
@@ -70,7 +70,7 @@ export const ProfileFloatingMenu = () => {
         {isAuthenticated && !loading ? (
           <>
             <div className="flex flex-col gap-3 justify-center items-center">
-              <UserAvatar user={user} fallbackBgColor={fallbackAvatarBackground} />
+              <UserAvatar user={user} fallbackColor={fallbackAvatarBackground} />
               <div className="flex flex-col gap-1 justify-center items-center">
                 <span className="text-base font-semibold">
                   {user?.first_name} {user?.last_name}
