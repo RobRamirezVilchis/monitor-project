@@ -1,4 +1,5 @@
 import { FC } from "react";
+import { useMantineTheme } from "@mantine/core";
 
 import { GridActionsCellTooltipItem } from "@/components/shared/GridActionsCellTooltipItem";
 import { showSuccessNotification, showErrorNotification } from "@/components/ui/notifications";
@@ -25,6 +26,7 @@ export const DeleteUserAction: FC<ActionsProps> = ({ whitelistItem }) => {
       message: "Ocurrió un error al eliminar el usuario. Por favor intenta de nuevo más tarde.",
     }),
   });
+  const theme = useMantineTheme();
 
   const { confirm } = useConfirmDialog({
     title: "Eliminar usuario",
@@ -32,6 +34,12 @@ export const DeleteUserAction: FC<ActionsProps> = ({ whitelistItem }) => {
     labels: {
       confirm: "Eliminar",
       cancel: "Cancelar",
+    },
+    confirmProps: {
+      color: "red",
+    },
+    cancelProps: {
+      color: theme.primaryColor,
     },
     onConfirm: () => deleteWhitelistItemMutation.mutateAsync(whitelistItem.id),
   });

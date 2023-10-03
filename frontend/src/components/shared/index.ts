@@ -2,9 +2,8 @@ export {
     ConfirmDialogProvider,
     ConfirmDialogContext,
     type ConfirmDialogCallbacks,
-    type ConfirmDialogContent,
+    type ConfirmDialogOptions,
     type ConfirmDialogContextProps,
-    type ConfirmDialogOpenOptions,
     type ConfirmDialogProviderProps,
   } from "./ConfirmDialogProvider";
 export { 

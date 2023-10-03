@@ -8,6 +8,7 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 
 import { AuthProvider } from "@/components/auth/AuthProvider";
+import { ConfirmDialogProvider } from "@/components/shared";
 import defaultTheme from "@/components/ui/themes/default";
 import defaultQueryClient from "@/api/clients/defaultQueryClient";
 
@@ -26,9 +27,25 @@ export const Providers: React.FC<ProvidersProps> = ({ children }) => {
     <MantineProvider theme={defaultTheme}>
       <Notifications limit={5} autoClose={10000} position="bottom-right" zIndex={1000} />
       <QueryClientProvider client={defaultQueryClient}>
-        <AuthProvider defaultSetCallbackUrlParam={false}>
-          {children}
-        </AuthProvider>
+        <ConfirmDialogProvider
+          title="Confirmar acción"
+          content="¿Está seguro que desea realizar esta acción?"
+          labels={{
+            confirm: "Confirmar",
+            cancel: "Cancelar",
+          }}
+          cancelProps={{
+            color: "red",
+          }}
+          modalProps={{
+            size: "sm",
+            centered: true,
+          }}
+        >
+          <AuthProvider defaultSetCallbackUrlParam={false}>
+            {children}
+          </AuthProvider>
+        </ConfirmDialogProvider>
 
         <ReactQueryDevtools initialIsOpen={false} />
       </QueryClientProvider>

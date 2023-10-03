@@ -123,50 +123,36 @@ const UsersPage = () => {
       </div>
 
       <div className="flex-[1_0_0] overflow-y-hidden pb-1 pr-1">
-        <ConfirmDialogProvider 
-          outsideClickClose
-          confirmProps={{
-            color: "error",
+        <DataGrid
+          rows={usersWhitelistQuery.data?.data || []}
+          columns={cols}
+          loading={usersWhitelistQuery.isLoading || usersWhitelistQuery.isFetching}
+          disableColumnMenu
+          rowSelection={false}
+          className="h-full"
+          
+          pagination
+          paginationMode="server"
+          paginationModel={{
+            page: pagination.state.page,
+            pageSize: pagination.state.page_size,
           }}
-          cancelProps={{
-            color: "primary",
-          }}
-          dialogProps={{
-            maxWidth: "xs",
-            fullWidth: true,
-          }}
-        >
-          <DataGrid
-            rows={usersWhitelistQuery.data?.data || []}
-            columns={cols}
-            loading={usersWhitelistQuery.isLoading || usersWhitelistQuery.isFetching}
-            disableColumnMenu
-            rowSelection={false}
-            className="h-full"
-            
-            pagination
-            paginationMode="server"
-            paginationModel={{
-              page: pagination.state.page,
-              pageSize: pagination.state.page_size,
-            }}
-            onPaginationModelChange={(model) => pagination.update({
-              page: model.page,
-              page_size: model.pageSize,
-            })}
-            pageSizeOptions={[25, 50, 100]}
-            rowCount={usersWhitelistQuery.data?.pagination?.count || 0}
+          onPaginationModelChange={(model) => pagination.update({
+            page: model.page,
+            page_size: model.pageSize,
+          })}
+          pageSizeOptions={[25, 50, 100]}
+          rowCount={usersWhitelistQuery.data?.pagination?.count || 0}
 
-            filterMode="server"
-            onFilterModelChange={onFilterModelChange}
-            slots={{
-              toolbar: GridToolbarWithSearch,
-            }}
-            disableDensitySelector
-            disableColumnFilter
-            disableColumnSelector
-          />
-        </ConfirmDialogProvider>
+          filterMode="server"
+          onFilterModelChange={onFilterModelChange}
+          slots={{
+            toolbar: GridToolbarWithSearch,
+          }}
+          disableDensitySelector
+          disableColumnFilter
+          disableColumnSelector
+        />
       </div>
 
       <Modal

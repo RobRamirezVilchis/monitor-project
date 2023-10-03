@@ -241,6 +241,9 @@ const HomeWrapper = () => {
       labels={{
         cancel: "Cancelar",
       }}
+      confirmProps={{
+        color: "red",
+      }}
       title="Confirmar acción"
       content="¿Está seguro de realizar esta acción?"
     >

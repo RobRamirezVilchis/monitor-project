@@ -139,7 +139,6 @@ export const ConfirmDialogProvider = ({
           {...mergedProps?.groupProps}
         >
           <Button
-            color="red"
             variant="outline"
             {...mergedProps?.cancelProps}
             disabled={isLoading}
