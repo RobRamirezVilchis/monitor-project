@@ -1,3 +1,6 @@
+const isObject = (obj: any) => {
+  return (obj && typeof obj === "object" && !Array.isArray(obj));
+}
 
 /**
  * @param obj The object to extract the property from 
@@ -80,3 +83,25 @@ export const filterFromObject = (original: any, filter: any) => {
     })
   );
 };
+
+/**
+ * Deeply merge source `object` into `target`, replacing or add `source` properties to `target`.
+ * @param target The target object to be merged
+ * @param source The source object to be merged
+ * @returns A new object with the merged properties of the target and source objects.
+ * If the same property exists in both objects, the source property will be used.
+ * If the property is an object, the merge will be done recursively.
+ * If the property is an array, the source array will replace the target array.
+ */
+export const deepMerge = (target: any, source: any) => {
+  if (!isObject(target) || !isObject(source)) return source;
+  for (const key in source) {
+    if (typeof source[key] === "object") {
+      if (!target[key]) Object.assign(target, { [key]: {} });
+      deepMerge(target[key], source[key]);
+    } else {
+      Object.assign(target, { [key]: source[key] });
+    }
+  }
+  return target;
+}
