@@ -38,7 +38,7 @@ export const Providers: React.FC<ProvidersProps> = ({ children }) => {
             color: "red",
           }}
           modalProps={{
-            size: "sm",
+            size: "md",
             centered: true,
           }}
         >
