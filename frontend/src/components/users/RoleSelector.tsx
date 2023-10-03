@@ -1,6 +1,5 @@
 import { FC } from "react";
-import Select, { SelectChangeEvent } from "@mui/material/Select";
-import MenuItem from "@mui/material/MenuItem";
+import { Select } from "@/components/ui/core";
 
 import { showSuccessNotification, showErrorNotification } from "@/components/ui/notifications";
 import { useAuth } from "@/hooks/auth";
@@ -8,7 +7,6 @@ import { userRoles } from "@/api/auth.types";
 import { useUpdateWhitelistItemMutation } from "@/api/mutations/users";
 import { WhitelistItem } from "@/api/users.types";
 import { getUserRoleLocalized } from "@/api/users";
-import { selectMenuSx } from "@/components/shared/mui.old/hook-form/styled";
 
 export interface RoleSelectorProps {
   whitelistItem: WhitelistItem;
@@ -29,8 +27,10 @@ export const RoleSelector: FC<RoleSelectorProps> = ({ whitelistItem, value }) =>
     }),
   });
 
-  const onSelectChange = (e: SelectChangeEvent<string>) => {
-    const group = e.target.value as WhitelistItem["group"];
+  const onSelectChange = (value: string | null) => {
+    if (!value) return;
+
+    const group = value as WhitelistItem["group"];
     updateWhitelistItemMutation.mutate({
       id: whitelistItem.id,
       data: {
@@ -43,31 +43,16 @@ export const RoleSelector: FC<RoleSelectorProps> = ({ whitelistItem, value }) =>
   return (
     <Select
       value={value}
-      fullWidth
-      variant="standard"
-      sx={{
-        "& .MuiSelect-select, .MuiSelect-nativeInput": {
-          padding: 0,
-        },
-        "& .MuiSelect-select.MuiSelect-standard.MuiInputBase-input.MuiInput-input:focus": {
-          backgroundColor: "transparent !important",
-        }
+      variant="unstyled"
+      classNames={{
+        input: "pl-2",
       }}
-      disableUnderline
       onChange={onSelectChange}
       disabled={
         updateWhitelistItemMutation.isLoading
         || (!!user && !!whitelistItem.user && user.id === whitelistItem.user.id)
       }
-      MenuProps={{
-        sx: {
-          ...selectMenuSx,
-        }
-      }}
-    >
-      {userRoles.map((role) => (
-        <MenuItem key={role} value={role}>{getUserRoleLocalized(role)}</MenuItem>
-      ))}
-    </Select>
+      data={userRoles.map(role => ({ value: role, label: getUserRoleLocalized(role) }))}
+    />
   );
 };

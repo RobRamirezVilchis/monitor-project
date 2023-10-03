@@ -1,6 +1,6 @@
 "use client"
 
-import ButtonBase from "@mui/material/ButtonBase";
+import { Button } from "@mantine/core";
 
 import { useAuth } from "@/hooks/auth";
 import { ProviderKey, Providers } from "@/api/auth.types";
@@ -23,19 +23,20 @@ const SocialProviders = () => {
       {providers ? (
         <div className="flex flex-col gap-1 items-center mt-2">
           {Object.entries(providers).map(([providerKey, provider]) => (
-            <ButtonBase
+            <Button
               key={provider.id}
               onClick={() => onSocialLogin(providerKey as ProviderKey)}
-              className="!bg-white !py-2.5 !px-8 !rounded-2xl !flex !gap-3"
-              sx={{
-                "&.MuiButtonBase-root": {
-                  border: "1px solid rgba(0, 0, 0, 0.2)",
-                }
+              radius="xl"
+              classNames={{
+                root: "border-neutral-200 px-8 ",
+                section: "!h-2"
               }}
+              size="lg"
+              variant="outline"
+              leftSection={getProviderLogo(providerKey as ProviderKey)}
             >
-              {getProviderLogo(providerKey as ProviderKey)}
               <span>Continuar con {provider.name}</span>
-            </ButtonBase>
+            </Button>
           ))}
         </div>
       ) : null}

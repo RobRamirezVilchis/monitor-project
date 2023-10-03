@@ -1,6 +1,6 @@
 "use client";
 
-import { NavLink } from "@/components/shared";
+import { ConfirmDialogProvider, NavLink } from "@/components/shared";
 import { useAuth } from "@/hooks/auth";
 import { getOrRefreshAccessToken } from "@/api/auth";
 import Link from "next/link";
@@ -11,6 +11,7 @@ import {
   showWarningNotification,
   showInfoNotification,
 } from "@/components/ui/notifications";
+import { useConfirmDialog } from "@/hooks/shared";
 
 const Home = () => {
   const { user, loading, login, logout, isAuthorized } = useAuth({
@@ -18,6 +19,7 @@ const Home = () => {
     redirectIfNotAuthorized: false,
     rolesWhitelist: ["Admin"]
   });
+  const { confirm } = useConfirmDialog();
 
   return (
     <section className="h-full w-full p-4">
@@ -122,8 +124,37 @@ const Home = () => {
           Info Notification
         </Button>
       </div>
+
+      <div className="flex gap-2 flex-wrap mt-2">
+        <Button
+          onClick={() => {
+            confirm({
+              content: {
+                title: "Hello",
+                body: "Are you sure?",
+                confirmLabel: "Yes",
+                cancelLabel: "No",
+              },
+            })
+          }}
+        >
+          Open Dialog
+        </Button>
+      </div>
     </section>
   )
 }
 
-export default Home;
+const HomeWrapper = () => {
+  return (
+    <ConfirmDialogProvider
+      dialogProps={{
+        centered: true,
+      }}
+    >
+      <Home />
+    </ConfirmDialogProvider>
+  )
+}
+
+export default HomeWrapper;

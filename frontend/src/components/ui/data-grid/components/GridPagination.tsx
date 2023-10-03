@@ -5,8 +5,12 @@ import buttonStyles from "./BaseButton.module.css";
 
 import { DataGridInstance } from "../types";
 
-import { ChevronLeft, ChevronRight } from "@mui/icons-material";
-import { IconChevronsLeft, IconChevronsRight } from "@tabler/icons-react";
+import { 
+  IconChevronLeft,
+  IconChevronsLeft, 
+  IconChevronRight,
+  IconChevronsRight,
+} from "@tabler/icons-react";
 import { useMemo } from "react";
 
 export interface GridPaginationProps<TData extends RowData> {
@@ -72,7 +76,7 @@ const GridPagination = <TData extends RowData>({
             instance.options.slotProps?.baseActionIconProps?.onClick?.(e);
           }}
         >
-          <ChevronLeft />
+          <IconChevronLeft />
         </ActionIcon>
 
         <span>
@@ -93,7 +97,7 @@ const GridPagination = <TData extends RowData>({
             instance.options.slotProps?.baseActionIconProps?.onClick?.(e);
           }}
         >
-          <ChevronRight />
+          <IconChevronRight />
         </ActionIcon>
 
         <ActionIcon

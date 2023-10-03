@@ -2,8 +2,7 @@
 
 import { GridCallbackDetails, GridColDef, GridFilterModel } from "@mui/x-data-grid";
 import { useEffect, useState } from "react";
-import Button from "@mui/material/Button";
-import Dialog from "@mui/material/Dialog";
+import { Button, Modal } from "@mantine/core";
 
 import { ConfirmDialogProvider } from "@/components/shared/ConfirmDialogProvider";
 import { DataGrid, GridToolbarWithSearch } from "@/components/shared/DataGrid";
@@ -19,7 +18,7 @@ import { UserAvatar } from "@/components/shared/UserAvatar";
 import { useWhitelistQuery } from "@/api/queries/users";
 import { WhitelistItem } from "@/api/users.types";
 
-import AddIcon from '@mui/icons-material/Add';
+import { IconPlus } from "@tabler/icons-react";
 
 const UsersPage = () => {
   const pagination = useQueryState({
@@ -114,10 +113,8 @@ const UsersPage = () => {
 
         <div className="text-neutral-800">
           <Button
-            variant="text"
-            color="inherit"
-            startIcon={<AddIcon />}
-            size="small"
+            variant="transparent"
+            leftSection={<IconPlus className="w-4 h-4" />}
             onClick={() => setNewUserFormOpen(true)}
           >
             Agregar usuario
@@ -172,11 +169,12 @@ const UsersPage = () => {
         </ConfirmDialogProvider>
       </div>
 
-      <Dialog
-        open={newUserFormOpen}
+      <Modal
+        opened={newUserFormOpen}
         onClose={() => setNewUserFormOpen(false)}
-        maxWidth="xs"
-        fullWidth
+        size="md"
+        centered
+        title={<p className="text-xl font-semibold">Agregar usuario</p>}
       >
         <div className="p-4">
           <NewUserForm 
@@ -184,7 +182,7 @@ const UsersPage = () => {
             loading={addToWhitelistMutation.isLoading} 
           />
         </div>
-      </Dialog>
+      </Modal>
     </section>
   );
 };

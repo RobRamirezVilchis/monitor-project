@@ -2,7 +2,7 @@
 
 import { useSearchParams } from "next/navigation";
 import { useLayoutEffect, useRef } from "react";
-import CircularProgress from "@mui/material/CircularProgress";
+import { Loader } from "@mantine/core";
 
 const GoogleCallback = () => {
   const ready = useRef(false);
@@ -28,7 +28,7 @@ const GoogleCallback = () => {
 
   return (
     <div className="h-full grid place-items-center">
-      <CircularProgress />
+      <Loader />
     </div>
   );
 };

@@ -1,10 +1,10 @@
 import { FC } from "react";
 import { FormProvider, useForm } from "react-hook-form";
-import z from "zod";
+import { Button } from "@mantine/core";
 import { zodResolver } from "@hookform/resolvers/zod";
-import Button  from "@mui/lab/LoadingButton";
+import z from "zod";
 
-import { TextInput, Select } from "../shared/mui.old/hook-form/styled";
+import { Select, TextInput } from "@/components/ui/core";
 import { CreateWhitelistItemData } from "@/api/users.types";
 import { getUserRoleLocalized } from "@/api/users";
 import { userRoles } from "@/api/auth.types";
@@ -30,10 +30,6 @@ export const NewUserForm: FC<NewUserFormProps> = ({ onSubmit, loading }) => {
 
   return (
     <section>
-      <p className="text-xl font-bold text-blue-500 mb-4">
-        Agregar usuario
-      </p>
-
       <FormProvider {...formMethods}>
         <form 
           noValidate
@@ -42,38 +38,24 @@ export const NewUserForm: FC<NewUserFormProps> = ({ onSubmit, loading }) => {
           <div className="flex flex-col gap-4">
             <TextInput
               name="email"
+              control={formMethods.control}
               variant="filled"
               type="email"
               placeholder="Correo"
-              title="Correo"
-              classes={{
-                title: {
-                  label: "text-neutral-700",
-                },
-              }}
-              inputProps={{
-                maxLength: 100,
-              }}
-              fullWidth
+              label="Correo"
+              maxLength={100}
             />
             <Select
               name="group"
+              control={formMethods.control}
               variant="filled"
-              title="Rol"
-              options={userRoles.map(role => ({ value: role, label: getUserRoleLocalized(role) }))}
+              label="Rol"
+              data={userRoles.map(role => ({ value: role, label: getUserRoleLocalized(role) }))}
               placeholder="Rol"
-              disablePlaceholder
-              classes={{
-                title: {
-                  label: "text-neutral-700",
-                },
-              }}
-              fullWidth
             />
             <div className="grid place-items-center">
               <Button
-                variant="outlined"
-                color="primary"
+                variant="outline"
                 type="submit"
                 loading={loading}
               >
