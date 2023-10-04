@@ -36,6 +36,7 @@ import {
   Updater,
   VisibilityInstance as _VisibilityInstance,
   VisibilityOptions,
+  SortDirection,
 } from "@tanstack/react-table";
 import { CSSProperties, Dispatch, ReactNode, RefObject, SetStateAction, MouseEvent } from "react";
 import { Virtualizer, VirtualizerOptions } from "@tanstack/react-virtual";
@@ -499,7 +500,46 @@ Omit<_RowSelectionInstance<TData>,
 // Localization ----------------------------------------------------------------
 
 export interface DataGridLocalization {
+  toolbarShowHideFilters: string;
+  toolbarShowHideColumns: string;
+  toolbarShowAllColumns: string;
+  toolbarHideAllColumns: string;
+  toolbarToggleDensity: string;
+  toolbarToggleFullscreen: string;
+  toolbarQuickFilterPlaceholder: string;
+  
+  columnPanelSortByLabel: (sortInfo: { 
+    direction: SortDirection | false;
+    nextDirection: SortDirection | false;
+    column: Column<any, any>;
+  }) => string;
+  columnPanelDragHandleLabel: string;
+  columnPanelMenuLabel: string;
+  columnMenuSortByAscending: (column: Column<any, any>) => string;
+  columnMenuSortByDescending: (column: Column<any, any>) => string;
+  columnMenuClearSortBy: (column: Column<any, any>) => string;
+  columnMenuHideColumn: string;
+  
+  paginationFirstPage: string;
+  paginationLastPage: string;
+  paginationPreviousPage: string;
+  paginationNextPage: string;
+  paginationLabelRowsPerPage: string;
+  paginationLabelDisplayRows: (info: {
+    from: number;
+    to: number;
+    count: number;
+    page: number;
+    pageCount: number;
+  }) => string;
+  
+  rowExpandRowIconLabel: string;
+  rowCollapseRowIconLabel: string;
+  noRowsLabel: string;
+  noResultsOverlayLabel: string;
+  loadingOverlayLabel: string;
 
+  footerSelectedRowCount: (count: number) => string;
 }
 
 // Styles ----------------------------------------------------------------------

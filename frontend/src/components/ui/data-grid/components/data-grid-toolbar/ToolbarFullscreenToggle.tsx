@@ -24,7 +24,7 @@ const ToolbarFullscreenToggle = <TData extends RowData>({
       withinPortal 
       openDelay={250}
       {...instance.options.slotProps?.baseTooltipProps}
-      label="Toggle Fullscreen" 
+      label={instance.localization.toolbarToggleFullscreen}
     >
       <ActionIcon
         color="black"

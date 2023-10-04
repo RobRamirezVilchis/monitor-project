@@ -31,7 +31,7 @@ const DataGridFooter = <TData extends RowData>({
         >
           {selectedRowModel.rows.length > 0 ? (
             <span>
-              {selectedRowModel.rows.length} rows selected
+              {instance.localization.footerSelectedRowCount(selectedRowModel.rows.length)}
             </span>
           ) : null}
         </div>

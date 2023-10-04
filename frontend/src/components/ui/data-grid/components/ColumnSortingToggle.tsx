@@ -26,20 +26,19 @@ const ColumnSortingToggle = <TData extends unknown, TValue>({
   header,
 }: ColumnSortingToggleProps<TData, TValue>) => {
 
-  const sorted = header.column.getIsSorted();
+  const sortedBy = header.column.getIsSorted();
+  const nextSortBy = header.column.getNextSortingOrder();
 
   return (
     <Tooltip
       withinPortal
       openDelay={250}
       {...instance.options.slotProps?.baseTooltipProps}
-      label={
-        sorted === "asc"
-          ? "Sorted Ascending"
-          : sorted === "desc"
-            ? "Sorted Descending"
-            : "Not Sorted"
-      }   
+      label={instance.localization.columnPanelSortByLabel({
+        direction: sortedBy,
+        nextDirection: nextSortBy,
+        column: header.column,
+      })}  
     >
       <ActionIcon
         color="black"
@@ -52,8 +51,8 @@ const ColumnSortingToggle = <TData extends unknown, TValue>({
           instance.options.slotProps?.baseActionIconProps?.onClick?.(e);
         }}
       >
-        {sorted ? (
-          sortIcons[sorted]
+        {sortedBy ? (
+          sortIcons[sortedBy]
         ) : (
           <IconArrowsSort fontSize="small" />
         )}

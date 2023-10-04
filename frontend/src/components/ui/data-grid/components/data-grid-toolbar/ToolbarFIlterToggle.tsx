@@ -24,7 +24,7 @@ const ToolbarFilterToggle = <TData extends RowData>({
       withinPortal 
       openDelay={250}
       {...instance.options.slotProps?.baseTooltipProps}
-      label="Toggle Filters" 
+      label={instance.localization.toolbarShowHideFilters}
     >
       <ActionIcon
         color="black"

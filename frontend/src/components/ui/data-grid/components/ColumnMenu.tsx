@@ -41,7 +41,7 @@ const ColumnMenu = <TData extends unknown, TValue>({
         instance.options.slotProps?.baseMenuItemProps?.onClick?.(e);
       }}
     >
-      Sort Ascending
+      {instance.localization.columnMenuSortByAscending(header.column)}
     </Menu.Item>,
     <Menu.Item
       key="sort-desc"
@@ -53,7 +53,7 @@ const ColumnMenu = <TData extends unknown, TValue>({
         instance.options.slotProps?.baseMenuItemProps?.onClick?.(e);
       }}
     >
-      Sort Descending
+      {instance.localization.columnMenuSortByDescending(header.column)}
     </Menu.Item>,
     <Menu.Item
       key="sort-clear"
@@ -65,7 +65,7 @@ const ColumnMenu = <TData extends unknown, TValue>({
         instance.options.slotProps?.baseMenuItemProps?.onClick?.(e);
       }}
     >
-      Clear Sort
+      {instance.localization.columnMenuClearSortBy(header.column)}
     </Menu.Item>,
   ];
 
@@ -79,7 +79,7 @@ const ColumnMenu = <TData extends unknown, TValue>({
         instance.options.slotProps?.baseMenuItemProps?.onClick?.(e);
       }}
     >
-      Hide Column
+      {instance.localization.columnMenuHideColumn}
     </Menu.Item>,
   ];
 
@@ -108,7 +108,7 @@ const ColumnMenu = <TData extends unknown, TValue>({
           withinPortal
           openDelay={250}
           {...instance.options.slotProps?.baseTooltipProps}
-          label="Menu"
+          label={instance.localization.columnPanelMenuLabel}
         >
           <ActionIcon
             color="black"

@@ -23,7 +23,7 @@ const ToolbarColumnVisibilityToggle = <TData extends unknown>({
           openDelay={250}
           withinPortal 
           {...instance.options.slotProps?.baseTooltipProps}
-          label="Show/Hide Columns"
+          label={instance.localization.toolbarShowHideColumns}
         >
           <ActionIcon
             color="black"
@@ -61,7 +61,7 @@ const ToolbarColumnVisibilityToggle = <TData extends unknown>({
               }}
               disabled={instance.getIsAllColumnsVisible()}
             >
-              Mostrar todo
+              {instance.localization.toolbarShowAllColumns}
             </Button>
 
             <Button
@@ -73,7 +73,7 @@ const ToolbarColumnVisibilityToggle = <TData extends unknown>({
               }}
               disabled={!instance.getIsSomeColumnsVisible()}
             >
-              Ocultar todo
+              {instance.localization.toolbarHideAllColumns}
             </Button>
           </div>
         </div>

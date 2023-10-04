@@ -1,5 +1,5 @@
 import { RowData } from "@tanstack/react-table";
-import { ActionIcon, Select } from "@mantine/core";
+import { ActionIcon, Select, Tooltip } from "@mantine/core";
 
 import buttonStyles from "./BaseButton.module.css";
 
@@ -34,7 +34,7 @@ const GridPagination = <TData extends RowData>({
   return (
     <div className="flex gap-4 items-center">
       <div className="flex gap-2 items-center">
-        <span>Rows per page</span>
+        <span>{instance.localization.paginationLabelRowsPerPage}</span>
         <span className="w-20">
           <Select
             {...instance.options.slotProps?.baseSelectProps}
@@ -49,71 +49,83 @@ const GridPagination = <TData extends RowData>({
       </div>
 
       <div className="flex items-center gap-1">
-        <ActionIcon
-          color="black"
-          variant="transparent"
-          className={buttonStyles.root}
-          radius="xl"
-          disabled={pagination.pageIndex === 0}
-          {...instance.options.slotProps?.baseActionIconProps}
-          onClick={e => {
-            instance.setPageIndex(0);
-            instance.options.slotProps?.baseActionIconProps?.onClick?.(e);
-          }}
-        >
-          <IconChevronsLeft />
-        </ActionIcon>
+        <Tooltip label={instance.localization.paginationFirstPage}>
+          <ActionIcon
+            color="black"
+            variant="transparent"
+            className={buttonStyles.root}
+            radius="xl"
+            disabled={pagination.pageIndex === 0}
+            {...instance.options.slotProps?.baseActionIconProps}
+            onClick={e => {
+              instance.setPageIndex(0);
+              instance.options.slotProps?.baseActionIconProps?.onClick?.(e);
+            }}
+          >
+            <IconChevronsLeft />
+          </ActionIcon>
+        </Tooltip>
 
-        <ActionIcon
-          color="black"
-          variant="transparent"
-          className={buttonStyles.root}
-          radius="xl"
-          disabled={!instance.getCanPreviousPage()}
-          {...instance.options.slotProps?.baseActionIconProps}
-          onClick={e => {
-            instance.previousPage();
-            instance.options.slotProps?.baseActionIconProps?.onClick?.(e);
-          }}
-        >
-          <IconChevronLeft />
-        </ActionIcon>
+        <Tooltip label={instance.localization.paginationPreviousPage}>
+          <ActionIcon
+            color="black"
+            variant="transparent"
+            className={buttonStyles.root}
+            radius="xl"
+            disabled={!instance.getCanPreviousPage()}
+            {...instance.options.slotProps?.baseActionIconProps}
+            onClick={e => {
+              instance.previousPage();
+              instance.options.slotProps?.baseActionIconProps?.onClick?.(e);
+            }}
+          >
+            <IconChevronLeft />
+          </ActionIcon>
+        </Tooltip>
 
         <span>
-          {pagination.pageIndex * pagination.pageSize + 1} - {
-            (pagination.pageIndex + 1) * pagination.pageSize
-          } of {prePagination.rows.length}
+          {instance.localization.paginationLabelDisplayRows({
+            from: pagination.pageIndex * pagination.pageSize + 1,
+            to: (pagination.pageIndex + 1) * pagination.pageSize,
+            count: prePagination.rows.length,
+            page: pagination.pageIndex + 1,
+            pageCount,
+          })}
         </span>
 
-        <ActionIcon
-          color="black"
-          variant="transparent"
-          className={buttonStyles.root}
-          radius="xl"
-          disabled={!instance.getCanNextPage()}
-          {...instance.options.slotProps?.baseActionIconProps}
-          onClick={e => {
-            instance.nextPage();
-            instance.options.slotProps?.baseActionIconProps?.onClick?.(e);
-          }}
-        >
-          <IconChevronRight />
-        </ActionIcon>
+        <Tooltip label={instance.localization.paginationNextPage}>
+          <ActionIcon
+            color="black"
+            variant="transparent"
+            className={buttonStyles.root}
+            radius="xl"
+            disabled={!instance.getCanNextPage()}
+            {...instance.options.slotProps?.baseActionIconProps}
+            onClick={e => {
+              instance.nextPage();
+              instance.options.slotProps?.baseActionIconProps?.onClick?.(e);
+            }}
+          >
+            <IconChevronRight />
+          </ActionIcon>
+        </Tooltip>
 
-        <ActionIcon
-          color="black"
-          variant="transparent"
-          className={buttonStyles.root}
-          radius="xl"
-          disabled={pagination.pageIndex === pageCount - 1}
-          {...instance.options.slotProps?.baseActionIconProps}
-          onClick={e => {
-            instance.setPageIndex(pageCount - 1);
-            instance.options.slotProps?.baseActionIconProps?.onClick?.(e);
-          }}
-        >
-          <IconChevronsRight />
-        </ActionIcon>
+        <Tooltip label={instance.localization.paginationLastPage}>
+          <ActionIcon
+            color="black"
+            variant="transparent"
+            className={buttonStyles.root}
+            radius="xl"
+            disabled={pagination.pageIndex === pageCount - 1}
+            {...instance.options.slotProps?.baseActionIconProps}
+            onClick={e => {
+              instance.setPageIndex(pageCount - 1);
+              instance.options.slotProps?.baseActionIconProps?.onClick?.(e);
+            }}
+          >
+            <IconChevronsRight />
+          </ActionIcon>
+        </Tooltip>
       </div>
     </div>
   )
