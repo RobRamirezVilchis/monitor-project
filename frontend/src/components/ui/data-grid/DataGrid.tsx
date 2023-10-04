@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { RowData } from "@tanstack/react-table";
 import clsx from "clsx";
 
@@ -21,6 +21,7 @@ export interface DataGridProps<TData extends RowData> {
 const DataGrid = <TData extends RowData>({
   instance,
 }: DataGridProps<TData>) => {
+  const [ready, setReady] = useState(false);
   const [contentRect, setContentRect] = useState({ 
     width: 0, 
     height: 0,
@@ -42,6 +43,10 @@ const DataGrid = <TData extends RowData>({
       contentResizeObserver.disconnect();
     };
   }, [instance.refs]);
+
+  useEffect(() => {
+    setReady(true);
+  }, []);
 
   return (
     <div 
@@ -77,7 +82,7 @@ const DataGrid = <TData extends RowData>({
 
         <DataGridBody
           instance={instance}
-          loading={instance.options.loading}
+          ready={ready}
           style={{
             gridColumn: "1 / 2",
             gridRow: "2 / 3",
@@ -116,7 +121,7 @@ const DataGrid = <TData extends RowData>({
           }}
         />
 
-        {instance.options.loading ? (
+        {instance.options.loading || !ready ? (
           <div className={clsx("DataGridBody-overlay DataGridBody-overlayLoading", styles.overlay)}>
             {instance.options.slots?.loadingOverlay ? (
               instance.options.slots.loadingOverlay()

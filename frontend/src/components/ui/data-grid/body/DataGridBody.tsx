@@ -10,16 +10,16 @@ import NoRowsOverlay from "../components/NoRowsOverlay";
 
 export interface DataGridBodyProps<TData extends unknown> {
   instance: DataGridInstance<TData>;
-  loading?: boolean;
+  ready?: boolean;
   style?: CSSProperties;
 }
 
 const DataGridBody = <TData extends unknown>({
   instance, 
-  loading,
+  ready,
   style,
 }: DataGridBodyProps<TData>) => {
-  
+
   useIsomorphicLayoutEffect(() => {
     instance.scrolls.main.horizontal.current?.syncScroll(instance.refs.content.main);
     instance.scrolls.main.vertical.current?.syncScroll(instance.refs.content.main);
@@ -72,36 +72,38 @@ const DataGridBody = <TData extends unknown>({
         }}
         role="rowgroup"
       >
-        {/* Rows */}
-        {instance.options.enableRowsVirtualization
-        ? instance.scrolls.virtualizers.rows.current?.getVirtualItems().map(virtualRow => {
-          const row = rowModel.rows[virtualRow.index];
-          return (
+        {ready ? (
+          // Rows
+          instance.options.enableRowsVirtualization
+          ? instance.scrolls.virtualizers.rows.current?.getVirtualItems().map(virtualRow => {
+            const row = rowModel.rows[virtualRow.index];
+            return (
+              <DataGridRow 
+                key={row.id} 
+                instance={instance}
+                row={row} 
+                rowIndex={virtualRow.index}
+                style={{
+                  // height: virtualRow.size,
+                  position : "absolute",
+                  transform: `translateY(${virtualRow.start}px)`,
+                }}
+                vRowEnd={virtualRow.end}
+              />
+            )
+          }) 
+          : rowModel.rows.map((row, rowIdx) => (
             <DataGridRow 
               key={row.id} 
               instance={instance}
               row={row} 
-              rowIndex={virtualRow.index}
-              style={{
-                // height: virtualRow.size,
-                position : "absolute",
-                transform: `translateY(${virtualRow.start}px)`,
-              }}
-              vRowEnd={virtualRow.end}
+              rowIndex={rowIdx}
             />
-          )
-        }) 
-        : rowModel.rows.map((row, rowIdx) => (
-          <DataGridRow 
-            key={row.id} 
-            instance={instance}
-            row={row} 
-            rowIndex={rowIdx}
-          />
-        ))}
+          ))
+        ) : null}
       </div>
 
-      {!loading && rowModel.rows.length === 0 ? (
+      {!instance.options.loading && rowModel.rows.length === 0 ? (
         <div className={clsx("DataGridBody-overlay DataGridBody-overlayEmpty", gridBodyStyles.overlay)}>
           {instance.options.slots?.noRowsOverlay ? (
             instance.options.slots.noRowsOverlay()
