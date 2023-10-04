@@ -3,6 +3,7 @@
     overflow: hidden;
     overflow-anchor: none; /* for virtualization */
     touch-action: pan-down; /* for mobile browser refresh gesture */
+    border-bottom: 1px solid #e0e0e0;
 }
 
 .headersContainer {
