@@ -237,42 +237,7 @@ PartialKeys<DataGridOptionsResolved<TData>, "getCoreRowModel" | "state" | "onSta
    * @default "normal" (52px)
    */
   density?: DataGridDensity;
-  classNames?: {
-    root?: string;
-    toolbarContainer?: string;
-    mainContainer?: string;
-    footerContainer?: string;
-    toolbar?: DataGridToolbarClassNames;
-    columnHeaders?: DataGridColumnHeadersClassNames;
-    columnHeaderGroup?: DataGridColumnHeaderGroupClassNames;
-    columnHeaderCell?: DataGridColumnHeaderCellClassNames;
-    columnFooter?: DataGridColumnsFooterClassNames;
-    columnFooterGroup?: DataGridColumnFooterGroupClassNames;
-    columnFooterCell?: DataGridColumnFooterCellClassNames;
-    body?: DataGridBodyClassNames;
-    footer?: DataGridFooterClassNames;
-    row?: DataGridRowClassNames;
-    cell?: DataGridRowCellClassNames;
-  };
-  styles?: {
-    root?: CSSProperties;
-    toolbarContainer?: CSSProperties;
-    mainContainer?: CSSProperties;
-    footerContainer?: CSSProperties;
-    toolbar?: DataGridToolbarStyles;
-    columnHeaders?: DataGridColumnHeadersStyles;
-    columnHeaderGroup?: DataGridColumnHeaderGroupStyles;
-    columnHeaderCell?: DataGridColumnHeaderCellStyles;
-    columnFooter?: DataGridColumnsFooterStyles;
-    columnFooterGroup?: DataGridColumnFooterGroupStyles;
-    columnFooterCell?: DataGridColumnFooterCellStyles;
-    body?: DataGridBodyStyles;
-    footer?: DataGridFooterStyles;
-    row?: DataGridRowStyles;
-    cell?: DataGridRowCellStyles;
-  };
   renderSubComponent?: (row: Row<TData>) => ReactNode;
-
   /**
    * Whether to enable column reordering.
    * @default true
@@ -321,6 +286,41 @@ PartialKeys<DataGridOptionsResolved<TData>, "getCoreRowModel" | "state" | "onSta
   onCellDoubleClick?: (cell: Cell<TData>, instance: DataGridInstance<TData>, event: MouseEvent<HTMLDivElement, MouseEvent>) => void;
   onRowClick?: (row: Row<TData>, instance: DataGridInstance<TData>, event: MouseEvent<HTMLDivElement, MouseEvent>) => void;
   onRowDoubleClick?: (row: Row<TData>, instance: DataGridInstance<TData>, event: MouseEvent<HTMLDivElement, MouseEvent>) => void;
+
+  classNames?: {
+    root?: string;
+    toolbarContainer?: string;
+    mainContainer?: string;
+    footerContainer?: string;
+    toolbar?: DataGridToolbarClassNames;
+    columnHeaders?: DataGridColumnHeadersClassNames;
+    columnHeaderGroup?: DataGridColumnHeaderGroupClassNames;
+    columnHeaderCell?: DataGridColumnHeaderCellClassNames;
+    columnFooter?: DataGridColumnsFooterClassNames;
+    columnFooterGroup?: DataGridColumnFooterGroupClassNames;
+    columnFooterCell?: DataGridColumnFooterCellClassNames;
+    body?: DataGridBodyClassNames;
+    footer?: DataGridFooterClassNames;
+    row?: DataGridRowClassNames;
+    cell?: DataGridRowCellClassNames;
+  };
+  styles?: {
+    root?: CSSProperties;
+    toolbarContainer?: CSSProperties;
+    mainContainer?: CSSProperties;
+    footerContainer?: CSSProperties;
+    toolbar?: DataGridToolbarStyles;
+    columnHeaders?: DataGridColumnHeadersStyles;
+    columnHeaderGroup?: DataGridColumnHeaderGroupStyles;
+    columnHeaderCell?: DataGridColumnHeaderCellStyles;
+    columnFooter?: DataGridColumnsFooterStyles;
+    columnFooterGroup?: DataGridColumnFooterGroupStyles;
+    columnFooterCell?: DataGridColumnFooterCellStyles;
+    body?: DataGridBodyStyles;
+    footer?: DataGridFooterStyles;
+    row?: DataGridRowStyles;
+    cell?: DataGridRowCellStyles;
+  };
 }
 
 // DataGrid Instance ------------------------------------------------------------

@@ -77,33 +77,6 @@ const Test = () => {
     // console.log(query2.queryPrimaryKey, query2.data, query2.variables)
   }
 
-  const dialog = useConfirmDialog({
-    content: {
-      title: "Test title",
-      body: "Test body",
-      confirmLabel: "Test confirm",
-      cancelLabel: "Test cancel",
-    },
-    onConfirm: async () => {
-      console.log("default confirm")
-      await new Promise(resolve => setTimeout(resolve, 3000));
-
-      // console.log("error");
-      // throw new Error("Error");
-
-      console.log("success");
-    },
-    callbacks: {
-      onConfirmClick: () => console.log("onConfirmClick"),
-      onCancelClick: () => console.log("onCancelClick"),
-      onClose: () => console.log("onClose"),
-    }
-  });
-
-  const dialogAlt = useConfirmDialog();
-
-  
-
   return (
     <div className="p-4">
       Hola
@@ -141,86 +114,6 @@ const Test = () => {
           }}
         >
           Call Mutation2
-        </button>
-      </div>
-
-      <div className="flex gap-4 p-2">
-        <button
-          className="bg-blue-500 text-white rounded-md p-2"
-          onClick={() => dialog.confirm()}
-        >
-          Dialog default
-        </button>
-
-        <button
-          className="bg-blue-500 text-white rounded-md p-2"
-          onClick={() => dialog.confirm({
-            content: {
-              title: "Dialog 1",
-              body: "Dialog 1 body",
-              confirmLabel: "Dialog 1 confirm",
-              cancelLabel: "Dialog 1 cancel",
-            },
-            onConfirm: async () => {
-              console.log("confirm 1")
-              await new Promise(resolve => setTimeout(resolve, 3000));
-
-              // console.log("error");
-              // throw new Error("Error");
-
-              console.log("success");
-            },
-          })}
-        >
-          Dialog 1
-        </button>
-
-        <button
-          className="bg-blue-500 text-white rounded-md p-2"
-          onClick={() => dialog.confirm({
-            content: {
-              title: "Dialog 2",
-              body: "Dialog 2 body",
-              confirmLabel: "Dialog 2 confirm",
-              cancelLabel: "Dialog 2 cancel",
-            },
-            onConfirm: async () => {
-              console.log("confirm 2")
-              await new Promise(resolve => setTimeout(resolve, 3000));
-
-              console.log("error");
-              throw new Error("Error");
-
-              console.log("success");
-            },
-            onError: e => console.log("adasd", e),
-          })}
-        >
-          Dialog 2
-        </button>
-
-        <button
-          className="bg-blue-500 text-white rounded-md p-2"
-          onClick={() => dialogAlt.confirm({
-            // content: {
-            //   title: "Dialog Alt",
-            //   body: "Dialog Alt body",
-            //   confirmLabel: "Dialog Alt confirm",
-            //   cancelLabel: "Dialog Alt cancel",
-            // },
-            // onConfirm: async () => {
-            //   console.log("confirm Alt")
-            //   await new Promise(resolve => setTimeout(resolve, 3000));
-
-            //   console.log("error");
-            //   throw new Error("Error");
-
-            //   console.log("success");
-            // },
-            // onError: e => console.log("adasd", e),
-          })}
-        >
-          Dialog Alt
         </button>
       </div>
 
@@ -264,20 +157,7 @@ const Test = () => {
   )
 }
 
-const Wrapper = () => {
-  return (
-    <ConfirmDialogProvider outsideClickClose content={{ 
-      title: "Prov title",
-      body: "Prov body",
-      confirmLabel: "Prov confirm",
-      cancelLabel: "Prov cancel",
-    }}>
-      <Test />
-    </ConfirmDialogProvider>
-  )
-}
-
-export default Wrapper;
+export default Test;
 
 const withTrailingZeros = (num: number, digits: number) => num.toString().padStart(digits, "0");
 

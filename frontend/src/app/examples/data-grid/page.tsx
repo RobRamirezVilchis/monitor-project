@@ -81,30 +81,31 @@ const DataGridExamplePage = () => {
     ),
     density: "compact",
     classNames: {
-      root: "h-full !border-none bg-white overflow-hidden",
-      columnHeaders: {
-        root: "bg-neutral-800 text-white rounded-t-md",
-      },
-      columnHeaderCell: {
-        label: "text-sm !font-normal",
-        actions: "bg-neutral-800",
-        // dragIsOver: {
-        //   label: "bg-red-100",
-        // },
-        // dragOverlay: {
-        //   label: "!bg-blue-200",
-        // }
-      },
-      columnFooter: {
-        root: "bg-neutral-800 text-white",
-      },
-      columnFooterCell: {
-        content: "text-sm !font-normal",
-      },
-      cell: {
-        // focused: "bg-red-100",
-        content: "text-sm",
-      },
+      root: "h-full",
+      // root: "h-full !border-none bg-white overflow-hidden",
+      // columnHeaders: {
+      //   root: "bg-neutral-800 text-white rounded-t-md",
+      // },
+      // columnHeaderCell: {
+      //   label: "text-sm !font-normal",
+      //   actions: "bg-neutral-800",
+      //   // dragIsOver: {
+      //   //   label: "bg-red-100",
+      //   // },
+      //   // dragOverlay: {
+      //   //   label: "!bg-blue-200",
+      //   // }
+      // },
+      // columnFooter: {
+      //   root: "bg-neutral-800 text-white",
+      // },
+      // columnFooterCell: {
+      //   content: "text-sm !font-normal",
+      // },
+      // cell: {
+      //   // focused: "bg-red-100",
+      //   content: "text-sm",
+      // },
       // row: {
       //   selected: "!bg-red-200",
       // },
