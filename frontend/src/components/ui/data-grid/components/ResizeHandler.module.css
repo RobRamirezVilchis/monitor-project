@@ -2,11 +2,23 @@
     position: absolute;
     top: 50%;
     right: 0;
-    transform: translate(50%, -50%);
-    background-color: #a8a8a8;
+    /* transform: translate(50%, -50%); */
+    transform: translateY(-50%);
     width: 0.25rem;
     cursor: col-resize;
     touch-action: none;
+    height: 1rem;
+    z-index: 10;
+}
+
+.root::after {
+    display: block;
+    position: absolute;
+    content: "";
+    height: 100%;
+    width: 0.125rem;
+    background-color: #a8a8a8;
     border-radius: 0.25rem;
-    height: 80%;
+    left: 50%;
+    transform: translateX(-50%);
 }
