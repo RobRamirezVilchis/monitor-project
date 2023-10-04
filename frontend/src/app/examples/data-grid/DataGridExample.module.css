@@ -1,0 +1,9 @@
+.columnFooterCell::after {
+    content: "";
+    position: absolute;
+    right: 0;
+    width: 0.125rem;
+    height: 1rem;
+    background-color: #a8a8a8;
+    border-radius: 0.125rem;
+}

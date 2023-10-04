@@ -1,10 +1,15 @@
 "use client";
 
 import { Button, Menu } from "@mantine/core";
+
+import dataGridExampleStyles from "./DataGridExample.module.css";
+
 import { exampleData, exampleData2, ExampleData, ExampleData2 } from "./Data";
 import { ColumnDef } from "@/components/ui/data-grid/types";
 import DataGrid from "@/components/ui/data-grid/DataGrid";
 import useDataGrid from "@/components/ui/data-grid/useDataGrid";
+import { LoadingOverlay as MLoadingOverlay } from "@mantine/core";
+import { es } from "@/components/ui/data-grid/locales/es";
 
 import { Icon3dRotate } from "@tabler/icons-react";
 import { useState } from "react";
@@ -21,6 +26,7 @@ const DataGridExamplePage = () => {
   const [selectedRows, setSelectedRows] = useState<RowSelectionState>({});
 
   const grid = useDataGrid<ExampleData2>({
+    localization: es,
     loading,
     data: data2,
     columns: cols2,
@@ -34,7 +40,7 @@ const DataGridExamplePage = () => {
     enableGlobalFilter: true,
     enableColumnFilters: true,
     enableFacetedValues: true,
-    // enableRowSelection: true,
+    enableRowSelection: true,
     // enableGrouping: true,
     enablePagination: true,
     // enableRowsVirtualization: true,
@@ -75,9 +81,13 @@ const DataGridExamplePage = () => {
     ),
     density: "compact",
     classNames: {
-      root: "h-full border-blue-400 bg-white overflow-hidden",
+      root: "h-full !border-none bg-white overflow-hidden",
+      columnHeaders: {
+        root: "bg-neutral-800 text-white rounded-t-md",
+      },
       columnHeaderCell: {
-        actions: "bg-white",
+        label: "text-sm !font-normal",
+        actions: "bg-neutral-800",
         // dragIsOver: {
         //   label: "bg-red-100",
         // },
@@ -85,9 +95,16 @@ const DataGridExamplePage = () => {
         //   label: "!bg-blue-200",
         // }
       },
-      // cell: {
-      //   focused: "bg-red-100",
-      // },
+      columnFooter: {
+        root: "bg-neutral-800 text-white",
+      },
+      columnFooterCell: {
+        content: "text-sm !font-normal",
+      },
+      cell: {
+        // focused: "bg-red-100",
+        content: "text-sm",
+      },
       // row: {
       //   selected: "!bg-red-200",
       // },
@@ -250,33 +267,50 @@ const cols: ColumnDef<ExampleData>[] = [
 const cols2: ColumnDef<ExampleData2>[] = [
   {
     accessorKey: "id",
+    columnTitle: "ID",
+    header: () => "ID",
     size: 150,
     filterVariant: "number",
-    filterFn: "equals"
+    filterFn: "equals",
+    enableHiding: false,
+    footer: () => "Totals",
+    footerClassNames: {
+      root: dataGridExampleStyles.columnFooterCell,
+    }
   },
   {
     accessorKey: "first_name",
+    columnTitle: "First Name",
+    header: () => "First Name",
     size: 150,
     filterVariant: "text",
   },
   {
     accessorKey: "last_name",
+    columnTitle: "Last Name",
+    header: () => "Last Name",
     size: 150,
     filterVariant: "text",
   },
   {
     accessorKey: "email",
+    columnTitle: "Email",
+    header: () => "Email",
     size: 150,
     filterVariant: "autocomplete",
   },
   {
     accessorKey: "gender",
+    columnTitle: "Gender",
+    header: () => "Gender",
     size: 150,
     filterVariant: "select",
     filterFn: "equals",
   },
   {
     accessorKey: "birthday",
+    columnTitle: "Birthday",
+    header: () => "Birthday",
     size: 150,
     filterVariant: "date",
     filterFn: "equals",
@@ -285,17 +319,23 @@ const cols2: ColumnDef<ExampleData2>[] = [
   },
   {
     accessorKey: "salary",
+    columnTitle: "Salary",
+    header: () => "Salary",
     size: 150,
     filterVariant: "range-slider",
     filterFn: "inNumberRange",
   },
   {
     accessorKey: "approved",
+    columnTitle: "Approved",
+    header: () => "Approved",
     size: 150,
     filterVariant: "checkbox",
   },
   {
     accessorKey: "color",
+    columnTitle: "Color",
+    header: () => "Color",
     size: 150,
     // filterVariant: "multi-select",
     filterVariant: "multi-autocomplete",
@@ -303,16 +343,27 @@ const cols2: ColumnDef<ExampleData2>[] = [
   },
   {
     id: "created_at",
+    accessorKey: "created_at",
+    columnTitle: "Created At",
+    header: () => "Created At",
     size: 150,
     filterVariant: "date-range",
     // filterFn: "inNumberRange",
     accessorFn: (row) => new Date(row.created_at),
-    cell: (cell) => (cell.getValue() as Date).toISOString(), 
+    cell: (cell) => (cell.getValue() as Date).toISOString(),
+    cellTitle: (cell) => (cell.getValue() as Date).toISOString(),
+    footerClassNames: {
+      root: dataGridExampleStyles.columnFooterCell,
+    }
   },
   {
     accessorKey: "score",
+    columnTitle: "Score",
+    header: () => "Score",
     size: 150,
     filterVariant: "range",
-    filterFn: "inNumberRange"
+    filterFn: "inNumberRange",
+    footer: (ctx) => ctx.table.getRowModel()
+      .rows.reduce((acc, row) => acc + row.original.score, 0).toString(),
   },
 ];
