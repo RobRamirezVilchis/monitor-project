@@ -141,6 +141,8 @@ export type ColumnDef<TData extends RowData, TValue = unknown> = ColumnDefBase<T
   cellStyles?: DataGridRowCellStyles;
   headerClassNames?: DataGridColumnHeaderCellClassNames;
   headerStyles?: DataGridColumnHeaderCellStyles;
+  footerClassNames?: DataGridColumnFooterCellClassNames;
+  footerStyles?: DataGridColumnFooterCellStyles;
   filterVariant?: FilterVariant;
 }
 
@@ -242,6 +244,9 @@ PartialKeys<DataGridOptionsResolved<TData>, "getCoreRowModel" | "state" | "onSta
     columnHeaders?: DataGridColumnHeadersClassNames;
     columnHeaderGroup?: DataGridColumnHeaderGroupClassNames;
     columnHeaderCell?: DataGridColumnHeaderCellClassNames;
+    columnFooter?: DataGridColumnsFooterClassNames;
+    columnFooterGroup?: DataGridColumnFooterGroupClassNames;
+    columnFooterCell?: DataGridColumnFooterCellClassNames;
     body?: DataGridBodyClassNames;
     footer?: DataGridFooterClassNames;
     row?: DataGridRowClassNames;
@@ -254,6 +259,9 @@ PartialKeys<DataGridOptionsResolved<TData>, "getCoreRowModel" | "state" | "onSta
     columnHeaders?: DataGridColumnHeadersStyles;
     columnHeaderGroup?: DataGridColumnHeaderGroupStyles;
     columnHeaderCell?: DataGridColumnHeaderCellStyles;
+    columnFooter?: DataGridColumnsFooterStyles;
+    columnFooterGroup?: DataGridColumnFooterGroupStyles;
+    columnFooterCell?: DataGridColumnFooterCellStyles;
     body?: DataGridBodyStyles;
     footer?: DataGridFooterStyles;
     row?: DataGridRowStyles;
@@ -333,6 +341,9 @@ export type DataGridInstance<TData extends RowData> =
       main: RefObject<HTMLDivElement>;
     };
     columnHeader: {
+      main: RefObject<HTMLDivElement>;
+    };
+    columnFooter: {
       main: RefObject<HTMLDivElement>;
     };
     header: RefObject<HTMLDivElement>;
@@ -632,6 +643,34 @@ export interface DataGridColumnHeaderCellStyles {
   label?: CSSProperties;
   actions?: CSSProperties;
   filters?: CSSProperties;
+}
+
+export interface DataGridColumnsFooterClassNames {
+  root?: string;
+  container?: string;
+}
+
+export interface DataGridColumnsFooterStyles {
+  root?: CSSProperties;
+  container?: CSSProperties;
+}
+
+export interface DataGridColumnFooterGroupClassNames {
+  root?: string;
+}
+
+export interface DataGridColumnFooterGroupStyles {
+  root?: CSSProperties;
+}
+
+export interface DataGridColumnFooterCellClassNames {
+  root?: string;
+  content?: string;
+}
+
+export interface DataGridColumnFooterCellStyles {
+  root?: CSSProperties;
+  content?: CSSProperties;
 }
 
 export interface DataGridBodyClassNames {

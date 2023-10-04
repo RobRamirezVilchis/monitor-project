@@ -96,6 +96,7 @@ const Scroll = forwardRef<HTMLDivElement, ScrollProps>(({
       {...props}
       ref={mergeRefs(ref, viewportRef)}
       style={{
+        ...props.style,
         height: orientation === "vertical" ? size 
           : hide ? 0 : thickness,
         width: orientation === "horizontal" ? size 

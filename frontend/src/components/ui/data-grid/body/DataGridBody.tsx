@@ -9,6 +9,7 @@ import DataGridRow from "./DataGridRow";
 import NoRowsOverlay from "../components/NoRowsOverlay";
 import SpinnerLoadingOverlay from "@/components/ui/data-grid/components/SpinnerLoadingOverlay";
 import Scroll from "@/components/ui/data-grid/components/Scroll";
+import DataGridColumnFooter from "../column-footer/DataGridColumnFooter";
 
 export interface DataGridBodyProps<TData extends unknown> {
   instance: DataGridInstance<TData>;
@@ -57,7 +58,11 @@ const DataGridBody = <TData extends unknown>({
       {/* Viewport */}
       <div
         className={clsx("DataGridBody-viewport", gridBodyStyles.viewport, instance.options.classNames?.body?.viewport)}
-        style={instance.options.styles?.body?.viewport}
+        style={{
+          ...instance.options.styles?.body?.viewport,
+          gridColumn: "1 / 2",
+          gridRow: "1 / 2",
+        }}
         onWheel={e => {
           instance.scrolls.main.horizontal.current?.onWheel(e);
           instance.scrolls.main.vertical.current?.onWheel(e);
@@ -77,6 +82,7 @@ const DataGridBody = <TData extends unknown>({
       >
         {/* Content */}
         <div
+          ref={instance.refs.content.main}
           className={clsx("DataGridBody-rowsContainer", gridBodyStyles.rowsContainer, instance.options.classNames?.body?.container)}
           style={{
             ...instance.options.styles?.body?.container,
@@ -87,7 +93,6 @@ const DataGridBody = <TData extends unknown>({
               ? instance.scrolls.virtualizers.rows.current?.getTotalSize()
               : undefined,
           }}
-          ref={instance.refs.content.main}
           role="rowgroup"
         >
           {/* Rows */}
@@ -136,14 +141,32 @@ const DataGridBody = <TData extends unknown>({
         ref={instance.scrolls.main.vertical.current?.scrollRef}
         onScroll={instance.scrolls.main.vertical.current?.onScroll}
         thickness={instance.options.slotProps?.scroll?.thickness}
+        style={{
+          gridColumn: "2 / 3",
+          gridRow: "1 / 2",
+        }}
       />
+      
+      <DataGridColumnFooter 
+        instance={instance} 
+        style={{
+          gridColumn: "1 / 3",
+          gridRow: "2 / 3",
+        }}
+      />
+
       <Scroll
         orientation="horizontal"
         virtualSize={contentRect.width}
         ref={instance.scrolls.main.horizontal.current?.scrollRef}
         onScroll={instance.scrolls.main.horizontal.current?.onScroll}
         thickness={instance.options.slotProps?.scroll?.thickness}
+        style={{
+          gridColumn: "1 / 2",
+          gridRow: "3 / 4",
+        }}
       />
+
 
       {loading ? (
         <div className={clsx("DataGridBody-overlay DataGridBody-overlayLoading", gridBodyStyles.overlay)}>

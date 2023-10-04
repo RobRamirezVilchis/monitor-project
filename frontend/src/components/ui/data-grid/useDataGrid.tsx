@@ -75,6 +75,7 @@ const useDataGrid = <TData extends RowData>(options: DataGridOptions<TData>): Da
   const headerRef = useRef<HTMLDivElement>(null);
   const mainContentRef = useRef<HTMLDivElement>(null);
   const mainColumnsHeaderRef = useRef<HTMLDivElement>(null);
+  const mainColumnsFooterRef = useRef<HTMLDivElement>(null);
   const footerRef = useRef<HTMLDivElement>(null);
 
   const mainHorizontalScroll = useScroll({ orientation: "horizontal" });
@@ -88,6 +89,9 @@ const useDataGrid = <TData extends RowData>(options: DataGridOptions<TData>): Da
     },
     columnHeader: {
       main: mainColumnsHeaderRef,
+    },
+    columnFooter: {
+      main: mainColumnsFooterRef,
     },
     header: headerRef,
     footer: footerRef,
