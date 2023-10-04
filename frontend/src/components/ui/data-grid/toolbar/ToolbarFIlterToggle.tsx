@@ -1,9 +1,9 @@
 import { ActionIcon, Tooltip } from "@mantine/core";
 import clsx from "clsx";
 
-import buttonStyles from "../BaseButton.module.css";
+import buttonStyles from "../components/BaseButton.module.css";
 
-import { DataGridInstance } from "../../types";
+import { DataGridInstance } from "../types";
 import { RowData } from "@tanstack/react-table";
 
 import { 

@@ -2,10 +2,10 @@ import { RowData } from "@tanstack/react-table";
 import { ActionIcon, Button, Popover, Switch, Tooltip } from "@mantine/core";
 import clsx from "clsx";
 
-import buttonStyles from "../BaseButton.module.css";
+import buttonStyles from "../components/BaseButton.module.css";
 import gridToolbarStyles from "./DataGridToolbar.module.css";
 
-import type { DataGridInstance } from "../../types";
+import type { DataGridInstance } from "../types";
 
 import { IconColumns } from "@tabler/icons-react";
 

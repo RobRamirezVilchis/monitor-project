@@ -16,32 +16,26 @@ const DataGridFooter = <TData extends RowData>({
   const selectedRowModel = instance.getSelectedRowModel();
 
   return (
-    <div
-      ref={instance.refs.footer}
+    <div 
       className={clsx("DataGridFooter-root", gridFooterStyles.root, instance.options.classNames?.footer?.root)}
       style={instance.options.styles?.footer?.root}
     >
       <div 
-        className={clsx("DataGridFooter-contentContainer", gridFooterStyles.contentContainer, instance.options.classNames?.footer?.contentContainer)}
-        style={instance.options.styles?.footer?.contentContainer}
+        className={clsx("DataGridFooter-rowSelection", gridFooterStyles.rowSelection, instance.options.classNames?.footer?.rowSelection)}
+        style={instance.options.styles?.footer?.rowSelection}
       >
-        <div 
-          className={clsx("DataGridFooter-content", gridFooterStyles.content, instance.options.classNames?.footer?.content)}
-          style={instance.options.styles?.footer?.content}
-        >
-          {selectedRowModel.rows.length > 0 ? (
-            <span>
-              {instance.localization.footerSelectedRowCount(selectedRowModel.rows.length)}
-            </span>
-          ) : null}
-        </div>
+        {selectedRowModel.rows.length > 0 ? (
+          <span>
+            {instance.localization.footerSelectedRowCount(selectedRowModel.rows.length)}
+          </span>
+        ) : null}
+      </div>
 
-        <div
-          className={clsx("DataGridFooter-pagination", gridFooterStyles.pagination, instance.options.classNames?.footer?.pagination)}
-          style={instance.options.styles?.footer?.pagination}
-        >
-          {instance.options.slots?.pagination ? instance.options.slots.pagination({ instance }) : <GridPagination instance={instance} />}
-        </div>
+      <div
+        className={clsx("DataGridFooter-pagination", gridFooterStyles.pagination, instance.options.classNames?.footer?.pagination)}
+        style={instance.options.styles?.footer?.pagination}
+      >
+        {instance.options.slots?.pagination ? instance.options.slots.pagination({ instance }) : <GridPagination instance={instance} />}
       </div>
     </div>
   )

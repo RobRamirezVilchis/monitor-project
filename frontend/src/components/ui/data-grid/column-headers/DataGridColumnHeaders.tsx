@@ -12,7 +12,7 @@ import {
   useSensor,
   useSensors,
 } from "@dnd-kit/core";
-import { useCallback, useRef, useState } from "react";
+import { CSSProperties, useCallback, useRef, useState } from "react";
 import clsx from "clsx";
 
 import gridColumnHeadersStyles from "./DataGridColumnHeaders.module.css";
@@ -24,10 +24,12 @@ import DataGridColumnHeaderCell from "./DataGridColumnHeaderCell";
 
 export interface DataGridColumnHeadersProps<TData extends unknown> {
   instance: DataGridInstance<TData>;
+  style?: CSSProperties;
 }
 
 const DataGridColumnHeaders = <TData extends unknown>({
   instance,
+  style,
 }: DataGridColumnHeadersProps<TData>) => {
   const [draggedHeader, setDraggedHeader] = useState<any | null>(null);
   const columnOrder = useRef(instance.getAllFlatColumns().map(c => c.id));
@@ -98,7 +100,10 @@ const DataGridColumnHeaders = <TData extends unknown>({
   return (
     <div
       className={clsx("DataGridColumnHeaders-root DataGridColumnHeaders-viewport", gridColumnHeadersStyles.root, instance.options.classNames?.columnHeaders?.root)}
-      style={instance.options.styles?.columnHeaders?.root}
+      style={{
+        ...instance.options.styles?.columnHeaders?.root,
+        ...style,
+      }}
       onWheel={instance.scrolls.main.horizontal.current?.onWheel}
       onTouchStart={instance.scrolls.main.horizontal.current?.onTouchStart}
       onTouchMove={instance.scrolls.main.horizontal.current?.onTouchMove}

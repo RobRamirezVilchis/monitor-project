@@ -2,7 +2,7 @@ import { useCallback } from "react";
 import { TextInput } from "@mantine/core";
 
 import { useDebounce } from "@/hooks/shared";
-import type { DataGridInstance } from "../../types";
+import type { DataGridInstance } from "../types";
 
 export interface ToolbarQuickFilterProps<TData extends unknown> {
   instance: DataGridInstance<TData>;

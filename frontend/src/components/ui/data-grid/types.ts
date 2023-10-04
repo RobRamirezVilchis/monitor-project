@@ -239,7 +239,9 @@ PartialKeys<DataGridOptionsResolved<TData>, "getCoreRowModel" | "state" | "onSta
   density?: DataGridDensity;
   classNames?: {
     root?: string;
-    header?: DataGridHeaderClassNames;
+    toolbarContainer?: string;
+    mainContainer?: string;
+    footerContainer?: string;
     toolbar?: DataGridToolbarClassNames;
     columnHeaders?: DataGridColumnHeadersClassNames;
     columnHeaderGroup?: DataGridColumnHeaderGroupClassNames;
@@ -254,7 +256,9 @@ PartialKeys<DataGridOptionsResolved<TData>, "getCoreRowModel" | "state" | "onSta
   };
   styles?: {
     root?: CSSProperties;
-    header?: DataGridHeaderStyles;
+    toolbarContainer?: CSSProperties;
+    mainContainer?: CSSProperties;
+    footerContainer?: CSSProperties;
     toolbar?: DataGridToolbarStyles;
     columnHeaders?: DataGridColumnHeadersStyles;
     columnHeaderGroup?: DataGridColumnHeaderGroupStyles;
@@ -288,7 +292,6 @@ PartialKeys<DataGridOptionsResolved<TData>, "getCoreRowModel" | "state" | "onSta
   hideDensitySelector?: boolean;
   hideFullscreenSelector?: boolean;
   hideFooter?: boolean;
-  hideHeader?: boolean;
   hideFooterPagination?: boolean;
   hideFooterSelectedRowCount?: boolean;
   hideColumnFiltersSelector?: boolean;
@@ -566,41 +569,29 @@ export interface DataGridLocalization {
 
 // Styles ----------------------------------------------------------------------
 
-export interface DataGridHeaderClassNames {
-  root?: string;
-  contentContainer?: string;
-  content?: string;
-}
-
-export interface DataGridHeaderStyles {
-  root?: CSSProperties;
-  contentContainer?: CSSProperties;
-  content?: CSSProperties;
-}
-
 export interface DataGridToolbarClassNames {
   root?: string;
-  left?: string;
-  right?: string;
+  content?: string;
+  leftContainer?: string;
+  rightContainer?: string;
 }
 
 export interface DataGridToolbarStyles {
   root?: CSSProperties;
-  left?: CSSProperties;
-  right?: CSSProperties;
+  content?: CSSProperties;
+  leftContainer?: CSSProperties;
+  rightContainer?: CSSProperties;
 }
 
 export interface DataGridFooterClassNames {
   root?: string;
-  contentContainer?: string;
-  content?: string;
+  rowSelection?: string;
   pagination?: string;
 }
 
 export interface DataGridFooterStyles {
   root?: CSSProperties;
-  contentContainer?: CSSProperties;
-  content?: CSSProperties;
+  rowSelection?: CSSProperties;
   pagination?: CSSProperties;
 }
 
@@ -675,13 +666,11 @@ export interface DataGridColumnFooterCellStyles {
 
 export interface DataGridBodyClassNames {
   root?: string;
-  viewport?: string;
   container?: string;
 }
 
 export interface DataGridBodyStyles {
   root?: CSSProperties;
-  viewport?: CSSProperties;
   container?: CSSProperties;
 }
 

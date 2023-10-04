@@ -1,15 +1,4 @@
 .root {
-    display: grid;
-    flex: 1;
-    grid-template-columns: 1fr auto;
-    grid-template-rows: 1fr auto auto;
-    overflow-anchor: none; /* for virtualization */
-    overflow: hidden;
-    width: 100%;
-    position: relative;
-}
-
-.viewport {
     height: 100%;
     overflow-anchor: none; /* for virtualization */
     overflow: hidden;
