@@ -3,6 +3,7 @@ import { ActionIcon, Button, Popover, Switch, Tooltip } from "@mantine/core";
 import clsx from "clsx";
 
 import buttonStyles from "../BaseButton.module.css";
+import gridToolbarStyles from "./DataGridToolbar.module.css";
 
 import type { DataGridInstance } from "../../types";
 
@@ -19,7 +20,7 @@ const ToolbarColumnVisibilityToggle = <TData extends unknown>({
   return (
     <Popover position="bottom-end">
       <Popover.Target>
-        <Tooltip 
+        <Tooltip
           openDelay={250}
           withinPortal 
           {...instance.options.slotProps?.baseTooltipProps}
@@ -36,46 +37,61 @@ const ToolbarColumnVisibilityToggle = <TData extends unknown>({
         </Tooltip>
       </Popover.Target>
       
-      <Popover.Dropdown classNames={{ dropdown: "p-2" }}>
-        <div>
-          <div className="flex flex-col gap-1">
-            {instance.getAllLeafColumns().map(column => (
-              <Switch 
-                {...instance.options.slotProps?.baseSwitchProps}
-                key={column.id} 
-                label={column.id}
-                checked={column.getIsVisible()} 
-                onChange={() => column.toggleVisibility()}
-                disabled={column.getCanHide() === false}
-              />
-            ))}
-          </div>
+      <Popover.Dropdown 
+        classNames={{ 
+          dropdown: clsx(
+            "DataGridToolbar--columnsMenu-root", 
+            gridToolbarStyles["columnsMenu-root"]
+          )
+        }}
+      >
+        <div 
+          className={clsx(
+            "DataGridToolbar--columnsMenu-selectors", 
+            gridToolbarStyles["columnsMenu-selectors"]
+          )}
+        >
+          {instance.getAllLeafColumns().map(column => !column.columnDef.hideFromColumnsMenu ? (
+            <Switch 
+              {...instance.options.slotProps?.baseSwitchProps}
+              key={column.id} 
+              label={column.columnDef.columnTitle || column.id}
+              checked={column.getIsVisible()} 
+              onChange={() => column.toggleVisibility()}
+              disabled={column.getCanHide() === false}
+            />
+          ) : null)}
+        </div>
 
-          <div className="flex gap-1">
-            <Button
-              variant="subtle"
-              {...instance.options.slotProps?.baseButtonProps}
-              onClick={e => {
-                instance.toggleAllColumnsVisible(true);
-                instance.options.slotProps?.baseButtonProps?.onClick?.(e);
-              }}
-              disabled={instance.getIsAllColumnsVisible()}
-            >
-              {instance.localization.toolbarShowAllColumns}
-            </Button>
+        <div 
+          className={clsx(
+            "DataGridToolbar--columnsMenu-actions", 
+            gridToolbarStyles["columnsMenu-actions"]
+          )}
+        >
+          <Button
+            variant="subtle"
+            {...instance.options.slotProps?.baseButtonProps}
+            onClick={e => {
+              instance.toggleAllColumnsVisible(true);
+              instance.options.slotProps?.baseButtonProps?.onClick?.(e);
+            }}
+            disabled={instance.getIsAllColumnsVisible()}
+          >
+            {instance.localization.toolbarShowAllColumns}
+          </Button>
 
-            <Button
-              variant="subtle"
-              {...instance.options.slotProps?.baseButtonProps}
-              onClick={e => {
-                instance.toggleAllColumnsVisible(false);
-                instance.options.slotProps?.baseButtonProps?.onClick?.(e);
-              }}
-              disabled={!instance.getIsSomeColumnsVisible()}
-            >
-              {instance.localization.toolbarHideAllColumns}
-            </Button>
-          </div>
+          <Button
+            variant="subtle"
+            {...instance.options.slotProps?.baseButtonProps}
+            onClick={e => {
+              instance.toggleAllColumnsVisible(false);
+              instance.options.slotProps?.baseButtonProps?.onClick?.(e);
+            }}
+            disabled={!instance.getIsSomeColumnsVisible()}
+          >
+            {instance.localization.toolbarHideAllColumns}
+          </Button>
         </div>
       </Popover.Dropdown>
     </Popover>

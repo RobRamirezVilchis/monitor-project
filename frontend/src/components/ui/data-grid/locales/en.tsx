@@ -10,13 +10,13 @@ export const en: DataGridLocalization = {
   toolbarQuickFilterPlaceholder: "Search...",
 
   columnPanelSortByLabel: ({ direction, nextDirection, column }) => direction 
-    ? `Sorted by ${column.id} (${direction === "desc" ? "descending" : "ascending"})`
-    : `Sort by ${column.id} (${nextDirection === "desc" ? "descending" : "ascending"})`,
+    ? `Sorted by ${column.columnDef.columnTitle || column.id} (${direction === "desc" ? "descending" : "ascending"})`
+    : `Sort by ${column.columnDef.columnTitle || column.id} (${nextDirection === "desc" ? "descending" : "ascending"})`,
   columnPanelDragHandleLabel: "Drag to reorder column",
   columnPanelMenuLabel: "Menu",
-  columnMenuSortByAscending: (column) => `Sort by ${column.id} (ascending)`,
-  columnMenuSortByDescending: (column) => `Sort by ${column.id} (descending)`,
-  columnMenuClearSortBy: (column) => `Clear sort by ${column.id}`,
+  columnMenuSortByAscending: (column) => `Sort by ${column.columnDef.columnTitle || column.id} (ascending)`,
+  columnMenuSortByDescending: (column) => `Sort by ${column.columnDef.columnTitle || column.id} (descending)`,
+  columnMenuClearSortBy: (column) => `Clear sort by ${column.columnDef.columnTitle || column.id}`,
   columnMenuHideColumn: "Hide column",
 
   paginationFirstPage: "First page",
@@ -39,4 +39,24 @@ export const en: DataGridLocalization = {
   loadingOverlayLabel: "Loading...",
 
   footerSelectedRowCount: (count) => count === 1 ? "1 row selected" : `${count} rows selected`,
+
+  // filterMinPlaceholder: "Min",
+  // filterMaxPlaceholder: "Max",
+  // filterSelectPlaceholder: "Select",
+  // filterOperatorBetween: "Between",
+  // filterOperatorEquals: "Equals",
+  // filterOperatorStartsWith: "Starts with",
+  // filterOperatorEndsWith: "Ends with",
+  // filterOperatorContains: "Contains",
+  // filterOperatorNotContains: "Not contains",
+  // filterOperatorAfter: "After",
+  // filterOperatorOnOrAfter: "On or after",
+  // filterOperatorBefore: "Before",
+  // filterOperatorOnOrBefore: "On or before",
+  // filterOperatorIsEmpty: "Is empty",
+  // filterOperatorIsNotEmpty: "Is not empty",
+  // filterOperatorIsTrue: "Is true",
+  // filterOperatorIsFalse: "Is false",
+  // filterHeaderFilter: "Filter",
+  // filterHeaderReset: "Reset",
 };

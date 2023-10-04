@@ -70,7 +70,7 @@ const DataGridRowCell = <TData extends RowData, TValue>({
           ...instance.options.styles?.cell?.content,
           ...columnDef.cellStyles?.content,
         }}
-        title={title}
+        title={columnDef?.cellTitle?.(cell.getContext()) || title}
       >
         {instance.options.enableRowNumbering && cell.column.id === ROW_NUMBER_COLUMN_ID ? (
           instance.options.rowNumberingMode === "static" 

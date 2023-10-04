@@ -14,6 +14,7 @@ export const ROW_NUMBER_COLUMN_ID = "__row_number__";
 export function createRowSelectionColumnDef<TData extends RowData>(options?: DataGridOptions<TData>): ColumnDef<TData> {
   return {
     id: ROW_SELECTION_COLUMN_ID,
+    hideFromColumnsMenu: true,
     minSize: 40,
     maxSize: 40,
     enableColumnFilter: false,
@@ -49,6 +50,7 @@ export function createRowSelectionColumnDef<TData extends RowData>(options?: Dat
 export function createExpandableColumnDef<TData extends RowData>(options?: DataGridOptions<TData>): ColumnDef<TData> {
   return  {
     id: EXPANDABLE_COLUMN_ID,
+    hideFromColumnsMenu: true,
     minSize: 40,
     maxSize: 40,
     enableColumnFilter: false,
@@ -119,6 +121,7 @@ export function createExpandableColumnDef<TData extends RowData>(options?: DataG
 export function createRowNumberingColumnDef<TData extends RowData>(options?: DataGridOptions<TData>): ColumnDef<TData> {
   return {
     id: ROW_NUMBER_COLUMN_ID,
+    hideFromColumnsMenu: true,
     minSize: 50,
     maxSize: 50,
     enableColumnFilter: false,

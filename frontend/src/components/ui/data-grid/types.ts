@@ -1,6 +1,7 @@
 import {
   AccessorColumnDef,
   Cell as _Cell,
+  CellContext,
   Column as _Column,
   ColumnDef as _ColumnDef,
   ColumnOrderInstance,
@@ -31,12 +32,12 @@ import {
   RowModel as _RowModel,
   RowSelectionInstance as _RowSelectionInstance,
   RowSelectionOptions,
+  SortDirection,
   SortingInstance as _SortingInstance,
   SortingOptions,
   Updater,
   VisibilityInstance as _VisibilityInstance,
   VisibilityOptions,
-  SortDirection,
 } from "@tanstack/react-table";
 import { CSSProperties, Dispatch, ReactNode, RefObject, SetStateAction, MouseEvent } from "react";
 import { Virtualizer, VirtualizerOptions } from "@tanstack/react-virtual";
@@ -120,6 +121,16 @@ export type GroupColumnDef<TData extends RowData, TValue = unknown> = Omit<_Grou
 export type ColumnDefBase<TData extends RowData, TValue = unknown> = DisplayColumnDef<TData, TValue> | GroupColumnDef<TData, TValue> | AccessorColumnDef<TData, TValue>;
 
 export type ColumnDef<TData extends RowData, TValue = unknown> = ColumnDefBase<TData, TValue> & {
+  /**
+   * Label used in menus and header cell's title attribute.
+   */
+  columnTitle?: string;
+  /**
+   * Label used as cell's title attribute. If not given, a title value will try to 
+   * be rendered based on the cell's value. Useful when the cell's value is not a string.
+   */
+  cellTitle?: (cell: CellContext<TData, TValue>) => string;
+  hideFromColumnsMenu?: boolean;
   enableReordering?: boolean;
   enableColumnActions?: boolean;
   columnActionsMenuItems?: (props: {

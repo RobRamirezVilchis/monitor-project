@@ -83,6 +83,7 @@ const DataGridColumnHeaderCell = <TData extends RowData, TValue>({
                 ...instance.options.styles?.columnHeaderCell?.label,
                 ...columnDef.headerStyles?.label,
               }}
+              title={header.column.columnDef.columnTitle}
             >
               {flexRender(header.column.columnDef.header, header.getContext())}
             </div>

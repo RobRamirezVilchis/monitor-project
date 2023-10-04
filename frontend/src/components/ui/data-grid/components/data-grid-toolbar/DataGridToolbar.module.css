@@ -19,3 +19,21 @@
     gap: 0.25rem;
     justify-content: flex-end;
 }
+
+.columnsMenu-root {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.columnsMenu-selectors {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.columnsMenu-actions {
+    display: flex;
+    gap: 0.25rem;
+    justify-content: space-between;
+}

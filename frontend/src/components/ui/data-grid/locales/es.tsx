@@ -10,13 +10,13 @@ export const es: DataGridLocalization = {
     toolbarQuickFilterPlaceholder: "Buscar...",
   
     columnPanelSortByLabel: ({ direction, nextDirection, column }) => direction 
-    ? `Ordenado por ${column.id} (${direction === "desc" ? "descendente" : "ascendente"})`
-    : `Ordenar por ${column.id} (${nextDirection === "desc" ? "descendente" : "ascendente"})`,
+    ? `Ordenado por ${column.columnDef.columnTitle || column.id} (${direction === "desc" ? "descendente" : "ascendente"})`
+    : `Ordenar por ${column.columnDef.columnTitle || column.id} (${nextDirection === "desc" ? "descendente" : "ascendente"})`,
     columnPanelDragHandleLabel: "Arrastra para reordenar columna",
     columnPanelMenuLabel: "Menú",
-    columnMenuSortByAscending: (column) => `Ordenar por ${column.id} (ascendente)`,
-    columnMenuSortByDescending: (column) => `Ordenar por ${column.id} (descendente)`,
-    columnMenuClearSortBy: (column) => `Limpiar orden por ${column.id}`,
+    columnMenuSortByAscending: (column) => `Ordenar por ${column.columnDef.columnTitle || column.id} (ascendente)`,
+    columnMenuSortByDescending: (column) => `Ordenar por ${column.columnDef.columnTitle || column.id} (descendente)`,
+    columnMenuClearSortBy: (column) => `Limpiar orden por ${column.columnDef.columnTitle || column.id}`,
     columnMenuHideColumn: "Ocultar columna",
   
     paginationFirstPage: "Primera página",
