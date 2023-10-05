@@ -18,6 +18,8 @@ import type { DataGridOptions, DataGridInstance, DataGridDensity, ColumnDef, Tab
 import { useScroll } from "./components/useScroll";
 import { createExpandableColumnDef, createRowNumberingColumnDef, createRowSelectionColumnDef } from "./reservedColumnDefs";
 import { en } from "./locales/en";
+import { filterFns } from "./filterFns";
+import { sortingFns } from "./sortingFns";
 
 export const densityFactor: Record<DataGridDensity, number> = {
   normal: 1,
@@ -42,6 +44,8 @@ const useDataGrid = <TData extends RowData>(options: DataGridOptions<TData>): Da
     getPaginationRowModel: _getPaginationRowModel,
     initialState,
     state,
+    filterFns: _filterFns,
+    sortingFns: _sortingFns,
     ...tableOptions
   } = options;
 
@@ -80,6 +84,14 @@ const useDataGrid = <TData extends RowData>(options: DataGridOptions<TData>): Da
       fullscreen,
       columnFiltersOpen,
       ...state,
+    },
+    filterFns: {
+      ...filterFns,
+      ..._filterFns,
+    },
+    sortingFns: {
+      ...sortingFns,
+      ..._sortingFns,
     },
     columns,
     getCoreRowModel       : _getCoreRowModel            ?? getCoreRowModel<TData>(),

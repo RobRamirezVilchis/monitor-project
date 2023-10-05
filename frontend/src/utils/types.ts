@@ -33,3 +33,7 @@ export type RequiredKeys<T, K extends keyof T> = Omit<T, K> & Required<Pick<T, K
 export type Prettify<T> = {
   [K in keyof T]: T[K];
 };
+
+export type DistributiveOmit<T, K extends keyof any> = T extends any
+  ? Omit<T, K>
+  : never;

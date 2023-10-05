@@ -1,5 +1,7 @@
+import { DistributiveOmit } from "@/utils/types";
 import {
-  AccessorColumnDef,
+  BuiltInFilterFn as _BuiltInFilterFn,
+  BuiltInSortingFn as _BuiltInSortingFn,
   Cell as _Cell,
   CellContext,
   Column as _Column,
@@ -12,11 +14,11 @@ import {
   ColumnSizingOptions,
   CoreInstance as _CoreInstance,
   CoreOptions as _CoreOptions,
-  DisplayColumnDef,
   ExpandedInstance as _ExpandedInstance,
   ExpandedOptions,
+  FilterFnOption as _FilterFnOption,
   FiltersInstance as _FiltersInstance,
-  FiltersOptions,
+  FiltersOptions as _FiltersOptions,
   GroupColumnDef as _GroupColumnDef,
   GroupingInstance as _GroupingInstance,
   GroupingOptions,
@@ -34,6 +36,7 @@ import {
   RowSelectionInstance as _RowSelectionInstance,
   RowSelectionOptions,
   SortDirection,
+  SortingFnOption as _SortingFnOption,
   SortingInstance as _SortingInstance,
   SortingOptions,
   TableState as _TableState,
@@ -55,6 +58,8 @@ import {
   TooltipProps,
 } from "@mantine/core";
 
+import { type FilterFnOption } from "./filterFns";
+import { type SortingFnOption } from "./sortingFns";
 import { UseScrollReturn } from "./components/useScroll";
 
 export type DataGridDensity = "compact" | "normal" | "comfortable";
@@ -120,9 +125,14 @@ export type GroupColumnDef<TData extends RowData, TValue = unknown> = Omit<_Grou
   columns?: ColumnDef<TData, any>[];
 }
 
-export type ColumnDefBase<TData extends RowData, TValue = unknown> = DisplayColumnDef<TData, TValue> | GroupColumnDef<TData, TValue> | AccessorColumnDef<TData, TValue>;
-
-export type ColumnDef<TData extends RowData, TValue = unknown> = ColumnDefBase<TData, TValue> & {
+export type ColumnDef<TData extends RowData, TValue = unknown> = 
+DistributiveOmit<
+  _ColumnDef<TData, TValue>, 
+  | "filterFn"
+  | "sortingFn"
+>
+& {
+  accessorKey?: string;
   /**
    * Label used in menus and header cell's title attribute.
    */
@@ -146,6 +156,8 @@ export type ColumnDef<TData extends RowData, TValue = unknown> = ColumnDefBase<T
   footerClassNames?: DataGridColumnFooterCellClassNames;
   footerStyles?: DataGridColumnFooterCellStyles;
   filterVariant?: FilterVariant;
+  filterFn?: _FilterFnOption<TData> | FilterFnOption | string & Record<never, never>;
+  sortingFn?: _SortingFnOption<TData> | SortingFnOption | string & Record<never, never>;
 }
 
 // Column ----------------------------------------------------------------------
@@ -202,6 +214,13 @@ Omit<_CoreOptions<TData>,
   defaultColumn?: Partial<ColumnDef<TData, unknown>>;
   state?: Partial<TableState>;
   initialState?: InitialTableState;
+}
+
+export interface FiltersOptions<TData extends RowData> extends 
+Omit<_FiltersOptions<TData>,
+  "globalFilterFn"
+> {
+  globalFilterFn?: _FilterFnOption<TData> | FilterFnOption | string & Record<never, never>;
 }
 
 export interface ExtraTableState {
