@@ -61,7 +61,7 @@ const useDataGrid = <TData extends RowData>(options: DataGridOptions<TData>): Da
   const instance = useReactTable<TData>({
     ...tableOptions,
     columns,
-    getCoreRowModel       : _getCoreRowModel                 ?? getCoreRowModel<TData>(),
+    getCoreRowModel       : _getCoreRowModel            ?? getCoreRowModel<TData>(),
     getExpandedRowModel   : options.enableExpanding     ? _getExpandedRowModel    ?? getExpandedRowModel<TData>()    : undefined,
     getSortedRowModel     : options.enableSorting       ? _getSortedRowModel      ?? getSortedRowModel<TData>()      : undefined,
     getFilteredRowModel   : options.enableFilters       ? _getFilteredRowModel    ?? getFilteredRowModel<TData>()    : undefined,

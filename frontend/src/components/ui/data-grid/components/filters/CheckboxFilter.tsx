@@ -21,6 +21,7 @@ const CheckboxFilter = <TData extends RowData, TValue>({
       label={columnFilterValue === undefined ? "All" : columnFilterValue ? "Yes" : "No"}
       indeterminate={columnFilterValue === undefined}
       checked={columnFilterValue ?? false}
+      onChange={e => {}}
       onClick={e => {
         const prevValue = columnFilterValue;
         let newValue;

@@ -14,6 +14,8 @@ import DataGridToolbar from "./toolbar/DataGridToolbar";
 import Scroll from "@/components/ui/data-grid/components/Scroll";
 import SpinnerLoadingOverlay from "@/components/ui/data-grid/components/SpinnerLoadingOverlay";
 
+// TODO: Fix virtualized scrolling re-rendering the whole table
+
 export interface DataGridProps<TData extends RowData> {
   instance: DataGridInstance<TData>;
 }
