@@ -32,8 +32,10 @@ export const en: DataGridLocalization = {
     pageCount: number;
   }) => `${info.from}-${info.to} of ${info.count}`,
 
-  rowExpandRowIconLabel: "Expand row",
-  rowCollapseRowIconLabel: "Collapse row",
+  expandRowLabel: "Expand row",
+  expandAllRowsLabel: "Expand all",
+  collapseRowLabel: "Collapse row",
+  collapseAllRowsLabel: "Collapse all",
   noRowsLabel: "No rows",
   noResultsOverlayLabel: "No results",
   loadingOverlayLabel: "Loading...",

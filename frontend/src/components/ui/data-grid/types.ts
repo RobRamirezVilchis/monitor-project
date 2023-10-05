@@ -558,8 +558,10 @@ export interface DataGridLocalization {
     pageCount: number;
   }) => string;
   
-  rowExpandRowIconLabel: string;
-  rowCollapseRowIconLabel: string;
+  expandRowLabel: string;
+  expandAllRowsLabel: string;
+  collapseRowLabel: string;
+  collapseAllRowsLabel: string;
   noRowsLabel: string;
   noResultsOverlayLabel: string;
   loadingOverlayLabel: string;

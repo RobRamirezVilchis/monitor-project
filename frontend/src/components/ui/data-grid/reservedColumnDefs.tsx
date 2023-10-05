@@ -1,5 +1,5 @@
 import { RowData } from "@tanstack/react-table";
-import { ActionIcon, Checkbox } from "@mantine/core";
+import { ActionIcon, Checkbox, Tooltip } from "@mantine/core";
 
 import buttonStyles from "./components/BaseButton.module.css";
 
@@ -71,50 +71,72 @@ export function createExpandableColumnDef<TData extends RowData>(options?: DataG
         placeItems: "center",
       },
     },
-    header: (ctx) => (
-      <ActionIcon 
-        color="black"
-        variant="transparent"
-        className={buttonStyles.root}
-        radius="xl"
-        size="sm"
-        {...options?.slotProps?.baseActionIconProps}
-        onClick={e => {
-          ctx.table.getToggleAllRowsExpandedHandler();
-          options?.slotProps?.baseActionIconProps?.onClick?.(e);
-        }}
-      >
-        {ctx.table.getIsSomeRowsExpanded() ? (
-          <IconChevronUp />
-        ) : (
-          <IconChevronDown />
-        )}
-      </ActionIcon>
-    ),
-    cell: (cell) => (
-      <ActionIcon 
-        color="black"
-        variant="transparent"
-        className={buttonStyles.root}
-        radius="xl"
-        size="sm"
-        {...options?.slotProps?.baseActionIconProps}
-        onClick={e => {
-          const expanded = cell.row.getIsExpanded();
-          cell.table.toggleAllRowsExpanded(false);
-          if (!expanded)
-            cell.row.toggleExpanded();
+    header: (ctx) => {
+      const expanded = ctx.table.getIsSomeRowsExpanded();
+      
+      return (
+        <Tooltip 
+          label={expanded 
+            ? options?.localization?.collapseAllRowsLabel 
+            : options?.localization?.expandAllRowsLabel
+          }
+        >
+          <ActionIcon 
+            color="black"
+            variant="transparent"
+            className={buttonStyles.root}
+            radius="xl"
+            size="sm"
+            {...options?.slotProps?.baseActionIconProps}
+            onClick={e => {
+              ctx.table.toggleAllRowsExpanded();
+              options?.slotProps?.baseActionIconProps?.onClick?.(e);
+            }}
+          >
+            {expanded ? (
+              <IconChevronUp />
+            ) : (
+              <IconChevronDown />
+            )}
+          </ActionIcon>
+        </Tooltip>
+      );
+    },
+    cell: (cell) => {
+      const expanded = cell.row.getIsExpanded();
 
-          options?.slotProps?.baseActionIconProps?.onClick?.(e);
-        }}
-      >
-        {cell.row.getIsExpanded() ? (
-          <IconChevronUp />
-        ) : (
-          <IconChevronDown />
-        )}
-      </ActionIcon>
-    ),
+      return (
+        <Tooltip
+          label={expanded 
+            ? options?.localization?.collapseRowLabel 
+            : options?.localization?.expandRowLabel
+          }
+        >
+          <ActionIcon 
+            color="black"
+            variant="transparent"
+            className={buttonStyles.root}
+            radius="xl"
+            size="sm"
+            {...options?.slotProps?.baseActionIconProps}
+            onClick={e => {
+              const expanded = cell.row.getIsExpanded();
+              cell.table.toggleAllRowsExpanded(false);
+              if (!expanded)
+                cell.row.toggleExpanded();
+
+              options?.slotProps?.baseActionIconProps?.onClick?.(e);
+            }}
+          >
+            {expanded ? (
+              <IconChevronUp />
+            ) : (
+              <IconChevronDown />
+            )}
+          </ActionIcon>
+        </Tooltip>
+      );
+    },
   };
 }
 
