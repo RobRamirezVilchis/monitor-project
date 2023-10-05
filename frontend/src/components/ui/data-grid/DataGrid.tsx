@@ -14,8 +14,6 @@ import DataGridToolbar from "./toolbar/DataGridToolbar";
 import Scroll from "@/components/ui/data-grid/components/Scroll";
 import SpinnerLoadingOverlay from "@/components/ui/data-grid/components/SpinnerLoadingOverlay";
 
-// TODO: Fix virtualized scrolling re-rendering the whole table
-
 export interface DataGridProps<TData extends RowData> {
   instance: DataGridInstance<TData>;
 }
@@ -53,7 +51,7 @@ const DataGrid = <TData extends RowData>({
   return (
     <div 
       className={clsx("DataGrid", styles.root, { 
-        [styles.fullscreen]: instance.fullscreen 
+        [styles.fullscreen]: instance.getState().fullscreen, 
       }, instance.options.classNames?.root)} 
       style={instance.options.styles?.root}
       role="grid"
@@ -123,7 +121,7 @@ const DataGrid = <TData extends RowData>({
           }}
         />
 
-        {instance.options.loading || !ready ? (
+        {instance.getState().loading || !ready ? (
           <div className={clsx("DataGridBody-overlay DataGridBody-overlayLoading", styles.overlay)}>
             {instance.options.slots?.loadingOverlay ? (
               instance.options.slots.loadingOverlay()

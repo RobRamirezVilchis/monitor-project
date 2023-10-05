@@ -36,7 +36,7 @@ const ToolbarFilterToggle = <TData extends RowData>({
           instance.options.slotProps?.baseActionIconProps?.onClick?.(e);
         }}
       >
-        {instance.columnFiltersOpen ? <IconFilterOff /> : <IconFilter />}
+        {instance.getState().columnFiltersOpen ? <IconFilterOff /> : <IconFilter />}
       </ActionIcon>
     </Tooltip>
   );

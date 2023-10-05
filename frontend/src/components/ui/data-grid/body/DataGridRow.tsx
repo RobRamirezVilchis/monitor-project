@@ -46,9 +46,9 @@ const DataGridRow = <TData extends RowData>({
         }, instance.options.classNames?.row?.root)}
         style={{
           ...instance.options.styles?.row?.root,
-          height: instance.density.rowHeight,
-          minHeight: instance.density.rowHeight,
-          maxHeight: instance.density.rowHeight,
+          height: instance.getDensityModel().rowHeight,
+          minHeight: instance.getDensityModel().rowHeight,
+          maxHeight: instance.getDensityModel().rowHeight,
           width: instance.options.enableColumnsVirtualization
             ? instance.scrolls.virtualizers.columns.current?.getTotalSize()
             : instance.options.styles?.row?.root?.width,

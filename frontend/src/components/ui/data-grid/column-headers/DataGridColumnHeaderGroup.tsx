@@ -21,7 +21,7 @@ const DataGridColumnHeaderGroup = <TData extends RowData>({
       className={clsx("DataGridColumnHeaderGroup-root", gridHeaderGroupStyles.root, instance.options.classNames?.columnHeaderGroup?.root)}
       style={{
         ...instance.options.styles?.columnHeaderGroup?.root,
-        minHeight: instance.density.headerHeight,
+        minHeight: instance.getDensityModel().headerHeight,
       }}
       role="row"
     >

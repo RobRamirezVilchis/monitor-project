@@ -29,7 +29,7 @@ const DataGridColumnFooterCell = <TData extends RowData, TValue>({
         ...instance.options.styles?.columnFooterCell?.root,
         ...columnDef.footerStyles?.root,
         width: header.getSize(),
-        minHeight: instance.density.headerHeight,
+        minHeight: instance.getDensityModel().headerHeight,
       }}
       role="columnheader"
     >

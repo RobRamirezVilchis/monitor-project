@@ -103,7 +103,7 @@ const DataGridBody = <TData extends unknown>({
         ) : null}
       </div>
 
-      {!instance.options.loading && rowModel.rows.length === 0 ? (
+      {!instance.getState().loading && rowModel.rows.length === 0 ? (
         <div className={clsx("DataGridBody-overlay DataGridBody-overlayEmpty", gridBodyStyles.overlay)}>
           {instance.options.slots?.noRowsOverlay ? (
             instance.options.slots.noRowsOverlay()

@@ -37,7 +37,7 @@ const DataGridColumnHeaderCell = <TData extends RowData, TValue>({
         {
           [`${gridHeaderCellStyles.overlay} ${instance.options.classNames?.columnHeaderCell?.dragOverlay?.root}`]: isOverlay,
           [`${gridHeaderCellStyles.draggableOver} ${instance.options.classNames?.columnHeaderCell?.dragIsOver?.root}`]: droppableCtx?.isOver,
-          [`${gridHeaderCellStyles.verticalPadding}`]: instance.columnFiltersOpen,
+          [`${gridHeaderCellStyles.verticalPadding}`]: instance.getState().columnFiltersOpen,
         },
         instance.options.classNames?.columnHeaderCell?.root,
         columnDef.headerClassNames?.root,
@@ -46,7 +46,7 @@ const DataGridColumnHeaderCell = <TData extends RowData, TValue>({
         ...instance.options.styles?.columnHeaderCell?.root,
         ...columnDef.headerStyles?.root,
         width: header.getSize(),
-        minHeight: instance.density.headerHeight,
+        minHeight: instance.getDensityModel().headerHeight,
       }}
 
       ref={droppableCtx?.setNodeRef}
@@ -110,7 +110,7 @@ const DataGridColumnHeaderCell = <TData extends RowData, TValue>({
           {header.column.getCanFilter() && header.subHeaders.length === 0 ? (
             <div
               className={clsx("DataGridColumnHeaderCell-filter", {
-                [`${gridHeaderCellStyles["filter--closed"]}`]: !instance.columnFiltersOpen,
+                [`${gridHeaderCellStyles["filter--closed"]}`]: !instance.getState().columnFiltersOpen,
               }, gridHeaderCellStyles.filter, instance.options.classNames?.columnHeaderCell?.filter, columnDef.headerClassNames?.filter)}
               style={{
                 ...instance.options.styles?.columnHeaderCell?.filters,

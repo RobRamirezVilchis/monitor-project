@@ -32,13 +32,13 @@ const ToolbarDensityToggle = <TData extends RowData>({
         {...instance.options.slotProps?.baseActionIconProps}
         className={clsx(buttonStyles.root, instance.options.slotProps?.baseActionIconProps?.className)}
         onClick={e => {
-          instance.density.toggle()
+          instance.toggleDensity()
           instance.options.slotProps?.baseActionIconProps?.onClick?.(e);
         }}
       >
-        {instance.density.value === "compact" && <IconBaselineDensitySmall />}
-        {instance.density.value === "normal" && <IconBaselineDensityMedium />}
-        {instance.density.value === "comfortable" && <IconBaselineDensityLarge />}
+        {instance.getState().density === "compact" && <IconBaselineDensitySmall />}
+        {instance.getState().density === "normal" && <IconBaselineDensityMedium />}
+        {instance.getState().density === "comfortable" && <IconBaselineDensityLarge />}
       </ActionIcon>
     </Tooltip>
   )

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { 
   getCoreRowModel, 
   getExpandedRowModel,
@@ -14,7 +14,7 @@ import {
 } from "@tanstack/react-table";
 import { useVirtualizer } from "@tanstack/react-virtual";
 
-import type { DataGridOptions, DataGridInstance, DataGridDensity, ColumnDef } from "./types";
+import type { DataGridOptions, DataGridInstance, DataGridDensity, ColumnDef, TableState } from "./types";
 import { useScroll } from "./components/useScroll";
 import { createExpandableColumnDef, createRowNumberingColumnDef, createRowSelectionColumnDef } from "./reservedColumnDefs";
 import { en } from "./locales/en";
@@ -40,6 +40,8 @@ const useDataGrid = <TData extends RowData>(options: DataGridOptions<TData>): Da
     getFacetedUniqueValues: _getFacetedUniqueValues,
     getGroupedRowModel: _getGroupedRowModel,
     getPaginationRowModel: _getPaginationRowModel,
+    initialState,
+    state,
     ...tableOptions
   } = options;
 
@@ -58,8 +60,27 @@ const useDataGrid = <TData extends RowData>(options: DataGridOptions<TData>): Da
     ];
   }, [_columns, options]);
 
+  const [loading, setLoading] = useState(options.initialState?.loading ?? options.state?.loading ?? false);
+  const [density, setDensity] = useState<DataGridDensity>(options.initialState?.density ?? options.state?.density ?? "normal");
+  const [fullscreen, setFullscreen] = useState(options.initialState?.fullscreen ?? options.state?.fullscreen ?? false);
+  const [columnFiltersOpen, setColumnFiltersOpen] = useState(options.initialState?.columnFiltersOpen ?? options.state?.columnFiltersOpen ?? false);
+
   const instance = useReactTable<TData>({
     ...tableOptions,
+    initialState: {
+      ...initialState,
+      loading: initialState?.loading ?? false,
+      density: initialState?.density ?? "normal",
+      fullscreen: initialState?.fullscreen ?? false,
+      columnFiltersOpen: initialState?.columnFiltersOpen ?? false,
+    },
+    state: {
+      loading,
+      density,
+      fullscreen,
+      columnFiltersOpen,
+      ...state,
+    },
     columns,
     getCoreRowModel       : _getCoreRowModel            ?? getCoreRowModel<TData>(),
     getExpandedRowModel   : options.enableExpanding     ? _getExpandedRowModel    ?? getExpandedRowModel<TData>()    : undefined,
@@ -70,7 +91,27 @@ const useDataGrid = <TData extends RowData>(options: DataGridOptions<TData>): Da
     getFacetedUniqueValues: options.enableFacetedValues ? _getFacetedUniqueValues ?? getFacetedUniqueValues<TData>() : undefined,
     getGroupedRowModel    : options.enableGrouping      ? _getGroupedRowModel     ?? getGroupedRowModel<TData>()     : undefined,
     getPaginationRowModel : options.enablePagination    ? _getPaginationRowModel  ?? getPaginationRowModel<TData>()  : undefined,
-  } as any) as DataGridInstance<TData>;
+  } as any) as unknown as DataGridInstance<TData>;
+
+  const densityModel = useMemo(() => ({
+    factor: densityFactor[density],
+    rowHeight: Math.floor(DENSITY_BASE_ROW_HEIGHT * (densityFactor[density] ?? 1)),
+    headerHeight: Math.floor(DENSITY_BASE_HEADER_HEIGHT * (densityFactor[density] ?? 1)),
+  }), [density]);
+  const getDensityModel = useMemo(() => () => densityModel, [densityModel]);
+  const toggleDensity = useCallback<DataGridInstance<TData>["toggleDensity"]>((density) => {
+    if (density) 
+      setDensity(density);
+    else {
+      setDensity(prev => {
+        switch (prev) {
+          case "normal":      return "comfortable";
+          case "compact":     return "normal";
+          case "comfortable": return "compact";
+        }
+      });
+    }
+  }, []);
 
   const headerRef = useRef<HTMLDivElement>(null);
   const mainContentRef = useRef<HTMLDivElement>(null);
@@ -97,31 +138,6 @@ const useDataGrid = <TData extends RowData>(options: DataGridOptions<TData>): Da
     footer: footerRef,
   }), []);
 
-  const [_density, _setDensity] = useState<DataGridDensity>(options.density ?? "normal");
-
-  const density = useMemo(() => ({
-    value: _density,
-    factor: densityFactor[_density],
-    rowHeight: Math.floor(DENSITY_BASE_ROW_HEIGHT * (densityFactor[_density] ?? 1)),
-    headerHeight: Math.floor(DENSITY_BASE_HEADER_HEIGHT * (densityFactor[_density] ?? 1)),
-    toggle: (density?: DataGridDensity) => {
-      if (density) 
-        _setDensity(density);
-      else {
-        _setDensity(prev => {
-          switch (prev) {
-            case "normal":      return "comfortable";
-            case "compact":     return "normal";
-            case "comfortable": return "compact";
-          }
-        });
-      }
-    },
-  }), [_density]);
-
-  const [fullscreen, setFullscreen] = useState(false);
-  const [columnFiltersOpen, setColumnFiltersOpen] = useState(false);
-
   //* Virtualization cannot be changed after initialization!!!
   const leafColumns = instance.getVisibleLeafColumns();
   const horizontalVirtualizer = useVirtualizer(options.enableColumnsVirtualization ? {
@@ -141,7 +157,7 @@ const useDataGrid = <TData extends RowData>(options: DataGridOptions<TData>): Da
     count: instance.getRowModel().rows.length,
     overscan: 1,
     getScrollElement: () => mainVerticalScrollRef.current.scrollRef.current,
-    estimateSize: () => density.rowHeight,
+    estimateSize: () => densityModel.rowHeight,
     horizontal: false,
     ...options.rowsVirtualizerProps,    
   } : {
@@ -150,12 +166,12 @@ const useDataGrid = <TData extends RowData>(options: DataGridOptions<TData>): Da
     estimateSize: () => 0,
   });
 
-  const prevDensityValue = useRef(density.value);
+  const prevDensityValue = useRef(density);
   useEffect(() => {
-    if (prevDensityValue.current === density.value) return;
-    prevDensityValue.current = density.value;
+    if (prevDensityValue.current === density) return;
+    prevDensityValue.current = density;
     verticalVirtualizer.measure();
-  }, [density.value, verticalVirtualizer]);
+  }, [density, verticalVirtualizer]);
 
   const horizontalVirtualizerRef = useRef(
     options.enableColumnsVirtualization ? horizontalVirtualizer : null
@@ -182,10 +198,10 @@ const useDataGrid = <TData extends RowData>(options: DataGridOptions<TData>): Da
 
   instance.refs = refs;
   instance.scrolls = scrolls;
-  instance.density = density;
-  instance.fullscreen = fullscreen;
+  instance.setLoading = setLoading;
+  instance.getDensityModel = getDensityModel;
+  instance.toggleDensity = toggleDensity;
   instance.setFullscreen = setFullscreen;
-  instance.columnFiltersOpen = columnFiltersOpen;
   instance.setColumnFiltersOpen = setColumnFiltersOpen;
   instance.localization = localization;
 

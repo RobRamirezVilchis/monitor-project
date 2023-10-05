@@ -53,9 +53,9 @@ const DataGridRowCell = <TData extends RowData, TValue>({
       style={{
         ...instance.options.styles?.cell?.root,
         ...columnDef.cellStyles?.root,
-        height: instance.density.rowHeight,
-        minHeight: instance.density.rowHeight,
-        maxHeight: instance.density.rowHeight,
+        height: instance.getDensityModel().rowHeight,
+        minHeight: instance.getDensityModel().rowHeight,
+        maxHeight: instance.getDensityModel().rowHeight,
         width: cell.column.getSize(),
         ...style,
       }}

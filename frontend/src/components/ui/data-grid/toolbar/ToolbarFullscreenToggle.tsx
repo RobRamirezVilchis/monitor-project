@@ -36,7 +36,7 @@ const ToolbarFullscreenToggle = <TData extends RowData>({
           instance.options.slotProps?.baseActionIconProps?.onClick?.(e);
         }}
       >
-        {instance.fullscreen ? <IconMinimize /> : <IconMaximize />}
+        {instance.getState().fullscreen ? <IconMinimize /> : <IconMaximize />}
       </ActionIcon>
     </Tooltip>
   );

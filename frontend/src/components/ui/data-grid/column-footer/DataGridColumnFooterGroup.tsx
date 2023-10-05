@@ -20,7 +20,7 @@ const DataGridColumnHeaderGroup = <TData extends RowData>({
       className={clsx("DataGridColumnFooterGroup-root", gridFooterGroupStyles.root, instance.options.classNames?.columnFooterGroup?.root)}
       style={{
         ...instance.options.styles?.columnFooterGroup?.root,
-        minHeight: instance.density.headerHeight,
+        minHeight: instance.getDensityModel().headerHeight,
       }}
       role="row"
     >

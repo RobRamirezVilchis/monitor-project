@@ -23,6 +23,7 @@ import {
   Header as _Header,
   HeaderGroup as _HeaderGroup,
   HeadersInstance as _HeaderInstance,
+  InitialTableState as _InitialTableState,
   PaginationInstance as _PaginationInstance,
   PaginationOptions as _PaginationOptions,
   PartialKeys,
@@ -35,6 +36,7 @@ import {
   SortDirection,
   SortingInstance as _SortingInstance,
   SortingOptions,
+  TableState as _TableState,
   Updater,
   VisibilityInstance as _VisibilityInstance,
   VisibilityOptions,
@@ -193,10 +195,29 @@ export interface CoreOptions<TData extends RowData> extends
 Omit<_CoreOptions<TData>, 
   | "columns" 
   | "defaultColumn"
+  | "state"
+  | "initialState"
 > {
   columns: ColumnDef<TData, any>[];
   defaultColumn?: Partial<ColumnDef<TData, unknown>>;
+  state?: Partial<TableState>;
+  initialState?: InitialTableState;
 }
+
+export interface ExtraTableState {
+  loading?: boolean;
+  /**
+   * The height of each row in pixels.
+   * @default "normal" (52px)
+   */
+  density: DataGridDensity;
+  fullscreen: boolean;
+  columnFiltersOpen: boolean;
+}
+
+export interface TableState extends _TableState, ExtraTableState {}
+
+export interface InitialTableState extends _InitialTableState, Partial<ExtraTableState> {}
 
 export interface PaginationOptions extends _PaginationOptions {
   enablePagination?: boolean;
@@ -230,13 +251,7 @@ VirtualizationOptions {}
 export type DataGridOptionsResolved<TData extends RowData> = CoreOptions<TData> & FeatureOptions<TData>;
 
 export interface DataGridOptions<TData extends RowData> extends 
-PartialKeys<DataGridOptionsResolved<TData>, "getCoreRowModel" | "state" | "onStateChange" | "renderFallbackValue"> {
-  loading?: boolean;
-  /**
-   * The height of each row in pixels.
-   * @default "normal" (52px)
-   */
-  density?: DataGridDensity;
+PartialKeys<DataGridOptionsResolved<TData>, "getCoreRowModel" | "onStateChange" | "renderFallbackValue"> {
   renderSubComponent?: (row: Row<TData>) => ReactNode;
   /**
    * Whether to enable column reordering.
@@ -362,16 +377,14 @@ export type DataGridInstance<TData extends RowData> =
       rows: RefObject<Virtualizer<HTMLDivElement, Element> | null>;
     }
   };
-  density: {
-    value: DataGridDensity;
+  setLoading: Dispatch<SetStateAction<boolean>>;
+  getDensityModel: () => {
     factor: number;
     rowHeight: number;
     headerHeight: number;
-    toggle: (density?: DataGridDensity) => void;
   };
-  fullscreen: boolean;
+  toggleDensity: (density?: DataGridDensity) => void;
   setFullscreen: Dispatch<SetStateAction<boolean>>;
-  columnFiltersOpen: boolean;
   setColumnFiltersOpen: Dispatch<SetStateAction<boolean>>;
   localization: DataGridLocalization;
 }
@@ -387,6 +400,8 @@ Omit<_CoreInstance<TData>,
   | "getAllFlatColumns"
   | "getAllLeafColumns"
   | "getColumn"
+  | "getState"
+  | "setState"
 > {
   options: RequiredKeys<DataGridOptions<TData>, "state">;
   setOptions: (newOptions: Updater<DataGridOptionsResolved<TData>>) => void;
@@ -397,6 +412,8 @@ Omit<_CoreInstance<TData>,
   getAllFlatColumns: () => Column<TData, unknown>[];
   getAllLeafColumns: () => Column<TData, unknown>[];
   getColumn: (columnId: string) => Column<TData, unknown> | undefined;
+  getState: () => TableState;
+  setState: (updater: Updater<TableState>) => void;
 }
 
 export interface HeadersInstance<TData extends RowData> extends 
