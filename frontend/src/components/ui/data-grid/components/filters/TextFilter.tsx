@@ -25,7 +25,7 @@ const TextFilter = <TData extends RowData, TValue>({
 
   return (
     <TextInput
-      placeholder="Filter..."
+      placeholder={instance.localization.filterByPlaceholder(header.column)}
       value={internalValue}
       onChange={(e) => {
         setInternalValue(e.target.value);

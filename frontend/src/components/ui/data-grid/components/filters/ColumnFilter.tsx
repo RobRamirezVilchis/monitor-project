@@ -18,11 +18,11 @@ export interface ColumnFilterProps<TData extends RowData, TValue> {
   header: Header<TData, TValue>;
 }
 
-// TODO: Fix bug where tabbing through filters causes the column headers to translate without fix
-
 // TODO: Add props for editing some filter values (like select, autocomplete, etc.)
 
 // TODO: Apply instance....className/style to filter inputs
+
+// TODO: Prevent window scrolling inside fake scrollbars
 
 const ColumnFilter = <TData extends RowData, TValue>({
   instance,
@@ -31,17 +31,17 @@ const ColumnFilter = <TData extends RowData, TValue>({
   const variant = header.column.columnDef.filterVariant ?? "text";
 
   switch (variant) {
-    case "text"        : return <TextFilter header={header} instance={instance} />;
+    case "text"                : return <TextFilter header={header} instance={instance} />;
     case "multi-autocomplete"  : return <MultiAutocompleteFilter header={header} instance={instance} />;
-    case "autocomplete": return <AutocompleteFilter header={header} instance={instance} />;
-    case "select"      : return <SelectFilter header={header} instance={instance} />;
-    case "multi-select": return <MultiSelectFilter header={header} instance={instance} />;
-    case "number"      : return <NumberFilter header={header} instance={instance} />;
-    case "range"       : return <RangeFilter header={header} instance={instance} />;
-    case "range-slider": return <RangeSliderFilter header={header} instance={instance} />;
-    case "date"        : return <DateFilter header={header} instance={instance} />;
-    case "date-range"  : return <div>DateRangeFilter</div>; // <DateRangeFilter header={header} instance={instance} />;
-    case "checkbox"    : return <CheckboxFilter header={header} instance={instance} />;
+    case "autocomplete"        : return <AutocompleteFilter header={header} instance={instance} />;
+    case "select"              : return <SelectFilter header={header} instance={instance} />;
+    case "multi-select"        : return <MultiSelectFilter header={header} instance={instance} />;
+    case "number"              : return <NumberFilter header={header} instance={instance} />;
+    case "range"               : return <RangeFilter header={header} instance={instance} />;
+    case "range-slider"        : return <RangeSliderFilter header={header} instance={instance} />;
+    case "date"                : return <DateFilter header={header} instance={instance} />;
+    case "date-range"          : return <DateRangeFilter header={header} instance={instance} />;
+    case "checkbox"            : return <CheckboxFilter header={header} instance={instance} />;
 
     default: return null;
   }

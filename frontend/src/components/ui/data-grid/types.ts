@@ -603,6 +603,11 @@ export interface DataGridLocalization {
   loadingOverlayLabel: string;
 
   footerSelectedRowCount: (count: number) => string;
+
+  filterByPlaceholder: (column: Column<any, any>) => string;
+  filterByCheckboxLabel: (checked: boolean | undefined, column: Column<any, any>) => string;
+  filterMinPlaceholder: string;
+  filterMaxPlaceholder: string;
 }
 
 // Styles ----------------------------------------------------------------------
@@ -733,3 +738,6 @@ export interface DataGridRowCellStyles {
   content?: CSSProperties;
   // focused?: CSSProperties;
 }
+
+// Filters ---------------------------------------------------------------------
+

@@ -16,44 +16,34 @@ const DateRangeFilter = <TData extends RowData, TValue>({
   instance,
   header,
 }: DateRangeFilterProps<TData, TValue>) => {
-  // TODO: Fix date range filter
-  const facetedMinMaxValues = [new Date(), new Date()] /*header.column.getFacetedMinMaxValues()*/ as [Date, Date];
-  const min = facetedMinMaxValues?.[0] ?? null;
-  const max = facetedMinMaxValues?.[1] ?? null;
-  const columnFilterValue = header.column.getFilterValue() as [Date | null, Date | null] ?? [min, max];
-  const debounce = useDebounce({
-    callback: useCallback((value: Date | null) => {
-      header.column.setFilterValue(value);
-    }, [header.column]),
-    debounceTime: 500,
-  });
-  const [internalValue, setInternalValue] = useState<[Date | null, Date | null]>(columnFilterValue);
+  const columnFilterValue = header.column.getFilterValue() as [Date | null, Date | null] ?? [null, null];
 
-  console.log(facetedMinMaxValues)
+  return (
+    <div
+      style={{
+        display: "grid",
+        gap: "0.25rem",
+        alignItems: "center",
+        gridTemplateColumns: "1fr 1fr",
+      }}
+    >
+      <DateInput
+        placeholder={instance.localization.filterMinPlaceholder}
+        value={columnFilterValue[0]}
+        leftSection={<IconCalendarEvent />}
+        onChange={value => header.column.setFilterValue([value, columnFilterValue[1]])}
+        clearable
+      />
 
-  if (true)
-    return (
-      // <DateInput
-      //   multiple
-      //   placeholder="Filter..."
-      //   value={internalValue}
-      //   leftSection={<IconCalendarEvent />}
-      //   onChange={(value) => {
-      //       setInternalValue(value);
-      //       debounce(value);
-      //   }}
-      //   clearable
-      // />
-      <div>
-
-      </div>
-    );
-  else
-    return (
-      <div>
-
-      </div>
-    );
+      <DateInput
+        placeholder={instance.localization.filterMaxPlaceholder}
+        value={columnFilterValue[1]}
+        leftSection={<IconCalendarEvent />}
+        onChange={value => header.column.setFilterValue([columnFilterValue[0], value])}
+        clearable
+      />
+    </div>
+  );
 }
 
 export default DateRangeFilter;

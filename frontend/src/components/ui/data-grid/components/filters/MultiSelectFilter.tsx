@@ -25,7 +25,7 @@ const MultiSelectFilter = <TData extends RowData, TValue>({
 
   return (
     <MultiSelect
-      placeholder="Filter..."
+      placeholder={instance.localization.filterByPlaceholder(header.column)}
       value={internalValue}
       onChange={(value) => {
         setInternalValue(value);

@@ -42,8 +42,10 @@ export const en: DataGridLocalization = {
 
   footerSelectedRowCount: (count) => count === 1 ? "1 row selected" : `${count} rows selected`,
 
-  // filterMinPlaceholder: "Min",
-  // filterMaxPlaceholder: "Max",
+  filterByPlaceholder: (column) => `Filter by ${column.columnDef.columnTitle || column.id}...`,
+  filterByCheckboxLabel: (checked, column) => `Showing ${checked === undefined ? "all" : checked ? "true" : "false"} values from ${column.columnDef.columnTitle || column.id}`,
+  filterMinPlaceholder: "Min",
+  filterMaxPlaceholder: "Max",
   // filterSelectPlaceholder: "Select",
   // filterOperatorBetween: "Between",
   // filterOperatorEquals: "Equals",
@@ -59,6 +61,4 @@ export const en: DataGridLocalization = {
   // filterOperatorIsNotEmpty: "Is not empty",
   // filterOperatorIsTrue: "Is true",
   // filterOperatorIsFalse: "Is false",
-  // filterHeaderFilter: "Filter",
-  // filterHeaderReset: "Reset",
 };

@@ -54,38 +54,38 @@ export const endsWithSensitive: FilterFn<any> = (row, columnId, filterValue: str
 }
 endsWithSensitive.autoRemove = (v) => !v;
 
-export const greaterThan: FilterFn<any> = (row, columnId, filterValue: string | number | Date) => {
-  const value = row.getValue<string | number | Date>(columnId);
+export const greaterThan: FilterFn<any> = (row, columnId, filterValue: string | number) => {
+  const value = row.getValue<string | number>(columnId);
   return value > filterValue;
 }
 greaterThan.autoRemove = (v) => !v;
 
-export const greaterThanOrEqualTo: FilterFn<any> = (row, columnId, filterValue: string | number | Date) => {
-  const value = row.getValue<string | number | Date>(columnId);
+export const greaterThanOrEqualTo: FilterFn<any> = (row, columnId, filterValue: string | number) => {
+  const value = row.getValue<string | number>(columnId);
   return value >= filterValue;
 }
 greaterThanOrEqualTo.autoRemove = (v) => !v;
 
-export const lessThan: FilterFn<any> = (row, columnId, filterValue: string | number | Date) => {
-  const value = row.getValue<string | number | Date>(columnId);
+export const lessThan: FilterFn<any> = (row, columnId, filterValue: string | number) => {
+  const value = row.getValue<string | number>(columnId);
   return value < filterValue;
 }
 lessThan.autoRemove = (v) => !v;
 
-export const lessThanOrEqualTo: FilterFn<any> = (row, columnId, filterValue: string | number | Date) => {
-  const value = row.getValue<string | number | Date>(columnId);
+export const lessThanOrEqualTo: FilterFn<any> = (row, columnId, filterValue: string | number) => {
+  const value = row.getValue<string | number>(columnId);
   return value <= filterValue;
 }
 lessThanOrEqualTo.autoRemove = (v) => !v;
 
-export const between: FilterFn<any> = (row, columnId, filterValue: [string | number | Date, string | number | Date]) => {
-  const value = row.getValue<string | number | Date>(columnId);
+export const between: FilterFn<any> = (row, columnId, filterValue: [string | number, string | number]) => {
+  const value = row.getValue<string | number>(columnId);
   return value >= filterValue[0] && value <= filterValue[1];
 }
 between.autoRemove = (v) => !v;
 
-export const betweenExclusive: FilterFn<any> = (row, columnId, filterValue: [string | number | Date, string | number | Date]) => {
-  const value = row.getValue<string | number | Date>(columnId);
+export const betweenExclusive: FilterFn<any> = (row, columnId, filterValue: [string | number, string | number]) => {
+  const value = row.getValue<string | number>(columnId);
   return value > filterValue[0] && value < filterValue[1];
 }
 betweenExclusive.autoRemove = (v) => !v;
@@ -140,29 +140,61 @@ strEqualsToSensitive.autoRemove = (v) => !v;
 
 // Dates
 
-export const isAfter: FilterFn<any> = (row, columnId, filterValue: Date) => {
+export const dateEqualsTo: FilterFn<any> = (row, columnId, filterValue: number) => {
   const value = row.getValue<Date>(columnId);
-  return value > filterValue;
+  if (!value) return false;
+  return value.valueOf() === filterValue;
 }
-isAfter.autoRemove = (v) => !v;
+dateEqualsTo.autoRemove = (v) => !v || !v?.valueOf;
+dateEqualsTo.resolveFilterValue = (v) => v.valueOf();
 
-export const isAfterOrEqualTo: FilterFn<any> = (row, columnId, filterValue: Date) => {
+export const isAfter: FilterFn<any> = (row, columnId, filterValue: number) => {
   const value = row.getValue<Date>(columnId);
-  return value >= filterValue;
+  if (!value) return false;
+  return value.valueOf() > filterValue;
 }
-isAfterOrEqualTo.autoRemove = (v) => !v;
+isAfter.autoRemove = (v) => !v || !v?.valueOf;
+isAfter.resolveFilterValue = (v) => v.valueOf();
 
-export const isBefore: FilterFn<any> = (row, columnId, filterValue: Date) => {
+export const isAfterOrEqualTo: FilterFn<any> = (row, columnId, filterValue: number) => {
   const value = row.getValue<Date>(columnId);
-  return value < filterValue;
+  if (!value) return false;
+  return value.valueOf() >= filterValue;
 }
-isBefore.autoRemove = (v) => !v;
+isAfterOrEqualTo.autoRemove = (v) => !v || !v?.valueOf;
+isAfterOrEqualTo.resolveFilterValue = (v) => v.valueOf();
 
-export const isBeforeOrEqualTo: FilterFn<any> = (row, columnId, filterValue: Date) => {
+export const isBefore: FilterFn<any> = (row, columnId, filterValue: number) => {
   const value = row.getValue<Date>(columnId);
-  return value <= filterValue;
+  if (!value) return false;
+  return value.valueOf() < filterValue;
 }
-isBeforeOrEqualTo.autoRemove = (v) => !v;
+isBefore.autoRemove = (v) => !v || !v?.valueOf;
+isBefore.resolveFilterValue = (v) => v.valueOf();
+
+export const isBeforeOrEqualTo: FilterFn<any> = (row, columnId, filterValue: number) => {
+  const value = row.getValue<Date>(columnId);
+  if (!value) return false;
+  return value.valueOf() <= filterValue;
+}
+isBeforeOrEqualTo.autoRemove = (v) => !v || !v?.valueOf;
+isBeforeOrEqualTo.resolveFilterValue = (v) => v.valueOf();
+
+export const isDateBetween: FilterFn<any> = (row, columnId, filterValue: [number, number]) => {
+  const value = row.getValue<Date>(columnId);
+  if (!value) return false;
+  return value.valueOf() >= filterValue[0] && value.valueOf() <= filterValue[1];
+}
+isDateBetween.autoRemove = (v) => !v || !v?.length;
+isDateBetween.resolveFilterValue = (v) => [v[0].valueOf(), v[1].valueOf()];
+
+export const isDateBetweenExclusive: FilterFn<any> = (row, columnId, filterValue: [number, number]) => {
+  const value = row.getValue<Date>(columnId);
+  if (!value) return false;
+  return value.valueOf() > filterValue[0] && value.valueOf() < filterValue[1];
+}
+isDateBetweenExclusive.autoRemove = (v) => !v || !v?.length;
+isDateBetweenExclusive.resolveFilterValue = (v) => [v[0].valueOf(), v[1].valueOf()];
 
 // Utils
 
@@ -228,10 +260,15 @@ export const filterFns = {
   notEqualsTo,
   strEqualsTo,
   strEqualsToSensitive,
+
+  dateEqualsTo,
   isAfter,
   isAfterOrEqualTo,
   isBefore,
   isBeforeOrEqualTo,
+  isDateBetween,
+  isDateBetweenExclusive,
+
   isNull,
   isNotNull,
   isUndefined,

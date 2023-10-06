@@ -16,7 +16,7 @@ const SelectFilter = <TData extends RowData, TValue>({
 
   return (
     <Select
-      placeholder="Filter..."
+      placeholder={instance.localization.filterByPlaceholder(header.column)}
       value={columnFilterValue}
       onChange={(value) => {
         header.column.setFilterValue(value);

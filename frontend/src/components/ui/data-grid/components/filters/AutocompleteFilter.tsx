@@ -25,7 +25,7 @@ const AutocompleteFilter = <TData extends RowData, TValue>({
 
   return (
     <Autocomplete
-      placeholder="Filter..."
+      placeholder={instance.localization.filterByPlaceholder(header.column)}
       value={internalValue}
       onChange={(value) => {
         setInternalValue(value);

@@ -17,23 +17,13 @@ const DateFilter = <TData extends RowData, TValue>({
   header,
 }: DateFilterProps<TData, TValue>) => {
   const columnFilterValue = header.column.getFilterValue() as Date | null ?? null;
-  const debounce = useDebounce({
-    callback: useCallback((value: Date | null) => {
-      header.column.setFilterValue(value);
-    }, [header.column]),
-    debounceTime: 500,
-  });
-  const [internalValue, setInternalValue] = useState<Date | null>(columnFilterValue);
 
   return (
     <DateInput
-      placeholder="Filter..."
-      value={internalValue}
+      placeholder={instance.localization.filterByPlaceholder(header.column)}
+      value={columnFilterValue}
       leftSection={<IconCalendarEvent />}
-      onChange={(value) => {
-        setInternalValue(value);
-        debounce(value);
-      }}
+      onChange={value => header.column.setFilterValue(value)}
       clearable
     />
   );
