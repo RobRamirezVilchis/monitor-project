@@ -289,12 +289,12 @@ PartialKeys<DataGridOptionsResolved<TData>, "getCoreRowModel" | "onStateChange" 
   renderSubComponent?: (row: Row<TData>) => ReactNode;
   /**
    * Whether to enable column reordering.
-   * @default true
+   * @default false
    */
   enableColumnReordering?: boolean;
   /**
    * Whether to enable column actions.
-   * @default true
+   * @default false
    */
   enableColumnActions?: boolean;
   enableRowNumbering?: boolean;

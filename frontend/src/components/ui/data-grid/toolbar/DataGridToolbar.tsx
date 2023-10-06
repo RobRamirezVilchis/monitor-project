@@ -31,14 +31,21 @@ const DataGridHeader = <TData extends RowData>({
             className={clsx("DataGridToolbar-leftContainer", styles.left, instance.options.classNames?.toolbar?.leftContainer)}
             style={instance.options.styles?.toolbar?.leftContainer}
           >
-            {instance.options.hideQuickSearch ? null : <ToolbarQuickFilter instance={instance} />}
+            {instance.options.hideQuickSearch 
+              || !instance.options.enableFilters 
+              || !instance.options.enableGlobalFilter
+             ? null 
+             : <ToolbarQuickFilter instance={instance} />
+            }
           </div>
 
           <div
             className={clsx("DataGridToolbar-rightContainer", styles.right, instance.options.classNames?.toolbar?.rightContainer)}
             style={instance.options.styles?.toolbar?.rightContainer}
           >
-            {instance.options.hideColumnFiltersSelector ? null : <ToolbarFilterToggle instance={instance} />}
+            {instance.options.hideColumnFiltersSelector
+              || !instance.options.enableFilters 
+              || !instance.options.enableColumnFilters   ? null : <ToolbarFilterToggle instance={instance} />}
             {instance.options.hideColumnSelector        ? null : <ToolbarColumnVisibilityToggle instance={instance} />}
             {instance.options.hideDensitySelector       ? null : <ToolbarDensityToggle instance={instance} />}
             {instance.options.hideFullscreenSelector    ? null : <ToolbarFullscreenToggle instance={instance} />}

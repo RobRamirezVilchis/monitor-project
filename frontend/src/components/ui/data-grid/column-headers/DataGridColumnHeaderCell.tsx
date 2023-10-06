@@ -96,11 +96,13 @@ const DataGridColumnHeaderCell = <TData extends RowData, TValue>({
                   ...columnDef.headerStyles?.actions,
                 }}
               >
-                {header.column.getCanSort() ? <ColumnSortingToggle header={header} instance={instance} /> : null}
-                {instance.options.enableColumnReordering !== false && header.column.columnDef.enableReordering !== false && draggableCtx 
+                {instance.options.enableSorting && header.column.getCanSort() 
+                ? <ColumnSortingToggle header={header} instance={instance} /> 
+                : null}
+                {instance.options.enableColumnReordering && header.column.columnDef.enableReordering && draggableCtx 
                 ? <ColumnDragHandle draggableCtx={draggableCtx} instance={instance} /> 
                 : null}
-                {instance.options.enableColumnActions !== false && header.column.columnDef.enableColumnActions !== false
+                {instance.options.enableColumnActions && header.column.columnDef.enableColumnActions
                 ? <ColumnMenu instance={instance} header={header} /> 
                 : null}
               </div>) 

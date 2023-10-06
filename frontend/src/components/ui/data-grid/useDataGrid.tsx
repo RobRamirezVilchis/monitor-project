@@ -33,19 +33,19 @@ const DENSITY_BASE_HEADER_HEIGHT = 56;
 const useDataGrid = <TData extends RowData>(options: DataGridOptions<TData>): DataGridInstance<TData> => {
   const {
     columns: _columns,
-    getCoreRowModel: _getCoreRowModel,
-    getSortedRowModel: _getSortedRowModel,
-    getExpandedRowModel: _getExpandedRowModel,
-    getFilteredRowModel: _getFilteredRowModel,
-    getFacetedRowModel: _getFacetedRowModel,
-    getFacetedMinMaxValues: _getFacetedMinMaxValues,
-    getFacetedUniqueValues: _getFacetedUniqueValues,
-    getGroupedRowModel: _getGroupedRowModel,
-    getPaginationRowModel: _getPaginationRowModel,
     initialState,
     state,
-    filterFns: _filterFns,
-    sortingFns: _sortingFns,
+    filterFns             : _filterFns,
+    sortingFns            : _sortingFns,
+    getCoreRowModel       : _getCoreRowModel,
+    getSortedRowModel     : _getSortedRowModel,
+    getExpandedRowModel   : _getExpandedRowModel,
+    getFilteredRowModel   : _getFilteredRowModel,
+    getFacetedRowModel    : _getFacetedRowModel,
+    getFacetedMinMaxValues: _getFacetedMinMaxValues,
+    getFacetedUniqueValues: _getFacetedUniqueValues,
+    getGroupedRowModel    : _getGroupedRowModel,
+    getPaginationRowModel : _getPaginationRowModel,
     ...tableOptions
   } = options;
 
@@ -71,6 +71,7 @@ const useDataGrid = <TData extends RowData>(options: DataGridOptions<TData>): Da
 
   const instance = useReactTable<TData>({
     ...tableOptions,
+    columns,
     initialState: {
       ...initialState,
       loading: initialState?.loading ?? false,
@@ -93,7 +94,6 @@ const useDataGrid = <TData extends RowData>(options: DataGridOptions<TData>): Da
       ...sortingFns,
       ..._sortingFns,
     },
-    columns,
     getCoreRowModel       : _getCoreRowModel            ?? getCoreRowModel<TData>(),
     getExpandedRowModel   : options.enableExpanding     ? _getExpandedRowModel    ?? getExpandedRowModel<TData>()    : undefined,
     getSortedRowModel     : options.enableSorting       ? _getSortedRowModel      ?? getSortedRowModel<TData>()      : undefined,
