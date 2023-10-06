@@ -1,4 +1,4 @@
-import { CSSProperties } from "react";
+import { CSSProperties, useLayoutEffect } from "react";
 import clsx from "clsx";
 
 import gridBodyStyles from "./DataGridBody.module.css";
@@ -20,7 +20,7 @@ const DataGridBody = <TData extends unknown>({
   style,
 }: DataGridBodyProps<TData>) => {
 
-  useIsomorphicLayoutEffect(() => {
+  useLayoutEffect(() => {
     instance.scrolls.main.horizontal.current?.syncScroll(instance.refs.content.main);
     instance.scrolls.main.vertical.current?.syncScroll(instance.refs.content.main);
 
@@ -28,7 +28,7 @@ const DataGridBody = <TData extends unknown>({
       instance.scrolls.main.horizontal.current?.desyncScroll(instance.refs.content.main);
       instance.scrolls.main.vertical.current?.desyncScroll(instance.refs.content.main);
     };
-  }, [instance.refs, instance.scrolls]);
+  }, [instance.scrolls.main.horizontal, instance.scrolls.main.vertical, instance.refs.content.main]);
 
   const rowModel = instance.getRowModel();
 

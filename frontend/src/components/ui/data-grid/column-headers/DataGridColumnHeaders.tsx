@@ -12,7 +12,7 @@ import {
   useSensor,
   useSensors,
 } from "@dnd-kit/core";
-import { CSSProperties, useCallback, useRef, useState } from "react";
+import { CSSProperties, UIEventHandler, useCallback, useRef, useState } from "react";
 import clsx from "clsx";
 
 import gridColumnHeadersStyles from "./DataGridColumnHeaders.module.css";
@@ -96,6 +96,19 @@ const DataGridColumnHeaders = <TData extends unknown>({
     instance.setColumnOrder(newColumnOrder);
   }, [instance]);
 
+  const onScroll: UIEventHandler<HTMLDivElement> = (e) => {
+    // Let the scrollbar manage the scrolling for the main container
+    // when the column headers are scrolled by tabbing through the filters
+    const left = e.currentTarget.scrollLeft;
+    e.currentTarget.scrollLeft = 0;
+    if (left !== 0) {
+      instance.scrolls.main.horizontal.current?.scrollRef.current?.scrollTo({
+        left,
+        behavior: "instant",
+      });
+    }
+  };
+
   // Viewport
   return (
     <div
@@ -108,6 +121,7 @@ const DataGridColumnHeaders = <TData extends unknown>({
       onTouchStart={instance.scrolls.main.horizontal.current?.onTouchStart}
       onTouchMove={instance.scrolls.main.horizontal.current?.onTouchMove}
       onTouchEnd={instance.scrolls.main.horizontal.current?.onTouchEnd}
+      onScroll={onScroll}
       role="rowgroup"
     >
       {/* Columns */}
