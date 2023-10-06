@@ -110,7 +110,7 @@ const useDataGrid = <TData extends RowData>(options: DataGridOptions<TData>): Da
     rowHeight: Math.floor(DENSITY_BASE_ROW_HEIGHT * (densityFactor[density] ?? 1)),
     headerHeight: Math.floor(DENSITY_BASE_HEADER_HEIGHT * (densityFactor[density] ?? 1)),
   }), [density]);
-  const getDensityModel = useMemo(() => () => densityModel, [densityModel]);
+  const getDensityModel = useCallback(() => densityModel, [densityModel]);
   const toggleDensity = useCallback<DataGridInstance<TData>["toggleDensity"]>((density) => {
     if (density) 
       setDensity(density);
