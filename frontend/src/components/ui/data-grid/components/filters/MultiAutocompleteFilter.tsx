@@ -25,28 +25,15 @@ const MultiAutocompleteFilter = <TData extends RowData, TValue>({
 
   return (
     <TagsInput
-      placeholder={instance.localization.filterByPlaceholder(header.column)}
+      placeholder={header.column.columnDef.filterProps?.placeholder 
+        || instance.localization.filterByPlaceholder(header.column)
+      }
       value={internalValue}
       onChange={(value) => {
         setInternalValue(value);
         debounce(value);
       }}
-      data={[
-        "Fuscia",
-        "Blue",
-        "Red",
-        "Green",
-        "Yellow",
-        "Purple",
-        "Orange",
-        "Teal",
-        "Maroon",
-        "Aquamarine",
-        "Mauv",
-        "Indigo",
-        "Goldenrod",
-        "Pink",
-      ]}
+      data={header.column.columnDef.filterProps?.options ?? []}
     />
   );
 }

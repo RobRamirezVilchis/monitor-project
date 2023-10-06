@@ -18,7 +18,9 @@ const CheckboxFilter = <TData extends RowData, TValue>({
 
   return (
     <Checkbox
-      label={instance.localization.filterByCheckboxLabel(columnFilterValue, header.column)}
+      label={header.column.columnDef.filterProps?.label
+        || instance.localization.filterByCheckboxLabel(columnFilterValue, header.column)
+      }
       indeterminate={columnFilterValue === undefined}
       checked={columnFilterValue ?? false}
       onChange={e => {}}

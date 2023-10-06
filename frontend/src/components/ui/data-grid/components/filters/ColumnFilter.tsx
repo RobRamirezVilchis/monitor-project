@@ -18,11 +18,12 @@ export interface ColumnFilterProps<TData extends RowData, TValue> {
   header: Header<TData, TValue>;
 }
 
-// TODO: Add props for editing some filter values (like select, autocomplete, etc.)
 
 // TODO: Apply instance....className/style to filter inputs
 
 // TODO: Prevent window scrolling inside fake scrollbars
+
+// TODO: Add support for async options for select, autocomplete, etc.
 
 const ColumnFilter = <TData extends RowData, TValue>({
   instance,

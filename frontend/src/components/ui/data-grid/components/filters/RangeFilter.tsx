@@ -36,7 +36,9 @@ const RangeFilter = <TData extends RowData, TValue>({
       }}
     >
       <NumberInput 
-        placeholder={instance.localization.filterMinPlaceholder}
+        placeholder={header.column.columnDef.filterProps?.placeholder 
+          || instance.localization.filterMinPlaceholder
+        }
         value={internalValue?.[0] ?? ""} 
         onChange={value => { 
           setInternalValue(p => {
@@ -44,10 +46,14 @@ const RangeFilter = <TData extends RowData, TValue>({
             debounce(newMinMax);
             return newMinMax;
           }) 
-        }} 
+        }}
+        min={header.column.columnDef.filterProps?.min}
+        max={header.column.columnDef.filterProps?.max}
       />
       <NumberInput 
-        placeholder={instance.localization.filterMaxPlaceholder}
+        placeholder={header.column.columnDef.filterProps?.placeholder 
+          || instance.localization.filterMaxPlaceholder
+        }
         value={internalValue?.[1] ?? ""} 
         onChange={value => { 
           setInternalValue(p => {
@@ -56,6 +62,8 @@ const RangeFilter = <TData extends RowData, TValue>({
             return newMinMax;
           }) 
         }}
+        min={header.column.columnDef.filterProps?.min}
+        max={header.column.columnDef.filterProps?.max}
       />
     </div>
   );

@@ -16,17 +16,14 @@ const SelectFilter = <TData extends RowData, TValue>({
 
   return (
     <Select
-      placeholder={instance.localization.filterByPlaceholder(header.column)}
+      placeholder={header.column.columnDef.filterProps?.placeholder 
+        || instance.localization.filterByPlaceholder(header.column)
+      }
       value={columnFilterValue}
       onChange={(value) => {
         header.column.setFilterValue(value);
       }}
-      data={[
-        { label: "All", value: "" },
-        "Male",
-        "Female",
-        "Non-binary",
-      ]}
+      data={header.column.columnDef.filterProps?.options ?? []}
     />
   );
 }

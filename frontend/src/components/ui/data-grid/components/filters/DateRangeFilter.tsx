@@ -28,19 +28,27 @@ const DateRangeFilter = <TData extends RowData, TValue>({
       }}
     >
       <DateInput
-        placeholder={instance.localization.filterMinPlaceholder}
+        placeholder={header.column.columnDef.filterProps?.placeholder 
+          || instance.localization.filterMinPlaceholder
+        }
         value={columnFilterValue[0]}
         leftSection={<IconCalendarEvent />}
         onChange={value => header.column.setFilterValue([value, columnFilterValue[1]])}
         clearable
+        minDate={header.column.columnDef.filterProps?.min}
+        maxDate={header.column.columnDef.filterProps?.max}
       />
 
       <DateInput
-        placeholder={instance.localization.filterMaxPlaceholder}
+        placeholder={header.column.columnDef.filterProps?.placeholder 
+          || instance.localization.filterMaxPlaceholder
+        }
         value={columnFilterValue[1]}
         leftSection={<IconCalendarEvent />}
         onChange={value => header.column.setFilterValue([columnFilterValue[0], value])}
         clearable
+        minDate={header.column.columnDef.filterProps?.min}
+        maxDate={header.column.columnDef.filterProps?.max}
       />
     </div>
   );

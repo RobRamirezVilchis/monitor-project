@@ -24,12 +24,16 @@ const NumberFilter = <TData extends unknown, TValue>({
 
   return (
     <NumberInput
-      placeholder={instance.localization.filterByPlaceholder(header.column)}
+      placeholder={header.column.columnDef.filterProps?.placeholder 
+        || instance.localization.filterByPlaceholder(header.column)
+      }
       value={internalValue}
       onChange={(value) => {
         setInternalValue(value);
         debounce(value);
       }}
+      min={header.column.columnDef.filterProps?.min}
+      max={header.column.columnDef.filterProps?.max}
     />
   );
 }

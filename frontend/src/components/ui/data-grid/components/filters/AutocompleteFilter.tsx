@@ -25,17 +25,15 @@ const AutocompleteFilter = <TData extends RowData, TValue>({
 
   return (
     <Autocomplete
-      placeholder={instance.localization.filterByPlaceholder(header.column)}
+      placeholder={header.column.columnDef.filterProps?.placeholder 
+        || instance.localization.filterByPlaceholder(header.column)
+      }
       value={internalValue}
       onChange={(value) => {
         setInternalValue(value);
         debounce(value);
       }}
-      data={[
-        "erushmere0@washingtonpost.com",
-        "rrippen1@loc.gov",
-        "bwilde2@foxnews.com",
-      ]}
+      data={header.column.columnDef.filterProps?.options ?? []}
     />
   );
 }

@@ -20,11 +20,15 @@ const DateFilter = <TData extends RowData, TValue>({
 
   return (
     <DateInput
-      placeholder={instance.localization.filterByPlaceholder(header.column)}
+      placeholder={header.column.columnDef.filterProps?.placeholder 
+        || instance.localization.filterByPlaceholder(header.column)
+      }
       value={columnFilterValue}
       leftSection={<IconCalendarEvent />}
       onChange={value => header.column.setFilterValue(value)}
       clearable
+      minDate={header.column.columnDef.filterProps?.min}
+      maxDate={header.column.columnDef.filterProps?.max}
     />
   );
 }

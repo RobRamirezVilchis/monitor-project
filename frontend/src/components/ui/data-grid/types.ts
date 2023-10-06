@@ -50,6 +50,7 @@ import {
   ActionIconProps, 
   ButtonProps, 
   CheckboxProps, 
+  ComboboxData, 
   ElementProps,
   MenuItemProps, 
   SelectProps, 
@@ -155,9 +156,17 @@ DistributiveOmit<
   headerStyles?: DataGridColumnHeaderCellStyles;
   footerClassNames?: DataGridColumnFooterCellClassNames;
   footerStyles?: DataGridColumnFooterCellStyles;
+  sortingFn?: _SortingFnOption<TData> | SortingFnOption | string & Record<never, never>;
   filterVariant?: FilterVariant;
   filterFn?: _FilterFnOption<TData> | FilterFnOption | string & Record<never, never>;
-  sortingFn?: _SortingFnOption<TData> | SortingFnOption | string & Record<never, never>;
+  filterProps?: {
+    label?: string;
+    placeholder?: string;
+    options?: ComboboxData;
+    min?: any;
+    max?: any;
+    step?: number;
+  };
 }
 
 // Column ----------------------------------------------------------------------
