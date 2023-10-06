@@ -57,7 +57,13 @@ import {
   SwitchProps, 
   TextInputProps, 
   TooltipProps,
+  MultiSelectProps,
+  AutocompleteProps,
+  NumberInputProps,
+  TagsInputProps,
+  RangeSliderProps,
 } from "@mantine/core";
+import { DateInputProps } from "@mantine/dates";
 
 import { type FilterFnOption } from "./filterFns";
 import { type SortingFnOption } from "./sortingFns";
@@ -312,14 +318,20 @@ PartialKeys<DataGridOptionsResolved<TData>, "getCoreRowModel" | "onStateChange" 
     pagination?: (props: { instance: DataGridInstance<TData>; }) => ReactNode;
   };
   slotProps?: {
+    baseAutocompleteProps?: AutocompleteProps;
+    baseTagsInputProps?: TagsInputProps;
     baseActionIconProps?: ActionIconProps & ElementProps<"button">;
     baseButtonProps?: ButtonProps & ElementProps<"button">;
     baseCheckboxProps?: CheckboxProps;
     baseMenuItemProps?: MenuItemProps & ElementProps<"button">;
     baseSelectProps?: SelectProps;
+    baseMultiSelectProps?: MultiSelectProps;
     baseSwitchProps?: SwitchProps;
     baseTextInputProps?: TextInputProps;
     baseTooltipProps?: Omit<TooltipProps, "children" | "label">;
+    baseNumberInputProps?: NumberInputProps;
+    baseRangeSliderProps?: RangeSliderProps;
+    baseDateInputProps?: DateInputProps;
     scroll?: {
       thickness?: number;
     }

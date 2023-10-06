@@ -31,8 +31,8 @@ const ColumnSortingToggle = <TData extends unknown, TValue>({
 
   return (
     <Tooltip
-      withinPortal
       openDelay={250}
+      withinPortal
       {...instance.options.slotProps?.baseTooltipProps}
       label={instance.localization.columnPanelSortByLabel({
         direction: sortedBy,

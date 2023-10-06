@@ -1,7 +1,5 @@
-import { useCallback, useState } from "react";
 import { RowData } from "@tanstack/react-table";
 
-import { useDebounce } from "@/hooks/shared";
 import { DataGridInstance, Header } from "../../types";
 import { Checkbox } from "@mantine/core";
 
@@ -18,12 +16,15 @@ const CheckboxFilter = <TData extends RowData, TValue>({
 
   return (
     <Checkbox
+      {...instance.options.slotProps?.baseCheckboxProps}
       label={header.column.columnDef.filterProps?.label
         || instance.localization.filterByCheckboxLabel(columnFilterValue, header.column)
       }
       indeterminate={columnFilterValue === undefined}
       checked={columnFilterValue ?? false}
-      onChange={e => {}}
+      onChange={e => {
+        instance.options.slotProps?.baseCheckboxProps?.onChange?.(e);
+      }}
       onClick={e => {
         const prevValue = columnFilterValue;
         let newValue;
@@ -33,6 +34,7 @@ const CheckboxFilter = <TData extends RowData, TValue>({
           case false    : newValue = undefined; break;
         }
         header.column.setFilterValue(newValue);
+        instance.options.slotProps?.baseCheckboxProps?.onClick?.(e);
       }}
     />
   );

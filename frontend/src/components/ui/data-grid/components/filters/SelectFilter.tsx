@@ -16,12 +16,14 @@ const SelectFilter = <TData extends RowData, TValue>({
 
   return (
     <Select
+      {...instance.options.slotProps?.baseSelectProps}
       placeholder={header.column.columnDef.filterProps?.placeholder 
         || instance.localization.filterByPlaceholder(header.column)
       }
       value={columnFilterValue}
       onChange={(value) => {
         header.column.setFilterValue(value);
+        instance.options.slotProps?.baseSelectProps?.onChange?.(value);
       }}
       data={header.column.columnDef.filterProps?.options ?? []}
     />

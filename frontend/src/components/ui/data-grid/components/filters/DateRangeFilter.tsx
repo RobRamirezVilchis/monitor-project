@@ -28,25 +28,33 @@ const DateRangeFilter = <TData extends RowData, TValue>({
       }}
     >
       <DateInput
+        clearable
+        leftSection={<IconCalendarEvent />}
+        {...instance.options.slotProps?.baseDateInputProps}
         placeholder={header.column.columnDef.filterProps?.placeholder 
           || instance.localization.filterMinPlaceholder
         }
         value={columnFilterValue[0]}
-        leftSection={<IconCalendarEvent />}
-        onChange={value => header.column.setFilterValue([value, columnFilterValue[1]])}
-        clearable
+        onChange={value => {
+          header.column.setFilterValue([value, columnFilterValue[1]]);
+          instance.options.slotProps?.baseDateInputProps?.onChange?.(value);
+        }}
         minDate={header.column.columnDef.filterProps?.min}
         maxDate={header.column.columnDef.filterProps?.max}
       />
 
       <DateInput
+        clearable
+        leftSection={<IconCalendarEvent />}
+        {...instance.options.slotProps?.baseDateInputProps}
         placeholder={header.column.columnDef.filterProps?.placeholder 
           || instance.localization.filterMaxPlaceholder
         }
         value={columnFilterValue[1]}
-        leftSection={<IconCalendarEvent />}
-        onChange={value => header.column.setFilterValue([columnFilterValue[0], value])}
-        clearable
+        onChange={value => {
+          header.column.setFilterValue([columnFilterValue[0], value]);
+          instance.options.slotProps?.baseDateInputProps?.onChange?.(value);
+        }}
         minDate={header.column.columnDef.filterProps?.min}
         maxDate={header.column.columnDef.filterProps?.max}
       />

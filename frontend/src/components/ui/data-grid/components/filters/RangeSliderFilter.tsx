@@ -40,7 +40,8 @@ const RangeSliderFilter = <TData extends RowData, TValue>({
   }, [internalValue, header.column]);
 
   return (
-    <RangeSlider 
+    <RangeSlider
+      {...instance.options.slotProps?.baseRangeSliderProps}
       value={internalValue}
       min={min}
       max={max}
@@ -48,6 +49,7 @@ const RangeSliderFilter = <TData extends RowData, TValue>({
       onChange={(value) => {
         setInternalValue(value);
         debounce(value);
+        instance.options.slotProps?.baseRangeSliderProps?.onChange?.(value);
       }}
       
     />

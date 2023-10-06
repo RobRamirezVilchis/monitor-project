@@ -25,6 +25,7 @@ const TextFilter = <TData extends RowData, TValue>({
 
   return (
     <TextInput
+      {...instance.options.slotProps?.baseTextInputProps}
       placeholder={header.column.columnDef.filterProps?.placeholder 
         || instance.localization.filterByPlaceholder(header.column)
       }
@@ -32,6 +33,7 @@ const TextFilter = <TData extends RowData, TValue>({
       onChange={(e) => {
         setInternalValue(e.target.value);
         debounce(e.target.value);
+        instance.options.slotProps?.baseTextInputProps?.onChange?.(e);
       }}
     />
   );

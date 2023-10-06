@@ -35,7 +35,8 @@ const RangeFilter = <TData extends RowData, TValue>({
         gridTemplateColumns: "1fr 1fr",
       }}
     >
-      <NumberInput 
+      <NumberInput
+        {...instance.options.slotProps?.baseNumberInputProps}
         placeholder={header.column.columnDef.filterProps?.placeholder 
           || instance.localization.filterMinPlaceholder
         }
@@ -45,12 +46,14 @@ const RangeFilter = <TData extends RowData, TValue>({
             const newMinMax: [string | number, string | number] = [value, p?.[1]];
             debounce(newMinMax);
             return newMinMax;
-          }) 
+          });
+          instance.options.slotProps?.baseNumberInputProps?.onChange?.(value);
         }}
         min={header.column.columnDef.filterProps?.min}
         max={header.column.columnDef.filterProps?.max}
       />
       <NumberInput 
+        {...instance.options.slotProps?.baseNumberInputProps}
         placeholder={header.column.columnDef.filterProps?.placeholder 
           || instance.localization.filterMaxPlaceholder
         }
@@ -60,7 +63,8 @@ const RangeFilter = <TData extends RowData, TValue>({
             const newMinMax: [string | number, string | number] = [p?.[0], value];
             debounce(newMinMax);
             return newMinMax;
-          }) 
+          });
+          instance.options.slotProps?.baseNumberInputProps?.onChange?.(value);
         }}
         min={header.column.columnDef.filterProps?.min}
         max={header.column.columnDef.filterProps?.max}

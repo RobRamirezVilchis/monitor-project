@@ -25,6 +25,7 @@ const MultiAutocompleteFilter = <TData extends RowData, TValue>({
 
   return (
     <TagsInput
+      {...instance.options.slotProps?.baseTagsInputProps}
       placeholder={header.column.columnDef.filterProps?.placeholder 
         || instance.localization.filterByPlaceholder(header.column)
       }
@@ -32,6 +33,7 @@ const MultiAutocompleteFilter = <TData extends RowData, TValue>({
       onChange={(value) => {
         setInternalValue(value);
         debounce(value);
+        instance.options.slotProps?.baseTagsInputProps?.onChange?.(value);
       }}
       data={header.column.columnDef.filterProps?.options ?? []}
     />

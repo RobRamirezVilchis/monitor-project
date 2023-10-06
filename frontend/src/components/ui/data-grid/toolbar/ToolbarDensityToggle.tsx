@@ -21,8 +21,8 @@ const ToolbarDensityToggle = <TData extends RowData>({
 }: ToolbarDensityToggleProps<TData>) => {
   return (
     <Tooltip 
-      withinPortal 
       openDelay={250}
+      withinPortal 
       {...instance.options.slotProps?.baseTooltipProps}
       label={instance.localization.toolbarToggleDensity}
     >

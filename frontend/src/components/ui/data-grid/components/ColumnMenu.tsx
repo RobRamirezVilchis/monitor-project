@@ -34,8 +34,8 @@ const ColumnMenu = <TData extends unknown, TValue>({
     <Menu.Item
       key="sort-asc"
       leftSection={<IconSortAscending />}
-      disabled={sorted === "asc"}
       {...instance.options.slotProps?.baseMenuItemProps}
+      disabled={sorted === "asc"}
       onClick={e => {
         header.column.toggleSorting(false);
         instance.options.slotProps?.baseMenuItemProps?.onClick?.(e);
@@ -46,8 +46,8 @@ const ColumnMenu = <TData extends unknown, TValue>({
     <Menu.Item
       key="sort-desc"
       leftSection={<IconSortDescending />}
-      disabled={sorted === "desc"}
       {...instance.options.slotProps?.baseMenuItemProps}
+      disabled={sorted === "desc"}
       onClick={e => {
         header.column.toggleSorting(true);
         instance.options.slotProps?.baseMenuItemProps?.onClick?.(e);
@@ -58,8 +58,8 @@ const ColumnMenu = <TData extends unknown, TValue>({
     <Menu.Item
       key="sort-clear"
       leftSection={<IconArrowsSort />}
-      disabled={sorted === false || sorted === undefined}
       {...instance.options.slotProps?.baseMenuItemProps}
+      disabled={sorted === false || sorted === undefined}
       onClick={e => {
         header.column.clearSorting();
         instance.options.slotProps?.baseMenuItemProps?.onClick?.(e);
@@ -105,8 +105,8 @@ const ColumnMenu = <TData extends unknown, TValue>({
     <Menu>
       <Menu.Target>
         <Tooltip
-          withinPortal
           openDelay={250}
+          withinPortal
           {...instance.options.slotProps?.baseTooltipProps}
           label={instance.localization.columnPanelMenuLabel}
         >

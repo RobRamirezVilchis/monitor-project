@@ -25,6 +25,7 @@ const AutocompleteFilter = <TData extends RowData, TValue>({
 
   return (
     <Autocomplete
+      {...instance.options.slotProps?.baseAutocompleteProps}
       placeholder={header.column.columnDef.filterProps?.placeholder 
         || instance.localization.filterByPlaceholder(header.column)
       }
@@ -32,6 +33,7 @@ const AutocompleteFilter = <TData extends RowData, TValue>({
       onChange={(value) => {
         setInternalValue(value);
         debounce(value);
+        instance.options.slotProps?.baseAutocompleteProps?.onChange?.(value);
       }}
       data={header.column.columnDef.filterProps?.options ?? []}
     />

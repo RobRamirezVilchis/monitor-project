@@ -1,5 +1,6 @@
 import { RowData } from "@tanstack/react-table";
 import { ActionIcon, Checkbox, Tooltip } from "@mantine/core";
+import clsx from "clsx";
 
 import buttonStyles from "./components/BaseButton.module.css";
 
@@ -25,9 +26,9 @@ export function createRowSelectionColumnDef<TData extends RowData>(options?: Dat
     enableHiding: false,
     header: (ctx) => (
       <Checkbox 
+        {...options?.slotProps?.baseCheckboxProps}
         checked={ctx.table.getIsAllRowsSelected()}
         indeterminate={ctx.table.getIsSomeRowsSelected()}
-        {...options?.slotProps?.baseCheckboxProps}
         onChange={e => {
           ctx.table.toggleAllRowsSelected();
           options?.slotProps?.baseCheckboxProps?.onChange?.(e);
@@ -36,8 +37,8 @@ export function createRowSelectionColumnDef<TData extends RowData>(options?: Dat
     ),
     cell: (ctx) => (
       <Checkbox 
-        checked={ctx.row.getIsSelected()}
         {...options?.slotProps?.baseCheckboxProps}
+        checked={ctx.row.getIsSelected()}
         onChange={e => {
           ctx.row.toggleSelected();
           options?.slotProps?.baseCheckboxProps?.onChange?.(e);
@@ -84,10 +85,10 @@ export function createExpandableColumnDef<TData extends RowData>(options?: DataG
           <ActionIcon 
             color="black"
             variant="transparent"
-            className={buttonStyles.root}
             radius="xl"
             size="sm"
             {...options?.slotProps?.baseActionIconProps}
+            className={clsx(buttonStyles.root, options?.slotProps?.baseActionIconProps?.className)}
             onClick={e => {
               ctx.table.toggleAllRowsExpanded();
               options?.slotProps?.baseActionIconProps?.onClick?.(e);
@@ -115,10 +116,10 @@ export function createExpandableColumnDef<TData extends RowData>(options?: DataG
           <ActionIcon 
             color="black"
             variant="transparent"
-            className={buttonStyles.root}
             radius="xl"
             size="sm"
             {...options?.slotProps?.baseActionIconProps}
+            className={clsx(buttonStyles.root, options?.slotProps?.baseActionIconProps?.className)}
             onClick={e => {
               const expanded = cell.row.getIsExpanded();
               cell.table.toggleAllRowsExpanded(false);

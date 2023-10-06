@@ -24,6 +24,7 @@ const NumberFilter = <TData extends unknown, TValue>({
 
   return (
     <NumberInput
+      {...instance.options.slotProps?.baseNumberInputProps}
       placeholder={header.column.columnDef.filterProps?.placeholder 
         || instance.localization.filterByPlaceholder(header.column)
       }
@@ -31,6 +32,7 @@ const NumberFilter = <TData extends unknown, TValue>({
       onChange={(value) => {
         setInternalValue(value);
         debounce(value);
+        instance.options.slotProps?.baseNumberInputProps?.onChange?.(value);
       }}
       min={header.column.columnDef.filterProps?.min}
       max={header.column.columnDef.filterProps?.max}

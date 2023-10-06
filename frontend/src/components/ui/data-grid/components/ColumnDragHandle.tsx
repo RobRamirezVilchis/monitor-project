@@ -29,10 +29,10 @@ const ColumnDragHandle = <TData extends RowData>({
       }}
     >
       <Tooltip 
-        label={instance.localization.columnPanelDragHandleLabel}
-        {...instance.options.slotProps?.baseTooltipProps}
-        withinPortal 
         openDelay={250}
+        withinPortal
+        {...instance.options.slotProps?.baseTooltipProps}
+        label={instance.localization.columnPanelDragHandleLabel}
       >
         <ActionIcon 
           color="black"

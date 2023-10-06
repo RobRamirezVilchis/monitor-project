@@ -25,6 +25,7 @@ const MultiSelectFilter = <TData extends RowData, TValue>({
 
   return (
     <MultiSelect
+      {...instance.options.slotProps?.baseMultiSelectProps}
       placeholder={header.column.columnDef.filterProps?.placeholder 
         || instance.localization.filterByPlaceholder(header.column)
       }
@@ -32,6 +33,7 @@ const MultiSelectFilter = <TData extends RowData, TValue>({
       onChange={(value) => {
         setInternalValue(value);
         debounce(value);
+        instance.options.slotProps?.baseMultiSelectProps?.onChange?.(value);
       }}
       data={header.column.columnDef.filterProps?.options ?? []}
     />

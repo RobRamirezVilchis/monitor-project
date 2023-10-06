@@ -1,5 +1,6 @@
 import { RowData } from "@tanstack/react-table";
 import { ActionIcon, Select, Tooltip } from "@mantine/core";
+import clsx from "clsx";
 
 import buttonStyles from "./BaseButton.module.css";
 
@@ -53,10 +54,10 @@ const GridPagination = <TData extends RowData>({
           <ActionIcon
             color="black"
             variant="transparent"
-            className={buttonStyles.root}
             radius="xl"
             disabled={pagination.pageIndex === 0}
             {...instance.options.slotProps?.baseActionIconProps}
+            className={clsx(buttonStyles.root, instance.options?.slotProps?.baseActionIconProps?.className)}
             onClick={e => {
               instance.setPageIndex(0);
               instance.options.slotProps?.baseActionIconProps?.onClick?.(e);
@@ -70,10 +71,10 @@ const GridPagination = <TData extends RowData>({
           <ActionIcon
             color="black"
             variant="transparent"
-            className={buttonStyles.root}
             radius="xl"
             disabled={!instance.getCanPreviousPage()}
             {...instance.options.slotProps?.baseActionIconProps}
+            className={clsx(buttonStyles.root, instance.options?.slotProps?.baseActionIconProps?.className)}
             onClick={e => {
               instance.previousPage();
               instance.options.slotProps?.baseActionIconProps?.onClick?.(e);
@@ -97,10 +98,10 @@ const GridPagination = <TData extends RowData>({
           <ActionIcon
             color="black"
             variant="transparent"
-            className={buttonStyles.root}
             radius="xl"
             disabled={!instance.getCanNextPage()}
             {...instance.options.slotProps?.baseActionIconProps}
+            className={clsx(buttonStyles.root, instance.options?.slotProps?.baseActionIconProps?.className)}
             onClick={e => {
               instance.nextPage();
               instance.options.slotProps?.baseActionIconProps?.onClick?.(e);
@@ -114,10 +115,10 @@ const GridPagination = <TData extends RowData>({
           <ActionIcon
             color="black"
             variant="transparent"
-            className={buttonStyles.root}
             radius="xl"
             disabled={pagination.pageIndex === pageCount - 1}
             {...instance.options.slotProps?.baseActionIconProps}
+            className={clsx(buttonStyles.root, instance.options?.slotProps?.baseActionIconProps?.className)}
             onClick={e => {
               instance.setPageIndex(pageCount - 1);
               instance.options.slotProps?.baseActionIconProps?.onClick?.(e);

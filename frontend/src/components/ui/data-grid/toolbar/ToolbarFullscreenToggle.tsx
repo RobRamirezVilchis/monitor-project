@@ -21,8 +21,8 @@ const ToolbarFullscreenToggle = <TData extends RowData>({
 }: ToolbarFullscreenToggleProps<TData>) => {
   return (
     <Tooltip 
-      withinPortal 
       openDelay={250}
+      withinPortal 
       {...instance.options.slotProps?.baseTooltipProps}
       label={instance.localization.toolbarToggleFullscreen}
     >
