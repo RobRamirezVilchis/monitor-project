@@ -3,6 +3,7 @@ import {
   PasswordInput,
   ColorInput,
   em,
+  MantineSize,
 } from "@mantine/core";
 
 import fonts from "@/components/ui/fonts";
@@ -12,6 +13,8 @@ import {
   IconEye,
   IconEyeOff,
 } from "@tabler/icons-react";
+
+const baseMantineSize: MantineSize | (string & {}) = "md";
 
 const defaultTheme = createTheme({
   fontFamily: fonts.roboto.style.fontFamily,
@@ -32,18 +35,168 @@ const defaultTheme = createTheme({
   },
   cursorType: "pointer",
   components: {
+    // Core
+    Autocomplete: {
+      defaultProps: {
+        size: baseMantineSize,
+      },
+    },
+    Checkbox: {
+      defaultProps: {
+        size: baseMantineSize,
+      },
+    },
+    Chip: {
+      defaultProps: {
+        size: baseMantineSize,
+      },
+    },
     ColorInput: ColorInput.extend({
       defaultProps: {
+        size: baseMantineSize,
         eyeDropperIcon: <IconColorPicker className="w-4 h-4" />,
       },
     }),
+    ColorPicker: {
+      defaultProps: {
+        size: baseMantineSize,
+      },
+    },
+    FileInput: {
+      defaultProps: {
+        size: baseMantineSize,
+      },
+    },
+    JsonInput: {
+      defaultProps: {
+        size: baseMantineSize,
+      },
+    },
+    MultiSelect: {
+      defaultProps: {
+        size: baseMantineSize,
+      },
+    },
+    NativeSelect: {
+      defaultProps: {
+        size: baseMantineSize,
+      },
+    },
+    NumberInput: {
+      defaultProps: {
+        size: baseMantineSize,
+      },
+    },
     PasswordInput: PasswordInput.extend({
       defaultProps: {
+        size: baseMantineSize,
         visibilityToggleIcon: ({ reveal }) => reveal 
           ? <IconEyeOff className="w-5 h-5" />
           : <IconEye className="w-5 h-5" />,
       },
     }),
+    PinInput: {
+      defaultProps: {
+        size: baseMantineSize,
+      },
+    },
+    Radio: {
+      defaultProps: {
+        size: baseMantineSize,
+      },
+    },
+    Rating: {
+      defaultProps: {
+        size: baseMantineSize,
+      },
+    },
+    SegmentedControl: {
+      defaultProps: {
+        size: baseMantineSize,
+      },
+    },
+    Select: {
+      defaultProps: {
+        size: baseMantineSize,
+      },
+    },
+    Slider: {
+      defaultProps: {
+        size: baseMantineSize,
+      },
+    },
+    Switch: {
+      defaultProps: {
+        size: baseMantineSize,
+      },
+    },
+    TagsInput: {
+      defaultProps: {
+        size: baseMantineSize,
+      },
+    },
+    Textarea: {
+      defaultProps: {
+        size: baseMantineSize,
+      },
+    },
+    TextInput: {
+      defaultProps: {
+        size: baseMantineSize,
+      },
+    },
+    // Dates
+    DateInput: {
+      defaultProps: {
+        size: baseMantineSize,
+      },
+    },
+    DatePicker: {
+      defaultProps: {
+        size: baseMantineSize,
+      },
+    },
+    DatePickerInput: {
+      defaultProps: {
+        size: baseMantineSize,
+      },
+    },
+    DateTimePicker: {
+      defaultProps: {
+        size: baseMantineSize,
+      },
+    },
+    MonthPìcker: {
+      defaultProps: {
+        size: baseMantineSize,
+      },
+    },
+    MonthPickerInput: {
+      defaultProps: {
+        size: baseMantineSize,
+      },
+    },
+    TimeInput: {
+      defaultProps: {
+        size: baseMantineSize,
+      },
+    },
+    YearPicker: {
+      defaultProps: {
+        size: baseMantineSize,
+      },
+    },
+    YearPickerInput: {
+      defaultProps: {
+        size: baseMantineSize,
+      },
+    },
+    // Other
+    Button: {
+      defaultProps: {
+        size: baseMantineSize,
+      },
+    },
   },
 });
 

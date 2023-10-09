@@ -11,5 +11,7 @@
   body,
   #__next, #__app {
     height: 100%;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
   }
 }

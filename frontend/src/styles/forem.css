@@ -1,17 +1,6 @@
 :root {
     --forem-neutral-disabled: rgb(0 0 0 / 0.5);
 
-    --forem-green-50 :   #E6F6ED;
-    --forem-green-100:   #C2E8D3;
-    --forem-green-200:   #9EDAB9;
-    --forem-green-300:   #7ACD9F;
-    --forem-green-400:   #56BF85;
-    --forem-green-500:   #04A64B;
-    --forem-green-600:   #007E48;
-    --forem-green-700:   #00603A;
-    --forem-green-800:   #00402B;
-    --forem-green-900:   #00201D;
-
     --forem-neutral-50 : #FFFFFF;
     --forem-neutral-100: #F9F9F9;
     --forem-neutral-200: #F3F3F3;
@@ -22,6 +11,17 @@
     --forem-neutral-700: #424141;
     --forem-neutral-800: #1D1D1B;
     --forem-neutral-900: #000000;
+
+    --forem-green-50 :   #E6F6ED;
+    --forem-green-100:   #C2E8D3;
+    --forem-green-200:   #9EDAB9;
+    --forem-green-300:   #7ACD9F;
+    --forem-green-400:   #56BF85;
+    --forem-green-500:   #04A64B;
+    --forem-green-600:   #007E48;
+    --forem-green-700:   #00603A;
+    --forem-green-800:   #00402B;
+    --forem-green-900:   #00201D;
 
     --forem-yellow-50 :  #F8F8E6;
     --forem-yellow-100:  #EDEDC2;
@@ -55,4 +55,26 @@
     --forem-red-700:     #A80117;
     --forem-red-800:     #7A0112;
     --forem-red-900:     #4D000E;
+}
+
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #04A64B;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #007E48;
+}
+
+::-webkit-scrollbar-thumb:active {
+    background: #007E48;
 }
