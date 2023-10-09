@@ -8,6 +8,7 @@ import {
   Fieldset,
   Radio as _Radio,
   ActionIcon,
+  useMantineTheme,
 } from "@mantine/core";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -49,6 +50,7 @@ import {
 } from "@/components/ui/hook-form/dates";
 import { useRef, useState } from "react";
 import { DatePickerValue } from "@mantine/dates";
+import { useMediaQuery } from "@mantine/hooks";
 
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 
@@ -130,6 +132,10 @@ const schema = z.object({
 type Form = Required<z.infer<typeof schema>>;
 
 const AppMantineUIPage = () => {
+  const theme = useMantineTheme();
+  const mobile = useMediaQuery(`(max-width: ${theme.breakpoints.sm})`, true);
+  const size = mobile ? "lg" : "sm";
+
   const {
     control,
     formState: { isValid, isDirty, errors },
@@ -180,7 +186,7 @@ const AppMantineUIPage = () => {
     },
     resolver: zodResolver(schema),
   });
-  const values = watch(); //! WARNING: This will rerender on every value change!!!
+  const values: Partial<Form> = mobile ? {} : watch(); //! WARNING: This will rerender on every value change!!!
 
   const [focusName, setFocusName] = useState<string | null>("");
 
@@ -227,6 +233,7 @@ const AppMantineUIPage = () => {
                 name="checkbox"
                 control={control}
                 label="Agree to terms and conditions"
+                size={size}
               />
             </Fieldset>
 
@@ -234,6 +241,7 @@ const AppMantineUIPage = () => {
               <Chip
                 name="chip"
                 control={control}
+                size={size}
               >
                 Chip
               </Chip>
@@ -245,6 +253,7 @@ const AppMantineUIPage = () => {
                 control={control}
                 label="Color"
                 placeholder="Pick a color"
+                size={size}
               />
             </Fieldset>
 
@@ -253,6 +262,7 @@ const AppMantineUIPage = () => {
                 name="colorPicker"
                 control={control}
                 placeholder="Pick a color"
+                size={size}
               />
             </Fieldset>
 
@@ -262,6 +272,7 @@ const AppMantineUIPage = () => {
                 control={control}
                 placeholder="Pick a file"
                 multiple
+                size={size}
               />
             </Fieldset>
 
@@ -272,6 +283,7 @@ const AppMantineUIPage = () => {
                 label="Json"
                 placeholder="Enter a json"
                 rows={5}
+                size={size}
               />
             </Fieldset>
 
@@ -296,6 +308,7 @@ const AppMantineUIPage = () => {
 
                   }
                 ]}
+                size={size}
               />
             </Fieldset>
 
@@ -305,6 +318,7 @@ const AppMantineUIPage = () => {
                 control={control}
                 label="Name"
                 placeholder="Enter a number"
+                size={size}
               />
             </Fieldset>
 
@@ -314,6 +328,7 @@ const AppMantineUIPage = () => {
                 control={control}
                 label="Password"
                 placeholder="Enter your password"
+                size={size}
               />
             </Fieldset>
 
@@ -325,6 +340,7 @@ const AppMantineUIPage = () => {
                 inputType="tel"
                 inputMode="numeric"
                 type={/^[\d]+/}
+                size={size}
               />
             </Fieldset>
 
@@ -333,6 +349,7 @@ const AppMantineUIPage = () => {
                 name="radio"
                 control={control}
                 label="Radio"
+                size={size}
               />
             </Fieldset>
 
@@ -342,11 +359,12 @@ const AppMantineUIPage = () => {
                 control={control}
                 label="Radio Group"
                 description="This is a description"
+                size={size}
               >
                 <div className="flex gap-2 mt-2">
-                  <_Radio value="Option1" label="Option1" />
-                  <_Radio value="Option2" label="Option2" />
-                  <_Radio value="Option3" label="Option3" />
+                  <_Radio value="Option1" label="Option1" size={size} />
+                  <_Radio value="Option2" label="Option2" size={size} />
+                  <_Radio value="Option3" label="Option3" size={size} />
                 </div>
               </Radio.Group>
             </Fieldset>
@@ -356,6 +374,7 @@ const AppMantineUIPage = () => {
                 name="rating"
                 control={control}
                 fractions={2}
+                size={size}
               />
             </Fieldset>
 
@@ -368,6 +387,7 @@ const AppMantineUIPage = () => {
                   { label: "Segment 2", value: "s2" },
                   { label: "Segment 3", value: "s3" },
                 ]}
+                size={size}
               />
             </Fieldset>
 
@@ -376,6 +396,7 @@ const AppMantineUIPage = () => {
                 name="slider"
                 control={control}
                 label={v => v}
+                size={size}
               />
             </Fieldset>
 
@@ -384,6 +405,7 @@ const AppMantineUIPage = () => {
                 name="switch"
                 control={control}
                 label="Switch"
+                size={size}
               />
             </Fieldset>
 
@@ -393,6 +415,7 @@ const AppMantineUIPage = () => {
                 control={control}
                 label="Textarea"
                 placeholder="Enter some text"
+                size={size}
               />
             </Fieldset>
 
@@ -402,6 +425,7 @@ const AppMantineUIPage = () => {
                 control={control}
                 label="Name"
                 placeholder="Enter your name"
+                size={size}
               />
             </Fieldset>
           </Fieldset>
@@ -428,6 +452,7 @@ const AppMantineUIPage = () => {
                     ],
                   },
                 ]}
+                size={size}
               />
             </Fieldset>
 
@@ -447,6 +472,7 @@ const AppMantineUIPage = () => {
                     ],
                   },
                 ]}
+                size={size}
               />
             </Fieldset>
 
@@ -466,6 +492,7 @@ const AppMantineUIPage = () => {
                     ],
                   },
                 ]}
+                size={size}
               />
             </Fieldset>
 
@@ -485,6 +512,7 @@ const AppMantineUIPage = () => {
                     ],
                   },
                 ]}
+                size={size}
               />
             </Fieldset>
           </Fieldset>
@@ -501,6 +529,7 @@ const AppMantineUIPage = () => {
                 control={control}
                 label="DateInput"
                 placeholder="Enter something"
+                size={size}
               />
             </Fieldset>
 
@@ -509,6 +538,7 @@ const AppMantineUIPage = () => {
                 name="datePicker"
                 control={control}
                 placeholder="Enter something"
+                size={size}
               />
             </Fieldset>
 
@@ -517,6 +547,7 @@ const AppMantineUIPage = () => {
                 name="datePickerMultiple"
                 control={control}
                 type="multiple"
+                size={size}
               />
             </Fieldset>
 
@@ -527,6 +558,7 @@ const AppMantineUIPage = () => {
                 control={control}
                 label="DatePickerInput"
                 placeholder="Enter something"
+                size={size}
               />
             </Fieldset>
 
@@ -536,6 +568,7 @@ const AppMantineUIPage = () => {
                 control={control}
                 label="DateTimePicker"
                 placeholder="Enter something"
+                size={size}
               />
             </Fieldset>
 
@@ -543,6 +576,7 @@ const AppMantineUIPage = () => {
               <MonthPicker
                 name="monthPicker"
                 control={control}
+                size={size}
               />
             </Fieldset>
 
@@ -551,6 +585,7 @@ const AppMantineUIPage = () => {
                 name="monthPickerMultiple"
                 control={control}
                 type="multiple"
+                size={size}
               />
             </Fieldset>
 
@@ -559,6 +594,7 @@ const AppMantineUIPage = () => {
                 name="monthPickerRange"
                 control={control}
                 type="range"
+                size={size}
               />
             </Fieldset>
 
@@ -568,6 +604,7 @@ const AppMantineUIPage = () => {
                 control={control}
                 label="MonthPickerInput"
                 placeholder="Enter something"
+                size={size}
               />
             </Fieldset>
 
@@ -575,6 +612,7 @@ const AppMantineUIPage = () => {
               <YearPicker
                 name="yearPicker"
                 control={control}
+                size={size}
               />
             </Fieldset>
 
@@ -583,6 +621,7 @@ const AppMantineUIPage = () => {
                 name="yearPickerMultiple"
                 control={control}
                 type="multiple"
+                size={size}
               />
             </Fieldset>
 
@@ -591,6 +630,7 @@ const AppMantineUIPage = () => {
                 name="yearPickerRange"
                 control={control}
                 type="range"
+                size={size}
               />
             </Fieldset>
 
@@ -600,6 +640,7 @@ const AppMantineUIPage = () => {
                 control={control}
                 label="YearPickerInput"
                 placeholder="Enter something"
+                size={size}
               />
             </Fieldset>
 
@@ -611,6 +652,7 @@ const AppMantineUIPage = () => {
                 placeholder="Enter something"
                 inputRef={timeInputRef}
                 rightSection={pickerControl}
+                size={size}
               />
             </Fieldset>
 
@@ -618,10 +660,10 @@ const AppMantineUIPage = () => {
 
 
           <div className="flex gap-4">
-            <Button type="submit">
+            <Button type="submit" size={size}>
               Submit
             </Button>
-            <Button type="button" onClick={setExampleValidValues}>
+            <Button type="button" onClick={setExampleValidValues} size={size}>
               Example valid values
             </Button>
           </div>
@@ -632,6 +674,7 @@ const AppMantineUIPage = () => {
                 onClick={() => {
                   setFocus(focusName as any);
                 }}
+                size={size}
               >
                 Focus
               </Button>
@@ -663,29 +706,32 @@ const AppMantineUIPage = () => {
                   "select",
                   "tags",
                 ]}
+                size={size}
               />
           </div>
         </form>
 
         <div>
-          <Fieldset legend="Form State" classNames={{ legend: "px-2 font-semibold" }}>
-            <pre className="p-2">
-              {JSON.stringify({
-                isValid,
-                isDirty,
-                values: {
-                  ...values,
-                  files: (() => {
-                    const files = values.files;
-                    if (files === null) return null;
-                    if (Array.isArray(files)) return files.map(f => f.name);
-                    return files.name;
-                  })(),
-                },
-                errors,
-              }, null, 2)}
-            </pre>
-          </Fieldset>
+          {!mobile ? (
+            <Fieldset legend="Form State" classNames={{ legend: "px-2 font-semibold" }}>
+              <pre className="p-2">
+                {JSON.stringify({
+                  isValid,
+                  isDirty,
+                  values: {
+                    ...values,
+                    files: (() => {
+                      const files = values?.files;
+                      if (files === null) return null;
+                      if (Array.isArray(files)) return files.map(f => f.name);
+                      return files?.name;
+                    })(),
+                  },
+                  errors,
+                }, null, 2)}
+              </pre>
+            </Fieldset>
+          ) : null}
         </div>
       </div>
     </div>
