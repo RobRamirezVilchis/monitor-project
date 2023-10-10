@@ -1,11 +1,7 @@
-import { useCallback, useState } from "react";
 import { RowData } from "@tanstack/react-table";
 
-import { useDebounce } from "@/hooks/shared";
 import { DataGridInstance, Header } from "../../types";
 import { DateInput } from "@mantine/dates";
-
-import { IconCalendarEvent } from "@tabler/icons-react";
 
 interface DateFilterProps<TData extends RowData, TValue> {
   instance: DataGridInstance<TData>;
@@ -21,7 +17,6 @@ const DateFilter = <TData extends RowData, TValue>({
   return (
     <DateInput
       clearable
-      leftSection={<IconCalendarEvent />}
       {...instance.options.slotProps?.baseDateInputProps}
         placeholder={header.column.columnDef.filterProps?.placeholder 
         || instance.localization.filterByPlaceholder(header.column)

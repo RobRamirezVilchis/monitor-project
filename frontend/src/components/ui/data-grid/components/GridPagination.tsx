@@ -33,7 +33,7 @@ const GridPagination = <TData extends RowData>({
   );
 
   return (
-    <div className="flex gap-4 items-center">
+    <div className="flex flex-col sm:flex-row gap-4 items-center">
       <div className="flex gap-2 items-center">
         <span>{instance.localization.paginationLabelRowsPerPage}</span>
         <span className="w-20">
