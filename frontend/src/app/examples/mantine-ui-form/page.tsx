@@ -51,6 +51,7 @@ import {
 import { useRef, useState } from "react";
 import { DatePickerValue } from "@mantine/dates";
 import { useMediaQuery } from "@mantine/hooks";
+import DateRangePresets, { DateRangePresetsList } from "@/components/ui/dates/DateRangePresets";
 
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 
@@ -143,6 +144,7 @@ const AppMantineUIPage = () => {
     reset,
     watch,
     setFocus,
+    setValue,
   } = useForm<Form>({
     mode: "onTouched",
     defaultValues: {
@@ -551,15 +553,55 @@ const AppMantineUIPage = () => {
               />
             </Fieldset>
 
+            <Fieldset legend="DatePicker (range)" classNames={{ legend: "px-2 font-semibold" }}>
+              <div className="flex gap-1">
+                <DatePicker
+                  name="datePickerInput"
+                  control={control}
+                  type="range"
+                  size={size}
+                />
+
+                <DateRangePresetsList 
+                  onPresetClick={(value) => {
+                    setValue("datePickerInput", value);
+                    console.log(value)
+                  }} 
+                  classNames={{
+                    item: "bg-transparent hover:bg-gray-100",
+                  }}
+                />
+              </div>
+            </Fieldset>
+
             <Fieldset legend="DatePickerInput (range)" classNames={{ legend: "px-2 font-semibold" }}>
-              <DatePickerInput
-                type="range"
-                name="datePickerInput"
-                control={control}
-                label="DatePickerInput"
-                placeholder="Enter something"
-                size={size}
-              />
+              <div className="flex items-center gap-2">
+                <DatePickerInput
+                  type="range"
+                  name="datePickerInput"
+                  control={control}
+                  label="DatePickerInput"
+                  placeholder="Enter something"
+                  size={size}
+                  className="flex-1"
+                  rightSection={
+                    <DateRangePresets
+                      onPresetClick={(value) => {
+                        setValue("datePickerInput", value);
+                        console.log(value)
+                      }} 
+                      actionIconProps={{
+                        variant: "subtle",
+                        color: "gray",
+                      }}
+                      iconProps={{
+                        className: "w-5 h-5"
+                      }}
+                    />
+                  }
+                  rightSectionPointerEvents="auto"
+                />
+              </div>
             </Fieldset>
 
             <Fieldset legend="DateTimePicker" classNames={{ legend: "px-2 font-semibold" }}>
