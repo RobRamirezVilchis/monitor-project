@@ -5,16 +5,21 @@ import {
   em,
   MantineSize,
 } from "@mantine/core";
+import { 
+  DateInput, 
+  DatePickerInput 
+} from "@mantine/dates";
 
 import fonts from "@/components/ui/fonts";
 
 import { 
+  IconCalendarEvent,
   IconColorPicker,
   IconEye,
   IconEyeOff,
 } from "@tabler/icons-react";
 
-const baseMantineSize: MantineSize | (string & {}) = "md";
+const baseMantineSize: MantineSize = "md";
 
 const defaultTheme = createTheme({
   fontFamily: fonts.roboto.style.fontFamily,
@@ -146,21 +151,24 @@ const defaultTheme = createTheme({
       },
     },
     // Dates
-    DateInput: {
+    DateInput: DateInput.extend({
       defaultProps: {
         size: baseMantineSize,
+        rightSection: <IconCalendarEvent className="w-5 h-5" />,
+        rightSectionPointerEvents: "none",
       },
-    },
+    }),
     DatePicker: {
       defaultProps: {
         size: baseMantineSize,
       },
     },
-    DatePickerInput: {
+    DatePickerInput: DatePickerInput.extend({
       defaultProps: {
         size: baseMantineSize,
+        rightSection: <IconCalendarEvent className="w-5 h-5" />,
       },
-    },
+    }),
     DateTimePicker: {
       defaultProps: {
         size: baseMantineSize,
