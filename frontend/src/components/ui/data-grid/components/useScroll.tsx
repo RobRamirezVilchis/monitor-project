@@ -1,4 +1,4 @@
-import { RefObject, TouchEventHandler, UIEventHandler, WheelEventHandler, useCallback, useMemo, useRef } from "react";
+import { RefObject, TouchEventHandler, UIEventHandler, WheelEventHandler, useCallback, useEffect, useMemo, useRef } from "react";
 
 import { clamp, closeToZero, lerp2, mapValue, easeOutCubic } from "@/utils/math";
 import { ScrollOrientation } from "./Scroll";
@@ -9,6 +9,7 @@ export interface UseScrollOptions {
    * @default "vertical"
    */
   orientation: ScrollOrientation;
+  lockOuterScrollOf?: RefObject<HTMLElement>;
 }
 
 // TODO: Add support for mouse wheel click scrolling
@@ -18,6 +19,8 @@ export const useScroll = ({
 }: UseScrollOptions) => {
   const scrollRef = useRef<HTMLDivElement>(null);
   const contentRefs = useRef<RefObject<HTMLDivElement>[]>([]);
+  const wheelLockedRef = useRef(false);
+  const touchMoveLockedRef = useRef(false);
 
   const scrollInfo = useRef({
     start: 0,
@@ -34,6 +37,63 @@ export const useScroll = ({
     end: 0,
   });
 
+  const lockWheel = useCallback<WheelEventHandler<HTMLDivElement>>((e) => {
+    if (!scrollRef.current) return;
+
+    const { min, max } = getScrollLimits(scrollRef.current, orientation);
+    const current = orientation === "vertical" ? scrollRef.current!.scrollTop : scrollRef.current.scrollLeft;
+    const dir = orientation === "vertical" ? e.deltaY : e.deltaX;
+    let prevent = dir !== 0; // Only prevent if the user is scrolling in the same direction as the scroll
+    if (dir > 0 && current === max || dir < 0 && current === min)
+      prevent = false;
+
+    if (prevent) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+  }, [orientation]);
+
+  // TODO: Fix this
+  const lockTouchMove = useCallback<TouchEventHandler<HTMLDivElement>>((e) => {
+    if (!scrollRef.current) return;
+
+    const { min, max } = getScrollLimits(scrollRef.current, orientation);
+    const current = orientation === "vertical" ? scrollRef.current!.scrollTop : scrollRef.current.scrollLeft;
+    const dir = (orientation === "vertical" 
+      ? e.touches[0].clientY 
+      : e.touches[0].clientX
+    ) - touchInfo.current.start;
+    let prevent = dir !== 0; // Only prevent if the user is scrolling in the same direction as the scroll
+      
+    if (dir < 0 && current === max || dir > 0 && current === min)
+    prevent = false;
+
+    console.log(orientation, prevent, current, dir)
+
+    if (prevent) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+  }, [orientation]);
+
+  useEffect(() => {
+    if (wheelLockedRef.current)
+      window.addEventListener("wheel", lockWheel as any);
+
+    return () => {
+      window.removeEventListener("wheel", lockWheel as any);
+    }
+  }, [lockWheel]);
+
+  useEffect(() => {
+    if (touchMoveLockedRef.current)
+      window.addEventListener("touchmove", lockTouchMove as any);
+
+    return () => {
+      window.removeEventListener("touchmove", lockTouchMove as any);
+    }
+  }, [lockTouchMove]);
+
   const syncScroll = useCallback((element: RefObject<HTMLDivElement>) => {
     if (!contentRefs.current.includes(element))
       contentRefs.current.push(element);
@@ -44,6 +104,20 @@ export const useScroll = ({
     if (found !== -1)
       contentRefs.current.splice(found, 1);
   }, []);
+
+  const lockOuterScroll = useCallback(() => {
+    if (!wheelLockedRef.current) {
+      window.addEventListener("wheel", lockWheel as any, { passive: false });
+      wheelLockedRef.current = true;
+    }
+  }, [lockWheel]);
+
+  const unlockOuterScroll = useCallback(() => {
+    if (wheelLockedRef.current) {
+      window.removeEventListener("wheel", lockWheel as any);
+      wheelLockedRef.current = false;
+    }
+  }, [lockWheel]);
 
   // Scrollbar Events ----------------------------------------------------------
   const onScroll = useCallback<UIEventHandler<HTMLDivElement>>((e) => {
@@ -121,7 +195,12 @@ export const useScroll = ({
       end: orientation === "vertical" ? scrollRef.current.scrollTop : scrollRef.current.scrollLeft,
       startTimestamp: e.timeStamp,
     };
-  }, [orientation]);
+
+    if (!wheelLockedRef.current) {
+      window.addEventListener("touchmove", lockTouchMove as any);
+      touchMoveLockedRef.current = true;
+    }
+  }, [orientation, lockTouchMove]);
 
   const onTouchMove = useCallback<TouchEventHandler<HTMLDivElement>>((e) => {
     if (!scrollRef.current) return;
@@ -130,7 +209,8 @@ export const useScroll = ({
       ? e.touches[0].clientY 
       : e.touches[0].clientX
     ) - touchInfo.current.start;
-    if (delta === 0) return;
+    // if (delta === 0) return;
+    if (Math.abs(delta) < 5) return;
     const { min, max } = getScrollLimits(scrollRef.current, orientation);
     if (orientation === "vertical")
       scrollRef.current.scrollTop = clamp(
@@ -155,7 +235,12 @@ export const useScroll = ({
     const velocity = distance / time;
     const delta = velocity * 500;
     requestAnimationFrame(timestamp => initAnimateScroll(timestamp, delta, orientation, 1000, easeOutCubic));
-  }, [orientation, initAnimateScroll]);
+
+    if (wheelLockedRef.current) {
+      window.removeEventListener("touchmove", lockTouchMove as any);
+      touchMoveLockedRef.current = false;
+    }
+  }, [orientation, initAnimateScroll, lockTouchMove]);
 
   const value = useMemo(() => ({
     scrollRef,
@@ -166,7 +251,9 @@ export const useScroll = ({
     onTouchEnd,
     syncScroll,
     desyncScroll,
-  }), [onScroll, onWheel, onTouchStart, onTouchMove, onTouchEnd, syncScroll, desyncScroll]);
+    lockOuterScroll,
+    unlockOuterScroll,
+  }), [onScroll, onWheel, onTouchStart, onTouchMove, onTouchEnd, syncScroll, desyncScroll, lockOuterScroll, unlockOuterScroll]);
   return value;
 }
 

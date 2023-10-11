@@ -11,7 +11,6 @@ import ColumnMenu from "../components/ColumnMenu";
 import ColumnSortingToggle from "../components/ColumnSortingToggle";
 import ResizeHandler from "../components/ResizeHandler";
 
-
 export interface DataGridColumnHeaderCellProps<TData extends RowData, TValue> {
   instance: DataGridInstance<TData>;
   header: Header<TData, TValue>;
@@ -99,10 +98,10 @@ const DataGridColumnHeaderCell = <TData extends RowData, TValue>({
                 {instance.options.enableSorting && header.column.getCanSort() 
                 ? <ColumnSortingToggle header={header} instance={instance} /> 
                 : null}
-                {instance.options.enableColumnReordering && header.column.columnDef.enableReordering && draggableCtx 
+                {instance.options.enableColumnReordering && header.column.columnDef.enableReordering !== false && draggableCtx 
                 ? <ColumnDragHandle draggableCtx={draggableCtx} instance={instance} /> 
                 : null}
-                {instance.options.enableColumnActions && header.column.columnDef.enableColumnActions
+                {instance.options.enableColumnActions && header.column.columnDef.enableColumnActions !== false
                 ? <ColumnMenu instance={instance} header={header} /> 
                 : null}
               </div>) 

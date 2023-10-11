@@ -14,7 +14,7 @@ import {
 } from "@tanstack/react-table";
 import { useVirtualizer } from "@tanstack/react-virtual";
 
-import type { DataGridOptions, DataGridInstance, DataGridDensity, ColumnDef, TableState } from "./types";
+import type { DataGridOptions, DataGridInstance, DataGridDensity, ColumnDef } from "./types";
 import { useScroll } from "./components/useScroll";
 import { createExpandableColumnDef, createRowNumberingColumnDef, createRowSelectionColumnDef } from "./reservedColumnDefs";
 import { en } from "./locales/en";
@@ -105,6 +105,11 @@ const useDataGrid = <TData extends RowData>(options: DataGridOptions<TData>): Da
     getPaginationRowModel : options.enablePagination    ? _getPaginationRowModel  ?? getPaginationRowModel<TData>()  : undefined,
   } as any) as unknown as DataGridInstance<TData>;
 
+  useEffect(() => {
+    if (instance.getState().columnOrder.length === 0)
+      instance.setColumnOrder(instance.getAllLeafColumns().map(c => c.id));
+  }, [instance]);
+
   const densityModel = useMemo(() => ({
     factor: densityFactor[density],
     rowHeight: Math.floor(DENSITY_BASE_ROW_HEIGHT * (densityFactor[density] ?? 1)),
@@ -150,31 +155,31 @@ const useDataGrid = <TData extends RowData>(options: DataGridOptions<TData>): Da
     footer: footerRef,
   }), []);
 
+
   //* Virtualization cannot be changed after initialization!!!
-  const leafColumns = instance.getVisibleLeafColumns();
   const horizontalVirtualizer = useVirtualizer(options.enableColumnsVirtualization ? {
-    count: leafColumns.length,
+    count: instance.getVisibleLeafColumns().length,
     overscan: 1,
-    getScrollElement: () => mainHorizontalScrollRef.current.scrollRef.current,
-    estimateSize: i => leafColumns[i].getSize(),
+    getScrollElement: () => mainHorizontalScrollRef.current.scrollRef.current!,
+    estimateSize: i => instance.getVisibleLeafColumns()[i].getSize(),
     horizontal: true,
     ...options.columnsVirtualizerProps,
   } : {
     count: 0,
-    getScrollElement: () => null,
+    getScrollElement: () => null!,
     estimateSize: () => 0,
   });
   
   const verticalVirtualizer = useVirtualizer(options.enableRowsVirtualization ? {
     count: instance.getRowModel().rows.length,
     overscan: 1,
-    getScrollElement: () => mainVerticalScrollRef.current.scrollRef.current,
+    getScrollElement: () => mainVerticalScrollRef.current.scrollRef.current!,
     estimateSize: () => densityModel.rowHeight,
     horizontal: false,
     ...options.rowsVirtualizerProps,    
   } : {
     count: 0,
-    getScrollElement: () => null,
+    getScrollElement: () => null!,
     estimateSize: () => 0,
   });
 

@@ -30,8 +30,6 @@ const DataGridBody = <TData extends unknown>({
     };
   }, [instance.scrolls.main.horizontal, instance.scrolls.main.vertical, instance.refs.content.main]);
 
-  const rowModel = instance.getRowModel();
-
   return (
     // Viewport
     <div
@@ -76,7 +74,7 @@ const DataGridBody = <TData extends unknown>({
           // Rows
           instance.options.enableRowsVirtualization
           ? instance.scrolls.virtualizers.rows.current?.getVirtualItems().map(virtualRow => {
-            const row = rowModel.rows[virtualRow.index];
+            const row = instance.getRowModel().rows[virtualRow.index];
             return (
               <DataGridRow 
                 key={row.id} 
@@ -92,7 +90,7 @@ const DataGridBody = <TData extends unknown>({
               />
             )
           }) 
-          : rowModel.rows.map((row, rowIdx) => (
+          : instance.getRowModel().rows.map((row, rowIdx) => (
             <DataGridRow 
               key={row.id} 
               instance={instance}
@@ -103,7 +101,7 @@ const DataGridBody = <TData extends unknown>({
         ) : null}
       </div>
 
-      {!instance.getState().loading && rowModel.rows.length === 0 ? (
+      {!instance.getState().loading && instance.getRowModel().rows.length === 0 ? (
         <div className={clsx("DataGridBody-overlay DataGridBody-overlayEmpty", gridBodyStyles.overlay)}>
           {instance.options.slots?.noRowsOverlay ? (
             instance.options.slots.noRowsOverlay()

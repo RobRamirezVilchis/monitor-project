@@ -45,7 +45,7 @@ import {
   VisibilityOptions,
 } from "@tanstack/react-table";
 import { CSSProperties, Dispatch, ReactNode, RefObject, SetStateAction, MouseEvent } from "react";
-import { Virtualizer, VirtualizerOptions } from "@tanstack/react-virtual";
+import { Virtualizer, VirtualizerOptions } from "@tanstack/virtual-core";
 import { 
   ActionIconProps, 
   ButtonProps, 

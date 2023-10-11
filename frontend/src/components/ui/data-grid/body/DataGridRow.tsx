@@ -28,8 +28,6 @@ const DataGridRow = <TData extends RowData>({
   style,
   vRowEnd = 0,
 }: DataGridRowProps<TData>) => {
-  const visibleCells = row.getVisibleCells();
-
   const onClick = useCallback<MouseEventHandler<HTMLDivElement>>((e) => {
     instance.options.onRowClick?.(row as any, instance, e as any);
   }, [row, instance]);
@@ -63,7 +61,7 @@ const DataGridRow = <TData extends RowData>({
         {/* Cells */}
         {instance.options.enableColumnsVirtualization
         ? instance.scrolls.virtualizers.columns?.current?.getVirtualItems().map(virtualColumn => {
-          const cell = visibleCells[virtualColumn.index];
+          const cell = row.getCenterVisibleCells()[virtualColumn.index];
           return (
             <DataGridRowCell 
               key={cell.id}
@@ -78,7 +76,7 @@ const DataGridRow = <TData extends RowData>({
               }}
             />
           )
-        }) : visibleCells.map(cell => (
+        }) : row.getCenterVisibleCells().map(cell => (
           <DataGridRowCell 
             key={cell.id}
             instance={instance}

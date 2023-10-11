@@ -12,7 +12,7 @@ import {
   useSensor,
   useSensors,
 } from "@dnd-kit/core";
-import { CSSProperties, UIEventHandler, useCallback, useRef, useState } from "react";
+import { CSSProperties, UIEventHandler, useCallback, useState } from "react";
 import clsx from "clsx";
 
 import gridColumnHeadersStyles from "./DataGridColumnHeaders.module.css";
@@ -32,7 +32,6 @@ const DataGridColumnHeaders = <TData extends unknown>({
   style,
 }: DataGridColumnHeadersProps<TData>) => {
   const [draggedHeader, setDraggedHeader] = useState<any | null>(null);
-  const columnOrder = useRef(instance.getAllFlatColumns().map(c => c.id));
   const sensors = useSensors(
     useSensor(MouseSensor, {
       activationConstraint: {
@@ -47,8 +46,6 @@ const DataGridColumnHeaders = <TData extends unknown>({
     }), 
     useSensor(KeyboardSensor),
   );
-
-  const headerGroups = instance.getHeaderGroups();
 
   useIsomorphicLayoutEffect(() => {
     instance.scrolls.main.horizontal.current?.syncScroll(instance.refs.columnHeader.main);
@@ -82,17 +79,17 @@ const DataGridColumnHeaders = <TData extends unknown>({
       return;
     }
 
-    const activeIndex = columnOrder.current.findIndex(id => id === active.id);
-    const overIndex = columnOrder.current.findIndex(id => id === over?.id);
+    const columnOrder = instance.getState().columnOrder;
+
+    const activeIndex = columnOrder.findIndex(col => col === active.id);
+    const overIndex = columnOrder.findIndex(col => col === over?.id);
     if (activeIndex === -1 || overIndex === -1) {
       return;
     }
 
-    const newColumnOrder = [...columnOrder.current];
+    const newColumnOrder = [...columnOrder];
     newColumnOrder[activeIndex] = over.id as string;
     newColumnOrder[overIndex] = active.id as string;
-
-    columnOrder.current = newColumnOrder;
     instance.setColumnOrder(newColumnOrder);
   }, [instance]);
 
@@ -140,7 +137,7 @@ const DataGridColumnHeaders = <TData extends unknown>({
           }}
         >
           {/* Groups */}
-          {headerGroups.map(group => (
+          {instance.getHeaderGroups().map(group => (
             <DataGridColumnHeaderGroup 
               key={group.id} 
               instance={instance}
