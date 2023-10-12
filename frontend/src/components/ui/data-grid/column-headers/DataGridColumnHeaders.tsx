@@ -48,25 +48,25 @@ const DataGridColumnHeaders = <TData extends unknown>({
   );
 
   useIsomorphicLayoutEffect(() => {
-    instance.scrolls.main.horizontal.current?.syncScroll(instance.refs.columnHeader.main);
+    instance.scrolls.main.horizontal.current?.syncScroll(instance.refs.columnsHeader.main.viewport);
 
     return () => {
-      instance.scrolls.main.horizontal.current?.desyncScroll(instance.refs.columnHeader.main);
+      instance.scrolls.main.horizontal.current?.desyncScroll(instance.refs.columnsHeader.main.viewport);
     };
-  }, [instance.scrolls.main.horizontal, instance.refs.columnHeader.main]);
+  }, [instance.scrolls.main.horizontal, instance.refs.columnsHeader.main.viewport]);
 
   useIsomorphicLayoutEffect(() => {
-    if (instance.options.enableColumnsVirtualization) {
-      const columnHeaderResizeObserver = new ResizeObserver((entries, observer) => {
-        instance.scrolls.virtualizers.columns.current?.measure();
-      });
-      columnHeaderResizeObserver.observe(instance.refs.columnHeader.main.current!);
+    if (!instance.options.enableColumnsVirtualization || !instance.refs.columnsHeader.main.content.current) return;
+    
+    const columnHeaderResizeObserver = new ResizeObserver((entries, observer) => {
+      instance.scrolls.virtualizers.columns.current?.measure();
+    });
+    columnHeaderResizeObserver.observe(instance.refs.columnsHeader.main.content.current);
 
-      return () => {
-        columnHeaderResizeObserver.disconnect();
-      }
+    return () => {
+      columnHeaderResizeObserver.disconnect();
     }
-  }, [instance.options.enableColumnsVirtualization, instance.refs.columnHeader.main, instance.scrolls.virtualizers.columns]);
+  }, [instance.options.enableColumnsVirtualization, instance.refs.columnsHeader.main.content, instance.scrolls.virtualizers.columns]);
 
   const onHeaderDragStart = useCallback((e: DragStartEvent) => {
     setDraggedHeader(e.active.data.current);
@@ -94,21 +94,18 @@ const DataGridColumnHeaders = <TData extends unknown>({
   }, [instance]);
 
   const onScroll: UIEventHandler<HTMLDivElement> = (e) => {
-    // Let the scrollbar manage the scrolling for the main container
-    // when the column headers are scrolled by tabbing through the filters
+    // Update other scrolls when the column headers are scrolled by tabbing trough the filters
     const left = e.currentTarget.scrollLeft;
-    e.currentTarget.scrollLeft = 0;
-    if (left !== 0) {
-      instance.scrolls.main.horizontal.current?.scrollRef.current?.scrollTo({
-        left,
-        behavior: "instant",
-      });
-    }
+    instance.scrolls.main.horizontal.current?.scrollRef.current?.scrollTo({
+      left,
+      behavior: "instant",
+    });
   };
 
   // Viewport
   return (
     <div
+      ref={instance.refs.columnsHeader.main.viewport}
       className={clsx("DataGridColumnHeaders-root DataGridColumnHeaders-viewport", gridColumnHeadersStyles.root, instance.options.classNames?.columnHeaders?.root)}
       style={{
         ...instance.options.styles?.columnHeaders?.root,
@@ -129,7 +126,7 @@ const DataGridColumnHeaders = <TData extends unknown>({
         onDragEnd={onHeaderDragEnd}
       >
         <div
-          ref={instance.refs.columnHeader.main}
+          ref={instance.refs.columnsHeader.main.content}
           className={clsx("DataGridColumnHeaders-headersContainer", gridColumnHeadersStyles.headersContainer, instance.options.classNames?.columnHeaders?.container)}
           style={{
             ...instance.options.styles?.columnHeaders?.container,

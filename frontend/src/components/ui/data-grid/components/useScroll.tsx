@@ -68,8 +68,6 @@ export const useScroll = ({
     if (dir < 0 && current === max || dir > 0 && current === min)
     prevent = false;
 
-    console.log(orientation, prevent, current, dir)
-
     if (prevent) {
       e.preventDefault();
       e.stopPropagation();
@@ -110,25 +108,36 @@ export const useScroll = ({
       window.addEventListener("wheel", lockWheel as any, { passive: false });
       wheelLockedRef.current = true;
     }
-  }, [lockWheel]);
+
+    if (!touchMoveLockedRef.current) {
+      window.addEventListener("touchmove", lockTouchMove as any, { passive: false });
+      touchMoveLockedRef.current = true;
+    }
+  }, [lockWheel, lockTouchMove]);
 
   const unlockOuterScroll = useCallback(() => {
     if (wheelLockedRef.current) {
       window.removeEventListener("wheel", lockWheel as any);
       wheelLockedRef.current = false;
     }
-  }, [lockWheel]);
+
+    if (touchMoveLockedRef.current) {
+      window.removeEventListener("touchmove", lockTouchMove as any);
+      touchMoveLockedRef.current = false;
+    }
+  }, [lockWheel, lockTouchMove]);
 
   // Scrollbar Events ----------------------------------------------------------
   const onScroll = useCallback<UIEventHandler<HTMLDivElement>>((e) => {
     if (contentRefs.current.length === 0) return;
-
+    
     for (let element of contentRefs.current) {
       if (!element.current) continue;
-      const { x, y } = getTranslateXY(element.current);
-      element.current.style.transform = orientation === "vertical"
-        ? `translate(${x}px, -${e.currentTarget.scrollTop}px)`
-        : `translate(-${e.currentTarget.scrollLeft}px, ${y}px)`;
+
+      if (orientation === "vertical")
+        element.current.scrollTop = e.currentTarget.scrollTop;
+      else
+        element.current.scrollLeft = e.currentTarget.scrollLeft;
     }
   }, [orientation]);
   

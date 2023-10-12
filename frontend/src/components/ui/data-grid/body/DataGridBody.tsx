@@ -21,18 +21,19 @@ const DataGridBody = <TData extends unknown>({
 }: DataGridBodyProps<TData>) => {
 
   useIsomorphicLayoutEffect(() => {
-    instance.scrolls.main.horizontal.current?.syncScroll(instance.refs.content.main);
-    instance.scrolls.main.vertical.current?.syncScroll(instance.refs.content.main);
+    instance.scrolls.main.horizontal.current?.syncScroll(instance.refs.body.main.viewport);
+    instance.scrolls.main.vertical.current?.syncScroll(instance.refs.body.main.viewport);
 
     return () => {
-      instance.scrolls.main.horizontal.current?.desyncScroll(instance.refs.content.main);
-      instance.scrolls.main.vertical.current?.desyncScroll(instance.refs.content.main);
+      instance.scrolls.main.horizontal.current?.desyncScroll(instance.refs.body.main.viewport);
+      instance.scrolls.main.vertical.current?.desyncScroll(instance.refs.body.main.viewport);
     };
-  }, [instance.scrolls.main.horizontal, instance.scrolls.main.vertical, instance.refs.content.main]);
+  }, [instance.scrolls.main.horizontal, instance.scrolls.main.vertical, instance.refs.body.main.viewport]);
 
   return (
     // Viewport
     <div
+      ref={instance.refs.body.main.viewport}
       className={clsx("DataGridBody-root DataGridBody-viewport", gridBodyStyles.root, instance.options.classNames?.body?.root)}
       style={{
         ...instance.options.styles?.body?.root,
@@ -57,7 +58,7 @@ const DataGridBody = <TData extends unknown>({
     >
       {/* Content */}
       <div
-        ref={instance.refs.content.main}
+        ref={instance.refs.body.main.content}
         className={clsx("DataGridBody-rowsContainer", gridBodyStyles.rowsContainer, instance.options.classNames?.body?.container)}
         style={{
           ...instance.options.styles?.body?.container,

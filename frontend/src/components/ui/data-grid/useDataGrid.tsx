@@ -131,9 +131,12 @@ const useDataGrid = <TData extends RowData>(options: DataGridOptions<TData>): Da
   }, []);
 
   const headerRef = useRef<HTMLDivElement>(null);
-  const mainContentRef = useRef<HTMLDivElement>(null);
-  const mainColumnsHeaderRef = useRef<HTMLDivElement>(null);
-  const mainColumnsFooterRef = useRef<HTMLDivElement>(null);
+  const columnsHeaderMainViewportRef = useRef<HTMLDivElement>(null);
+  const columnsHeaderMainContentRef = useRef<HTMLDivElement>(null);
+  const bodyMainViewportRef = useRef<HTMLDivElement>(null);
+  const bodyMainContentRef = useRef<HTMLDivElement>(null);
+  const columnsFooterMainViewportRef = useRef<HTMLDivElement>(null);
+  const columnsFooterMainContentRef = useRef<HTMLDivElement>(null);
   const footerRef = useRef<HTMLDivElement>(null);
 
   const mainHorizontalScroll = useScroll({ orientation: "horizontal" });
@@ -142,16 +145,25 @@ const useDataGrid = <TData extends RowData>(options: DataGridOptions<TData>): Da
   const mainVerticalScrollRef = useRef(mainVerticalScroll);
 
   const refs: DataGridInstance<TData>["refs"] = useMemo(() => ({
-    content: {
-      main: mainContentRef,
-    },
-    columnHeader: {
-      main: mainColumnsHeaderRef,
-    },
-    columnFooter: {
-      main: mainColumnsFooterRef,
-    },
     header: headerRef,
+    columnsHeader: {
+      main: {
+        viewport: columnsHeaderMainViewportRef,
+        content: columnsHeaderMainContentRef,
+      },
+    },
+    body: {
+      main: {
+        viewport: bodyMainViewportRef,
+        content: bodyMainContentRef,
+      },
+    },
+    columnsFooter: {
+      main: {
+        viewport: columnsFooterMainViewportRef,
+        content: columnsFooterMainContentRef,
+      },
+    },
     footer: footerRef,
   }), []);
 

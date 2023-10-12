@@ -28,7 +28,7 @@ const DataGrid = <TData extends RowData>({
   });
   
   useIsomorphicLayoutEffect(() => {
-    if (!instance.refs.content.main.current) return;
+    if (!instance.refs.body.main.content.current) return;
 
     const contentResizeObserver = new ResizeObserver((entries, observer) => {
       const content = entries[0].target as HTMLDivElement;
@@ -37,12 +37,12 @@ const DataGrid = <TData extends RowData>({
         height: content.offsetHeight ?? 0
       });
     });
-    contentResizeObserver.observe(instance.refs.content.main.current!);
+    contentResizeObserver.observe(instance.refs.body.main.content.current);
 
     return () => {
       contentResizeObserver.disconnect();
     };
-  }, [instance.refs]);
+  },  [instance.refs.body.main.content]);
 
   useEffect(() => {
     setReady(true);
@@ -71,11 +71,11 @@ const DataGrid = <TData extends RowData>({
       <div
         className={clsx("DataGrid-mainContainer", styles.mainContainer, instance.options.classNames?.mainContainer)}
         style={instance.options.styles?.mainContainer}
-        onMouseEnter={e => {
+        onPointerEnter={e => {
           instance.scrolls.main.horizontal.current?.lockOuterScroll();
           instance.scrolls.main.vertical.current?.lockOuterScroll();
         }}
-        onMouseLeave={e => {
+        onPointerLeave={e => {
           instance.scrolls.main.horizontal.current?.unlockOuterScroll();
           instance.scrolls.main.vertical.current?.unlockOuterScroll();
         }}

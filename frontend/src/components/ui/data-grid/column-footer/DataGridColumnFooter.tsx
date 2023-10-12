@@ -18,16 +18,17 @@ const DataGridColumnFooter = <TData extends unknown>({
   const footerGroups = instance.getFooterGroups();
 
   useIsomorphicLayoutEffect(() => {
-    instance.scrolls.main.horizontal.current?.syncScroll(instance.refs.columnFooter.main);
+    instance.scrolls.main.horizontal.current?.syncScroll(instance.refs.columnsFooter.main.viewport);
 
     return () => {
-      instance.scrolls.main.horizontal.current?.desyncScroll(instance.refs.columnFooter.main);
+      instance.scrolls.main.horizontal.current?.desyncScroll(instance.refs.columnsFooter.main.viewport);
     };
-  }, [instance.scrolls.main.horizontal, instance.refs.columnFooter.main]);
+  }, [instance.scrolls.main.horizontal, instance.refs.columnsFooter.main.viewport]);
 
   // Viewport
   return (
     <div
+      ref={instance.refs.columnsFooter.main.viewport}
       className={clsx("DataGridColumnFooter-root DataGridColumnFooter-viewport", gridColumnFooterStyles.root, instance.options.classNames?.columnFooter?.root)}
       style={{
         ...instance.options.styles?.columnFooter?.root,
@@ -40,7 +41,7 @@ const DataGridColumnFooter = <TData extends unknown>({
       role="rowgroup"
     >
       <div
-        ref={instance.refs.columnFooter.main}
+        ref={instance.refs.columnsFooter.main.content}
         className={clsx("DataGridColumnFooter-container", gridColumnFooterStyles.container, instance.options.classNames?.columnFooter?.container)}
         style={{
           ...instance.options.styles?.columnFooter?.container,

@@ -395,16 +395,25 @@ export type DataGridInstance<TData extends RowData> =
 & RowSelectionInstance<TData> 
 & {
   refs: {
-    content: {
-      main: RefObject<HTMLDivElement>;
-    };
-    columnHeader: {
-      main: RefObject<HTMLDivElement>;
-    };
-    columnFooter: {
-      main: RefObject<HTMLDivElement>;
-    };
     header: RefObject<HTMLDivElement>;
+    columnsHeader: {
+      main: {
+        viewport: RefObject<HTMLDivElement>;
+        content: RefObject<HTMLDivElement>;
+      };
+    };
+    body: {
+      main: {
+        viewport: RefObject<HTMLDivElement>;
+        content: RefObject<HTMLDivElement>;
+      };
+    };
+    columnsFooter: {
+      main: {
+        viewport: RefObject<HTMLDivElement>;
+        content: RefObject<HTMLDivElement>;
+      };
+    };
     footer: RefObject<HTMLDivElement>;
   };
   scrolls: {
