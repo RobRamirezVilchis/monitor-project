@@ -1,7 +1,7 @@
 import { RowData, flexRender } from "@tanstack/react-table";
 import clsx from "clsx";
 
-import gridFooterCellStyles from "./DataGridColumnFooterCell.module.css";
+import styles from "./DataGridColumnFootersCell.module.css";
 
 import { DataGridInstance, Header } from "../types";
 
@@ -20,25 +20,25 @@ const DataGridColumnFooterCell = <TData extends RowData, TValue>({
   return (
     <div
       className={clsx(
-        "DataGridColumnHeaderCell-root", 
-        gridFooterCellStyles.root,
-        instance.options.classNames?.columnFooterCell?.root,
+        "DataGridColumnFootersCell-root", 
+        styles.root,
+        instance.options.classNames?.columnFootersCell?.root,
         columnDef.footerClassNames?.root,
       )}
       style={{
-        ...instance.options.styles?.columnFooterCell?.root,
+        ...instance.options.styles?.columnFootersCell?.root,
         ...columnDef.footerStyles?.root,
         width: header.getSize(),
         minHeight: instance.getDensityModel().headerHeight,
       }}
-      role="columnheader"
+      role="columnheaders"
     >
       {/* Content */}
       {!header.isPlaceholder ? (
         <div
-          className={clsx("DataGridColumnFooterCell-content", gridFooterCellStyles.content, instance.options.classNames?.columnFooterCell?.content, columnDef.footerClassNames?.content)}
+          className={clsx("DataGridColumnFootersCell-content", styles.content, instance.options.classNames?.columnFootersCell?.content, columnDef.footerClassNames?.content)}
           style={{
-            ...instance.options.styles?.columnFooterCell?.content,
+            ...instance.options.styles?.columnFootersCell?.content,
             ...columnDef.footerStyles?.content,
           }}
         >

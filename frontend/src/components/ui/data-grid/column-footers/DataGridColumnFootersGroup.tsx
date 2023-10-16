@@ -1,25 +1,25 @@
 import { RowData } from "@tanstack/react-table";
 import clsx from "clsx";
 
-import gridFooterGroupStyles from "./DataGridColumnFooterGroup.module.css";
+import styles from "./DataGridColumnFootersGroup.module.css";
 
 import { DataGridInstance, HeaderGroup } from "../types";
-import DataGridColumnFooterCell from "./DataGridColumnFooterCell";
+import DataGridColumnFooterCell from "./DataGridColumnFootersCell";
 
-export interface DataGridColumnHeaderGroupProps<TData extends RowData> {
+export interface DataGridColumnHeadersGroupProps<TData extends RowData> {
   instance: DataGridInstance<TData>;
   group: HeaderGroup<TData>;
 }
 
-const DataGridColumnHeaderGroup = <TData extends RowData>({
+const DataGridColumnHeadersGroup = <TData extends RowData>({
   instance,
   group,
-}: DataGridColumnHeaderGroupProps<TData>) => {
+}: DataGridColumnHeadersGroupProps<TData>) => {
   return (
     <div
-      className={clsx("DataGridColumnFooterGroup-root", gridFooterGroupStyles.root, instance.options.classNames?.columnFooterGroup?.root)}
+      className={clsx("DataGridColumnFootersGroup-root", styles.root, instance.options.classNames?.columnFootersGroup?.root)}
       style={{
-        ...instance.options.styles?.columnFooterGroup?.root,
+        ...instance.options.styles?.columnFootersGroup?.root,
         minHeight: instance.getDensityModel().headerHeight,
       }}
       role="row"
@@ -37,4 +37,4 @@ const DataGridColumnHeaderGroup = <TData extends RowData>({
   )
 }
 
-export default DataGridColumnHeaderGroup;
+export default DataGridColumnHeadersGroup;

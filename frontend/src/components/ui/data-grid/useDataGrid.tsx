@@ -135,8 +135,8 @@ const useDataGrid = <TData extends RowData>(options: DataGridOptions<TData>): Da
   const columnsHeaderMainContentRef = useRef<HTMLDivElement>(null);
   const bodyMainViewportRef = useRef<HTMLDivElement>(null);
   const bodyMainContentRef = useRef<HTMLDivElement>(null);
-  const columnsFooterMainViewportRef = useRef<HTMLDivElement>(null);
-  const columnsFooterMainContentRef = useRef<HTMLDivElement>(null);
+  const columnFootersMainViewportRef = useRef<HTMLDivElement>(null);
+  const columnFootersMainContentRef = useRef<HTMLDivElement>(null);
   const footerRef = useRef<HTMLDivElement>(null);
 
   const mainHorizontalScroll = useScroll({ orientation: "horizontal", wheelBehavior: "smooth" });
@@ -158,10 +158,10 @@ const useDataGrid = <TData extends RowData>(options: DataGridOptions<TData>): Da
         content: bodyMainContentRef,
       },
     },
-    columnsFooter: {
+    columnFooters: {
       main: {
-        viewport: columnsFooterMainViewportRef,
-        content: columnsFooterMainContentRef,
+        viewport: columnFootersMainViewportRef,
+        content: columnFootersMainContentRef,
       },
     },
     footer: footerRef,

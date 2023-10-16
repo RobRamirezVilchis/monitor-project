@@ -158,10 +158,10 @@ DistributiveOmit<
   }) => JSX.Element[];
   cellClassNames?: DataGridRowCellClassNames;
   cellStyles?: DataGridRowCellStyles;
-  headerClassNames?: DataGridColumnHeaderCellClassNames;
-  headerStyles?: DataGridColumnHeaderCellStyles;
-  footerClassNames?: DataGridColumnFooterCellClassNames;
-  footerStyles?: DataGridColumnFooterCellStyles;
+  headerClassNames?: DataGridColumnHeadersCellClassNames;
+  headerStyles?: DataGridColumnHeadersCellStyles;
+  footerClassNames?: DataGridColumnFootersCellClassNames;
+  footerStyles?: DataGridColumnFootersCellStyles;
   sortingFn?: _SortingFnOption<TData> | SortingFnOption | string & Record<never, never>;
   filterVariant?: FilterVariant;
   filterFn?: _FilterFnOption<TData> | FilterFnOption | string & Record<never, never>;
@@ -349,11 +349,11 @@ PartialKeys<DataGridOptionsResolved<TData>, "getCoreRowModel" | "onStateChange" 
     footerContainer?: string;
     toolbar?: DataGridToolbarClassNames;
     columnHeaders?: DataGridColumnHeadersClassNames;
-    columnHeaderGroup?: DataGridColumnHeaderGroupClassNames;
-    columnHeaderCell?: DataGridColumnHeaderCellClassNames;
-    columnFooter?: DataGridColumnsFooterClassNames;
-    columnFooterGroup?: DataGridColumnFooterGroupClassNames;
-    columnFooterCell?: DataGridColumnFooterCellClassNames;
+    columnHeadersGroup?: DataGridColumnHeadersGroupClassNames;
+    columnHeadersCell?: DataGridColumnHeadersCellClassNames;
+    columnFooters?: DataGridColumnFootersClassNames;
+    columnFootersGroup?: DataGridColumnFootersGroupClassNames;
+    columnFootersCell?: DataGridColumnFootersCellClassNames;
     body?: DataGridBodyClassNames;
     footer?: DataGridFooterClassNames;
     row?: DataGridRowClassNames;
@@ -366,11 +366,11 @@ PartialKeys<DataGridOptionsResolved<TData>, "getCoreRowModel" | "onStateChange" 
     footerContainer?: CSSProperties;
     toolbar?: DataGridToolbarStyles;
     columnHeaders?: DataGridColumnHeadersStyles;
-    columnHeaderGroup?: DataGridColumnHeaderGroupStyles;
-    columnHeaderCell?: DataGridColumnHeaderCellStyles;
-    columnFooter?: DataGridColumnsFooterStyles;
-    columnFooterGroup?: DataGridColumnFooterGroupStyles;
-    columnFooterCell?: DataGridColumnFooterCellStyles;
+    columnHeadersGroup?: DataGridColumnHeadersGroupStyles;
+    columnHeadersCell?: DataGridColumnHeadersCellStyles;
+    columnFooters?: DataGridColumnFootersStyles;
+    columnFootersGroup?: DataGridColumnFootersGroupStyles;
+    columnFootersCell?: DataGridColumnFootersCellStyles;
     body?: DataGridBodyStyles;
     footer?: DataGridFooterStyles;
     row?: DataGridRowStyles;
@@ -408,7 +408,7 @@ export type DataGridInstance<TData extends RowData> =
         content: RefObject<HTMLDivElement>;
       };
     };
-    columnsFooter: {
+    columnFooters: {
       main: {
         viewport: RefObject<HTMLDivElement>;
         content: RefObject<HTMLDivElement>;
@@ -678,29 +678,29 @@ export interface DataGridColumnHeadersStyles {
   container?: CSSProperties;
 }
 
-export interface DataGridColumnHeaderGroupClassNames {
+export interface DataGridColumnHeadersGroupClassNames {
   root?: string;
 }
 
-export interface DataGridColumnHeaderGroupStyles {
+export interface DataGridColumnHeadersGroupStyles {
   root?: CSSProperties;
 }
 
-export interface DataGridColumnHeaderCellBaseClassNames {
+export interface DataGridColumnHeadersCellBaseClassNames {
   root?: string;
   content?: string;
   contentLabel?: string;
   label?: string;
 }
 
-export interface DataGridColumnHeaderCellClassNames extends DataGridColumnHeaderCellBaseClassNames {
+export interface DataGridColumnHeadersCellClassNames extends DataGridColumnHeadersCellBaseClassNames {
   actions?: string;
   filter?: string;
-  dragOverlay?: DataGridColumnHeaderCellBaseClassNames;
-  dragIsOver?: DataGridColumnHeaderCellBaseClassNames;
+  dragOverlay?: DataGridColumnHeadersCellBaseClassNames;
+  dragIsOver?: DataGridColumnHeadersCellBaseClassNames;
 }
 
-export interface DataGridColumnHeaderCellStyles {
+export interface DataGridColumnHeadersCellStyles {
   root?: CSSProperties;
   content?: CSSProperties;
   contentLabel?: CSSProperties;
@@ -709,30 +709,30 @@ export interface DataGridColumnHeaderCellStyles {
   filters?: CSSProperties;
 }
 
-export interface DataGridColumnsFooterClassNames {
+export interface DataGridColumnFootersClassNames {
   root?: string;
   container?: string;
 }
 
-export interface DataGridColumnsFooterStyles {
+export interface DataGridColumnFootersStyles {
   root?: CSSProperties;
   container?: CSSProperties;
 }
 
-export interface DataGridColumnFooterGroupClassNames {
+export interface DataGridColumnFootersGroupClassNames {
   root?: string;
 }
 
-export interface DataGridColumnFooterGroupStyles {
+export interface DataGridColumnFootersGroupStyles {
   root?: CSSProperties;
 }
 
-export interface DataGridColumnFooterCellClassNames {
+export interface DataGridColumnFootersCellClassNames {
   root?: string;
   content?: string;
 }
 
-export interface DataGridColumnFooterCellStyles {
+export interface DataGridColumnFootersCellStyles {
   root?: CSSProperties;
   content?: CSSProperties;
 }

@@ -1,6 +1,6 @@
 import clsx from "clsx";
 
-import resizeHandlerStyles from "./ResizeHandler.module.css";
+import styles from "./ResizeHandler.module.css";
 
 import { DataGridInstance, Header } from "../types";
 
@@ -15,7 +15,7 @@ const ResizeHandler = <TData extends unknown, TValue>({
 }: ResizeHandlerProps<TData, TValue>) => {
   return (
     <div
-      className={clsx(resizeHandlerStyles.root)}
+      className={clsx(styles.root)}
       onMouseDown={e => {
         e.stopPropagation();
         header.getResizeHandler()(e);

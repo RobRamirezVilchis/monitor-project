@@ -2,7 +2,7 @@ import { RowData } from "@tanstack/react-table";
 import { CSSProperties, Fragment, MouseEventHandler, useCallback } from "react";
 import clsx from "clsx";
 
-import gridRowStyles from "./DataGridRow.module.css";
+import styles from "./DataGridRow.module.css";
 
 import { DataGridInstance, Row } from "../types";
 import DataGridRowCell from "./DataGridRowCell";
@@ -39,8 +39,8 @@ const DataGridRow = <TData extends RowData>({
   return (
     <Fragment>
       <div
-        className={clsx("DataGridRow-root", gridRowStyles.root, {
-          [`DataGridRow--selected ${gridRowStyles["--selected"]} ${instance.options.classNames?.row?.selected}`]: row.getIsSelected(),
+        className={clsx("DataGridRow-root", styles.root, {
+          [`DataGridRow--selected ${styles["--selected"]} ${instance.options.classNames?.row?.selected}`]: row.getIsSelected(),
         }, instance.options.classNames?.row?.root)}
         style={{
           ...instance.options.styles?.row?.root,

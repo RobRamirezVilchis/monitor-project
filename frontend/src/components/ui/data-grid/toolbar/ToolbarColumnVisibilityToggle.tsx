@@ -3,7 +3,7 @@ import { ActionIcon, Button, Popover, Switch, Tooltip } from "@mantine/core";
 import clsx from "clsx";
 
 import buttonStyles from "../components/BaseButton.module.css";
-import gridToolbarStyles from "./DataGridToolbar.module.css";
+import styles from "./DataGridToolbar.module.css";
 
 import type { DataGridInstance } from "../types";
 
@@ -41,14 +41,14 @@ const ToolbarColumnVisibilityToggle = <TData extends unknown>({
         classNames={{ 
           dropdown: clsx(
             "DataGridToolbar--columnsMenu-root", 
-            gridToolbarStyles["columnsMenu-root"]
+            styles["columnsMenu-root"]
           )
         }}
       >
         <div 
           className={clsx(
             "DataGridToolbar--columnsMenu-selectors", 
-            gridToolbarStyles["columnsMenu-selectors"]
+            styles["columnsMenu-selectors"]
           )}
         >
           {instance.getAllLeafColumns().map(column => !column.columnDef.hideFromColumnsMenu ? (
@@ -66,7 +66,7 @@ const ToolbarColumnVisibilityToggle = <TData extends unknown>({
         <div 
           className={clsx(
             "DataGridToolbar--columnsMenu-actions", 
-            gridToolbarStyles["columnsMenu-actions"]
+            styles["columnsMenu-actions"]
           )}
         >
           <Button

@@ -1,26 +1,26 @@
 import { RowData } from "@tanstack/react-table";
 import clsx from "clsx";
 
-import gridHeaderGroupStyles from "./DataGridColumnHeaderGroup.module.css";
+import styles from "./DataGridColumnHeadersGroup.module.css";
 
 import { DataGridInstance, HeaderGroup } from "../types";
-import DataGridColumnHeaderCell from "./DataGridColumnHeaderCell";
-import DataGridColumnHeaderCellDnd from "./DataGridColumnHeaderCellDnd";
+import DataGridColumnHeadersCell from "./DataGridColumnHeadersCell";
+import DataGridColumnHeadersCellDnd from "./DataGridColumnHeadersCellDnd";
 
-export interface DataGridColumnHeaderGroupProps<TData extends RowData> {
+export interface DataGridColumnHeadersGroupProps<TData extends RowData> {
   instance: DataGridInstance<TData>;
   group: HeaderGroup<TData>;
 }
 
-const DataGridColumnHeaderGroup = <TData extends RowData>({
+const DataGridColumnHeadersGroup = <TData extends RowData>({
   instance,
   group,
-}: DataGridColumnHeaderGroupProps<TData>) => {
+}: DataGridColumnHeadersGroupProps<TData>) => {
   return (
     <div
-      className={clsx("DataGridColumnHeaderGroup-root", gridHeaderGroupStyles.root, instance.options.classNames?.columnHeaderGroup?.root)}
+      className={clsx("DataGridColumnHeadersGroup-root", styles.root, instance.options.classNames?.columnHeadersGroup?.root)}
       style={{
-        ...instance.options.styles?.columnHeaderGroup?.root,
+        ...instance.options.styles?.columnHeadersGroup?.root,
         minHeight: instance.getDensityModel().headerHeight,
       }}
       role="row"
@@ -30,19 +30,19 @@ const DataGridColumnHeaderGroup = <TData extends RowData>({
         // Only for leaf headers
         && header.subHeaders.length === 0 ? (
         // Draggable Header Cell
-        <DataGridColumnHeaderCellDnd key={header.id} header={header}>
+        <DataGridColumnHeadersCellDnd key={header.id} header={header}>
           {(draggableCtx, droppableCtx) => (
-            <DataGridColumnHeaderCell key={header.id} 
+            <DataGridColumnHeadersCell key={header.id} 
               header={header}
               instance={instance}
               draggableCtx={draggableCtx} 
               droppableCtx={droppableCtx} 
             />
           )}
-        </DataGridColumnHeaderCellDnd>
+        </DataGridColumnHeadersCellDnd>
       ) : (
         // Header Cell
-        <DataGridColumnHeaderCell
+        <DataGridColumnHeadersCell
           key={header.id} 
           header={header} 
           instance={instance}
@@ -52,4 +52,4 @@ const DataGridColumnHeaderGroup = <TData extends RowData>({
   )
 }
 
-export default DataGridColumnHeaderGroup;
+export default DataGridColumnHeadersGroup;

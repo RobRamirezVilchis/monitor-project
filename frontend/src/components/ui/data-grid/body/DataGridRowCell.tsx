@@ -2,7 +2,7 @@ import { CSSProperties, FocusEventHandler, MouseEventHandler, useCallback } from
 import { RowData, flexRender } from "@tanstack/react-table";
 import clsx from "clsx";
 
-import gridRowCellStyles from "./DataGridRowCell.module.css";
+import styles from "./DataGridRowCell.module.css";
 
 import { Cell, DataGridInstance } from "../types";
 import { ROW_NUMBER_COLUMN_ID } from "../reservedColumnDefs";
@@ -49,7 +49,7 @@ const DataGridRowCell = <TData extends RowData, TValue>({
 
   return (
     <div
-      className={clsx("DataGridRowCell-root", gridRowCellStyles.root, instance.options.classNames?.cell?.root, columnDef.cellClassNames?.root)}
+      className={clsx("DataGridRowCell-root", styles.root, instance.options.classNames?.cell?.root, columnDef.cellClassNames?.root)}
       style={{
         ...instance.options.styles?.cell?.root,
         ...columnDef.cellStyles?.root,
@@ -65,7 +65,7 @@ const DataGridRowCell = <TData extends RowData, TValue>({
       role="cell"
     >
       <div
-        className={clsx("DataGridRowCell-content", gridRowCellStyles.content, instance.options.classNames?.cell?.content, columnDef.cellClassNames?.content)}
+        className={clsx("DataGridRowCell-content", styles.content, instance.options.classNames?.cell?.content, columnDef.cellClassNames?.content)}
         style={{
           ...instance.options.styles?.cell?.content,
           ...columnDef.cellStyles?.content,

@@ -4,7 +4,7 @@ import { ReactElement } from "react";
 
 import { Header } from "../types";
 
-export interface DataGridColumnHeaderCellDndProps<TData extends RowData, TValue> {
+export interface DataGridColumnHeadersCellDndProps<TData extends RowData, TValue> {
   children?: (
     draggableCtx: ReturnType<typeof useDraggable>, 
     droppableCtx: ReturnType<typeof useDroppable>
@@ -12,10 +12,10 @@ export interface DataGridColumnHeaderCellDndProps<TData extends RowData, TValue>
   header: Header<TData, TValue>;
 }
 
-const DataGridColumnHeaderCellDnd = <TData extends RowData, TValue>({
+const DataGridColumnHeadersCellDnd = <TData extends RowData, TValue>({
   children,
   header,
-}: DataGridColumnHeaderCellDndProps<TData, TValue>) => {
+}: DataGridColumnHeadersCellDndProps<TData, TValue>) => {
   const draggable = useDraggable({
     id: header.id,
     data: header,
@@ -28,4 +28,4 @@ const DataGridColumnHeaderCellDnd = <TData extends RowData, TValue>({
   return children?.(draggable, droppable) ?? null;
 }
 
-export default DataGridColumnHeaderCellDnd;
+export default DataGridColumnHeadersCellDnd;

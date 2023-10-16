@@ -8,7 +8,7 @@ import type { DataGridInstance } from "./types";
 import { useIsomorphicLayoutEffect } from "@/hooks/shared/useIsomorphicLayoutEffect";
 import DataGridColumnHeaders from "./column-headers/DataGridColumnHeaders";
 import DataGridBody from "./body/DataGridBody";
-import DataGridColumnFooter from "./column-footer/DataGridColumnFooter";
+import DataGridColumnFooters from "./column-footers/DataGridColumnFooters";
 import DataGridFooter from "./footer/DataGridFooter";
 import DataGridToolbar from "./toolbar/DataGridToolbar";
 import Scroll from "@/components/ui/data-grid/components/Scroll";
@@ -109,7 +109,7 @@ const DataGrid = <TData extends RowData>({
           }}
         />
         
-        <DataGridColumnFooter 
+        <DataGridColumnFooters
           instance={instance} 
           style={{
             gridColumn: "1 / 3",
@@ -130,7 +130,7 @@ const DataGrid = <TData extends RowData>({
         />
 
         {instance.getState().loading || !ready ? (
-          <div className={clsx("DataGridBody-overlay DataGridBody-overlayLoading", styles.overlay)}>
+          <div className={clsx("DataGrid-overlay DataGrid-overlayLoading", styles.overlay)}>
             {instance.options.slots?.loadingOverlay ? (
               instance.options.slots.loadingOverlay()
             ) : (

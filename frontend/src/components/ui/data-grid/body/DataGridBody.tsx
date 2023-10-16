@@ -1,7 +1,7 @@
 import { CSSProperties } from "react";
 import clsx from "clsx";
 
-import gridBodyStyles from "./DataGridBody.module.css";
+import styles from "./DataGridBody.module.css";
 
 import { useIsomorphicLayoutEffect } from "@/hooks/shared/useIsomorphicLayoutEffect";
 import type { DataGridInstance } from "../types";
@@ -34,7 +34,7 @@ const DataGridBody = <TData extends unknown>({
     // Viewport
     <div
       ref={instance.refs.body.main.viewport}
-      className={clsx("DataGridBody-root DataGridBody-viewport", gridBodyStyles.root, instance.options.classNames?.body?.root)}
+      className={clsx("DataGridBody-root DataGridBody-viewport", styles.root, instance.options.classNames?.body?.root)}
       style={{
         ...instance.options.styles?.body?.root,
         ...style,
@@ -59,7 +59,7 @@ const DataGridBody = <TData extends unknown>({
       {/* Content */}
       <div
         ref={instance.refs.body.main.content}
-        className={clsx("DataGridBody-rowsContainer", gridBodyStyles.rowsContainer, instance.options.classNames?.body?.container)}
+        className={clsx("DataGridBody-rowsContainer", styles.rowsContainer, instance.options.classNames?.body?.container)}
         style={{
           ...instance.options.styles?.body?.container,
           width: instance.options.enableColumnsVirtualization 
@@ -103,7 +103,7 @@ const DataGridBody = <TData extends unknown>({
       </div>
 
       {!instance.getState().loading && instance.getRowModel().rows.length === 0 ? (
-        <div className={clsx("DataGridBody-overlay DataGridBody-overlayEmpty", gridBodyStyles.overlay)}>
+        <div className={clsx("DataGrid-overlay DataGrid-overlayEmpty", styles.overlay)}>
           {instance.options.slots?.noRowsOverlay ? (
             instance.options.slots.noRowsOverlay()
           ) : (

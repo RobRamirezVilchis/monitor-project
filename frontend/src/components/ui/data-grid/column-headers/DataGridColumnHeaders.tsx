@@ -15,12 +15,12 @@ import {
 import { CSSProperties, UIEventHandler, useCallback, useState } from "react";
 import clsx from "clsx";
 
-import gridColumnHeadersStyles from "./DataGridColumnHeaders.module.css";
+import styles from "./DataGridColumnHeaders.module.css";
 
 import { useIsomorphicLayoutEffect } from "@/hooks/shared/useIsomorphicLayoutEffect";
 import type { DataGridInstance } from "../types";
-import DataGridColumnHeaderGroup from "./DataGridColumnHeaderGroup";
-import DataGridColumnHeaderCell from "./DataGridColumnHeaderCell";
+import DataGridColumnHeadersGroup from "./DataGridColumnHeadersGroup";
+import DataGridColumnHeadersCell from "./DataGridColumnHeadersCell";
 
 export interface DataGridColumnHeadersProps<TData extends unknown> {
   instance: DataGridInstance<TData>;
@@ -58,13 +58,13 @@ const DataGridColumnHeaders = <TData extends unknown>({
   useIsomorphicLayoutEffect(() => {
     if (!instance.options.enableColumnsVirtualization || !instance.refs.columnsHeader.main.content.current) return;
     
-    const columnHeaderResizeObserver = new ResizeObserver((entries, observer) => {
+    const columnHeadersResizeObserver = new ResizeObserver((entries, observer) => {
       instance.scrolls.virtualizers.columns.current?.measure();
     });
-    columnHeaderResizeObserver.observe(instance.refs.columnsHeader.main.content.current);
+    columnHeadersResizeObserver.observe(instance.refs.columnsHeader.main.content.current);
 
     return () => {
-      columnHeaderResizeObserver.disconnect();
+      columnHeadersResizeObserver.disconnect();
     }
   }, [instance.options.enableColumnsVirtualization, instance.refs.columnsHeader.main.content, instance.scrolls.virtualizers.columns]);
 
@@ -106,7 +106,7 @@ const DataGridColumnHeaders = <TData extends unknown>({
   return (
     <div
       ref={instance.refs.columnsHeader.main.viewport}
-      className={clsx("DataGridColumnHeaders-root DataGridColumnHeaders-viewport", gridColumnHeadersStyles.root, instance.options.classNames?.columnHeaders?.root)}
+      className={clsx("DataGridColumnHeaders-root DataGridColumnHeaders-viewport", styles.root, instance.options.classNames?.columnHeaders?.root)}
       style={{
         ...instance.options.styles?.columnHeaders?.root,
         ...style,
@@ -127,7 +127,7 @@ const DataGridColumnHeaders = <TData extends unknown>({
       >
         <div
           ref={instance.refs.columnsHeader.main.content}
-          className={clsx("DataGridColumnHeaders-headersContainer", gridColumnHeadersStyles.headersContainer, instance.options.classNames?.columnHeaders?.container)}
+          className={clsx("DataGridColumnHeaders-headersContainer", styles.headersContainer, instance.options.classNames?.columnHeaders?.container)}
           style={{
             ...instance.options.styles?.columnHeaders?.container,
             width: instance.getTotalSize(),
@@ -135,7 +135,7 @@ const DataGridColumnHeaders = <TData extends unknown>({
         >
           {/* Groups */}
           {instance.getHeaderGroups().map(group => (
-            <DataGridColumnHeaderGroup 
+            <DataGridColumnHeadersGroup 
               key={group.id} 
               instance={instance}
               group={group} 
@@ -145,7 +145,7 @@ const DataGridColumnHeaders = <TData extends unknown>({
 
         <DragOverlay dropAnimation={null}>
           {draggedHeader ? (
-            <DataGridColumnHeaderCell 
+            <DataGridColumnHeadersCell 
               instance={instance} 
               header={draggedHeader} 
               isOverlay 
