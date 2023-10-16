@@ -3,7 +3,8 @@
     overflow-anchor: none; /* for virtualization */
     overflow: hidden;
     position: relative;
-    touch-action: pan-down; /* for mobile browser refresh gesture */
+    /*touch-action: pan-down; /* for mobile browser refresh gesture */
+    touch-action: none;
     width: 100%;
 }
 
@@ -12,7 +13,6 @@
     flex-direction: column;
     overflow-anchor: none; /* for virtualization */
     overflow: hidden;
-    touch-action: pan-down; /* for mobile browser refresh gesture */
 }
 
 .overlay {

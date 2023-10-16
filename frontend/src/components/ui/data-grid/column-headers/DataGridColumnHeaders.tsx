@@ -48,12 +48,12 @@ const DataGridColumnHeaders = <TData extends unknown>({
   );
 
   useIsomorphicLayoutEffect(() => {
-    instance.scrolls.main.horizontal.current?.syncScroll(instance.refs.columnsHeader.main.viewport);
+    instance.scrolls.main.horizontal.current?.syncScroll({ ref: instance.refs.columnsHeader.main.content, mode: "translate" });
 
     return () => {
-      instance.scrolls.main.horizontal.current?.desyncScroll(instance.refs.columnsHeader.main.viewport);
+      instance.scrolls.main.horizontal.current?.desyncScroll(instance.refs.columnsHeader.main.content);
     };
-  }, [instance.scrolls.main.horizontal, instance.refs.columnsHeader.main.viewport]);
+  }, [instance.scrolls.main.horizontal, instance.refs.columnsHeader.main.content]);
 
   useIsomorphicLayoutEffect(() => {
     if (!instance.options.enableColumnsVirtualization || !instance.refs.columnsHeader.main.content.current) return;
@@ -111,11 +111,11 @@ const DataGridColumnHeaders = <TData extends unknown>({
         ...instance.options.styles?.columnHeaders?.root,
         ...style,
       }}
-      onWheel={instance.scrolls.main.horizontal.current?.onWheel}
-      onTouchStart={instance.scrolls.main.horizontal.current?.onTouchStart}
-      onTouchMove={instance.scrolls.main.horizontal.current?.onTouchMove}
-      onTouchEnd={instance.scrolls.main.horizontal.current?.onTouchEnd}
       onScroll={onScroll}
+      onWheel={instance.scrolls.main.horizontal.current?.onWheel}
+      // onPointerDown={instance.scrolls.main.horizontal.current?.onPointerDown}
+      // onPointerMove={instance.scrolls.main.horizontal.current?.onPointerMove}
+      // onPointerUp={instance.scrolls.main.horizontal.current?.onPointerUp}
       role="rowgroup"
     >
       {/* Columns */}

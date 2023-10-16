@@ -18,12 +18,12 @@ const DataGridColumnFooter = <TData extends unknown>({
   const footerGroups = instance.getFooterGroups();
 
   useIsomorphicLayoutEffect(() => {
-    instance.scrolls.main.horizontal.current?.syncScroll(instance.refs.columnsFooter.main.viewport);
+    instance.scrolls.main.horizontal.current?.syncScroll({ ref: instance.refs.columnsFooter.main.content, mode: "translate" });
 
     return () => {
-      instance.scrolls.main.horizontal.current?.desyncScroll(instance.refs.columnsFooter.main.viewport);
+      instance.scrolls.main.horizontal.current?.desyncScroll(instance.refs.columnsFooter.main.content);
     };
-  }, [instance.scrolls.main.horizontal, instance.refs.columnsFooter.main.viewport]);
+  }, [instance.scrolls.main.horizontal, instance.refs.columnsFooter.main.content]);
 
   // Viewport
   return (
@@ -35,9 +35,9 @@ const DataGridColumnFooter = <TData extends unknown>({
         ...style,
       }}
       onWheel={instance.scrolls.main.horizontal.current?.onWheel}
-      onTouchStart={instance.scrolls.main.horizontal.current?.onTouchStart}
-      onTouchMove={instance.scrolls.main.horizontal.current?.onTouchMove}
-      onTouchEnd={instance.scrolls.main.horizontal.current?.onTouchEnd}
+      onPointerDown={instance.scrolls.main.horizontal.current?.onPointerDown}
+      onPointerMove={instance.scrolls.main.horizontal.current?.onPointerMove}
+      onPointerUp={instance.scrolls.main.horizontal.current?.onPointerUp}
       role="rowgroup"
     >
       <div

@@ -21,8 +21,8 @@ const DataGridBody = <TData extends unknown>({
 }: DataGridBodyProps<TData>) => {
 
   useIsomorphicLayoutEffect(() => {
-    instance.scrolls.main.horizontal.current?.syncScroll(instance.refs.body.main.viewport);
-    instance.scrolls.main.vertical.current?.syncScroll(instance.refs.body.main.viewport);
+    instance.scrolls.main.horizontal.current?.syncScroll({ ref: instance.refs.body.main.viewport, mode: "scroll" });
+    instance.scrolls.main.vertical.current?.syncScroll({ ref: instance.refs.body.main.viewport, mode: "scroll" });
 
     return () => {
       instance.scrolls.main.horizontal.current?.desyncScroll(instance.refs.body.main.viewport);
@@ -43,17 +43,17 @@ const DataGridBody = <TData extends unknown>({
         instance.scrolls.main.horizontal.current?.onWheel(e);
         instance.scrolls.main.vertical.current?.onWheel(e);
       }}
-      onTouchStart={e => {
-        instance.scrolls.main.horizontal.current?.onTouchStart(e);
-        instance.scrolls.main.vertical.current?.onTouchStart(e);
+      onPointerDown={e => {
+        instance.scrolls.main.horizontal.current?.onPointerDown(e);
+        instance.scrolls.main.vertical.current?.onPointerDown(e);
       }}
-      onTouchMove={e => {
-        instance.scrolls.main.horizontal.current?.onTouchMove(e);
-        instance.scrolls.main.vertical.current?.onTouchMove(e);
+      onPointerMove={e => {
+        instance.scrolls.main.horizontal.current?.onPointerMove(e);
+        instance.scrolls.main.vertical.current?.onPointerMove(e);
       }}
-      onTouchEnd={e => {
-        instance.scrolls.main.horizontal.current?.onTouchEnd(e);
-        instance.scrolls.main.vertical.current?.onTouchEnd(e);
+      onPointerUp={e => {
+        instance.scrolls.main.horizontal.current?.onPointerUp(e);
+        instance.scrolls.main.vertical.current?.onPointerUp(e);
       }}
     >
       {/* Content */}

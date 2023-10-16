@@ -139,8 +139,8 @@ const useDataGrid = <TData extends RowData>(options: DataGridOptions<TData>): Da
   const columnsFooterMainContentRef = useRef<HTMLDivElement>(null);
   const footerRef = useRef<HTMLDivElement>(null);
 
-  const mainHorizontalScroll = useScroll({ orientation: "horizontal" });
-  const mainVerticalScroll = useScroll({ orientation: "vertical" });
+  const mainHorizontalScroll = useScroll({ orientation: "horizontal", wheelBehavior: "smooth" });
+  const mainVerticalScroll = useScroll({ orientation: "vertical", wheelBehavior: "smooth" });
   const mainHorizontalScrollRef = useRef(mainHorizontalScroll);
   const mainVerticalScrollRef = useRef(mainVerticalScroll);
 
