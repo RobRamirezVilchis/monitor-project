@@ -20,6 +20,7 @@ import {
   Chip,
   ColorInput,
   ColorPicker,
+  IMaskInput,
   FileInput,
   JsonInput,
   MultiSelect,
@@ -60,6 +61,7 @@ const schema = z.object({
   chip: z.boolean(),
   colorInput: z.string().nonempty("The color is required"),
   colorPicker: z.string().nonempty("The color is required"),
+  mask: z.string().nonempty("The mask is required"),
   files: z.union([z.custom<File>(), z.array(z.custom<File>()), z.null()]),
   json: z.string().nonempty("The json is required"),
   selectNative: z.string().nonempty("The selectNative is required"),
@@ -135,7 +137,7 @@ type Form = Required<z.infer<typeof schema>>;
 const AppMantineUIPage = () => {
   const theme = useMantineTheme();
   const mobile = useMediaQuery(`(max-width: ${theme.breakpoints.sm})`, true);
-  const size = mobile ? "lg" : "sm";
+  const size = undefined; // mobile ? "lg" : "sm";
 
   const {
     control,
@@ -152,6 +154,7 @@ const AppMantineUIPage = () => {
       chip: false,
       colorInput: "",
       colorPicker: "",
+      mask: "",
       files: null,
       json: "",
       selectNative: "",
@@ -265,6 +268,22 @@ const AppMantineUIPage = () => {
                 control={control}
                 placeholder="Pick a color"
                 size={size}
+              />
+            </Fieldset>
+            
+            <Fieldset legend="IMaskInput" classNames={{ legend: "px-2 font-semibold" }}>
+              <IMaskInput
+                name="mask"
+                control={control}
+                label="Phone Mask"
+                placeholder="Phone Mask"
+
+                mask="(#00) 000-0000"
+                unmask
+                definitions={{
+                  '#': /[1-9]/,
+                }}
+                overwrite
               />
             </Fieldset>
 
@@ -787,6 +806,7 @@ const ExampleValidValues: Form = {
   chip: true,
   colorInput: "#000000",
   colorPicker: "#000000",
+  mask: "1234567890",
   files: null,
   json: "{}",
   selectNative: "Option1",
