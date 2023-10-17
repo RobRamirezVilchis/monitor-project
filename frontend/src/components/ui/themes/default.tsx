@@ -19,7 +19,7 @@ import {
   IconEyeOff,
 } from "@tabler/icons-react";
 
-const baseMantineSize: MantineSize = "md";
+const baseMantineSize: MantineSize = "sm";
 
 const defaultTheme = createTheme({
   fontFamily: fonts.roboto.style.fontFamily,
@@ -63,6 +63,11 @@ const defaultTheme = createTheme({
       },
     }),
     ColorPicker: {
+      defaultProps: {
+        size: baseMantineSize,
+      },
+    },
+    InputBase: {
       defaultProps: {
         size: baseMantineSize,
       },
@@ -167,6 +172,7 @@ const defaultTheme = createTheme({
       defaultProps: {
         size: baseMantineSize,
         rightSection: <IconCalendarEvent className="w-5 h-5" />,
+        rightSectionPointerEvents: "none",
       },
     }),
     DateTimePicker: {
