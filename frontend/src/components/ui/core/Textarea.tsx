@@ -18,12 +18,13 @@ const Textarea = <
   control,
   rules,
   shouldUnregister,
+  inputRef,
   ...props
 }: TextareaProps<TFieldValues>) => {
   if (control && name)
-    return <_Textarea name={name} control={control} rules={rules} shouldUnregister={shouldUnregister} {...props} />;
+    return <_Textarea name={name} control={control} rules={rules} shouldUnregister={shouldUnregister} inputRef={inputRef} {...props} />;
   else
-    return <_MantineTextarea name={name} {...props} />;
+    return <_MantineTextarea name={name} ref={inputRef} {...props} />;
 }
 
 export default Textarea;

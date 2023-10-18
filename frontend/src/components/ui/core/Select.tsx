@@ -18,12 +18,13 @@ const Select = <
   control,
   rules,
   shouldUnregister,
+  inputRef,
   ...props
 }: SelectProps<TFieldValues>) => {
   if (control && name)
-    return <_Select name={name} control={control} rules={rules} shouldUnregister={shouldUnregister} {...props} />;
+    return <_Select name={name} control={control} rules={rules} shouldUnregister={shouldUnregister} inputRef={inputRef} {...props} />;
   else
-    return <_MantineSelect name={name} {...props} />;
+    return <_MantineSelect name={name} ref={inputRef} {...props} />;
 }
 
 export default Select;

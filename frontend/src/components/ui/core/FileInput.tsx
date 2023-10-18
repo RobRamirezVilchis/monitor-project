@@ -27,9 +27,9 @@ const FileInput = <
   ...props
 }: FileInputProps<Multiple, TFieldValues>) => {
   if (control && name)
-    return <_FileInput name={name} control={control} rules={rules} shouldUnregister={shouldUnregister} {...props} />;
+    return <_FileInput name={name} control={control} rules={rules} shouldUnregister={shouldUnregister} inputRef={inputRef} {...props} />;
   else
-    return <_MantineFileInput name={name} {...props} />;
+    return <_MantineFileInput name={name} ref={inputRef} {...props} />;
 }
 
 export default FileInput;

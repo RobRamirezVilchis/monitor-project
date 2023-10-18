@@ -25,9 +25,9 @@ const Rating = <
   ...props
 }: RatingProps<TFieldValues>) => {
   if (control && name)
-    return <_Rating name={name} control={control} rules={rules} shouldUnregister={shouldUnregister} {...props} />;
+    return <_Rating name={name} control={control} rules={rules} shouldUnregister={shouldUnregister} inputRef={inputRef} {...props} />;
   else
-    return <_MantineRating name={name} {...props} />;
+    return <_MantineRating name={name} ref={inputRef} {...props} />;
 }
 
 export default Rating;

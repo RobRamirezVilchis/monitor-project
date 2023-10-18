@@ -19,12 +19,13 @@ const Input = <
   control,
   rules,
   shouldUnregister,
+  inputRef,
   ...props
 }: InputProps<TFieldValues>) => {
   if (control && name)
-    return <_Input name={name} control={control} rules={rules} shouldUnregister={shouldUnregister} {...props} />;
+    return <_Input name={name} control={control} rules={rules} shouldUnregister={shouldUnregister} inputRef={inputRef} {...props} />;
   else
-    return <_MantineInput name={name} {...props} />;
+    return <_MantineInput name={name} ref={inputRef} {...props} />;
 }
 
 export default Input;

@@ -18,12 +18,13 @@ const PasswordInput = <
   control,
   rules,
   shouldUnregister,
+  inputRef,
   ...props
 }: PasswordInputProps<TFieldValues>) => {
   if (control && name)
-    return <_PasswordInput name={name} control={control} rules={rules} shouldUnregister={shouldUnregister} {...props} />;
+    return <_PasswordInput name={name} control={control} rules={rules} shouldUnregister={shouldUnregister} inputRef={inputRef} {...props} />;
   else
-    return <_MantinePasswordInput name={name} {...props} />;
+    return <_MantinePasswordInput name={name} ref={inputRef} {...props} />;
 }
 
 export default PasswordInput;

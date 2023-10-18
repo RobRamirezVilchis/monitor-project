@@ -18,12 +18,13 @@ const SegmentedControl = <
   control,
   rules,
   shouldUnregister,
+  inputRef,
   ...props
 }: SegmentedControlProps<TFieldValues>) => {
   if (control && name)
-    return <_SegmentedControl name={name} control={control} rules={rules} shouldUnregister={shouldUnregister} {...props} />;
+    return <_SegmentedControl name={name} control={control} rules={rules} shouldUnregister={shouldUnregister} inputRef={inputRef} {...props} />;
   else
-    return <_MantineSegmentedControl name={name} {...props} />;
+    return <_MantineSegmentedControl name={name} ref={inputRef} {...props} />;
 }
 
 export default SegmentedControl;

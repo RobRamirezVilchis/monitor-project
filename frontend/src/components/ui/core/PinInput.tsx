@@ -18,12 +18,13 @@ const PinInput = <
   control,
   rules,
   shouldUnregister,
+  inputRef,
   ...props
 }: PinInputProps<TFieldValues>) => {
   if (control && name)
-    return <_PinInput name={name} control={control} rules={rules} shouldUnregister={shouldUnregister} {...props} />;
+    return <_PinInput name={name} control={control} rules={rules} shouldUnregister={shouldUnregister} inputRef={inputRef} {...props} />;
   else
-    return <_MantinePinInput name={name} {...props} />;
+    return <_MantinePinInput name={name} ref={inputRef} {...props} />;
 }
 
 export default PinInput;

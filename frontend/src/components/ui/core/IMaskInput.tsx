@@ -17,12 +17,13 @@ const IMaskInput = <
   control,
   rules,
   shouldUnregister,
+  inputRef,
   ...props
 }: IMaskInputProps<TFieldValues>) => {
   if (control && name)
-    return <_HFIMaskInput name={name} control={control} rules={rules} shouldUnregister={shouldUnregister} {...props as any} />;
+    return <_HFIMaskInput name={name} control={control} rules={rules} shouldUnregister={shouldUnregister} inputRef={inputRef} {...props} />;
   else
-    return <_IMaskInput name={name} {...props as any} />;
+    return <_IMaskInput name={name} ref={inputRef} {...props as any} />;
 }
 
 export default IMaskInput;

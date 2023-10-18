@@ -15,12 +15,13 @@ const ColorInput = <TFieldValues extends FieldValues = FieldValues>({
   control,
   rules,
   shouldUnregister,
+  inputRef,
   ...props
 }: ColorInputProps<TFieldValues>) => {
   if (control && name)
-    return <_ColorInput name={name} control={control} rules={rules} shouldUnregister={shouldUnregister} {...props} />;
+    return <_ColorInput name={name} control={control} rules={rules} shouldUnregister={shouldUnregister} inputRef={inputRef} {...props} />;
   else
-    return <_MantineColorInput name={name} {...props} />;
+    return <_MantineColorInput name={name} ref={inputRef} {...props} />;
 };
 
 export default ColorInput;

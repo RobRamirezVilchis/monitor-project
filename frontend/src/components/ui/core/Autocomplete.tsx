@@ -18,12 +18,13 @@ const Autocomplete = <
   control,
   rules,
   shouldUnregister,
+  inputRef,
   ...props
 }: AutocompleteProps<TFieldValues>) => {
   if (control && name)
     return <_Autocomplete name={name} control={control} rules={rules} shouldUnregister={shouldUnregister} {...props} />;
   else
-    return <_MantineAutocomplete name={name} {...props} />;
+    return <_MantineAutocomplete name={name} ref={inputRef} {...props} />;
 }
 
 export default Autocomplete;

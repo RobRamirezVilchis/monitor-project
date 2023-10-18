@@ -20,12 +20,13 @@ const Radio = <
   control,
   rules,
   shouldUnregister,
+  inputRef,
   ...props
 }: RadioProps<TFieldValues>) => {
   if (control && name)
-    return <_Radio name={name} control={control} rules={rules} shouldUnregister={shouldUnregister} {...props} />;
+    return <_Radio name={name} control={control} rules={rules} shouldUnregister={shouldUnregister} inputRef={inputRef} {...props} />;
   else
-    return <_MantineRadio name={name} {...props} />;
+    return <_MantineRadio name={name} ref={inputRef} {...props} />;
 }
 
 export type RadioGroupProps<
@@ -39,12 +40,13 @@ export const RadioGroup = <
   control,
   rules,
   shouldUnregister,
+  inputRef,
   ...props
 }: RadioGroupProps<TFieldValues>) => {
   if (control && name)
-    return <_Radio.Group name={name} control={control} rules={rules} shouldUnregister={shouldUnregister} {...props} />;
+    return <_Radio.Group name={name} control={control} rules={rules} shouldUnregister={shouldUnregister} inputRef={inputRef} {...props} />;
   else
-    return <_MantineRadio.Group name={name} {...props} />;
+    return <_MantineRadio.Group name={name} ref={inputRef} {...props} />;
 }
 
 export default Object.assign(Radio, {

@@ -18,12 +18,13 @@ const Slider = <
   control,
   rules,
   shouldUnregister,
+  inputRef,
   ...props
 }: SliderProps<TFieldValues>) => {
   if (control && name)
-    return <_Slider name={name} control={control} rules={rules} shouldUnregister={shouldUnregister} {...props} />;
+    return <_Slider name={name} control={control} rules={rules} shouldUnregister={shouldUnregister} inputRef={inputRef} {...props} />;
   else
-    return <_MantineSlider name={name} {...props} />;
+    return <_MantineSlider name={name} ref={inputRef} {...props} />;
 }
 
 export default Slider;

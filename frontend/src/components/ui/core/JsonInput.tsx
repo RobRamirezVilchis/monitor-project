@@ -18,12 +18,13 @@ const JsonInput = <
   control,
   rules,
   shouldUnregister,
+  inputRef,
   ...props
 }: JsonInputProps<TFieldValues>) => {
   if (control && name)
-    return <_JsonInput name={name} control={control} rules={rules} shouldUnregister={shouldUnregister} {...props} />;
+    return <_JsonInput name={name} control={control} rules={rules} shouldUnregister={shouldUnregister} inputRef={inputRef} {...props} />;
   else
-    return <_MantineJsonInput name={name} {...props} />;
+    return <_MantineJsonInput name={name} ref={inputRef} {...props} />;
 }
 
 export default JsonInput;

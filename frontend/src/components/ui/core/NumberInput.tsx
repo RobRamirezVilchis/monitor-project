@@ -18,12 +18,13 @@ const NumberInput = <
   control,
   rules,
   shouldUnregister,
+  inputRef,
   ...props
 }: NumberInputProps<TFieldValues>) => {
   if (control && name)
-    return <_NumberInput name={name} control={control} rules={rules} shouldUnregister={shouldUnregister} {...props} />;
+    return <_NumberInput name={name} control={control} rules={rules} shouldUnregister={shouldUnregister} inputRef={inputRef} {...props} />;
   else
-    return <_MantineNumberInput name={name} {...props} />;
+    return <_MantineNumberInput name={name} ref={inputRef} {...props} />;
 }
 
 export default NumberInput;

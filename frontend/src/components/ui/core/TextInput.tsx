@@ -18,12 +18,13 @@ const TextInput = <
   control,
   rules,
   shouldUnregister,
+  inputRef,
   ...props
 }: TextInputProps<TFieldValues>) => {
   if (control && name)
-    return <_TextInput name={name} control={control} rules={rules} shouldUnregister={shouldUnregister} {...props} />;
+    return <_TextInput name={name} control={control} rules={rules} shouldUnregister={shouldUnregister} inputRef={inputRef} {...props} />;
   else
-    return <_MantineTextInput name={name} {...props} />;
+    return <_MantineTextInput name={name} ref={inputRef} {...props} />;
 }
 
 export default TextInput;

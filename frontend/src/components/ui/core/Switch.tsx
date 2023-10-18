@@ -18,12 +18,13 @@ const Switch = <
   control,
   rules,
   shouldUnregister,
+  inputRef,
   ...props
 }: SwitchProps<TFieldValues>) => {
   if (control && name)
-    return <_Switch name={name} control={control} rules={rules} shouldUnregister={shouldUnregister} {...props} />;
+    return <_Switch name={name} control={control} rules={rules} shouldUnregister={shouldUnregister} inputRef={inputRef} {...props} />;
   else
-    return <_MantineSwitch name={name} {...props} />;
+    return <_MantineSwitch name={name} ref={inputRef} {...props} />;
 }
 
 export default Switch;

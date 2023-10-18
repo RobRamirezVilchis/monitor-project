@@ -18,12 +18,13 @@ const Checkbox = <
   control,
   rules,
   shouldUnregister,
+  inputRef,
   ...props
 }: CheckboxProps<TFieldValues>) => {
   if (control && name)
-    return <_Checkbox name={name} control={control} rules={rules} shouldUnregister={shouldUnregister} {...props} />;
+    return <_Checkbox name={name} control={control} rules={rules} shouldUnregister={shouldUnregister} inputRef={inputRef} {...props} />;
   else
-    return <_MantineCheckbox name={name} {...props} />;
+    return <_MantineCheckbox name={name} ref={inputRef} {...props} />;
 }
 
 export default Checkbox;

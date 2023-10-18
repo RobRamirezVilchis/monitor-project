@@ -18,12 +18,13 @@ const TagsInput = <
   control,
   rules,
   shouldUnregister,
+  inputRef,
   ...props
 }: TagsInputProps<TFieldValues>) => {
   if (control && name)
-    return <_TagsInput name={name} control={control} rules={rules} shouldUnregister={shouldUnregister} {...props} />;
+    return <_TagsInput name={name} control={control} rules={rules} shouldUnregister={shouldUnregister} inputRef={inputRef} {...props} />;
   else
-    return <_MantineTagsInput name={name} {...props} />;
+    return <_MantineTagsInput name={name} ref={inputRef} {...props} />;
 }
 
 export default TagsInput;

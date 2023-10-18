@@ -18,12 +18,13 @@ const MultiSelect = <
   control,
   rules,
   shouldUnregister,
+  inputRef,
   ...props
 }: MultiSelectProps<TFieldValues>) => {
   if (control && name)
-    return <_MultiSelect name={name} control={control} rules={rules} shouldUnregister={shouldUnregister} {...props} />;
+    return <_MultiSelect name={name} control={control} rules={rules} shouldUnregister={shouldUnregister} inputRef={inputRef} {...props} />;
   else
-    return <_MantineMultiSelect name={name} {...props} />;
+    return <_MantineMultiSelect name={name} ref={inputRef} {...props} />;
 }
 
 export default MultiSelect;

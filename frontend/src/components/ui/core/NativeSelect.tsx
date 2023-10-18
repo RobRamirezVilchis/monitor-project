@@ -18,12 +18,13 @@ const NativeSelect = <
   control,
   rules,
   shouldUnregister,
+  inputRef,
   ...props
 }: NativeSelectProps<TFieldValues>) => {
   if (control && name)
-    return <_NativeSelect name={name} control={control} rules={rules} shouldUnregister={shouldUnregister} {...props} />;
+    return <_NativeSelect name={name} control={control} rules={rules} shouldUnregister={shouldUnregister} inputRef={inputRef} {...props} />;
   else
-    return <_MantineNativeSelect name={name} {...props} />;
+    return <_MantineNativeSelect name={name} ref={inputRef} {...props} />;
 }
 
 export default NativeSelect;

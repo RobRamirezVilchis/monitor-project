@@ -18,12 +18,13 @@ const Chip = <
   control,
   rules,
   shouldUnregister,
+  inputRef,
   ...props
 }: ChipProps<TFieldValues>) => {
   if (control && name)
-    return <_Chip name={name} control={control} rules={rules} shouldUnregister={shouldUnregister} {...props} />;
+    return <_Chip name={name} control={control} rules={rules} shouldUnregister={shouldUnregister} inputRef={inputRef} {...props} />;
   else
-    return <_MantineChip name={name} {...props} />;
+    return <_MantineChip name={name} ref={inputRef} {...props} />;
 }
 
 export default Chip;
