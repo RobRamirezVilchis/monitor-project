@@ -98,7 +98,6 @@ const DataGridColumnHeaders = <TData extends unknown>({
     const left = e.currentTarget.scrollLeft;
     instance.scrolls.main.horizontal.current?.scrollRef.current?.scrollTo({
       left,
-      behavior: "instant",
     });
   };
 
