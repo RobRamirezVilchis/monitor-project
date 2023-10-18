@@ -748,6 +748,7 @@ const AppMantineUIPage = () => {
                   "chip",
                   "colorInput",
                   "colorPicker",
+                  "mask",
                   "files",
                   "json",
                   "selectNative",

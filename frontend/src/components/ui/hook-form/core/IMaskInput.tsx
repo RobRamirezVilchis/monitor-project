@@ -8,12 +8,10 @@ import { FieldValues, useController } from "react-hook-form";
 import { FormInputProps } from "@/components/ui/hook-form/base";
 
 export type IMaskInputProps<
-  C = "input",
   TFieldValues extends FieldValues = FieldValues,
-> = FormInputProps<TFieldValues> & _IMaskInputProps<C>;
+> = FormInputProps<TFieldValues> & _IMaskInputProps;
 
 const IMaskInput = <
-  C = "input",
   TFieldValues extends FieldValues = FieldValues,
 >({
   name,
@@ -25,7 +23,7 @@ const IMaskInput = <
   onBlur: _onBlur,
   inputRef,
   ...props
-}: IMaskInputProps<C, TFieldValues>) => {
+}: IMaskInputProps<TFieldValues>) => {
   const {
     field: { value, onChange, onBlur, ref, ...field },
     fieldState,
@@ -38,7 +36,7 @@ const IMaskInput = <
   });
 
   return (
-    <_IMaskInput<C>
+    <_IMaskInput
       {...field}
       {...props as any}
       value={value}

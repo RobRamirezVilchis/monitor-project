@@ -7,12 +7,10 @@ import _IMaskInput, {
 } from "@/components/ui/base/core/IMaskInput";
 
 export type IMaskInputProps<
-  C = "input",
   TFieldValues extends FieldValues = FieldValues,
-> = BaseInputProps<TFieldValues> & _IMaskInputProps<C>;
+> = BaseInputProps<TFieldValues, _IMaskInputProps>;
 
 const IMaskInput = <
-  C = "input",
   TFieldValues extends FieldValues = FieldValues,
 >({
   name,
@@ -20,7 +18,7 @@ const IMaskInput = <
   rules,
   shouldUnregister,
   ...props
-}: IMaskInputProps<C, TFieldValues>) => {
+}: IMaskInputProps<TFieldValues>) => {
   if (control && name)
     return <_HFIMaskInput name={name} control={control} rules={rules} shouldUnregister={shouldUnregister} {...props as any} />;
   else

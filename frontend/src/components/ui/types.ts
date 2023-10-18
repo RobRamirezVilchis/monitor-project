@@ -1,4 +1,6 @@
 import { FieldValues, FieldPath } from "react-hook-form";
+
+import { DistributiveOmit } from "@/utils/types";
 import { FormInputProps } from "./hook-form/base";
 
 export type BaseInputProps<
@@ -6,7 +8,7 @@ export type BaseInputProps<
   TInputProps extends { defaultValue?: any } = { defaultValue?: any },
   TRef = HTMLInputElement,
   TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
-> = Omit<FormInputProps<TFieldValues, TInputProps, TRef, TName>,
+> = DistributiveOmit<FormInputProps<TFieldValues, TInputProps, TRef, TName>,
   "name" | "control" | "rules" | "shouldUnregister"
 > & 
 (
