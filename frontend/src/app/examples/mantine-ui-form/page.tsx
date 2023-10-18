@@ -37,7 +37,7 @@ import {
   TagsInput,
   Textarea,
   TextInput,
-} from "@/components/ui/hook-form/core";
+} from "@/components/ui/core";
 import {
   DateInput,
   DatePicker,
@@ -48,13 +48,13 @@ import {
   TimeInput,
   YearPicker,
   YearPickerInput,
-} from "@/components/ui/hook-form/dates";
+} from "@/components/ui/dates";
 import { useRef, useState } from "react";
 import { DatePickerValue } from "@mantine/dates";
 import { useMediaQuery } from "@mantine/hooks";
 import DateRangePresets, { DateRangePresetsList } from "@/components/ui/dates/DateRangePresets";
 
-import AccessTimeIcon from '@mui/icons-material/AccessTime';
+import AccessTimeIcon from "@mui/icons-material/AccessTime";
 
 const schema = z.object({
   checkbox: z.boolean(),
@@ -281,7 +281,7 @@ const AppMantineUIPage = () => {
                 mask="(#00) 000-0000"
                 unmask
                 definitions={{
-                  '#': /[1-9]/,
+                  "#": /[1-9]/,
                 }}
                 overwrite
               />

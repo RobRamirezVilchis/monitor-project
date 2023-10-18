@@ -12,7 +12,7 @@ import { LoadingOverlay as MLoadingOverlay } from "@mantine/core";
 import { es } from "@/components/ui/data-grid/locales/es";
 
 import { Icon3dRotate } from "@tabler/icons-react";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { RowSelectionState } from "@tanstack/react-table";
 import ProgressLoadingOverlay from "@/components/ui/data-grid/components/ProgressLoadingOverlay";
 
@@ -21,17 +21,24 @@ const data2 = exampleData2.slice(0, 100);
 
 const LoadingOverlay = () => <div className="bg-black/20 h-full grid place-items-center text-blue-600">Loading...</div>;
 
+// TODO: Update toolbar controls to be hidden when features are turned off
+
 const DataGridExamplePage = () => {
   const [loading, setLoading] = useState(false);
   const [selectedRows, setSelectedRows] = useState<RowSelectionState>({});
 
   const grid = useDataGrid<ExampleData2>({
+    // debugAll: true,
+    // debugRows: true,
+    // debugColumns: true,
+    // debugHeaders: true,
+    // debugTable: true,
     localization: es,
-    loading,
     data: data2,
     columns: cols2,
     enableColumnResizing: true,
     columnResizeMode: "onChange",
+ 
     enableHiding: true,
     enableSorting: true,
     // enableExpanding: true,
@@ -39,49 +46,66 @@ const DataGridExamplePage = () => {
     enableFilters: true,
     enableGlobalFilter: true,
     enableColumnFilters: true,
-    enableFacetedValues: true,
-    enableRowSelection: true,
+    enableColumnReordering: true,
+    // enableFacetedValues: true,
+    // enableRowSelection: true,
     // enableGrouping: true,
-    enablePagination: true,
+    // enablePagination: true,
     // enableRowsVirtualization: true,
     // enableColumnsVirtualization: true,
     // enableRowNumbering: true,
-    rowNumberingMode: "static",
+    // rowNumberingMode: "static",
     // hideToolbar: true,
+    hideFooter: true,
     // hideColumnSelector: false,
     // hideDensitySelector: true,
     // hideQuickSearch: true,
     // hideFullscreenSelector: true,
 
-    globalFilterFn: "includesString",
+    // globalFilterFn: "includesString",
     // debugAll: true,
     sortDescFirst: false,
     initialState: {
+      density: "compact",
+      // loading: false,
       pagination: {
         pageIndex: 0,
         pageSize: 50,
-      }
+      },
+      // columnOrder:  [
+      //   "id", 
+      //   "first_name", 
+      //   "last_name", 
+      //   "email", 
+      //   "gender", 
+      //   "birthday", 
+      //   "salary", 
+      //   "approved", 
+      //   "color", 
+      //   "created_at", 
+      //   "score"
+      // ],
     },
     state: {
       rowSelection: selectedRows,
+      loading,
     },
     onRowSelectionChange: setSelectedRows,
     // hideHeader: true,
     // hideFooter: true,
-    renderSubComponent: row => (
-      <div
-        style={{
-          height: "100%",
-          border: "1px solid rgb(25 118 210)",
-          width: "100%",
-        }}
-      >
-        SubComponent for row {row.id}
-      </div>
-    ),
-    density: "compact",
+    // renderSubComponent: row => (
+    //   <div
+    //     style={{
+    //       height: "100%",
+    //       border: "1px solid rgb(25 118 210)",
+    //       width: "100%",
+    //     }}
+    //   >
+    //     SubComponent for row {row.id}
+    //   </div>
+    // ),
     classNames: {
-      root: "h-full",
+      root: "h-full bg-white",
       // root: "h-full !border-none bg-white overflow-hidden",
       // columnHeaders: {
       //   root: "bg-neutral-800 text-white rounded-t-md",
@@ -150,23 +174,28 @@ const DataGridExamplePage = () => {
     // onCellDoubleClick: (cell) => console.log("Cell double clicked!", cell),
     // onRowClick: (row) => console.log("Row clicked!", row),
     // onRowDoubleClick: (row) => console.log("Row double clicked!", row),
+    filterFns: {
+      "test": () => false,
+    },
+    globalFilterFn: "fuzzy",
   });
-
   return (
     <div
-      className="flex flex-col gap-2 p-10 h-full"
+      className="flex flex-col gap-2 p-2 md:p-10 h-full"
     >
       <div 
-        className="flex-[1_0_0] min-h-0" // a min-height is required for this layout!
+        className="flex-[1_0_0] min-h-[0px]" // a min-height is required for this layout!
+        // className="flex-[1_0_0] min-h-[1500px] min-w-[2500px]" // a min-height is required for this layout!
       >
         <DataGrid
           instance={grid}
         />
       </div>
-      <div className="flex gap-2">
+      <div className="flex gap-2 flex-wrap">
         <Button
           onClick={() => {
             setLoading(!loading);
+            // grid.setLoading(prev => !prev);
           }}
         >
           Toggle Loading
@@ -179,11 +208,158 @@ const DataGridExamplePage = () => {
         >
           Print Selected Rows
         </Button>
+
+        <Button
+          onClick={() => {
+            console.log(grid.getState())
+          }}
+        >
+          Print State
+        </Button>
+
+        <Button
+          onClick={() => {
+            // console.log(grid.getAllColumns().map(x => [x.id, x.getFilterFn()]))
+            // console.log(grid.options)
+            console.log(grid.getAllColumns())
+            console.log(grid.getAllFlatColumns())
+            console.log(grid.getAllLeafColumns())
+          }}
+        >
+          Print Table
+        </Button>
       </div>
     </div>
   );
 }
 
+const Test = () => {
+  const ref1 = useRef<HTMLDivElement>(null);
+  const ref2 = useRef<HTMLDivElement>(null);
+
+  // useEffect(() => {
+  //   window.addEventListener("wheel", (e) => {
+  //     console.log((e.target as HTMLElement).closest(".DataGrid") )
+  //     // if ((e.target as HTMLElement).closest(".DataGrid") !== null) {
+  //     if (ref.current?.contains(e.target as HTMLElement)) {
+  //       console.log("aaaaaaa")
+  //       e.stopPropagation();
+  //       e.preventDefault();
+  //       e.stopImmediatePropagation();
+  //     }
+  //   }, { passive: false });
+  // }, []);
+
+  const pointerStats = useRef({
+    start: { x: 0, y: 0 },
+    end: { x: 0, y: 0 },
+    diff: { x: 0, y: 0 },
+  });
+
+  return (
+    <div className="p-6 h-full flex justify-center items-center gap-4"
+      style={{
+        // touchAction: "none",
+        height: "200vh"
+      }}
+    >
+      
+      <div
+        ref={ref1}
+        style={{
+          width: 250,
+          height: 250,
+          border: "4px solid black",
+          padding: "0 50px",
+          overflow: "scroll",
+          // touchAction: "none",
+        }}
+        onScroll={e => {
+          if (!ref2.current) return;
+          ref2.current.scrollTop = e.currentTarget.scrollTop;
+          ref2.current.scrollLeft = e.currentTarget.scrollLeft;
+        }}
+        // onPointerDown={e => {
+        //   pointerStats.current.start = { x: e.clientX, y: e.clientY };
+        // }}
+        // onPointerUp={e => {
+        //   pointerStats.current.end = { x: e.clientX, y: e.clientY };
+        //   pointerStats.current.diff = {
+        //     x: pointerStats.current.end.x - pointerStats.current.start.x,
+        //     y: pointerStats.current.end.y - pointerStats.current.start.y,
+        //   };
+        //   console.log(pointerStats.current)
+        // }}
+        onTouchStart={e => {
+          pointerStats.current.start = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+        }}
+        onTouchEnd={e => {
+          pointerStats.current.end = { x: e.changedTouches[0].clientX, y: e.changedTouches[0].clientY };
+          pointerStats.current.diff = {
+            x: pointerStats.current.end.x - pointerStats.current.start.x,
+            y: pointerStats.current.end.y - pointerStats.current.start.y,
+          };
+          console.log(pointerStats.current)
+          setTimeout(() => {
+            console.log("end", {x: ref1.current!.scrollLeft, y: ref1.current!.scrollTop })
+          }, 500);
+        }}
+        >
+        <div
+          className="before:content-['start'] before:absolute before:left-0 before:top-0 after:content-['end'] after:absolute after:right-0 after:bottom-0"
+          style={{
+            background: "rgb(25 118 210 / 20%)",
+            width: 500,
+            height: 1500,
+            position: "relative",
+          }}
+        >
+
+        </div>
+      </div>
+
+      <div
+        ref={ref2}
+        style={{
+          width: 250,
+          height: 250,
+          border: "4px solid black",
+          padding: "0 50px",
+          overflow: "hidden",
+          touchAction: "none",
+        }}
+        // Button 1 = left click and touch click
+        onPointerDown={e => console.log("pointer down", e)}
+        // onPointerMove={e => console.log("pointer move", e)}
+        onPointerUp={e => console.log("pointer up", e)}
+        // onPointerOver={e => console.log("pointer over", e)}
+        // onPointerCancel={e => console.log("pointer cancel", e)}
+        // onPointerEnter={e => console.log("pointer enter", e)}
+        // onPointerLeave={e => console.log("pointer leave", e)}
+        // onPointerOut={e => console.log("pointer out", e)}
+        onScroll={e => {
+          // console.log("scrolling")
+        }}
+      >
+        <div
+          className="before:content-['start'] before:absolute before:left-0 before:top-0 after:content-['end'] after:absolute after:right-0 after:bottom-0"
+          style={{
+            background: "rgb(25 118 210)",
+            width: 500,
+            height: 500,
+            position: "relative",
+          }}
+        >
+
+        </div>
+      </div>
+
+    </div>
+  );
+}
+
+
+// export default Test
 export default DataGridExamplePage;
 
 const cols: ColumnDef<ExampleData>[] = [
@@ -283,15 +459,17 @@ const cols2: ColumnDef<ExampleData2>[] = [
     accessorKey: "first_name",
     columnTitle: "First Name",
     header: () => "First Name",
-    size: 150,
+    size: 550,
     filterVariant: "text",
   },
   {
     accessorKey: "last_name",
     columnTitle: "Last Name",
     header: () => "Last Name",
-    size: 150,
+    size: 550,
     filterVariant: "text",
+    filterFn: "fuzzy",
+    // filterFn: "test"
   },
   {
     accessorKey: "email",
@@ -299,6 +477,12 @@ const cols2: ColumnDef<ExampleData2>[] = [
     header: () => "Email",
     size: 150,
     filterVariant: "autocomplete",
+    filterProps: {
+      options: [
+        "erushmere0@washingtonpost.com",
+        "rrippen1@loc.gov",
+      ]
+    }
   },
   {
     accessorKey: "gender",
@@ -307,6 +491,13 @@ const cols2: ColumnDef<ExampleData2>[] = [
     size: 150,
     filterVariant: "select",
     filterFn: "equals",
+    filterProps: {
+      options: [
+        { value: "", label: "All" },
+        "Male",
+        "Female"
+      ]
+    }
   },
   {
     accessorKey: "birthday",
@@ -314,9 +505,9 @@ const cols2: ColumnDef<ExampleData2>[] = [
     header: () => "Birthday",
     size: 150,
     filterVariant: "date",
-    filterFn: "equals",
+    filterFn: "dateEqualsTo",
     accessorFn: (row) => new Date(row.created_at),
-    cell: (cell) => (cell.getValue() as Date).toLocaleDateString(), 
+    cell: (cell) => (cell.getValue() as Date).toLocaleDateString(),
   },
   {
     accessorKey: "salary",
@@ -325,6 +516,10 @@ const cols2: ColumnDef<ExampleData2>[] = [
     size: 150,
     filterVariant: "range-slider",
     filterFn: "inNumberRange",
+    filterProps: {
+      // min: 7000, max: 15000, 
+      step: 100,
+    }
   },
   {
     accessorKey: "approved",
@@ -341,6 +536,20 @@ const cols2: ColumnDef<ExampleData2>[] = [
     // filterVariant: "multi-select",
     filterVariant: "multi-autocomplete",
     filterFn: "arrIncludesSome",
+    filterProps: {
+      options: [
+        "Red",
+        "Blue",
+        "Green",
+        "Yellow",
+        "Orange",
+        "Purple",
+        "Brown",
+        "Black",
+        "White",
+        "Gray",
+      ]
+    },
   },
   {
     id: "created_at",
@@ -350,12 +559,16 @@ const cols2: ColumnDef<ExampleData2>[] = [
     size: 150,
     filterVariant: "date-range",
     // filterFn: "inNumberRange",
+    filterFn: "isDateBetween",
     accessorFn: (row) => new Date(row.created_at),
     cell: (cell) => (cell.getValue() as Date).toISOString(),
     cellTitle: (cell) => (cell.getValue() as Date).toISOString(),
     footerClassNames: {
       root: dataGridExampleStyles.columnFooterCell,
-    }
+    },
+    filterProps: {
+      max: new Date(),
+    },
   },
   {
     accessorKey: "score",
@@ -366,5 +579,8 @@ const cols2: ColumnDef<ExampleData2>[] = [
     filterFn: "inNumberRange",
     footer: (ctx) => ctx.table.getRowModel()
       .rows.reduce((acc, row) => acc + row.original.score, 0).toString(),
+    filterProps: {
+      min: 0, max: 100,
+    },
   },
 ];
