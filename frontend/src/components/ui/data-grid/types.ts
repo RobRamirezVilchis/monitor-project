@@ -395,6 +395,7 @@ export type DataGridInstance<TData extends RowData> =
 & RowSelectionInstance<TData> 
 & {
   refs: {
+    root: RefObject<HTMLDivElement>;
     header: RefObject<HTMLDivElement>;
     columnsHeader: {
       main: {
@@ -433,7 +434,7 @@ export type DataGridInstance<TData extends RowData> =
     headerHeight: number;
   };
   toggleDensity: (density?: DataGridDensity) => void;
-  setFullscreen: Dispatch<SetStateAction<boolean>>;
+  setFullscreen: (fullscreen: boolean) => void;
   setColumnFiltersOpen: Dispatch<SetStateAction<boolean>>;
   localization: DataGridLocalization;
 }

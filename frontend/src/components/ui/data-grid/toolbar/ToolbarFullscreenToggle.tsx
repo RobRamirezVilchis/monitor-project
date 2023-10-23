@@ -32,7 +32,7 @@ const ToolbarFullscreenToggle = <TData extends RowData>({
         {...instance.options.slotProps?.baseActionIconProps}
         className={clsx(buttonStyles.root, instance.options.slotProps?.baseActionIconProps?.className)}
         onClick={e => {
-          instance.setFullscreen(prev => !prev);
+          instance.setFullscreen(!instance.getState().fullscreen);
           instance.options.slotProps?.baseActionIconProps?.onClick?.(e);
         }}
       >

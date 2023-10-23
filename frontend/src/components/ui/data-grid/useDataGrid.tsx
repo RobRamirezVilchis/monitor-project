@@ -66,7 +66,13 @@ const useDataGrid = <TData extends RowData>(options: DataGridOptions<TData>): Da
 
   const [loading, setLoading] = useState(options.initialState?.loading ?? options.state?.loading ?? false);
   const [density, setDensity] = useState<DataGridDensity>(options.initialState?.density ?? options.state?.density ?? "normal");
-  const [fullscreen, setFullscreen] = useState(options.initialState?.fullscreen ?? options.state?.fullscreen ?? false);
+  const [fullscreen, _setFullscreen] = useState(options.initialState?.fullscreen ?? options.state?.fullscreen ?? false);
+  const setFullscreen = useCallback((fullscreen: boolean) => {
+    fullscreen
+    ? rootRef.current?.requestFullscreen()
+    : document.exitFullscreen();
+    _setFullscreen(fullscreen);
+  }, []);  
   const [columnFiltersOpen, setColumnFiltersOpen] = useState(options.initialState?.columnFiltersOpen ?? options.state?.columnFiltersOpen ?? false);
 
   const instance = useReactTable<TData>({
@@ -130,6 +136,7 @@ const useDataGrid = <TData extends RowData>(options: DataGridOptions<TData>): Da
     }
   }, []);
 
+  const rootRef = useRef<HTMLDivElement>(null);
   const headerRef = useRef<HTMLDivElement>(null);
   const columnsHeaderMainViewportRef = useRef<HTMLDivElement>(null);
   const columnsHeaderMainContentRef = useRef<HTMLDivElement>(null);
@@ -145,6 +152,7 @@ const useDataGrid = <TData extends RowData>(options: DataGridOptions<TData>): Da
   const mainVerticalScrollRef = useRef(mainVerticalScroll);
 
   const refs: DataGridInstance<TData>["refs"] = useMemo(() => ({
+    root: rootRef,
     header: headerRef,
     columnsHeader: {
       main: {

@@ -50,9 +50,10 @@ const DataGrid = <TData extends RowData>({
 
   return (
     <div 
-      className={clsx("DataGrid", styles.root, { 
-        [styles.fullscreen]: instance.getState().fullscreen, 
-      }, instance.options.classNames?.root)} 
+      ref={instance.refs.root}
+      className={clsx("DataGrid", {
+        "DataGrid--fullscreen": instance.getState().fullscreen,
+      }, styles.root, instance.options.classNames?.root)} 
       style={instance.options.styles?.root}
       role="grid"
     >
