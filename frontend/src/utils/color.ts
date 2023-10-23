@@ -3,6 +3,14 @@ export function randomColor() {
   return "#" + Math.floor(Math.random() * 0xFFFFFF << 0).toString(16);
 }
 
+export function randomRGBColor() {
+  return {
+    r: Math.floor(Math.random() * 256),
+    g: Math.floor(Math.random() * 256), 
+    b: Math.floor(Math.random() * 256)
+  };
+}
+
 // Convert a hex color string to an RGB color object
 export function hexToRgb(hex: string) {
   const hexcolor = hex[0] === "#" ? hex.substring(1) : hex;
