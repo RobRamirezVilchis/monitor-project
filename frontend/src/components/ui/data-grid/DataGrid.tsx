@@ -72,14 +72,14 @@ const DataGrid = <TData extends RowData>({
       <div
         className={clsx("DataGrid-mainContainer", styles.mainContainer, instance.options.classNames?.mainContainer)}
         style={instance.options.styles?.mainContainer}
-        // onPointerEnter={e => {
-        //   instance.scrolls.main.horizontal.current?.lockOuterScroll();
-        //   instance.scrolls.main.vertical.current?.lockOuterScroll();
-        // }}
-        // onPointerLeave={e => {
-        //   instance.scrolls.main.horizontal.current?.unlockOuterScroll();
-        //   instance.scrolls.main.vertical.current?.unlockOuterScroll();
-        // }}
+        onPointerEnter={e => {
+          instance.scrolls.main.horizontal.current?.shouldLockScroll(true);
+          instance.scrolls.main.vertical.current?.shouldLockScroll(true);
+        }}
+        onPointerLeave={e => {
+          instance.scrolls.main.horizontal.current?.shouldLockScroll(false);
+          instance.scrolls.main.vertical.current?.shouldLockScroll(false);
+        }}
       >
         <DataGridColumnHeaders 
           instance={instance}

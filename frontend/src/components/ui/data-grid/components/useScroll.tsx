@@ -59,6 +59,11 @@ export const useScroll = ({
 
   const scrollContextRef = useRef<ScrollContext | null>(null);
 
+  const scrollLockContextRef = useRef<{
+    unregister: () => void;
+    counter: number;
+  } | null>(null);
+
   const syncScroll = useCallback((element: ScrollableElement) => {
     for (let current of scrollableElementsRef.current) {
       if (current.ref === element.ref) return;
@@ -72,6 +77,79 @@ export const useScroll = ({
       scrollableElementsRef.current.splice(found, 1);
   }, []);
 
+  const shouldLockScroll = useCallback((shouldLock: boolean) => {
+    if (shouldLock === !!scrollLockContextRef.current) return;
+
+    if (scrollLockContextRef.current) {
+      scrollLockContextRef.current.unregister();
+      scrollLockContextRef.current = null;
+    }
+
+    if (shouldLock) {
+      const lockWheel = (e: WheelEvent) => {
+        if (!scrollRef.current || !scrollLockContextRef.current) return;
+    
+        const { min, max } = getScrollLimits(scrollRef.current, orientation);
+        const current = orientation === "vertical" ? scrollRef.current!.scrollTop : scrollRef.current.scrollLeft;
+        const dir = orientation === "vertical" ? e.deltaY : e.deltaX;
+
+        if (dir === 0) return; // Only prevent if the user is scrolling in the same direction as the scroll
+
+        if (dir > 0 && current === max || dir < 0 && current === min)
+          scrollLockContextRef.current.counter += 1;
+        else 
+          scrollLockContextRef.current.counter = 0;
+    
+        if (scrollLockContextRef.current.counter < 2) {
+          e.preventDefault();
+          e.stopPropagation();
+        }
+      };
+      
+      // const lockPointerMove = (e: globalThis.PointerEvent) => {
+      //   if (!scrollRef.current || !scrollLockContextRef.current) return;
+    
+      //   const { min, max } = getScrollLimits(scrollRef.current, orientation);
+      //   const current = orientation === "vertical" ? scrollRef.current!.scrollTop : scrollRef.current.scrollLeft;
+      //   const dir = (orientation === "vertical" 
+      //     ? e.clientY 
+      //     : e.clientX
+      //   ) - (scrollContextRef.current?.start.clientPosition ?? 0);
+        
+      //   if (dir === 0) return; // Only prevent if the user is scrolling in the same direction as the scroll
+
+      //   if (dir > 0 && current === max || dir < 0 && current === min)
+      //     scrollLockContextRef.current.counter += 1;
+      //   else 
+      //     scrollLockContextRef.current.counter = 0;
+    
+      //   if (scrollLockContextRef.current.counter < 2) {
+      //     console.log(orientation, dir, current,  max, min, scrollLockContextRef.current)
+      //     e.preventDefault();
+      //     e.stopPropagation();
+      //   }
+      // };
+
+      window.addEventListener("wheel", lockWheel, { passive: false });
+      // window.addEventListener("pointermove", lockPointerMove, { passive: false });
+
+      scrollLockContextRef.current = {
+        counter: 0,
+        unregister: () => {
+          window.removeEventListener("wheel", lockWheel);
+          // window.removeEventListener("pointermove", lockPointerMove);
+        },
+      };
+    }
+  }, [orientation]);
+
+  useEffect(() => {
+    if (scrollLockContextRef.current) {
+      scrollLockContextRef.current.unregister();
+      scrollLockContextRef.current = null;
+    }
+  }, []);
+
   // Scrollbar Events ----------------------------------------------------------
   const onScroll = useCallback<UIEventHandler<HTMLDivElement>>((e) => {
     for (let element of scrollableElementsRef.current) {
@@ -79,7 +157,7 @@ export const useScroll = ({
 
       if (element.mode === "scroll") {
         if (orientation === "vertical")
-        element.ref.current.scrollTop = e.currentTarget.scrollTop;
+          element.ref.current.scrollTop = e.currentTarget.scrollTop;
         else
           element.ref.current.scrollLeft = e.currentTarget.scrollLeft;
       }
@@ -293,13 +371,15 @@ export const useScroll = ({
     scrollRef,
     syncScroll,
     desyncScroll,
+    shouldLockScroll,
+
     onScroll,
 
     onWheel,
     onPointerDown,
     onPointerMove,
     onPointerUp,
-  }), [scrollRef, syncScroll, desyncScroll, onScroll, onWheel, onPointerDown, onPointerMove, onPointerUp]);
+  }), [scrollRef, syncScroll, desyncScroll, shouldLockScroll, onScroll, onWheel, onPointerDown, onPointerMove, onPointerUp]);
   return value;
 }
 
