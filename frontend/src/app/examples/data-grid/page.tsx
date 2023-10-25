@@ -181,7 +181,7 @@ const DataGridExamplePage = () => {
   });
   return (
     <div
-      className="flex flex-col gap-2 p-2 md:p-10 h-full"
+      className="flex flex-col gap-2 p-10 md:p-10 h-full overflow-auto"
     >
       <div 
         className="flex-[1_0_0] min-h-[0px]" // a min-height is required for this layout!
@@ -233,133 +233,6 @@ const DataGridExamplePage = () => {
   );
 }
 
-const Test = () => {
-  const ref1 = useRef<HTMLDivElement>(null);
-  const ref2 = useRef<HTMLDivElement>(null);
-
-  // useEffect(() => {
-  //   window.addEventListener("wheel", (e) => {
-  //     console.log((e.target as HTMLElement).closest(".DataGrid") )
-  //     // if ((e.target as HTMLElement).closest(".DataGrid") !== null) {
-  //     if (ref.current?.contains(e.target as HTMLElement)) {
-  //       console.log("aaaaaaa")
-  //       e.stopPropagation();
-  //       e.preventDefault();
-  //       e.stopImmediatePropagation();
-  //     }
-  //   }, { passive: false });
-  // }, []);
-
-  const pointerStats = useRef({
-    start: { x: 0, y: 0 },
-    end: { x: 0, y: 0 },
-    diff: { x: 0, y: 0 },
-  });
-
-  return (
-    <div className="p-6 h-full flex justify-center items-center gap-4"
-      style={{
-        // touchAction: "none",
-        height: "200vh"
-      }}
-    >
-      
-      <div
-        ref={ref1}
-        style={{
-          width: 250,
-          height: 250,
-          border: "4px solid black",
-          padding: "0 50px",
-          overflow: "scroll",
-          // touchAction: "none",
-        }}
-        onScroll={e => {
-          if (!ref2.current) return;
-          ref2.current.scrollTop = e.currentTarget.scrollTop;
-          ref2.current.scrollLeft = e.currentTarget.scrollLeft;
-        }}
-        // onPointerDown={e => {
-        //   pointerStats.current.start = { x: e.clientX, y: e.clientY };
-        // }}
-        // onPointerUp={e => {
-        //   pointerStats.current.end = { x: e.clientX, y: e.clientY };
-        //   pointerStats.current.diff = {
-        //     x: pointerStats.current.end.x - pointerStats.current.start.x,
-        //     y: pointerStats.current.end.y - pointerStats.current.start.y,
-        //   };
-        //   console.log(pointerStats.current)
-        // }}
-        onTouchStart={e => {
-          pointerStats.current.start = { x: e.touches[0].clientX, y: e.touches[0].clientY };
-        }}
-        onTouchEnd={e => {
-          pointerStats.current.end = { x: e.changedTouches[0].clientX, y: e.changedTouches[0].clientY };
-          pointerStats.current.diff = {
-            x: pointerStats.current.end.x - pointerStats.current.start.x,
-            y: pointerStats.current.end.y - pointerStats.current.start.y,
-          };
-          console.log(pointerStats.current)
-          setTimeout(() => {
-            console.log("end", {x: ref1.current!.scrollLeft, y: ref1.current!.scrollTop })
-          }, 500);
-        }}
-        >
-        <div
-          className="before:content-['start'] before:absolute before:left-0 before:top-0 after:content-['end'] after:absolute after:right-0 after:bottom-0"
-          style={{
-            background: "rgb(25 118 210 / 20%)",
-            width: 500,
-            height: 1500,
-            position: "relative",
-          }}
-        >
-
-        </div>
-      </div>
-
-      <div
-        ref={ref2}
-        style={{
-          width: 250,
-          height: 250,
-          border: "4px solid black",
-          padding: "0 50px",
-          overflow: "hidden",
-          touchAction: "none",
-        }}
-        // Button 1 = left click and touch click
-        onPointerDown={e => console.log("pointer down", e)}
-        // onPointerMove={e => console.log("pointer move", e)}
-        onPointerUp={e => console.log("pointer up", e)}
-        // onPointerOver={e => console.log("pointer over", e)}
-        // onPointerCancel={e => console.log("pointer cancel", e)}
-        // onPointerEnter={e => console.log("pointer enter", e)}
-        // onPointerLeave={e => console.log("pointer leave", e)}
-        // onPointerOut={e => console.log("pointer out", e)}
-        onScroll={e => {
-          // console.log("scrolling")
-        }}
-      >
-        <div
-          className="before:content-['start'] before:absolute before:left-0 before:top-0 after:content-['end'] after:absolute after:right-0 after:bottom-0"
-          style={{
-            background: "rgb(25 118 210)",
-            width: 500,
-            height: 500,
-            position: "relative",
-          }}
-        >
-
-        </div>
-      </div>
-
-    </div>
-  );
-}
-
-
-// export default Test
 export default DataGridExamplePage;
 
 const cols: ColumnDef<ExampleData>[] = [

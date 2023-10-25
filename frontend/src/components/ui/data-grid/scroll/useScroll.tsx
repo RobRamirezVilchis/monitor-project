@@ -50,6 +50,16 @@ export interface ScrollContext {
   orientation: ScrollOrientation;
 };
 
+/**
+ * Syncs viewport of scrollable content with scrollbars even when 
+ * their overflow properties are set to hidden.
+ * NOTE: In other for the outer scrollbars (in case the this hook is used
+ * in a component inside another scrollable element) to update properly 
+ * in mobile browsers, the most outer scrollable element that may overflow should
+ * define its overflow/x/y properties as "auto" or "scroll". This does not work if
+ * the property is set to the body or html tags so a wrapper element is needed.
+ * This is not needed for desktop browsers.
+ */
 export const useScroll = ({
   orientation = "vertical",
   wheelBehavior = "smooth",
@@ -259,7 +269,8 @@ export const useScroll = ({
         ? scrollRef.current.scrollTop
         : scrollRef.current.scrollLeft;
       const { min, max } = getScrollLimits(scrollRef.current, orientation);
-      if (((delta < 0 && scrollPosition === max) || (delta > 0 && scrollPosition === min)) && !closestScrollableElementRef.current && scrollRootContainerRef.current)
+      // if (((delta < 0 && scrollPosition === max) || (delta > 0 && scrollPosition === min)) && !closestScrollableElementRef.current && scrollRootContainerRef.current)
+      if (((delta < 0 && Math.abs(scrollPosition - max) < 1) || (delta > 0 && Math.abs(scrollPosition - min) < 1)) && !closestScrollableElementRef.current && scrollRootContainerRef.current)
         closestScrollableElementRef.current = findNextScrollableElement(scrollRootContainerRef.current.parentElement, orientation);
     }
 
