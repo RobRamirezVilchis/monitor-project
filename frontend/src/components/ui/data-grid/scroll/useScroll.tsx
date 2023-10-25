@@ -56,8 +56,8 @@ export interface ScrollContext {
  * NOTE: In other for the outer scrollbars (in case the this hook is used
  * in a component inside another scrollable element) to update properly 
  * in mobile browsers, the most outer scrollable element that may overflow should
- * define its overflow/x/y properties as "auto" or "scroll". This does not work if
- * the property is set to the body or html tags so a wrapper element is needed.
+ * define its overflow/x/y properties as "auto" or "scroll". This must be set to 
+ * both the body and html tags or to a wrapper element inside the body tag.
  * This is not needed for desktop browsers.
  */
 export const useScroll = ({
