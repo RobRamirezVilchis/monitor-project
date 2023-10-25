@@ -67,7 +67,7 @@ import { DateInputProps } from "@mantine/dates";
 
 import { type FilterFnOption } from "./filterFns";
 import { type SortingFnOption } from "./sortingFns";
-import { UseScrollReturn } from "./components/useScroll";
+import { type UseScrollReturn } from "./scroll/useScroll";
 
 export type DataGridDensity = "compact" | "normal" | "comfortable";
 

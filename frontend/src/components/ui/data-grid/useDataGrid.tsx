@@ -15,7 +15,7 @@ import {
 import { useVirtualizer } from "@tanstack/react-virtual";
 
 import type { DataGridOptions, DataGridInstance, DataGridDensity, ColumnDef } from "./types";
-import { useScroll } from "./components/useScroll";
+import { useScroll } from "./scroll/useScroll";
 import { createExpandableColumnDef, createRowNumberingColumnDef, createRowSelectionColumnDef } from "./reservedColumnDefs";
 import { en } from "./locales/en";
 import { filterFns } from "./filterFns";

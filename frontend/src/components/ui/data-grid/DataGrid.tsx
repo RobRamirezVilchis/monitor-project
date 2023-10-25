@@ -12,7 +12,7 @@ import DataGridBody from "./body/DataGridBody";
 import DataGridColumnFooters from "./column-footers/DataGridColumnFooters";
 import DataGridFooter from "./footer/DataGridFooter";
 import DataGridToolbar from "./toolbar/DataGridToolbar";
-import Scroll from "@/components/ui/data-grid/components/Scroll";
+import Scroll from "@/components/ui/data-grid/scroll/Scroll";
 import SpinnerLoadingOverlay from "@/components/ui/data-grid/components/SpinnerLoadingOverlay";
 
 export interface DataGridProps<TData extends RowData> {
