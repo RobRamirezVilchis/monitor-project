@@ -1,7 +1,18 @@
-import { PointerEventHandler, PointerEvent, RefObject, MutableRefObject, TouchEventHandler, UIEventHandler, WheelEventHandler, useCallback, useEffect, useMemo, useRef } from "react";
+import { 
+  PointerEventHandler, 
+  PointerEvent, 
+  RefObject, 
+  MutableRefObject, 
+  UIEventHandler, 
+  WheelEventHandler, 
+  useCallback, 
+  useEffect, 
+  useMemo, 
+  useRef 
+} from "react";
 
-import { clamp, closeToZero, lerp2, mapValue, easeOutCubic } from "@/utils/math";
 import { ScrollOrientation } from "./Scroll";
+import type { RequiredKeys } from "@/utils/types";
 
 export interface UseScrollOptions {
   /**
@@ -28,26 +39,15 @@ export interface ScrollableElement {
 
 // TODO: Add support for mouse wheel click scrolling
 export interface ScrollContext {
-  start: {
-    scrollPosition: number;
-    clientPosition: number;
-    timestamp: number;
-    velocity: number;
-    acceleration: number;
-    direction: number;
-  };
-  current: {
-    scrollPosition: number;
-    clientPosition: number;
-    timestamp: number;
-    velocity: number;
-    acceleration: number;
-    direction: number;
-    delta: number;
-  };
+  initiator: "wheel" | "pointer" | "pointer-manual";
+  clientPosition: number;
+  timestamp: number;
+  velocity: number;
+  acceleration: number;
+  direction: number;
+  events: number;
   elapsed: number;
   orientation: ScrollOrientation;
-  initiator: "wheel" | "pointer" | "pointer-manual";
 };
 
 export const useScroll = ({
@@ -56,6 +56,7 @@ export const useScroll = ({
 }: UseScrollOptions) => {
   const scrollRef = useRef<HTMLDivElement>(null);
   const scrollableElementsRef = useRef<ScrollableElement[]>([]);
+  const scrollRootContainerRef = useRef<HTMLDivElement>(null);
 
   const scrollContextRef = useRef<ScrollContext | null>(null);
 
@@ -63,6 +64,7 @@ export const useScroll = ({
     unregister: () => void;
     counter: number;
   } | null>(null);
+  const closestScrollableElementRef = useRef<HTMLElement | null>(null);
 
   const syncScroll = useCallback((element: ScrollableElement) => {
     for (let current of scrollableElementsRef.current) {
@@ -77,6 +79,7 @@ export const useScroll = ({
       scrollableElementsRef.current.splice(found, 1);
   }, []);
 
+  // Wheel Locking -------------------------------------------------------------
   const shouldLockScroll = useCallback((shouldLock: boolean) => {
     if (shouldLock === !!scrollLockContextRef.current) return;
 
@@ -90,12 +93,17 @@ export const useScroll = ({
         if (!scrollRef.current || !scrollLockContextRef.current) return;
     
         const { min, max } = getScrollLimits(scrollRef.current, orientation);
-        const current = orientation === "vertical" ? scrollRef.current!.scrollTop : scrollRef.current.scrollLeft;
-        const dir = orientation === "vertical" ? e.deltaY : e.deltaX;
+        const shiftKey = e.shiftKey;
+        const current = shiftKey
+          ? (orientation === "vertical" ? scrollRef.current.scrollLeft : scrollRef.current.scrollTop)
+          : (orientation === "vertical" ? scrollRef.current.scrollTop : scrollRef.current.scrollLeft);
+        const dir = shiftKey
+          ? (orientation === "vertical" ? e.deltaX : e.deltaY)
+          : (orientation === "vertical" ? e.deltaY : e.deltaX);
 
         if (dir === 0) return; // Only prevent if the user is scrolling in the same direction as the scroll
 
-        if (dir > 0 && current === max || dir < 0 && current === min)
+        if ((dir > 0 && current === max) || (dir < 0 && current === min))
           scrollLockContextRef.current.counter += 1;
         else 
           scrollLockContextRef.current.counter = 0;
@@ -105,39 +113,13 @@ export const useScroll = ({
           e.stopPropagation();
         }
       };
-      
-      // const lockPointerMove = (e: globalThis.PointerEvent) => {
-      //   if (!scrollRef.current || !scrollLockContextRef.current) return;
-    
-      //   const { min, max } = getScrollLimits(scrollRef.current, orientation);
-      //   const current = orientation === "vertical" ? scrollRef.current!.scrollTop : scrollRef.current.scrollLeft;
-      //   const dir = (orientation === "vertical" 
-      //     ? e.clientY 
-      //     : e.clientX
-      //   ) - (scrollContextRef.current?.start.clientPosition ?? 0);
-        
-      //   if (dir === 0) return; // Only prevent if the user is scrolling in the same direction as the scroll
-
-      //   if (dir > 0 && current === max || dir < 0 && current === min)
-      //     scrollLockContextRef.current.counter += 1;
-      //   else 
-      //     scrollLockContextRef.current.counter = 0;
-    
-      //   if (scrollLockContextRef.current.counter < 2) {
-      //     console.log(orientation, dir, current,  max, min, scrollLockContextRef.current)
-      //     e.preventDefault();
-      //     e.stopPropagation();
-      //   }
-      // };
 
       window.addEventListener("wheel", lockWheel, { passive: false });
-      // window.addEventListener("pointermove", lockPointerMove, { passive: false });
 
       scrollLockContextRef.current = {
         counter: 0,
         unregister: () => {
           window.removeEventListener("wheel", lockWheel);
-          // window.removeEventListener("pointermove", lockPointerMove);
         },
       };
     }
@@ -190,53 +172,29 @@ export const useScroll = ({
         : scrollRef.current.scrollLeft = next;
     }
     else {
-      const scrollPosition = orientation === "vertical"
-        ? scrollRef.current.scrollTop
-        : scrollRef.current.scrollLeft;
-      const clientPosition = orientation === "vertical"
-        ? e.clientY
-        : e.clientX;
-      
       const time = 200;
       const acceleration = (2 * delta) / (time ** 2);
       const velocity = acceleration * time;
       const direction = Math.sign(delta);
       if (!scrollContextRef.current || scrollContextRef.current.initiator !== "wheel") {
         requestAnimationFrame((timestamp) => {
-          scrollContextRef.current = {
-            start: {
-              scrollPosition,
-              clientPosition,
-              timestamp,
-              velocity,
-              // We negate the acceleration since our final velocity is 0 and not the calculated one
-              acceleration: -acceleration,
-              direction,
-            },
-            current: {
-              scrollPosition,
-              clientPosition,
-              timestamp,
-              delta: 0,
-              velocity,
-              // We negate the acceleration since our final velocity is 0 and not the calculated one
-              acceleration: -acceleration,
-              direction,
-            },
-            elapsed: 0,
-            orientation,
-            initiator: "wheel",
-          };
-          requestAnimationFrame(timestamp => smoothScroll(scrollRef, scrollContextRef, "wheel", timestamp));
+          scrollContextRef.current = createScrollContext({
+            initiator: "wheel", 
+            orientation, 
+            timestamp,
+            velocity,
+            acceleration: -acceleration,
+            direction,
+          });
+          requestAnimationFrame(timestamp => smoothScroll(scrollRef.current, scrollContextRef, "wheel", timestamp));
         });
       }
       else {
-        scrollContextRef.current.current.delta = 0;
-        scrollContextRef.current.current.direction = direction;
-        scrollContextRef.current.current.velocity = direction === scrollContextRef.current.current.direction
-          ? scrollContextRef.current.current.velocity + velocity / 2
+        scrollContextRef.current.direction = direction;
+        scrollContextRef.current.velocity = direction === scrollContextRef.current.direction
+          ? scrollContextRef.current.velocity + velocity / 2
           : velocity;
-        scrollContextRef.current.current.acceleration = -scrollContextRef.current.current.velocity / time;
+        scrollContextRef.current.acceleration = -scrollContextRef.current.velocity / time;
       }
     }
   }, [orientation, wheelBehavior]);
@@ -258,71 +216,66 @@ export const useScroll = ({
 
     (e.target as HTMLElement).setPointerCapture(e.pointerId);
 
-    const scrollPosition = orientation === "vertical"
-      ? scrollRef.current.scrollTop
-      : scrollRef.current.scrollLeft;
     const clientPosition = orientation === "vertical"
       ? e.clientY 
       : e.clientX;
 
-    scrollContextRef.current = {
-      start: {
-        scrollPosition,
-        clientPosition,
-        timestamp: e.timeStamp,
-        velocity: 0,
-        acceleration: 0,
-        direction: 0,
-      },
-      current: {
-        scrollPosition,
-        clientPosition,
-        timestamp: e.timeStamp,
-        velocity: 0,
-        acceleration: 0,
-        direction: 0,
-        delta: 0,
-      },
-      elapsed: 0,
+    scrollContextRef.current = createScrollContext({
+      initiator: "pointer-manual", 
       orientation,
-      initiator: "pointer-manual",
-    };
+      clientPosition,
+      timestamp: e.timeStamp,
+    });
   }, [orientation]);
 
-  // TODO: Fix 
   const onPointerMove = useCallback<PointerEventHandler<HTMLDivElement>>((e) => {
     if (!scrollRef.current 
       || !(e.target as HTMLElement).hasPointerCapture(e.pointerId)
       || !scrollContextRef.current 
       || scrollContextRef.current.initiator !== "pointer-manual")
       return;
-
-    const scrollPosition = orientation === "vertical"
-      ? scrollRef.current.scrollTop
-      : scrollRef.current.scrollLeft;
+    
     const clientPosition = orientation === "vertical" 
       ? e.clientY 
       : e.clientX;
-    const distance = clientPosition - scrollContextRef.current.current.clientPosition;
+    const delta = clientPosition - scrollContextRef.current.clientPosition;
     
-    if (distance === 0) return;
+    if (delta === 0) return;
 
-    const deltaTime = e.timeStamp - scrollContextRef.current.current.timestamp;
-    scrollContextRef.current.current = {
-      scrollPosition: scrollPosition - distance,
+    const deltaTime = e.timeStamp - scrollContextRef.current.timestamp;
+    scrollContextRef.current = {
+      ...scrollContextRef.current,
       clientPosition,
       timestamp: e.timeStamp,
-      delta: distance,
-      velocity: -distance / deltaTime,
-      acceleration: 0,
-      direction: -Math.sign(distance),
+      velocity: -delta / deltaTime,
+      direction: -Math.sign(delta),
     };
-    scrollContextRef.current.elapsed = scrollContextRef.current.current.timestamp - scrollContextRef.current.start.timestamp;
+    scrollContextRef.current.events += 1;
+    
+    if (scrollContextRef.current.events === 1) {
+      // On the first move event, check if the scroll is at the limit
+      // If it is, find the next scrollable element and scroll it instead
+      const scrollPosition = orientation === "vertical"
+        ? scrollRef.current.scrollTop
+        : scrollRef.current.scrollLeft;
+      const { min, max } = getScrollLimits(scrollRef.current, orientation);
+      if (((delta < 0 && scrollPosition === max) || (delta > 0 && scrollPosition === min)) && !closestScrollableElementRef.current && scrollRootContainerRef.current)
+        closestScrollableElementRef.current = findNextScrollableElement(scrollRootContainerRef.current.parentElement, orientation);
+    }
 
-    if (orientation === "vertical")
-      scrollRef.current.scrollTop -= distance;
-    else 
-      scrollRef.current.scrollLeft -= distance;
+    if (closestScrollableElementRef.current) {
+      if (orientation === "vertical")
+        closestScrollableElementRef.current.scrollTop -= delta;
+      else
+        closestScrollableElementRef.current.scrollLeft -= delta;
+      return;
+    }
+    else {
+      if (orientation === "vertical")
+        scrollRef.current.scrollTop -= delta;
+      else
+        scrollRef.current.scrollLeft -= delta;
+    }
   }, [orientation]);
   
   const onPointerUp = useCallback<PointerEventHandler<HTMLDivElement>>((e) => {
@@ -334,41 +287,44 @@ export const useScroll = ({
       || scrollContextRef.current.initiator !== "pointer-manual") 
       return;
 
-    const scrollPosition = orientation === "vertical"
-      ? scrollRef.current.scrollTop
-      : scrollRef.current.scrollLeft;
+    if (scrollContextRef.current.velocity === 0) {
+      scrollContextRef.current = null;
+      return;
+    }
+    
     const clientPosition = orientation === "vertical" 
       ? e.clientY 
       : e.clientX;
 
-    if (scrollContextRef.current.current.velocity === 0) {
-      scrollContextRef.current = null;
-      return;
-    }
-
     requestAnimationFrame((timestamp) => {
       if (!scrollContextRef.current) return;
-      scrollContextRef.current.start.scrollPosition = scrollPosition;
-      scrollContextRef.current.start.clientPosition = clientPosition;
-      scrollContextRef.current.start.timestamp = timestamp;
-      scrollContextRef.current.start.velocity = scrollContextRef.current.current.velocity;
-      scrollContextRef.current.start.acceleration = 0.003 * Math.sign(-scrollContextRef.current.current.velocity);
-      scrollContextRef.current.start.direction = scrollContextRef.current.current.direction;
-      scrollContextRef.current.current.scrollPosition = scrollPosition;
-      scrollContextRef.current.current.clientPosition = clientPosition;
-      scrollContextRef.current.current.timestamp = timestamp;
-      scrollContextRef.current.current.acceleration = 0.003 * Math.sign(-scrollContextRef.current.current.velocity);
-      scrollContextRef.current.current.direction = scrollContextRef.current.current.direction;
-      scrollContextRef.current.current.delta = 0;
-      scrollContextRef.current.initiator = "pointer";
 
-      requestAnimationFrame(timestamp => smoothScroll(scrollRef, scrollContextRef, "pointer", timestamp));
+      const accelerationFactor = 0.003;
+      scrollContextRef.current = {
+        ...scrollContextRef.current,
+        clientPosition: clientPosition,
+        timestamp: timestamp,
+        acceleration: accelerationFactor * Math.sign(-scrollContextRef.current.velocity),
+        direction: scrollContextRef.current.direction,
+        initiator: "pointer",
+      }
+
+      requestAnimationFrame(timestamp => {
+        let targetEl: HTMLElement | null = scrollRef.current;
+        if (closestScrollableElementRef.current) {
+          targetEl = closestScrollableElementRef.current;
+          closestScrollableElementRef.current = null;
+        }
+        smoothScroll(targetEl, scrollContextRef, "pointer", timestamp);
+      });
     })
   }, [orientation]);
   
   // Content Events ------------------------------------------------------------
   const value = useMemo(() => ({
     scrollRef,
+    scrollRootContainerRef,
+
     syncScroll,
     desyncScroll,
     shouldLockScroll,
@@ -403,35 +359,80 @@ function getTranslateXY(element: HTMLElement) {
   }
 }
 
-function smoothScroll(scrollRef: RefObject<HTMLDivElement>, scrollContextRef: MutableRefObject<ScrollContext | null>, initiator: ScrollContext["initiator"], timestamp: number) {
-  if (!scrollRef.current || !scrollContextRef.current || scrollContextRef.current.initiator !== initiator) return;
+function isScrollableElement(element: HTMLElement, orientation: ScrollOrientation) {
+  const isOverflowing = orientation === "vertical"
+    ? element.scrollHeight > element.clientHeight
+    : element.scrollWidth > element.clientWidth;
 
-  const { current, orientation } = scrollContextRef.current;
-  const { acceleration, velocity, direction, scrollPosition: position, timestamp: prevTimestamp } = current;
+  if (element === document.documentElement && isOverflowing) 
+    return true;
+
+  const computedStyle = getComputedStyle(element);
+
+  const isOverflowScrollable = orientation === "vertical"
+    ? computedStyle.overflowY === "auto" || computedStyle.overflowY === "scroll"
+    : computedStyle.overflowX === "auto" || computedStyle.overflowX === "scroll";
+
+  return isOverflowing && isOverflowScrollable;
+}
+
+function findNextScrollableElement(current: HTMLElement | null, orientation: ScrollOrientation): HTMLElement | null {
+  if (!current) return null;
+  if (isScrollableElement(current, orientation)) return current;
+  return findNextScrollableElement(current.parentElement, orientation);
+}
+
+function smoothScroll(scrollEl: HTMLElement | null, scrollContextRef: MutableRefObject<ScrollContext | null>, initiator: ScrollContext["initiator"], timestamp: number) {
+  if (!scrollEl || !scrollContextRef.current || scrollContextRef.current.initiator !== initiator) return;
+
+  const { orientation, acceleration, velocity, direction, timestamp: prevTimestamp } = scrollContextRef.current;
+  const position = orientation === "vertical" ? scrollEl.scrollTop : scrollEl.scrollLeft;
   const deltaTime = timestamp - prevTimestamp;
   scrollContextRef.current.elapsed += deltaTime;
   const distance = velocity * deltaTime + 0.5 * acceleration * deltaTime ** 2;
-  scrollContextRef.current.current.delta += distance;
   const newVelocity = velocity + acceleration * deltaTime;
-  scrollContextRef.current.current.velocity = newVelocity;
+  scrollContextRef.current.velocity = newVelocity;
   const next = position + distance;
 
   if (orientation === "vertical")
-    scrollRef.current.scrollTop = next;
+    scrollEl.scrollTop = next;
   else
-    scrollRef.current.scrollLeft = next;
+    scrollEl.scrollLeft = next;
 
-  scrollContextRef.current.current.scrollPosition = next;
-  scrollContextRef.current.current.timestamp = timestamp;
+  scrollContextRef.current.timestamp = timestamp;
 
-  const { min, max } = getScrollLimits(scrollRef.current, orientation);
+  const { min, max } = getScrollLimits(scrollEl, orientation);
   if ((direction > 0 
     ? newVelocity > 0 
     : newVelocity < 0)
     && (next >= min && next <= max))
-    requestAnimationFrame(timestamp => smoothScroll(scrollRef, scrollContextRef, initiator, timestamp));
+    requestAnimationFrame(timestamp => smoothScroll(scrollEl, scrollContextRef, initiator, timestamp));
   else
     scrollContextRef.current = null;
+}
+
+function createScrollContext({
+  initiator,
+  orientation,
+  timestamp, 
+  clientPosition = 0,
+  velocity = 0,
+  acceleration = 0,
+  direction = 0,
+  events = 0,
+  elapsed = 0,
+}: RequiredKeys<Partial<ScrollContext>, "initiator" | "orientation" | "timestamp">): ScrollContext {
+  return {
+    initiator,
+    orientation,
+    timestamp,
+    clientPosition,
+    velocity,
+    acceleration,
+    direction,
+    events,
+    elapsed,
+  }
 }
 
 /*

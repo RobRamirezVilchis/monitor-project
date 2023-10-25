@@ -6,6 +6,7 @@ import styles from "./DataGrid.module.css";
 
 import type { DataGridInstance } from "./types";
 import { useIsomorphicLayoutEffect } from "@/hooks/shared/useIsomorphicLayoutEffect";
+import { mergeRefs } from "@/hooks/utils/useMergedRef";
 import DataGridColumnHeaders from "./column-headers/DataGridColumnHeaders";
 import DataGridBody from "./body/DataGridBody";
 import DataGridColumnFooters from "./column-footers/DataGridColumnFooters";
@@ -50,7 +51,7 @@ const DataGrid = <TData extends RowData>({
 
   return (
     <div 
-      ref={instance.refs.root}
+      ref={mergeRefs(instance.refs.root, instance.scrolls.main.horizontal.current?.scrollRootContainerRef!, instance.scrolls.main.vertical.current?.scrollRootContainerRef!)}
       className={clsx("DataGrid", {
         "DataGrid--fullscreen": instance.getState().fullscreen,
       }, styles.root, instance.options.classNames?.root)} 
