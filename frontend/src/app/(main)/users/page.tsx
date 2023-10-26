@@ -38,12 +38,6 @@ const UsersPage = () => {
   const [filters, setFilters] = useImmer<{  
     search?: string;
   }>({});
-  // const debounceFilters = useDebounce({
-  //   callback: (newFilters: typeof filters) => {
-  //     setFilters(newFilters);
-  //   },
-  //   debounceTime: 1000,
-  // });
   const usersWhitelistQuery = useWhitelistQuery({
     variables: {
       pagination: {
@@ -223,7 +217,8 @@ const cols: ColumnDef<WhitelistItem>[] = [
   {
     id: "avatar",
     accessorKey: "user",
-    header: () => null,
+    header: "",
+    columnTitle: "Avatar",
     size: 48,
     cell: ({ cell, row, getValue }) => getValue<User | null>() ? (
       <UserAvatar
@@ -236,6 +231,7 @@ const cols: ColumnDef<WhitelistItem>[] = [
     id: "user.name",
     accessorKey: "user",
     header: "Nombre",
+    columnTitle: "Nombre",
     size: 250,
     cell: ({ getValue }) => getValue<User | null>() 
       ? `${getValue<User>().first_name ?? ""} ${getValue<User>().last_name ?? ""}`
@@ -244,11 +240,13 @@ const cols: ColumnDef<WhitelistItem>[] = [
   {
     accessorKey: "email",
     header: "Email",
+    columnTitle: "Email",
     size: 250,
   },
   {
     accessorKey: "group",
     header: "Rol",
+    columnTitle: "Rol",
     size: 180,
     cell: ({ row, getValue }) => <RoleSelector whitelistItem={row.original} value={getValue<Role>()} />,
     cellClassNames: {
@@ -258,6 +256,7 @@ const cols: ColumnDef<WhitelistItem>[] = [
   {
     id: "actions",
     header: "Acciones",
+    columnTitle: "Acciones",
     size: 100,
     cellClassNames: {
       content: "flex w-full justify-center items-center"
