@@ -1,29 +1,31 @@
 "use client";
 
-import { GridCallbackDetails, GridColDef, GridFilterModel } from "@mui/x-data-grid";
 import { useEffect, useState } from "react";
 import { Button, Modal } from "@mantine/core";
+import { PaginationState } from "@tanstack/react-table";
+import { useImmer } from "use-immer";
 
-import { ConfirmDialogProvider } from "@/components/shared/ConfirmDialogProvider";
-import { DataGrid, GridToolbarWithSearch } from "@/components/shared/DataGrid";
-import { DeleteUserAction } from "@/components/users/Actions";
-import { getUserRoleLocalized } from "@/api/users";
-import { NewUserForm } from "@/components/users/NewUserForm";
-import { RoleSelector } from "@/components/users/RoleSelector";
+import { DeleteUserAction } from "./Actions";
+import { NewUserForm } from "./NewUserForm";
+import { Role, User } from "@/api/auth.types"; 
+import { RoleSelector } from "./RoleSelector";
 import { showSuccessNotification, showErrorNotification } from "@/components/ui/notifications";
 import { useAddToWhitelistMutation } from "@/api/mutations/users";
-import { useDebounce, useQueryState } from "@/hooks/shared";
-import { User } from "@/api/auth.types"; 
+import { useQueryState } from "@/hooks/shared";
 import { UserAvatar } from "@/components/shared/UserAvatar";
 import { useWhitelistQuery } from "@/api/queries/users";
 import { WhitelistItem } from "@/api/users.types";
+import { ColumnDef } from "@/components/ui/data-grid/types";
+import { es } from "@/components/ui/data-grid/locales/es";
+import DataGrid from "@/components/ui/data-grid/DataGrid";
+import useDataGrid from "@/components/ui/data-grid/useDataGrid";
 
 import { IconPlus } from "@tabler/icons-react";
 
 const UsersPage = () => {
   const pagination = useQueryState({
     page: {
-      defaultValue: 0,
+      defaultValue: 1,
       parse: (value) => parseInt(value),
       serialize: (value) => value.toString(),
     },
@@ -33,19 +35,19 @@ const UsersPage = () => {
       serialize: (value) => value.toString(),
     },
   });
-  const [filters, setFilters] = useState<{  
+  const [filters, setFilters] = useImmer<{  
     search?: string;
-  } | undefined>();
-  const debounceFilters = useDebounce({
-    callback: (newFilters: typeof filters) => {
-      setFilters(newFilters);
-    },
-    debounceTime: 1000,
-  });
+  }>({});
+  // const debounceFilters = useDebounce({
+  //   callback: (newFilters: typeof filters) => {
+  //     setFilters(newFilters);
+  //   },
+  //   debounceTime: 1000,
+  // });
   const usersWhitelistQuery = useWhitelistQuery({
     variables: {
       pagination: {
-        page: pagination.state.page + 1,
+        page: pagination.state.page,
         page_size: pagination.state.page_size,
       },
       filters: {
@@ -66,6 +68,83 @@ const UsersPage = () => {
     }),
   });
   const [newUserFormOpen, setNewUserFormOpen] = useState(false);
+  const grid = useDataGrid<WhitelistItem>({
+    data: usersWhitelistQuery.data?.data || [],
+    columns: cols,
+    localization: es,
+    initialState: {
+      density: "compact",
+    },
+    state: {
+      loading: usersWhitelistQuery.isLoading || usersWhitelistQuery.isFetching,
+      pagination: {
+        pageIndex: pagination.state.page - 1,
+        pageSize: pagination.state.page_size,
+      },
+      globalFilter: filters?.search,
+    },
+    classNames: {
+      root: "h-full !border-none text-neutral-800",
+      mainContainer: "rounded shadow-md bg-white",
+      footerContainer: "!border-none bg-white",
+      columnHeadersCell: {
+        root: "text-white font-bold",
+        actions: "bg-white !text-white",
+        label: "!font-normal !text-sm",
+      },
+      columnHeaders: {
+        root: "bg-neutral-800",
+      },
+      row: {
+        root: "border-b border-neutral-200",
+      },
+      toolbarContainer: "justify-end text-neutral-800",
+      footer: {
+        root: "pt-1",
+      }
+    },
+    globalFilterFn: "fuzzy",
+    enableColumnResizing: true,
+    columnResizeMode: "onChange",
+    hideColumnFooters: true,
+    // enableSorting: true,
+
+    enableFilters: true,
+    manualFiltering: true,
+    enableGlobalFilter: true,
+    globalFilterDebounceTime: 1000,
+    onGlobalFilterChange: (value) => {
+      const newValue = typeof value === "function" ? value(filters?.search) : value;
+      setFilters(draft => {
+        draft.search = newValue;
+      });
+    },
+
+    enablePagination: true,
+    manualPagination: true,
+    pageSizeOptions: [1, 25, 50, 100],
+    pageCount: usersWhitelistQuery.data?.pagination?.pages ?? 0,
+    rowCount: usersWhitelistQuery.data?.pagination?.count ?? 0,
+    onPaginationChange: (value) => {
+      const old: PaginationState = {
+        pageIndex :pagination.state.page - 1,
+        pageSize  :pagination.state.page_size,
+      };
+      const newValue = typeof value === "function" ? value(old) : value;
+      pagination.update({
+        page: newValue.pageIndex + 1,
+        page_size: newValue.pageSize,
+      });
+    },
+    
+    slotProps: {
+      baseTextInputProps: {
+        classNames: {
+          input: "rounded-none border-t-0 border-l-0 border-r-0 border-b border-b-2 border-neutral-600 hover:border-blue-500 focus:border-blue-500"
+        },
+      },
+    },
+  });
 
   //* Prefetch adjacent pages
   useEffect(() => {
@@ -97,12 +176,6 @@ const UsersPage = () => {
       }
     }
   }, [usersWhitelistQuery.data, usersWhitelistQuery.isPreviousData, usersWhitelistQuery.variables.filters, usersWhitelistQuery.variables.pagination?.page_size]);
-  
-  const onFilterModelChange = (model: GridFilterModel, details: GridCallbackDetails<"filter">) => {
-    debounceFilters({
-      search: model.quickFilterValues?.[0] || undefined,
-    });
-  };
 
   return (
     <section className="flex flex-col h-full lg:container mx-auto pb-2 md:pb-6 px-2 md:px-4 lg:px-0">
@@ -122,37 +195,8 @@ const UsersPage = () => {
         </div>
       </div>
 
-      <div className="flex-[1_0_0] overflow-y-hidden pb-1 pr-1">
-        <DataGrid
-          rows={usersWhitelistQuery.data?.data || []}
-          columns={cols}
-          loading={usersWhitelistQuery.isLoading || usersWhitelistQuery.isFetching}
-          disableColumnMenu
-          rowSelection={false}
-          className="h-full"
-          
-          pagination
-          paginationMode="server"
-          paginationModel={{
-            page: pagination.state.page,
-            pageSize: pagination.state.page_size,
-          }}
-          onPaginationModelChange={(model) => pagination.update({
-            page: model.page,
-            page_size: model.pageSize,
-          })}
-          pageSizeOptions={[25, 50, 100]}
-          rowCount={usersWhitelistQuery.data?.pagination?.count || 0}
-
-          filterMode="server"
-          onFilterModelChange={onFilterModelChange}
-          slots={{
-            toolbar: GridToolbarWithSearch,
-          }}
-          disableDensitySelector
-          disableColumnFilter
-          disableColumnSelector
-        />
+      <div className="flex-[1_0_0] min-h-[500px] overflow-y-hidden pb-1 pr-1">
+        <DataGrid instance={grid} />
       </div>
 
       <Modal
@@ -175,54 +219,53 @@ const UsersPage = () => {
 
 export default UsersPage;
   
-const cols: GridColDef<WhitelistItem>[] = [
+const cols: ColumnDef<WhitelistItem>[] = [
   {
-    field: "avatar",
-    headerName: "Avatar",
-    renderHeader: () => null,
-    width: 32,
-    renderCell: params => params.row.user ? (
+    id: "avatar",
+    accessorKey: "user",
+    header: () => null,
+    size: 48,
+    cell: ({ cell, row, getValue }) => getValue<User | null>() ? (
       <UserAvatar
-        user={params.row.user as User}
+        user={getValue<User | null>()}
         size="sm"
       />
     ) : null,
   },
   {
-    field: "user.name",
-    headerName: "Nombre",
-    minWidth: 200,
-    flex: 1,
-    sortable: true,
-    valueGetter: params => params.row.user
-      ? `${params.row.user.first_name ?? ""} ${params.row.user.last_name ?? ""}`
+    id: "user.name",
+    accessorKey: "user",
+    header: "Nombre",
+    size: 250,
+    cell: ({ getValue }) => getValue<User | null>() 
+      ? `${getValue<User>().first_name ?? ""} ${getValue<User>().last_name ?? ""}`
       : "No registrado",
   },
   {
-    field: "email",
-    headerName: "Email",
-    minWidth: 200,
-    flex: 1,
-    sortable: true,
+    accessorKey: "email",
+    header: "Email",
+    size: 250,
   },
   {
-    field: "group",
-    headerName: "Rol",
-    minWidth: 200,
-    maxWidth: 350,
-    flex: 1,
-    sortable: true,
-    valueFormatter: params => getUserRoleLocalized(params.value),
-    renderCell: params => <RoleSelector whitelistItem={params.row} value={params.value} />,
+    accessorKey: "group",
+    header: "Rol",
+    size: 180,
+    cell: ({ row, getValue }) => <RoleSelector whitelistItem={row.original} value={getValue<Role>()} />,
+    cellClassNames: {
+      root: "!p-0"
+    }
   },
   {
-    field: "actions",
-    headerName: "Acciones",
-    renderHeader: () => null,
-    width: 80,
-    type: "actions",
-    getActions: params => [
-      <DeleteUserAction key={1} whitelistItem={params.row} />,
-    ],
-  }
+    id: "actions",
+    header: "Acciones",
+    size: 100,
+    cellClassNames: {
+      content: "flex w-full justify-center items-center"
+    },
+    cell: ({ row }) => (
+      <>
+        <DeleteUserAction whitelistItem={row.original} />
+      </>
+    ),
+  },
 ];

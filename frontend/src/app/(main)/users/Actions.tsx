@@ -1,12 +1,12 @@
 import { FC } from "react";
-import { useMantineTheme } from "@mantine/core";
+import { ActionIcon, Tooltip, useMantineTheme } from "@mantine/core";
 
-import { GridActionsCellTooltipItem } from "@/components/shared/GridActionsCellTooltipItem";
 import { showSuccessNotification, showErrorNotification } from "@/components/ui/notifications";
 import { useAuth } from "@/hooks/auth";
 import { useConfirmDialog } from "@/hooks/shared/useConfirmDialog";
 import { useDeleteWhitelistItemMutation } from "@/api/mutations/users";
 import { WhitelistItem } from "@/api/users.types";
+
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 
 export interface ActionsProps {
@@ -45,19 +45,21 @@ export const DeleteUserAction: FC<ActionsProps> = ({ whitelistItem }) => {
   });
 
   return (
-    <GridActionsCellTooltipItem
-      tooltipProps={{
-        title: "Eliminar usuario",
-        disableInteractive: true,
-      }}
+    <Tooltip
       label="Eliminar usuario"
-      icon={<DeleteForeverIcon />}
-      color="error"
-      disabled={
-        deleteWhitelistItemMutation.isLoading 
-        || (!!user && !!whitelistItem.user && user.id === whitelistItem.user.id)
-      }
-      onClick={() => confirm()}
-    />
-  );
+    >
+      <ActionIcon
+        variant="subtle"
+        color="red"
+        radius="xl"
+        onClick={() => confirm()}
+        disabled={
+          deleteWhitelistItemMutation.isLoading 
+          || (!!user && !!whitelistItem.user && user.id === whitelistItem.user.id)
+        }
+      >
+        <DeleteForeverIcon className="w-5 h-5" />
+      </ActionIcon>
+    </Tooltip>
+  )
 }
