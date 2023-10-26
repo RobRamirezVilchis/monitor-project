@@ -6,12 +6,14 @@ import styles from "./DataGridRow.module.css";
 
 import { DataGridInstance, Row } from "../types";
 import DataGridRowCell from "./DataGridRowCell";
+import DataGridRowFillerCell from "./DataGridRowFillerCell";
 
 export interface DataGridRowProps<TData extends RowData> {
   instance: DataGridInstance<TData>;
   row: Row<TData>;
   rowIndex: number;
   style?: CSSProperties;
+  fillerSize: number;
   /**
    * The offset of the row from the top of the viewport.
    * Experimental, only used when rows virtualization is enabled.
@@ -26,6 +28,7 @@ const DataGridRow = <TData extends RowData>({
   row,
   rowIndex,
   style,
+  fillerSize,
   vRowEnd = 0,
 }: DataGridRowProps<TData>) => {
   const onClick = useCallback<MouseEventHandler<HTMLDivElement>>((e) => {
@@ -35,6 +38,7 @@ const DataGridRow = <TData extends RowData>({
   const onDoubleClick = useCallback<MouseEventHandler<HTMLDivElement>>((e) => {
     instance.options.onRowDoubleClick?.(row as any, instance, e as any);
   }, [row, instance]);
+  console.log(fillerSize)
 
   return (
     <Fragment>
@@ -84,6 +88,13 @@ const DataGridRow = <TData extends RowData>({
             rowIndex={rowIndex}
           />
         ))}
+        
+        {fillerSize > 0.5 ? (
+          <DataGridRowFillerCell
+            instance={instance}
+            width={fillerSize}
+          />
+        ) : null}
       </div>
 
       {/* Expandable SubComponent */}

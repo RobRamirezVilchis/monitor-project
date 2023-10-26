@@ -1,4 +1,4 @@
-import { CSSProperties } from "react";
+import { CSSProperties, useState } from "react";
 import clsx from "clsx";
 
 import styles from "./DataGridBody.module.css";
@@ -19,6 +19,7 @@ const DataGridBody = <TData extends unknown>({
   ready,
   style,
 }: DataGridBodyProps<TData>) => {
+  const [fillerSize, setFillerSize] = useState<number>(0);
 
   useIsomorphicLayoutEffect(() => {
     instance.scrolls.main.horizontal.current?.syncScroll({ ref: instance.refs.body.main.viewport, mode: "scroll" });
@@ -29,6 +30,24 @@ const DataGridBody = <TData extends unknown>({
       instance.scrolls.main.vertical.current?.desyncScroll(instance.refs.body.main.viewport);
     };
   }, [instance.scrolls.main.horizontal, instance.scrolls.main.vertical, instance.refs.body.main.viewport]);
+
+  useIsomorphicLayoutEffect(() => {
+    if (!instance.refs.body.main.viewport.current || !instance.refs.body.main.content.current) return;
+    
+    const bodyViewportResizeObserver = new ResizeObserver((entries, observer) => {
+      if (!instance.refs.body.main.viewport.current) return;
+      const bodyViewportWidth = instance.refs.body.main.viewport.current.clientWidth; // entries[0].contentRect.width;
+      const totalSize = instance.getTotalSize();
+      const fillerSize = bodyViewportWidth - totalSize;
+      setFillerSize(fillerSize);
+    });
+    bodyViewportResizeObserver.observe(instance.refs.body.main.viewport.current);
+    bodyViewportResizeObserver.observe(instance.refs.body.main.content.current);
+
+    return () => {
+      bodyViewportResizeObserver.disconnect();
+    }
+  }, [instance, instance.refs.body.main.viewport, instance.refs.body.main.content]);
 
   return (
     // Viewport
@@ -64,7 +83,7 @@ const DataGridBody = <TData extends unknown>({
           ...instance.options.styles?.body?.container,
           width: instance.options.enableColumnsVirtualization 
             ? instance.scrolls.virtualizers.columns.current?.getTotalSize()
-            : instance.getTotalSize(),
+            : instance.getTotalSize() + (fillerSize > 0 ? fillerSize : 0),
           height: instance.options.enableRowsVirtualization
             ? instance.scrolls.virtualizers.rows.current?.getTotalSize()
             : undefined,
@@ -82,6 +101,7 @@ const DataGridBody = <TData extends unknown>({
                 instance={instance}
                 row={row} 
                 rowIndex={virtualRow.index}
+                fillerSize={fillerSize}
                 style={{
                   // height: virtualRow.size,
                   position : "absolute",
@@ -96,6 +116,7 @@ const DataGridBody = <TData extends unknown>({
               key={row.id} 
               instance={instance}
               row={row} 
+              fillerSize={fillerSize}
               rowIndex={rowIdx}
             />
           ))
