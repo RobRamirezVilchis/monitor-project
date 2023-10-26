@@ -18,7 +18,7 @@ const NumberFilter = <TData extends unknown, TValue>({
     callback: useCallback((searchQuery: string | number) => {
       header.column.setFilterValue(searchQuery);
     }, [header.column]),
-    debounceTime: 500,
+    debounceTime: header.column.columnDef.filterProps?.debounceTime ?? 300,
   });
   const [internalValue, setInternalValue] = useState<string | number>(columnFilterValue);
 

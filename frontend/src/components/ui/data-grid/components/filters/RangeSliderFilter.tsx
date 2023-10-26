@@ -22,7 +22,7 @@ const RangeSliderFilter = <TData extends RowData, TValue>({
     callback: useCallback((value: [number, number]) => {
       header.column.setFilterValue(value);
     }, [header.column]),
-    debounceTime: 500,
+    debounceTime: header.column.columnDef.filterProps?.debounceTime ?? 300,
   });
 
   const firstRenderRef = useRef(true);

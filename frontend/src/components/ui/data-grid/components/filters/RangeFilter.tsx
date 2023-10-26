@@ -21,7 +21,7 @@ const RangeFilter = <TData extends RowData, TValue>({
     callback: useCallback((value: [string | number, string | number]) => {
       header.column.setFilterValue(value);
     }, [header.column]),
-    debounceTime: 500,
+    debounceTime: header.column.columnDef.filterProps?.debounceTime ?? 300,
   });
 
   const [internalValue, setInternalValue] = useState<[string | number, string | number]>([min, max]);

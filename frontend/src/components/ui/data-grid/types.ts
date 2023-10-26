@@ -172,6 +172,7 @@ DistributiveOmit<
     min?: any;
     max?: any;
     step?: number;
+    debounceTime?: number;
   };
 }
 
@@ -236,6 +237,11 @@ Omit<_FiltersOptions<TData>,
   "globalFilterFn"
 > {
   globalFilterFn?: _FilterFnOption<TData> | FilterFnOption | string & Record<never, never>;
+  /**
+   * The debounce time in milliseconds for the global filter.
+   * @default 300
+   */
+  globalFilterDebounceTime?: number;
 }
 
 export interface ExtraTableState {
@@ -315,6 +321,11 @@ PartialKeys<DataGridOptionsResolved<TData>, "getCoreRowModel" | "onStateChange" 
    * @default [10, 25, 50, 100]
    */
   pageSizeOptions?: number[];
+  /**
+   * Used to determine the total number of rows
+   * when manual pagination is enabled.
+   */
+  rowCount?: number;
   localization?: Partial<DataGridLocalization>;
   slots?: {
     noRowsOverlay?: () => ReactNode;

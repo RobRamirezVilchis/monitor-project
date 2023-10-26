@@ -38,7 +38,6 @@ const DataGridRow = <TData extends RowData>({
   const onDoubleClick = useCallback<MouseEventHandler<HTMLDivElement>>((e) => {
     instance.options.onRowDoubleClick?.(row as any, instance, e as any);
   }, [row, instance]);
-  console.log(fillerSize)
 
   return (
     <Fragment>
