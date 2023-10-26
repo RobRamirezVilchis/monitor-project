@@ -111,13 +111,15 @@ const DataGrid = <TData extends RowData>({
           }}
         />
         
-        <DataGridColumnFooters
-          instance={instance} 
-          style={{
-            gridColumn: "1 / 3",
-            gridRow: "3 / 4",
-          }}
-        />
+        {instance.options.hideColumnFooters ? null : (
+          <DataGridColumnFooters
+            instance={instance} 
+            style={{
+              gridColumn: "1 / 3",
+              gridRow: "3 / 4",
+            }}
+          />
+        )}
 
         <Scroll
           orientation="horizontal"

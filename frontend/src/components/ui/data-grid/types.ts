@@ -309,6 +309,7 @@ PartialKeys<DataGridOptionsResolved<TData>, "getCoreRowModel" | "onStateChange" 
   hideFooterPagination?: boolean;
   hideFooterSelectedRowCount?: boolean;
   hideColumnFiltersSelector?: boolean;
+  hideColumnFooters?: boolean;
 
   localization?: Partial<DataGridLocalization>;
   slots?: {
