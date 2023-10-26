@@ -16,20 +16,18 @@ import { useMemo } from "react";
 
 export interface GridPaginationProps<TData extends RowData> {
   instance: DataGridInstance<TData>;
-  rowsPerPageOptions?: number[];
 }
 
 const GridPagination = <TData extends RowData>({
   instance,
-  rowsPerPageOptions = [10, 25, 50, 100],
 }: GridPaginationProps<TData>) => {
   const prePagination = instance.getPrePaginationRowModel();
   const pagination = instance.getState().pagination;
   const pageCount = instance.getPageCount();
 
   const rppOptions = useMemo(
-    () => rowsPerPageOptions.map(x => x.toString()), 
-    [rowsPerPageOptions]
+    () => instance.options.pageSizeOptions.map(x => x.toString()), 
+    [instance.options.pageSizeOptions]
   );
 
   return (

@@ -46,6 +46,7 @@ const useDataGrid = <TData extends RowData>(options: DataGridOptions<TData>): Da
     getFacetedUniqueValues: _getFacetedUniqueValues,
     getGroupedRowModel    : _getGroupedRowModel,
     getPaginationRowModel : _getPaginationRowModel,
+    pageSizeOptions = [10, 25, 50, 100],
     ...tableOptions
   } = options;
 
@@ -100,6 +101,7 @@ const useDataGrid = <TData extends RowData>(options: DataGridOptions<TData>): Da
       ...sortingFns,
       ..._sortingFns,
     },
+    pageSizeOptions,
     getCoreRowModel       : _getCoreRowModel            ?? getCoreRowModel<TData>(),
     getExpandedRowModel   : options.enableExpanding     ? _getExpandedRowModel    ?? getExpandedRowModel<TData>()    : undefined,
     getSortedRowModel     : options.enableSorting       ? _getSortedRowModel      ?? getSortedRowModel<TData>()      : undefined,

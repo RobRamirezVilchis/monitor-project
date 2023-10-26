@@ -311,6 +311,10 @@ PartialKeys<DataGridOptionsResolved<TData>, "getCoreRowModel" | "onStateChange" 
   hideColumnFiltersSelector?: boolean;
   hideColumnFooters?: boolean;
 
+  /**
+   * @default [10, 25, 50, 100]
+   */
+  pageSizeOptions?: number[];
   localization?: Partial<DataGridLocalization>;
   slots?: {
     noRowsOverlay?: () => ReactNode;
@@ -454,7 +458,7 @@ Omit<_CoreInstance<TData>,
   | "getState"
   | "setState"
 > {
-  options: RequiredKeys<DataGridOptions<TData>, "state">;
+  options: RequiredKeys<DataGridOptions<TData>, "state" | "pageSizeOptions">;
   setOptions: (newOptions: Updater<DataGridOptionsResolved<TData>>) => void;
   getCoreRowModel: () => RowModel<TData>;
   getRowModel: () => RowModel<TData>;
