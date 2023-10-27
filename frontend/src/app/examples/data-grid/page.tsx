@@ -28,11 +28,6 @@ const DataGridExamplePage = () => {
   const [selectedRows, setSelectedRows] = useState<RowSelectionState>({});
 
   const grid = useDataGrid<ExampleData2>({
-    // debugAll: true,
-    // debugRows: true,
-    // debugColumns: true,
-    // debugHeaders: true,
-    // debugTable: true,
     localization: es,
     data: data2,
     columns: cols2,
@@ -41,143 +36,67 @@ const DataGridExamplePage = () => {
  
     enableHiding: true,
     enableSorting: true,
-    // enableExpanding: true,
+    enableExpanding: false,
     getRowCanExpand: (row) => true,
     enableFilters: true,
     enableGlobalFilter: true,
     enableColumnFilters: true,
     enableColumnReordering: true,
-    // enableFacetedValues: true,
-    // enableRowSelection: true,
-    // enableGrouping: true,
+    enableFacetedValues: true,
+    enableRowSelection: true,
     enablePagination: true,
-    // enableRowsVirtualization: true,
-    // enableColumnsVirtualization: true,
-    // enableRowNumbering: true,
-    // rowNumberingMode: "static",
-    // hideToolbar: true,
-    // hideFooter: true,
-    // hideColumnSelector: false,
-    // hideDensitySelector: true,
-    // hideQuickSearch: true,
-    // hideFullscreenSelector: true,
+    enableRowNumbering: true,
+    rowNumberingMode: "static",
 
-    // globalFilterFn: "includesString",
-    // debugAll: true,
+    globalFilterFn: "fuzzy",
     sortDescFirst: false,
     initialState: {
       density: "compact",
-      // loading: false,
       pagination: {
         pageIndex: 0,
         pageSize: 50,
       },
-      // columnOrder:  [
-      //   "id", 
-      //   "first_name", 
-      //   "last_name", 
-      //   "email", 
-      //   "gender", 
-      //   "birthday", 
-      //   "salary", 
-      //   "approved", 
-      //   "color", 
-      //   "created_at", 
-      //   "score"
-      // ],
     },
     state: {
       rowSelection: selectedRows,
       loading,
     },
     onRowSelectionChange: setSelectedRows,
-    // hideHeader: true,
-    // hideFooter: true,
-    // renderSubComponent: row => (
-    //   <div
-    //     style={{
-    //       height: "100%",
-    //       border: "1px solid rgb(25 118 210)",
-    //       width: "100%",
-    //     }}
-    //   >
-    //     SubComponent for row {row.id}
-    //   </div>
-    // ),
     classNames: {
-      root: "h-full bg-white",
-      // root: "h-full !border-none bg-white overflow-hidden",
-      // columnHeaders: {
-      //   root: "bg-neutral-800 text-white rounded-t-md",
-      // },
-      // columnHeaderCell: {
-      //   label: "text-sm !font-normal",
-      //   actions: "bg-neutral-800",
-      //   // dragIsOver: {
-      //   //   label: "bg-red-100",
-      //   // },
-      //   // dragOverlay: {
-      //   //   label: "!bg-blue-200",
-      //   // }
-      // },
-      // columnFooter: {
-      //   root: "bg-neutral-800 text-white",
-      // },
-      // columnFooterCell: {
-      //   content: "text-sm !font-normal",
-      // },
-      // cell: {
-      //   // focused: "bg-red-100",
-      //   content: "text-sm",
-      // },
-      // row: {
-      //   selected: "!bg-red-200",
-      // },
+      root: "h-full !border-none bg-white overflow-hidden",
+      columnHeaders: {
+        root: "bg-neutral-800 text-white rounded-t-md",
+      },
+      columnHeadersCell: {
+        label: "text-sm !font-normal",
+        actions: "bg-neutral-800",
+        dragIsOver: {
+          label: "bg-red-100",
+        },
+        dragOverlay: {
+          label: "!bg-blue-200",
+        }
+      },
+      columnFooters: {
+        root: "bg-neutral-800 text-white",
+      },
+      columnFootersCell: {
+        content: "text-sm !font-normal",
+      },
+      cell: {
+        focused: "bg-red-100",
+        content: "text-sm",
+      },
+      row: {
+        selected: "!bg-red-200",
+      },
     },
     slots: {
-      // loadingOverlay: LoadingOverlay,
-      // loadingOverlay: ProgressLoadingOverlay,
+      loadingOverlay: LoadingOverlay,
     },
-    // slotProps: {
-    //   baseButtonProps: {
-    //     color: "red",
-    //   },
-    //   baseActionIconProps: {
-    //     color: "red",
-    //   },
-    //   baseCheckboxProps: {
-    //     color: "red",
-    //   },
-    //   baseSelectProps: {
-    //     variant: "filled",
-    //   },
-    //   baseSwitchProps: {
-    //     color: "red",
-    //   },
-    //   baseTooltipProps:{
-    //     withArrow: true,
-    //   },
-    //   baseTextInputProps: {
-    //     variant: "filled",
-    //     classNames: {
-    //       input: "focus:border-black",
-    //     }
-    //   },
-    //   baseMenuItemProps: {
-    //     color: "red",
-    //   },
-    //   scroll: {
-    //     thickness: 10,
-    //   }
-    // },
-    // onCellClick: (cell) => console.log("Cell clicked!", cell),
-    // onCellDoubleClick: (cell) => console.log("Cell double clicked!", cell),
-    // onRowClick: (row) => console.log("Row clicked!", row),
-    // onRowDoubleClick: (row) => console.log("Row double clicked!", row),
     filterFns: {
       "test": () => false,
     },
-    globalFilterFn: "fuzzy",
   });
 
   return (
@@ -220,10 +139,7 @@ const DataGridExamplePage = () => {
 
         <Button
           onClick={() => {
-            // console.log(grid.getAllColumns().map(x => [x.id, x.getFilterFn()]))
-            // console.log(grid.options)
-            console.log(grid.getAllColumns())
-            console.log(grid.getAllFlatColumns())
+            console.log(grid)
             console.log(grid.getAllLeafColumns())
           }}
         >
@@ -234,252 +150,6 @@ const DataGridExamplePage = () => {
   );
 }
 
-const Test = () => {
-  const ref1 = useRef<HTMLDivElement>(null);
-  const ref2 = useRef<HTMLDivElement>(null);
-
-  // useEffect(() => {
-  //   window.addEventListener("wheel", (e) => {
-  //     console.log((e.target as HTMLElement).closest(".DataGrid") )
-  //     // if ((e.target as HTMLElement).closest(".DataGrid") !== null) {
-  //     if (ref.current?.contains(e.target as HTMLElement)) {
-  //       console.log("aaaaaaa")
-  //       e.stopPropagation();
-  //       e.preventDefault();
-  //       e.stopImmediatePropagation();
-  //     }
-  //   }, { passive: false });
-  // }, []);
-
-  const pointerStats = useRef({
-    start: { x: 0, y: 0 },
-    end: { x: 0, y: 0 },
-    diff: { x: 0, y: 0 },
-  });
-
-  return (
-    <div className="p-6 h-full flex justify-center items-center gap-4"
-      style={{
-        // touchAction: "none",
-        height: "200vh"
-      }}
-    >
-      
-      <div
-        ref={ref1}
-        style={{
-          width: 250,
-          height: 250,
-          border: "4px solid black",
-          padding: "0 50px",
-          overflow: "scroll",
-          // touchAction: "none",
-        }}
-        onScroll={e => {
-          if (!ref2.current) return;
-          ref2.current.scrollTop = e.currentTarget.scrollTop;
-          ref2.current.scrollLeft = e.currentTarget.scrollLeft;
-        }}
-        // onPointerDown={e => {
-        //   pointerStats.current.start = { x: e.clientX, y: e.clientY };
-        // }}
-        // onPointerUp={e => {
-        //   pointerStats.current.end = { x: e.clientX, y: e.clientY };
-        //   pointerStats.current.diff = {
-        //     x: pointerStats.current.end.x - pointerStats.current.start.x,
-        //     y: pointerStats.current.end.y - pointerStats.current.start.y,
-        //   };
-        //   console.log(pointerStats.current)
-        // }}
-        onTouchStart={e => {
-          pointerStats.current.start = { x: e.touches[0].clientX, y: e.touches[0].clientY };
-        }}
-        onTouchEnd={e => {
-          pointerStats.current.end = { x: e.changedTouches[0].clientX, y: e.changedTouches[0].clientY };
-          pointerStats.current.diff = {
-            x: pointerStats.current.end.x - pointerStats.current.start.x,
-            y: pointerStats.current.end.y - pointerStats.current.start.y,
-          };
-          console.log(pointerStats.current)
-          setTimeout(() => {
-            console.log("end", {x: ref1.current!.scrollLeft, y: ref1.current!.scrollTop })
-          }, 500);
-        }}
-        >
-        <div
-          className="before:content-['start'] before:absolute before:left-0 before:top-0 after:content-['end'] after:absolute after:right-0 after:bottom-0"
-          style={{
-            background: "rgb(25 118 210 / 20%)",
-            width: 500,
-            height: 1500,
-            position: "relative",
-          }}
-        >
-
-        </div>
-      </div>
-
-      <div
-        ref={ref2}
-        style={{
-          width: 250,
-          height: 250,
-          border: "4px solid black",
-          padding: "0 50px",
-          overflow: "hidden",
-          touchAction: "none",
-        }}
-        // Button 1 = left click and touch click
-        onPointerDown={e => console.log("pointer down", e)}
-        // onPointerMove={e => console.log("pointer move", e)}
-        onPointerUp={e => console.log("pointer up", e)}
-        // onPointerOver={e => console.log("pointer over", e)}
-        // onPointerCancel={e => console.log("pointer cancel", e)}
-        // onPointerEnter={e => console.log("pointer enter", e)}
-        // onPointerLeave={e => console.log("pointer leave", e)}
-        // onPointerOut={e => console.log("pointer out", e)}
-        onScroll={e => {
-          // console.log("scrolling")
-        }}
-      >
-        <div
-          className="before:content-['start'] before:absolute before:left-0 before:top-0 after:content-['end'] after:absolute after:right-0 after:bottom-0"
-          style={{
-            background: "rgb(25 118 210)",
-            width: 500,
-            height: 500,
-            position: "relative",
-          }}
-        >
-
-        </div>
-      </div>
-
-    </div>
-  );
-}
-
-const Test2 = () => {
-  const ref1 = useRef<HTMLDivElement>(null);
-  const ref2 = useRef<HTMLDivElement>(null);
-
-  return (
-    <div
-      className="p-6 flex flex-col gap-4"
-    >
-
-      <div
-        className="w-[400px] h-[400px] border z-0"
-      >
-        <div
-          className="h-full w-full overflow-auto relative"
-        >
-          <div className="h-[1000px] w-[1000px]">
-            <div className="bg-green-100 w-[1000px] flex justify-between sticky top-0 z-[1]">
-              <span>Header L</span>
-              <span>Header R</span>
-            </div>
-
-            <div className="flex">
-              <div className="bg-red-100 flex flex-col justify-between sticky left-0">
-                <span>Body Left T</span>
-                <span>Body Left B</span>
-              </div>
-
-              <div className="bg-blue-100 h-[1000px] w-[1000px] flex flex-col justify-between">
-                <div className="flex justify-between">
-                  <span>Body TL</span>
-                  <span>Body TR</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>Body BL</span>
-                  <span>Body BR</span>
-                </div>
-              </div>
-
-              <div className="bg-red-100 flex flex-col justify-between sticky right-0">
-                <span>Body Right T</span>
-                <span>Body Right B</span>
-              </div>
-            </div>
-
-            <div className="bg-purple-100 w-[1000px] flex justify-between sticky bottom-0">
-              <span>Footer L</span>
-              <span>Footer R</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div
-        className="w-[400px] h-[400px] border z-0"
-      >
-        <div
-          className="h-full w-full overflow-auto relative"
-        >
-          <div className="flex">
-            <div>
-              <div className="bg-green-100 sticky top-0 left-0">
-                <span>Header L</span>
-              </div>
-            </div>
-
-            <div>
-              <div className="bg-green-100 w-[1000px] sticky top-0">
-                <span>Header C</span>
-              </div>
-            </div>
-
-            <div>
-              <div className="bg-green-100 sticky top-0 right-0">
-                <span>Header R</span>
-              </div>
-            </div>
-          </div>
-
-          <div>
-            <div className="bg-green-100 w-[1000px] flex justify-between sticky top-0 z-[1]">
-              <span>Header L</span>
-              <span>Header R</span>
-            </div>
-
-            <div className="flex">
-              <div className="bg-red-100 flex flex-col justify-between sticky left-0">
-                <span>Body Left T</span>
-                <span>Body Left B</span>
-              </div>
-
-              <div className="bg-blue-100 h-[1000px] w-[1000px] flex flex-col justify-between">
-                <div className="flex justify-between">
-                  <span>Body TL</span>
-                  <span>Body TR</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>Body BL</span>
-                  <span>Body BR</span>
-                </div>
-              </div>
-
-              <div className="bg-red-100 flex flex-col justify-between sticky right-0">
-                <span>Body Right T</span>
-                <span>Body Right B</span>
-              </div>
-            </div>
-
-            <div className="bg-purple-100 w-[1000px] flex justify-between sticky bottom-0">
-              <span>Footer L</span>
-              <span>Footer R</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-    </div>
-  )
-}
-
-// export default Test2
-// export default Test
 export default DataGridExamplePage;
 
 const cols: ColumnDef<ExampleData>[] = [
