@@ -1,6 +1,7 @@
 export { default as DateInput, type DateInputProps } from "./DateInput";
 export { default as DatePicker, type DatePickerProps } from "./DatePicker";
 export { default as DatePickerInput, type DatePickerInputProps } from "./DatePickerInput";
+export { default as DateRangePresets, type DateRangePresetsProps } from "./DateRangePresets";
 export { default as DateTimePicker, type DateTimePickerProps } from "./DateTimePicker";
 export { default as MonthPicker, type MonthPickerProps } from "./MonthPicker";
 export { default as MonthPickerInput, type MonthPickerInputProps } from "./MonthPickerInput";

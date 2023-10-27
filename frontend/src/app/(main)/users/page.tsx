@@ -220,7 +220,7 @@ const cols: ColumnDef<WhitelistItem>[] = [
     header: "",
     columnTitle: "Avatar",
     size: 48,
-    cell: ({ cell, row, getValue }) => getValue<User | null>() ? (
+    cell: ({ getValue }) => getValue<User | null>() ? (
       <UserAvatar
         user={getValue<User | null>()}
         size="sm"

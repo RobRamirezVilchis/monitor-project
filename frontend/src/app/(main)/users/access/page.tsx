@@ -5,7 +5,7 @@ import { useQueryState } from "@/hooks/shared";
 import { useEffect, useState } from "react";
 import { useImmer } from "use-immer";
 
-import { DatePicker } from "@/components/shared/mui.old/hook-form/styled";
+import { DatePickerInput, DateRangePresets } from "@/components/ui/dates";
 import { User } from "@/api/auth.types";
 import { UserAccess } from "@/api/users.types";
 import { UserAvatar } from "@/components/shared/UserAvatar";
@@ -59,7 +59,7 @@ const UsersAccessPage = () => {
 
   const usersAccessQueryParams = useQueryState({
     page: {
-      defaultValue: 0,
+      defaultValue: 1,
       parse: (value) => parseInt(value),
       serialize: (value) => value.toString(),
     },
@@ -79,6 +79,7 @@ const UsersAccessPage = () => {
       serialize: (value) => localDatetimeToLocalDateStr(value),
     },
   });
+  const [calendarOpen, setCalendarOpen] = useState(false);
   const [dates, setDates] = useState<{ startDate: Date | null; endDate: Date | null; }>({
     startDate: usersAccessQueryParams.state.start_date,
     endDate: usersAccessQueryParams.state.end_date,
@@ -89,7 +90,7 @@ const UsersAccessPage = () => {
   const usersAccessQuery = useUsersAccessQuery({
     variables: {
       pagination: {
-        page: usersAccessQueryParams.state.page + 1,
+        page: usersAccessQueryParams.state.page,
         page_size: usersAccessQueryParams.state.page_size,
       },
       filters: {
@@ -97,7 +98,7 @@ const UsersAccessPage = () => {
         end_date: usersAccessQueryParams.state.end_date.toISOString(),
         sort: "-user",
         ...filters,
-      }
+      },
     },
   });
   const grid = useDataGrid<UserAccess>({
@@ -209,6 +210,13 @@ const UsersAccessPage = () => {
     }
   }, [usersAccessQuery.data, usersAccessQuery.isPreviousData, usersAccessQuery.variables.filters, usersAccessQuery.variables.pagination?.page_size]);
 
+  const setQueryDates = (startDate: Date | null, endDate: Date | null) => {
+    usersAccessQueryParams.update({
+      start_date: dateRangeStart(startDate),
+      end_date: dateRangeEnd(endDate ?? startDate),
+    });
+  };
+
   return (
     <section className="flex flex-col h-full lg:container mx-auto pb-2 md:pb-6 px-2 md:px-4 lg:px-0">
       <div className="flex flex-col md:flex-row items-center">
@@ -217,19 +225,41 @@ const UsersAccessPage = () => {
         </h1>
 
         <div className="text-neutral-800 self-end">
-          <DatePicker<true>
-            selectsRange
-            startDate={dates.startDate}
-            endDate={dates.endDate}
+          <DatePickerInput
+            type="range"
+            value={[dates.startDate, dates.endDate]}
             onChange={([sd, ed]) => {
               setDates({ startDate: sd, endDate: ed });
+              if (sd && ed) setCalendarOpen(false);
             }}
-            onCalendarClose={() => {
-              usersAccessQueryParams.update({
-                start_date: dateRangeStart(dates.startDate),
-                end_date: dateRangeEnd(dates.endDate ?? dates.startDate),
-              });
+            onClick={() => setCalendarOpen(true)}
+            popoverProps={{
+              opened: calendarOpen,
+              onClose: () => {
+                setCalendarOpen(false);
+                if (dates.startDate && !dates.endDate)
+                  setDates({ startDate: dates.startDate, endDate: dates.startDate });
+                
+                setQueryDates(dates.startDate, dates.endDate);
+              },
             }}
+            rightSection={
+              <DateRangePresets 
+                onPresetClick={([sd, ed]) => {
+                  setDates({ startDate: sd, endDate: ed });
+                  setQueryDates(sd, ed);
+                }} 
+                actionIconProps={{
+                  variant: "subtle",
+                  color: "gray",
+                }}
+                iconProps={{
+                  className: "!w-5 !h-5"
+                }}
+              />
+            }
+            rightSectionPointerEvents="auto"
+            allowSingleDateInRange
           />
         </div>
       </div>
@@ -250,7 +280,7 @@ const cols: ColumnDef<UserAccess>[] = [
     header: "",
     columnTitle: "Avatar",
     size: 48,
-    cell: ({ cell, row, getValue }) => getValue<User | null>() ? (
+    cell: ({ getValue }) => getValue<User | null>() ? (
       <UserAvatar
         user={getValue<User>()}
         size="sm"
