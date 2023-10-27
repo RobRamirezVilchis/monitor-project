@@ -1,0 +1,14 @@
+.root {
+    align-items: center;
+    display: flex;
+    justify-content: flex-start;
+    padding: 0 8px;
+    position: relative;
+    white-space: nowrap;
+}
+
+.content {
+    font-weight: 500;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}

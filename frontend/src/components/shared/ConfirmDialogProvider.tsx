@@ -1,34 +1,73 @@
-import { ReactNode, createContext, useCallback, useMemo, useRef } from "react";
-import Button, { ButtonProps } from "@mui/material/Button";
-import Dialog, { DialogProps } from "@mui/material/Dialog";
-import LoadingButton, { LoadingButtonProps } from "@mui/lab/LoadingButton";
-import { useImmer } from "use-immer";
+import { ReactNode, createContext, useCallback, useMemo, useState } from "react";
+import { 
+  Button, 
+  type ButtonProps,
+  Modal,
+  type ModalProps,
+  ElementProps,
+  Group,
+  type GroupProps,
+} from "@mantine/core";
+import { useDisclosure } from "@mantine/hooks";
 
-export interface ConfirmDialogContent {
-  title: ReactNode;
-  body: ReactNode;
-  confirmLabel: ReactNode;
-  cancelLabel: ReactNode;
-}
+import { deepMerge } from "@/utils/object.utils";
 
 export interface ConfirmDialogCallbacks {
-  onConfirmClick: () => void;
-  onCancelClick: () => void;
-  onClose: () => void;
+  /**
+   * The function to execute when the confirm button is clicked.
+   * @returns A promise if the dialog should close when the promise resolves.
+   */
+  onConfirm?: () => boolean | Promise<boolean>;
+  /**
+   * The function to execute when the cancel button is clicked.
+   */
+  onCancel?: () => void;
+  /**
+   * The function to execute when the dialog is closed.
+   */
+  onClose?: () => void;
 }
 
-export interface ConfirmDialogOpenOptions {
-  content?: Partial<ConfirmDialogContent>;
-  callbacks?: Partial<ConfirmDialogCallbacks>;
+export interface ConfirmDialogOptions extends ConfirmDialogCallbacks {
+  /**
+   * The title of the dialog.
+   */
+  title?: ReactNode;
+  /**
+   * The content of the dialog.  
+   */
+  content?: ReactNode;
+  /**
+   * The labels of the buttons.
+   */
+  labels?: {
+    confirm?: string;
+    cancel?: string;
+  };
+  /**
+   * The props of the modal.
+   */
+  modalProps?: Omit<ModalProps, "children" | "opened" | "title" | "onClose">;
+  /**
+   * The props of the confirm button.
+   */
+  confirmProps?: Omit<ButtonProps, "disabled" | "loading"> & ElementProps<"button">;
+  /**
+   * The props of the cancel button.
+   */
+  cancelProps?: Omit<ButtonProps, "disabled" | "loading"> & ElementProps<"button">;
+  /**
+   * The props of the button group.
+   */
+  groupProps?: GroupProps;
 }
 
 // Context --------------------------------------------------------------------
 export interface ConfirmDialogContextProps {
   isOpen: boolean;
-  open: (options?: ConfirmDialogOpenOptions) => void;
+  open: (options?: ConfirmDialogOptions) => void;
   close: () => void;
   isLoading: boolean;
-  setLoading: (loading: boolean) => void;
 }
 
 export const ConfirmDialogContext = createContext<ConfirmDialogContextProps>({
@@ -36,118 +75,99 @@ export const ConfirmDialogContext = createContext<ConfirmDialogContextProps>({
   open: () => console.warn("Not ConfirmDialogProvider found"),
   close: () => console.warn("Not ConfirmDialogProvider found"),
   isLoading: false,
-  setLoading: () => console.warn("Not ConfirmDialogProvider found"),
 });
 
 // Provider -------------------------------------------------------------------
-export interface ConfirmDialogProviderProps {
+export interface ConfirmDialogProviderProps extends ConfirmDialogOptions {
   children: ReactNode;
-  content?: Partial<ConfirmDialogContent>;
-  outsideClickClose?: boolean;
-  dialogProps?: Omit<DialogProps, "open" | "onClose">;
-  confirmButtonProps?: Omit<LoadingButtonProps, "loading">;
-  cancelButtonProps?: Omit<ButtonProps, "disabled">;
 }
 
-const defaultDialogContent: ConfirmDialogContent = {
+const defaultDialogContent: ConfirmDialogOptions = {
   title: "Confirm",
-  body: "Are you sure you want to perform this action?",
-  confirmLabel: "Confirm",
-  cancelLabel: "Cancel",
+  content: "Are you sure you want to perform this action?",
+  labels: {
+    confirm: "Confirm",
+    cancel: "Cancel",
+  },
 };
 
 export const ConfirmDialogProvider = ({ 
-  children, content, outsideClickClose,
-  dialogProps, confirmButtonProps, cancelButtonProps,
+  children, 
+  ...props
 }: ConfirmDialogProviderProps) => {
-  const [state, setState] = useImmer({
-    open: false,
-    loading: false,
-    content: {
-      ...defaultDialogContent,
-      ...content,
-    },
-  });
-  const callbacksRef = useRef<Partial<ConfirmDialogCallbacks>>();
+  const [isOpen, modal] = useDisclosure(false);
+  const [isLoading, setLoading] = useState(false);
+  const [mergedProps, setMergedProps] = useState(props);
 
-  const open = useCallback((options?: ConfirmDialogOpenOptions) => {
-    callbacksRef.current = options?.callbacks;
-    setState(draft => { 
-      draft.open = true; 
-      draft.content = {
-        ...defaultDialogContent,
-        ...content,
-        ...options?.content,
-      };
-    });
-  }, [setState, content]);
+  const open = useCallback((options?: ConfirmDialogOptions) => {
+    setMergedProps(deepMerge(
+      deepMerge({}, props, ["title", "content"]), 
+      options,
+      ["title", "content"],
+    ));
+    modal.open();
+  }, [modal, props]);
 
   const close = useCallback(() => {
-    setState(draft => { 
-      draft.open = false;
-      draft.loading = false;
-    });
-    callbacksRef.current?.onClose?.();
-  }, [setState]);
-
-  const setLoading = useCallback((loading: boolean) => {
-    setState(draft => { draft.loading = loading; });
-  }, [setState]);
+    setLoading(false);
+    modal.close();
+    mergedProps?.onClose?.();
+  }, [modal, setLoading, mergedProps]);
 
   const contextValue = useMemo<ConfirmDialogContextProps>(() => ({
-    isOpen: state.open,
+    isOpen,
     open,
     close,
-    isLoading: state.loading,
-    setLoading,
-  }), [state.open, open, close, state.loading, setLoading]);
+    isLoading,
+  }), [isOpen, open, close, isLoading]);
 
   return (
     <ConfirmDialogContext.Provider value={contextValue}>
       {children}
       
-      <Dialog
-        open={state.open}
-        onClose={outsideClickClose && !state.loading ? close : undefined}
-        {...dialogProps}
+      <Modal
+        {...mergedProps?.modalProps}
+        opened={isOpen}
+        onClose={close}
+        title={mergedProps?.title || defaultDialogContent.title}
       >
-        <div className="p-6">
-          <div className="text-lg mb-2 text-center font-bold">
-            {state.content.title}
-          </div>
+        {mergedProps?.content || defaultDialogContent.content}
 
-          <div className="text-lg p-6 text-center">
-            {state.content.body}
-          </div>
-
-          <div className="flex justify-center items-center gap-8 mt-4">
-            <Button
-              color="error"
-              variant="outlined"
-              {...cancelButtonProps}
-              disabled={state.loading}
-              onClick={e => {
-                close();
-                callbacksRef.current?.onCancelClick?.();
-                cancelButtonProps?.onClick?.(e);
-              }}
-            >
-              {state.content.cancelLabel}
-            </Button>
-            <LoadingButton
-              variant="outlined"
-              {...confirmButtonProps}
-              loading={state.loading}
-              onClick={e => {
-                callbacksRef.current?.onConfirmClick?.();
-                confirmButtonProps?.onClick?.(e);
-              }}
-            >
-              {state.content.confirmLabel}
-            </LoadingButton>
-          </div>
-        </div>
-      </Dialog>
+        <Group 
+          className="mt-4" 
+          justify="center"
+          {...mergedProps?.groupProps}
+        >
+          <Button
+            variant="outline"
+            {...mergedProps?.cancelProps}
+            disabled={isLoading}
+            onClick={e => {
+              mergedProps.cancelProps?.onClick?.(e);
+              mergedProps?.onCancel?.();
+              close();
+            }}
+          >
+            {mergedProps.labels?.cancel || defaultDialogContent.labels?.cancel}
+          </Button>
+          <Button
+            variant="outline"
+            {...mergedProps?.confirmProps}
+            loading={isLoading}
+            onClick={async e => {
+              setLoading(true);
+              mergedProps.confirmProps?.onClick?.(e);
+              try {
+                const shouldClose = await mergedProps?.onConfirm?.();
+                if (shouldClose) close();
+              } catch (e) { }
+              setLoading(false);
+            }}
+          >
+            {mergedProps.labels?.confirm || defaultDialogContent.labels?.confirm}
+          </Button>
+        </Group>
+      </Modal>
     </ConfirmDialogContext.Provider>
   );
 }

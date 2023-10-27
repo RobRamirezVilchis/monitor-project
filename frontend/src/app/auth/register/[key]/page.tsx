@@ -3,8 +3,8 @@
 import type { NextPage } from "next";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
+import { Button } from "@mantine/core";
 import Link from "next/link";
-import Button from "@mui/lab/LoadingButton";
 
 import { isRegisterTokenValid, verifyAccount } from "@/api/auth";
 import logger from "@/utils/logger";
@@ -102,11 +102,9 @@ const RegisterActivation: NextPage = () => {
     <div className="text-center">
       <p className="mb-10">
         <Button
-          variant="contained"
+          variant="outline"
           onClick={handleAccountActivation}
           loading={loading}
-          loadingPosition="end"
-          endIcon={loading ? <div className="ml-3"></div> : <span></span>}
         >
           Activar cuenta
         </Button>

@@ -1,0 +1,19 @@
+.root {
+    align-items: center;
+    display: flex;
+    justify-content: flex-start;
+    width: 100%;
+}
+
+.rowSelection {
+    padding: 0.25rem;
+}
+
+.pagination {
+    align-items: center;
+    display: flex;
+    flex: 1;
+    gap: 0.25rem;
+    justify-content: flex-end;
+    padding: 0.25rem;
+}

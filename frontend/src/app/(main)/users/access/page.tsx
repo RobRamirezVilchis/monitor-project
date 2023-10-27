@@ -1,16 +1,20 @@
 "use client";
 
-import { GridCallbackDetails, GridColDef, GridFilterModel } from "@mui/x-data-grid";
 import { parseISO, parse, format as formatDate } from "date-fns";
-import { useDebounce, useQueryState } from "@/hooks/shared";
+import { useQueryState } from "@/hooks/shared";
 import { useEffect, useState } from "react";
+import { useImmer } from "use-immer";
 
-import { DataGrid, GridToolbarWithSearch } from "@/components/shared/DataGrid";
-import { DatePicker } from "@/components/shared/hook-form/styled";
+import { DatePickerInput, DateRangePresets } from "@/components/ui/dates";
 import { User } from "@/api/auth.types";
 import { UserAccess } from "@/api/users.types";
 import { UserAvatar } from "@/components/shared/UserAvatar";
 import { useUsersAccessQuery } from "@/api/queries/users";
+import { ColumnDef } from "@/components/ui/data-grid/types";
+import { es } from "@/components/ui/data-grid/locales/es";
+import DataGrid from "@/components/ui/data-grid/DataGrid";
+import useDataGrid from "@/components/ui/data-grid/useDataGrid";
+import { PaginationState } from "@tanstack/react-table";
 
 function localDatetimeToLocalDateStr(datetime: Date | null) {
   return datetime ? formatDate(datetime, "yyyy-MM-dd") : "";
@@ -55,7 +59,7 @@ const UsersAccessPage = () => {
 
   const usersAccessQueryParams = useQueryState({
     page: {
-      defaultValue: 0,
+      defaultValue: 1,
       parse: (value) => parseInt(value),
       serialize: (value) => value.toString(),
     },
@@ -75,23 +79,18 @@ const UsersAccessPage = () => {
       serialize: (value) => localDatetimeToLocalDateStr(value),
     },
   });
+  const [calendarOpen, setCalendarOpen] = useState(false);
   const [dates, setDates] = useState<{ startDate: Date | null; endDate: Date | null; }>({
     startDate: usersAccessQueryParams.state.start_date,
     endDate: usersAccessQueryParams.state.end_date,
   });
-  const [filters, setFilters] = useState<{  
+  const [filters, setFilters] = useImmer<{  
     search?: string;
-  } | undefined>();
-  const debounceFilters = useDebounce({
-    callback: (newFilters: typeof filters) => {
-      setFilters(newFilters);
-    },
-    debounceTime: 1000,
-  });
+  }>({});
   const usersAccessQuery = useUsersAccessQuery({
     variables: {
       pagination: {
-        page: usersAccessQueryParams.state.page + 1,
+        page: usersAccessQueryParams.state.page,
         page_size: usersAccessQueryParams.state.page_size,
       },
       filters: {
@@ -99,7 +98,84 @@ const UsersAccessPage = () => {
         end_date: usersAccessQueryParams.state.end_date.toISOString(),
         sort: "-user",
         ...filters,
+      },
+    },
+  });
+  const grid = useDataGrid<UserAccess>({
+    data: usersAccessQuery.data?.data || [],
+    columns: cols,
+    localization: es,
+    initialState: {
+      density: "compact",
+    },
+    state: {
+      loading: usersAccessQuery.isLoading || usersAccessQuery.isFetching,
+      pagination: {
+        pageIndex: usersAccessQueryParams.state.page - 1,
+        pageSize: usersAccessQueryParams.state.page_size,
+      },
+      globalFilter: filters?.search,
+    },
+    classNames: {
+      root: "h-full !border-none text-neutral-800",
+      mainContainer: "rounded shadow-md bg-white",
+      footerContainer: "!border-none bg-white",
+      columnHeadersCell: {
+        root: "text-white font-bold",
+        actions: "bg-white !text-white",
+        label: "!font-normal !text-sm",
+      },
+      columnHeaders: {
+        root: "bg-neutral-800",
+      },
+      row: {
+        root: "border-b border-neutral-200",
+      },
+      toolbarContainer: "justify-end text-neutral-800",
+      footer: {
+        root: "pt-1",
       }
+    },
+    globalFilterFn: "fuzzy",
+    enableColumnResizing: true,
+    columnResizeMode: "onChange",
+    hideColumnFooters: true,
+    // enableSorting: true,
+
+    enableFilters: true,
+    manualFiltering: true,
+    enableGlobalFilter: true,
+    globalFilterDebounceTime: 1000,
+    onGlobalFilterChange: (value) => {
+      const newValue = typeof value === "function" ? value(filters?.search) : value;
+      setFilters(draft => {
+        draft.search = newValue;
+      });
+    },
+
+    enablePagination: true,
+    manualPagination: true,
+    pageSizeOptions: [1, 25, 50, 100],
+    pageCount: usersAccessQuery.data?.pagination?.pages ?? 0,
+    rowCount: usersAccessQuery.data?.pagination?.count ?? 0,
+    onPaginationChange: (value) => {
+      const old: PaginationState = {
+        pageIndex : usersAccessQueryParams.state.page - 1,
+        pageSize  : usersAccessQueryParams.state.page_size,
+      };
+      const newValue = typeof value === "function" ? value(old) : value;
+      usersAccessQueryParams.update({
+        page: newValue.pageIndex + 1,
+        page_size: newValue.pageSize,
+      });
+    },
+    
+    slotProps: {
+      baseTextInputProps: {
+        classNames: {
+          input: "rounded-none border-t-0 border-l-0 border-r-0 border-b border-b-2 border-neutral-600 hover:border-blue-500 focus:border-blue-500"
+        },
+      },
     },
   });
 
@@ -134,9 +210,10 @@ const UsersAccessPage = () => {
     }
   }, [usersAccessQuery.data, usersAccessQuery.isPreviousData, usersAccessQuery.variables.filters, usersAccessQuery.variables.pagination?.page_size]);
 
-  const onFilterModelChange = (model: GridFilterModel, details: GridCallbackDetails<"filter">) => {
-    debounceFilters({
-      search: model.quickFilterValues?.[0] || undefined,
+  const setQueryDates = (startDate: Date | null, endDate: Date | null) => {
+    usersAccessQueryParams.update({
+      start_date: dateRangeStart(startDate),
+      end_date: dateRangeEnd(endDate ?? startDate),
     });
   };
 
@@ -148,106 +225,96 @@ const UsersAccessPage = () => {
         </h1>
 
         <div className="text-neutral-800 self-end">
-          <DatePicker<true>
-            selectsRange
-            startDate={dates.startDate}
-            endDate={dates.endDate}
+          <DatePickerInput
+            type="range"
+            value={[dates.startDate, dates.endDate]}
             onChange={([sd, ed]) => {
               setDates({ startDate: sd, endDate: ed });
+              if (sd && ed) setCalendarOpen(false);
             }}
-            onCalendarClose={() => {
-              usersAccessQueryParams.update({
-                start_date: dateRangeStart(dates.startDate),
-                end_date: dateRangeEnd(dates.endDate ?? dates.startDate),
-              });
+            onClick={() => setCalendarOpen(true)}
+            popoverProps={{
+              opened: calendarOpen,
+              onClose: () => {
+                setCalendarOpen(false);
+                if (dates.startDate && !dates.endDate)
+                  setDates({ startDate: dates.startDate, endDate: dates.startDate });
+                
+                setQueryDates(dates.startDate, dates.endDate);
+              },
             }}
+            rightSection={
+              <DateRangePresets 
+                onPresetClick={([sd, ed]) => {
+                  setDates({ startDate: sd, endDate: ed });
+                  setQueryDates(sd, ed);
+                }} 
+                actionIconProps={{
+                  variant: "subtle",
+                  color: "gray",
+                }}
+                iconProps={{
+                  className: "!w-5 !h-5"
+                }}
+              />
+            }
+            rightSectionPointerEvents="auto"
+            allowSingleDateInRange
           />
         </div>
       </div>
 
       <div className="flex-[1_0_0] overflow-y-hidden pb-1 pr-1">
-        <DataGrid
-          rows={usersAccessQuery.data?.data || []}
-          columns={cols}
-          loading={usersAccessQuery.isLoading || usersAccessQuery.isFetching}
-          disableColumnMenu
-          rowSelection={false}
-          className="h-full"
-          
-          pagination
-          paginationMode="server"
-          paginationModel={{
-            page: usersAccessQueryParams.state.page,
-            pageSize: usersAccessQueryParams.state.page_size,
-          }}
-          onPaginationModelChange={(model) => usersAccessQueryParams.update({
-            page: model.page,
-            page_size: model.pageSize,
-          })}
-          pageSizeOptions={[25, 50, 100]}
-          rowCount={usersAccessQuery.data?.pagination?.count || 0}
-
-          filterMode="server"
-          onFilterModelChange={onFilterModelChange}
-          slots={{
-            toolbar: GridToolbarWithSearch,
-          }}
-          disableDensitySelector
-          disableColumnFilter
-          disableColumnSelector
-        />
+        <DataGrid instance={grid} />
       </div>
     </section>
   );
 };
 
 export default UsersAccessPage;
-  
-const cols: GridColDef<UserAccess>[] = [
+
+const cols: ColumnDef<UserAccess>[] = [
   {
-    field: "avatar",
-    headerName: "Avatar",
-    renderHeader: () => null,
-    width: 32,
-    renderCell: params => params.row.user ? (
+    id: "avatar",
+    accessorKey: "user",
+    header: "",
+    columnTitle: "Avatar",
+    size: 48,
+    cell: ({ getValue }) => getValue<User | null>() ? (
       <UserAvatar
-        user={params.row.user as User}
-        className="!w-8 !h-8 !text-base"
+        user={getValue<User>()}
+        size="sm"
       />
     ) : null,
   },
   {
-    field: "user.name",
-    headerName: "Nombre",
-    minWidth: 200,
-    flex: 1,
-    sortable: true,
-    valueGetter: params => params.row.user
-      ? `${params.row.user.first_name ?? ""} ${params.row.user.last_name ?? ""}`
+    id: "user.name",
+    accessorKey: "user",
+    header: "Nombre",
+    columnTitle: "Nombre",
+    size: 250,
+    cell: ({ getValue }) => getValue<User | null>() 
+      ? `${getValue<User>().first_name ?? ""} ${getValue<User>().last_name ?? ""}`
       : "No registrado",
   },
   {
-    field: "user.email",
-    headerName: "Email",
-    minWidth: 200,
-    flex: 1,
-    sortable: true,
-    valueGetter: params => params.row.user?.email ?? "N/A",
+    accessorKey: "user.email",
+    header: "Email",
+    columnTitle: "Email",
+    size: 250,
+    cell: ({ getValue }) => getValue<string>() ?? "N/A",
   },
   {
-    field: "last_access",
-    headerName: "Último acceso",
-    minWidth: 200,
-    flex: 1,
-    sortable: true,
-    valueFormatter: params => formatDate(parseISO(params.value), "P"),
-    type: "date",
+    accessorKey: "last_access",
+    header: "Último acceso",
+    columnTitle: "Último acceso",
+    size: 200,
+    cell: ({ getValue }) => formatDate(parseISO(getValue<string>()), "P"),
   },
   {
-    field: "access",
-    headerName: "Accesos",
-    minWidth: 150,
-    flex: 1,
-    sortable: true,
+    accessorKey: "access",
+    header: "Accesos",
+    columnTitle: "Accesos",
+    size: 150,
   },
 ];

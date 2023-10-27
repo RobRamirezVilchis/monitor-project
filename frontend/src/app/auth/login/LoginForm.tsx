@@ -4,13 +4,13 @@ import { useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { FormProvider, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import Button from "@mui/lab/LoadingButton";
+import { Button } from "@mantine/core";
 import z from "zod";
 
 import { useAuth } from "@/hooks/auth";
 import { AuthError } from "@/api/auth.types";
 import { getAuthErrorString } from "@/api/auth";
-import { TextInput } from "@/components/shared/hook-form/styled";
+import { TextInput, PasswordInput } from "@/components/ui/core";
 
 const schema = z.object({
   email: z.string().email("Ingrese un email válido"),
@@ -65,24 +65,18 @@ export const LoginForm = () => {
       >
         <TextInput
           name="email"
+          control={formMethods.control}
           variant="filled"
           type="email"
           placeholder="Correo"
-          inputProps={{
-            maxLength: 100,
-          }}
-          fullWidth
+          maxLength={100}
         />
-        <TextInput
+        <PasswordInput
           name="password"
+          control={formMethods.control}
           variant="filled"
-          type="password"
           placeholder="Contraseña"
-          showPasswordToggle
-          inputProps={{
-            maxLength: 150,
-          }}
-          fullWidth
+          maxLength={150}
         />
         {errors ? (
           <span className="text-red-500 text-sm text-center">
@@ -94,10 +88,8 @@ export const LoginForm = () => {
         <div className="text-center">
           <Button
             type="submit"
-            variant="outlined"
+            variant="outline"
             loading={loading}
-            loadingPosition="end"
-            endIcon={loading ? <div className="ml-3"></div> : <span></span>}
           >
             Iniciar sesión
           </Button>

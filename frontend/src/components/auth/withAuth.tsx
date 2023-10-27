@@ -1,6 +1,6 @@
 import { ComponentType, useEffect, useRef } from "react";
+import { Loader } from "@mantine/core";
 import { useAuth } from "@/hooks/auth";
-import CircularProgress from "@mui/material/CircularProgress";
 import { useRouter } from "next/navigation";
 import { User } from "@/api/auth.types";
 
@@ -19,7 +19,7 @@ export function withAuth<T extends JSX.IntrinsicAttributes>(
     if (loading) {
       return (
         <div className="h-full bg-neutral-100 grid place-items-center">
-          <CircularProgress />
+          <Loader />
         </div>
       );
     }
@@ -62,7 +62,7 @@ export function withRedirectIfLoggedIn<T extends JSX.IntrinsicAttributes>(
       <Component {...props} />
       {(!firstLoad.current && loading) || isAuthenticated ? (
         <div className="absolute inset-0 h-full bg-neutral-100 grid place-items-center">
-          <CircularProgress />
+          <Loader />
         </div>
       ) : null}
     </>);

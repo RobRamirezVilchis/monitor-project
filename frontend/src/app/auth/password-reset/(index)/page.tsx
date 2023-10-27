@@ -4,13 +4,13 @@ import { FormProvider, useForm } from "react-hook-form";
 import { isAxiosError } from "axios";
 import { useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
-import Button from "@mui/lab/LoadingButton";
+import { Button } from "@mantine/core";
 import Link from "next/link";
 import z from "zod";
 
 import { ApiError } from "@/api/types";
 import { requestPasswordReset } from "@/api/auth";
-import { TextInput } from "@/components/shared/hook-form/styled";
+import { TextInput } from "@/components/ui/core";
 
 const schema = z.object({
   email: z.string().email("Ingrese un email válido"),
@@ -85,11 +85,12 @@ const PasswordResetRequest = () => {
         >
           <TextInput
             name="email"
+            control={formMethods.control}
             variant="filled"
             type="email"
             placeholder="Correo"
-            title="Ingresar correo"
-            fullWidth
+            label="Ingresar correo"
+            maxLength={100}
           />
 
           {error ? (
@@ -99,10 +100,8 @@ const PasswordResetRequest = () => {
           <div className="text-center mt-6">
             <Button
               type="submit"
-              variant="outlined"
+              variant="outline"
               loading={loading}
-              loadingPosition="end"
-              endIcon={loading ? <div className="ml-3"></div> : <span></span>}
             >
               Enviar correo
             </Button>

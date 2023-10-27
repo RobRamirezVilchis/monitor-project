@@ -1,11 +1,18 @@
-@tailwind base;
+@layer {
+  @tailwind base;
+}
 @tailwind components;
 @tailwind utilities;
+
+/* Wrapping @tailwind base in a @layer is optional? */
 
 @layer base {
   html,
   body,
   #__next, #__app {
     height: 100%;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    overflow: auto;
   }
 }

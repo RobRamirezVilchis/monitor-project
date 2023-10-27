@@ -1,3 +1,6 @@
+const isObject = (obj: any) => {
+  return (obj && typeof obj === "object" && !Array.isArray(obj));
+}
 
 /**
  * @param obj The object to extract the property from 
@@ -6,7 +9,7 @@
  * @returns The property value
  * @see https://stackoverflow.com/a/6491621 for the original implementation
  */
-export const objectPropByString = (obj: any, str: string) => {
+export const getObjectPropByString = (obj: any, str: string) => {
   str = str.replace(/\[(\w+)\]/g, ".$1"); // convert indexes to properties
   str = str.replace(/^\./, ""); // strip a leading dot
   const indexes = str.split(".");
@@ -35,7 +38,7 @@ export const objectPropByString = (obj: any, str: string) => {
  * @returns A reference to the original object 
  * (NOTE: The original object is mutated and not a copy of it)
  */
-export const setPropValueByString = (obj: any, str: string, value: any, numericKeysForArraysOnly: boolean = true) => {
+export const setObjectPropByString = (obj: any, str: string, value: any, numericKeysForArraysOnly: boolean = true) => {
   str = str.replace(/\[(\w+)\]/g, ".$1"); // convert indexes to properties
   str = str.replace(/^\./, ""); // strip a leading dot
   let indexes = str.split(".");
@@ -49,7 +52,7 @@ export const setPropValueByString = (obj: any, str: string, value: any, numericK
       if (i === indexes.length - 1)
         curr = value;
       else {
-        if (numericKeysForArraysOnly && indexes[i + 1].match(/\d+/))
+        if (numericKeysForArraysOnly && indexes[i + 1].match(/^\d+$/))
           curr = [];
         else
           curr = {};
@@ -80,3 +83,28 @@ export const filterFromObject = (original: any, filter: any) => {
     })
   );
 };
+
+/**
+ * Deeply merge source `object` into `target`, replacing or add `source` properties to `target`.
+ * @param target The target object to be merged
+ * @param source The source object to be merged
+ * @param ignoreDeepMergePropNames An array of property names that should not be merged deeply but 
+ * instead replaced by the source property. This is useful when you want to replace an array or object
+ * property as a whole, instead of merging its properties.
+ * @returns A new object with the merged properties of the target and source objects.
+ * If the same property exists in both objects, the source property will be used.
+ * If the property is an object, the merge will be done recursively.
+ * If the property is an array, the source array will replace the target array.
+ */
+export const deepMerge = (target: any, source: any, ignoreDeepMergePropNames?: string[]) => {
+  if (!isObject(target) || !isObject(source)) return target;
+  for (const key in source) {
+    if (isObject(source[key]) && !ignoreDeepMergePropNames?.includes(key)) {
+      if (!target[key]) Object.assign(target, { [key]: {} });
+      deepMerge(target[key], source[key]);
+    } else {
+      Object.assign(target, { [key]: source[key] });
+    }
+  }
+  return target;
+}

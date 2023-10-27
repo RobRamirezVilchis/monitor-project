@@ -2,7 +2,7 @@
 
 import { useCallback, useMemo, useRef } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import type { NavigateOptions } from "next/dist/shared/lib/app-router-context";
+import { NavigateOptions } from "next/dist/shared/lib/app-router-context.shared-runtime";
 import { Nullable } from "@/utils/types";
 
 export type QueryParam<Type> = {

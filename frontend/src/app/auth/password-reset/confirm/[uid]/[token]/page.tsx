@@ -4,7 +4,7 @@ import { FormProvider, useForm } from "react-hook-form";
 import { useCallback, useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
-import Button from "@mui/lab/LoadingButton";
+import { Button } from "@mantine/core";
 import Link from "next/link";
 import z from "zod";
 
@@ -12,13 +12,12 @@ import {
   isPasswordResetTokenValid,
   confirmPasswordReset,
 } from "@/api/auth";
-import { TextInput } from "@/components/shared/hook-form/styled";
-import logger from "@/utils/logger";
+import { PasswordInput, MeteredPasswordInput } from "@/components/ui/core";
 
 const schema = z.object({
   password1: z.string({ required_error: "La contraseña es requerida" }).regex(
-      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d@$!%*?&]{8,}$/, 
-      "La contraseña debe tener al menos 8 caracteres, 1 mayúscula y un número"
+    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d@$!%*?&]{8,}$/, 
+    " "
   ),
   password2: z.string(),
 }).refine(({password1, password2}) => password1 === password2, {
@@ -71,7 +70,7 @@ const PasswordResetConfirmation = () => {
         setPasswordChanged(true);
       }
     } catch (e) {
-      logger.debug("Error", e);
+      console.debug("Error", e)
       setPasswordChanged(false);
     }
   }, [uid, token, tokenValid]);
@@ -136,29 +135,34 @@ const PasswordResetConfirmation = () => {
         onSubmit={formMethods.handleSubmit(onSubmit)}
         className="flex flex-col gap-4"
       >
-        <TextInput
+        <MeteredPasswordInput
           name="password1"
-          type="password"
-          placeholder="Contraseña"
-          title="Nueva contraseña"
-          fullWidth
-          showPasswordToggle
+          control={formMethods.control}
+          variant="filled"
+          label="Contraseña"
+          placeholder="Nueva contraseña"
+          maxLength={150}
           onChange={() => {
             if (getFieldState("password2").isTouched) trigger("password2");
           }}
+          requirements={[
+            { pattern: /.{8,}/, label: "8 caracteres" },
+            { pattern: /[A-Z]/, label: "1 mayúscula" },
+            { pattern: /[a-z]/, label: "1 minúscula" },
+            { pattern: /[0-9]/, label: "1 número" },
+          ]}
         />
 
-        <TextInput
+        <PasswordInput
           name="password2"
-          type="password"
+          control={formMethods.control}
           placeholder="Confirmar contraseña"
-          title="Repetir contraseña"
-          fullWidth
-          showPasswordToggle
+          label="Repetir contraseña"
+          variant="filled"
         />
 
         <div className="text-center mt-6">
-          <Button type="submit" variant="outlined">
+          <Button type="submit" variant="outline">
             Cambiar contraseña
           </Button>
         </div>

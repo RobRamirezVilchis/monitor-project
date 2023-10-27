@@ -1,0 +1,32 @@
+.root {
+    border: 1px solid #e0e0e0;
+    border-radius: 0.25rem;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+.toolbarContainer {
+    display: flex;
+}
+
+.mainContainer {
+    display: grid;
+    flex: 1;
+    grid-template-columns: 1fr auto;
+    grid-template-rows: auto 1fr auto auto;
+    overflow-anchor: none; /* for virtualization */
+    overflow: hidden;
+    width: 100%;
+    position: relative;
+}
+
+.footerContainer {
+    border-top: 1px solid #e0e0e0;
+    display: flex;
+}
+
+.overlay {
+    position: absolute;
+    inset: 0;
+}

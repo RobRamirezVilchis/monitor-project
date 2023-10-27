@@ -1,0 +1,80 @@
+:root {
+    --forem-neutral-disabled: rgb(0 0 0 / 0.5);
+
+    --forem-neutral-50 : #FFFFFF;
+    --forem-neutral-100: #F9F9F9;
+    --forem-neutral-200: #F3F3F3;
+    --forem-neutral-300: #EDEDED;
+    --forem-neutral-400: #E7E7E7;
+    --forem-neutral-500: #9B9A9A;
+    --forem-neutral-600: #6E6D6D;
+    --forem-neutral-700: #424141;
+    --forem-neutral-800: #1D1D1B;
+    --forem-neutral-900: #000000;
+
+    --forem-green-50 :   #E6F6ED;
+    --forem-green-100:   #C2E8D3;
+    --forem-green-200:   #9EDAB9;
+    --forem-green-300:   #7ACD9F;
+    --forem-green-400:   #56BF85;
+    --forem-green-500:   #04A64B;
+    --forem-green-600:   #007E48;
+    --forem-green-700:   #00603A;
+    --forem-green-800:   #00402B;
+    --forem-green-900:   #00201D;
+
+    --forem-yellow-50 :  #F8F8E6;
+    --forem-yellow-100:  #EDEDC2;
+    --forem-yellow-200:  #E2E29E;
+    --forem-yellow-300:  #D7D77A;
+    --forem-yellow-400:  #CCCC56;
+    --forem-yellow-500:  #E4E152;
+    --forem-yellow-600:  #D9D02B;
+    --forem-yellow-700:  #BFBF1F;
+    --forem-yellow-800:  #A5A512;
+    --forem-yellow-900:  #8B8B06;
+
+    --forem-blue-50 :    #E6F6F8;
+    --forem-blue-100:    #C2E8ED;
+    --forem-blue-200:    #9EDAE1;
+    --forem-blue-300:    #7ACCD6;
+    --forem-blue-400:    #56BEDA;
+    --forem-blue-500:    #46C6C3;
+    --forem-blue-600:    #2E9EA0;
+    --forem-blue-700:    #1F7A7C;
+    --forem-blue-800:    #105658;
+    --forem-blue-900:    #0A2C2C;
+
+    --forem-red-50 :     #F8E6E6;
+    --forem-red-100:     #ECC2C2;
+    --forem-red-200:     #E09E9E;
+    --forem-red-300:     #D47A7A;
+    --forem-red-400:     #C85656;
+    --forem-red-500:     #EF3F43;
+    --forem-red-600:     #D0021B;
+    --forem-red-700:     #A80117;
+    --forem-red-800:     #7A0112;
+    --forem-red-900:     #4D000E;
+}
+
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #04A64B;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #007E48;
+}
+
+::-webkit-scrollbar-thumb:active {
+    background: #007E48;
+}
