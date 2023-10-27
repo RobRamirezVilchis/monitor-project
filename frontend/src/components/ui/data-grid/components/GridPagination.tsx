@@ -85,7 +85,7 @@ const GridPagination = <TData extends RowData>({
         <span>
           {instance.localization.paginationLabelDisplayRows({
             from: pagination.pageIndex * pagination.pageSize + 1,
-            to: Math.min((pagination.pageIndex + 1) * pagination.pageSize),
+            to: Math.min((pagination.pageIndex + 1) * pagination.pageSize, instance.options.rowCount ?? prePagination.rows.length),
             count: instance.options.rowCount ?? prePagination.rows.length,
             page: pagination.pageIndex + 1,
             pageCount,
