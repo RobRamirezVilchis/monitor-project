@@ -9,16 +9,16 @@ import { DeleteUserAction } from "./Actions";
 import { NewUserForm } from "./NewUserForm";
 import { Role, User } from "@/api/auth.types"; 
 import { RoleSelector } from "./RoleSelector";
-import { showSuccessNotification, showErrorNotification } from "@/components/ui/notifications";
+import { showSuccessNotification, showErrorNotification } from "@/ui/notifications";
 import { useAddToWhitelistMutation } from "@/api/mutations/users";
 import { useQueryState } from "@/hooks/shared";
 import { UserAvatar } from "@/components/shared/UserAvatar";
 import { useWhitelistQuery } from "@/api/queries/users";
 import { WhitelistItem } from "@/api/users.types";
-import { ColumnDef } from "@/components/ui/data-grid/types";
-import { es } from "@/components/ui/data-grid/locales/es";
-import DataGrid from "@/components/ui/data-grid/DataGrid";
-import useDataGrid from "@/components/ui/data-grid/useDataGrid";
+import { ColumnDef } from "@/ui/data-grid/types";
+import { es } from "@/ui/data-grid/locales/es";
+import DataGrid from "@/ui/data-grid/DataGrid";
+import useDataGrid from "@/ui/data-grid/useDataGrid";
 
 import { IconPlus } from "@tabler/icons-react";
 
@@ -37,7 +37,9 @@ const UsersPage = () => {
   });
   const [filters, setFilters] = useImmer<{  
     search?: string;
-  }>({});
+  }>({
+    search: "",
+  });
   const usersWhitelistQuery = useWhitelistQuery({
     variables: {
       pagination: {
@@ -116,7 +118,7 @@ const UsersPage = () => {
 
     enablePagination: true,
     manualPagination: true,
-    pageSizeOptions: [1, 25, 50, 100],
+    pageSizeOptions: [25, 50, 100],
     pageCount: usersWhitelistQuery.data?.pagination?.pages ?? 0,
     rowCount: usersWhitelistQuery.data?.pagination?.count ?? 0,
     onPaginationChange: (value) => {

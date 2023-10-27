@@ -7,7 +7,7 @@ import { ColorSchemeScript } from "@mantine/core";
 import { Metadata } from "next";
 
 import { Providers } from "./Providers";
-import fonts from "@/components/ui/fonts";
+import fonts from "@/ui/fonts";
 
 interface RootLayoutProps {
   children: React.ReactNode

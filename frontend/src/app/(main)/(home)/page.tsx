@@ -11,7 +11,7 @@ import {
   showErrorNotification,
   showWarningNotification,
   showInfoNotification,
-} from "@/components/ui/notifications";
+} from "@/ui/notifications";
 import { useConfirmDialog } from "@/hooks/shared";
 import { sleep } from "@/utils/utils";
 

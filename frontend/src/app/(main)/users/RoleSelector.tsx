@@ -1,7 +1,7 @@
 import { FC } from "react";
-import { Select } from "@/components/ui/core";
+import { Select } from "@/ui/core";
 
-import { showSuccessNotification, showErrorNotification } from "@/components/ui/notifications";
+import { showSuccessNotification, showErrorNotification } from "@/ui/notifications";
 import { useAuth } from "@/hooks/auth";
 import { userRoles } from "@/api/auth.types";
 import { useUpdateWhitelistItemMutation } from "@/api/mutations/users";

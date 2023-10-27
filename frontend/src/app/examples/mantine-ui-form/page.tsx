@@ -37,7 +37,7 @@ import {
   TagsInput,
   Textarea,
   TextInput,
-} from "@/components/ui/core";
+} from "@/ui/core";
 import {
   DateInput,
   DatePicker,
@@ -48,11 +48,11 @@ import {
   TimeInput,
   YearPicker,
   YearPickerInput,
-} from "@/components/ui/dates";
+} from "@/ui/dates";
 import { useRef, useState } from "react";
 import { DatePickerValue } from "@mantine/dates";
 import { useMediaQuery } from "@mantine/hooks";
-import DateRangePresets, { DateRangePresetsList } from "@/components/ui/dates/DateRangePresets";
+import DateRangePresets, { DateRangePresetsList } from "@/ui/dates/DateRangePresets";
 
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 

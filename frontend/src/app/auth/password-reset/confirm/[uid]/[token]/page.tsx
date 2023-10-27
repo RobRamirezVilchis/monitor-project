@@ -12,7 +12,7 @@ import {
   isPasswordResetTokenValid,
   confirmPasswordReset,
 } from "@/api/auth";
-import { PasswordInput, MeteredPasswordInput } from "@/components/ui/core";
+import { PasswordInput, MeteredPasswordInput } from "@/ui/core";
 
 const schema = z.object({
   password1: z.string({ required_error: "La contraseña es requerida" }).regex(

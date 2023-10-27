@@ -1,7 +1,7 @@
 import { FC } from "react";
 import { ActionIcon, Tooltip, useMantineTheme } from "@mantine/core";
 
-import { showSuccessNotification, showErrorNotification } from "@/components/ui/notifications";
+import { showSuccessNotification, showErrorNotification } from "@/ui/notifications";
 import { useAuth } from "@/hooks/auth";
 import { useConfirmDialog } from "@/hooks/shared/useConfirmDialog";
 import { useDeleteWhitelistItemMutation } from "@/api/mutations/users";

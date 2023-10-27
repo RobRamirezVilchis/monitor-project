@@ -5,15 +5,15 @@ import { useQueryState } from "@/hooks/shared";
 import { useEffect, useState } from "react";
 import { useImmer } from "use-immer";
 
-import { DatePickerInput, DateRangePresets } from "@/components/ui/dates";
+import { DatePickerInput, DateRangePresets } from "@/ui/dates";
 import { User } from "@/api/auth.types";
 import { UserAccess } from "@/api/users.types";
 import { UserAvatar } from "@/components/shared/UserAvatar";
 import { useUsersAccessQuery } from "@/api/queries/users";
-import { ColumnDef } from "@/components/ui/data-grid/types";
-import { es } from "@/components/ui/data-grid/locales/es";
-import DataGrid from "@/components/ui/data-grid/DataGrid";
-import useDataGrid from "@/components/ui/data-grid/useDataGrid";
+import { ColumnDef } from "@/ui/data-grid/types";
+import { es } from "@/ui/data-grid/locales/es";
+import DataGrid from "@/ui/data-grid/DataGrid";
+import useDataGrid from "@/ui/data-grid/useDataGrid";
 import { PaginationState } from "@tanstack/react-table";
 
 function localDatetimeToLocalDateStr(datetime: Date | null) {
@@ -86,7 +86,9 @@ const UsersAccessPage = () => {
   });
   const [filters, setFilters] = useImmer<{  
     search?: string;
-  }>({});
+  }>({
+    search: "",
+  });
   const usersAccessQuery = useUsersAccessQuery({
     variables: {
       pagination: {
@@ -155,7 +157,7 @@ const UsersAccessPage = () => {
 
     enablePagination: true,
     manualPagination: true,
-    pageSizeOptions: [1, 25, 50, 100],
+    pageSizeOptions: [25, 50, 100],
     pageCount: usersAccessQuery.data?.pagination?.pages ?? 0,
     rowCount: usersAccessQuery.data?.pagination?.count ?? 0,
     onPaginationChange: (value) => {

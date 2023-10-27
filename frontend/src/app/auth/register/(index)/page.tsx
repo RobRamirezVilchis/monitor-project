@@ -13,8 +13,8 @@ import {
   registerUser,
   RegisterUserData,
 } from "@/api/auth";
-import { TextInput, PasswordInput, MeteredPasswordInput } from "@/components/ui/core";
-import { showSuccessNotification, showErrorNotification } from "@/components/ui/notifications";
+import { TextInput, PasswordInput, MeteredPasswordInput } from "@/ui/core";
+import { showSuccessNotification, showErrorNotification } from "@/ui/notifications";
 
 const schema = z.object({
   first_name: z.string().nonempty("El nombre es requerido"),

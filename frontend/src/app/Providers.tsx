@@ -11,7 +11,7 @@ import Cookies from "js-cookie";
 
 import { AuthProvider } from "@/components/auth/AuthProvider";
 import { ConfirmDialogProvider } from "@/components/shared";
-import defaultTheme from "@/components/ui/themes/default";
+import defaultTheme from "@/ui/themes/default";
 import defaultQueryClient from "@/api/clients/defaultQueryClient";
 
 interface ProvidersProps {

@@ -5,16 +5,16 @@ import { Button, Menu } from "@mantine/core";
 import dataGridExampleStyles from "./DataGridExample.module.css";
 
 import { exampleData, exampleData2, ExampleData, ExampleData2 } from "./Data";
-import { ColumnDef } from "@/components/ui/data-grid/types";
-import DataGrid from "@/components/ui/data-grid/DataGrid";
-import useDataGrid from "@/components/ui/data-grid/useDataGrid";
+import { ColumnDef } from "@/ui/data-grid/types";
+import DataGrid from "@/ui/data-grid/DataGrid";
+import useDataGrid from "@/ui/data-grid/useDataGrid";
 import { LoadingOverlay as MLoadingOverlay } from "@mantine/core";
-import { es } from "@/components/ui/data-grid/locales/es";
+import { es } from "@/ui/data-grid/locales/es";
 
 import { Icon3dRotate } from "@tabler/icons-react";
 import { useEffect, useRef, useState } from "react";
 import { RowSelectionState } from "@tanstack/react-table";
-import ProgressLoadingOverlay from "@/components/ui/data-grid/components/ProgressLoadingOverlay";
+import ProgressLoadingOverlay from "@/ui/data-grid/components/ProgressLoadingOverlay";
 
 const data = exampleData.slice(0, 100);
 const data2 = exampleData2.slice(0, 100);

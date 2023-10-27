@@ -4,7 +4,7 @@ import { Button } from "@mantine/core";
 import { zodResolver } from "@hookform/resolvers/zod";
 import z from "zod";
 
-import { Select, TextInput } from "@/components/ui/core";
+import { Select, TextInput } from "@/ui/core";
 import { CreateWhitelistItemData } from "@/api/users.types";
 import { getUserRoleLocalized } from "@/api/users";
 import { userRoles } from "@/api/auth.types";
