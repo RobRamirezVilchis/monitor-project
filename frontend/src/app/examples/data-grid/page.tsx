@@ -50,13 +50,13 @@ const DataGridExamplePage = () => {
     // enableFacetedValues: true,
     // enableRowSelection: true,
     // enableGrouping: true,
-    // enablePagination: true,
+    enablePagination: true,
     // enableRowsVirtualization: true,
     // enableColumnsVirtualization: true,
     // enableRowNumbering: true,
     // rowNumberingMode: "static",
     // hideToolbar: true,
-    hideFooter: true,
+    // hideFooter: true,
     // hideColumnSelector: false,
     // hideDensitySelector: true,
     // hideQuickSearch: true,
@@ -179,9 +179,10 @@ const DataGridExamplePage = () => {
     },
     globalFilterFn: "fuzzy",
   });
+
   return (
     <div
-      className="flex flex-col gap-2 p-10 md:p-10 h-full overflow-auto"
+      className="flex flex-col gap-2 p-10 md:p-10 h-full"
     >
       <div 
         className="flex-[1_0_0] min-h-[0px]" // a min-height is required for this layout!
@@ -233,6 +234,252 @@ const DataGridExamplePage = () => {
   );
 }
 
+const Test = () => {
+  const ref1 = useRef<HTMLDivElement>(null);
+  const ref2 = useRef<HTMLDivElement>(null);
+
+  // useEffect(() => {
+  //   window.addEventListener("wheel", (e) => {
+  //     console.log((e.target as HTMLElement).closest(".DataGrid") )
+  //     // if ((e.target as HTMLElement).closest(".DataGrid") !== null) {
+  //     if (ref.current?.contains(e.target as HTMLElement)) {
+  //       console.log("aaaaaaa")
+  //       e.stopPropagation();
+  //       e.preventDefault();
+  //       e.stopImmediatePropagation();
+  //     }
+  //   }, { passive: false });
+  // }, []);
+
+  const pointerStats = useRef({
+    start: { x: 0, y: 0 },
+    end: { x: 0, y: 0 },
+    diff: { x: 0, y: 0 },
+  });
+
+  return (
+    <div className="p-6 h-full flex justify-center items-center gap-4"
+      style={{
+        // touchAction: "none",
+        height: "200vh"
+      }}
+    >
+      
+      <div
+        ref={ref1}
+        style={{
+          width: 250,
+          height: 250,
+          border: "4px solid black",
+          padding: "0 50px",
+          overflow: "scroll",
+          // touchAction: "none",
+        }}
+        onScroll={e => {
+          if (!ref2.current) return;
+          ref2.current.scrollTop = e.currentTarget.scrollTop;
+          ref2.current.scrollLeft = e.currentTarget.scrollLeft;
+        }}
+        // onPointerDown={e => {
+        //   pointerStats.current.start = { x: e.clientX, y: e.clientY };
+        // }}
+        // onPointerUp={e => {
+        //   pointerStats.current.end = { x: e.clientX, y: e.clientY };
+        //   pointerStats.current.diff = {
+        //     x: pointerStats.current.end.x - pointerStats.current.start.x,
+        //     y: pointerStats.current.end.y - pointerStats.current.start.y,
+        //   };
+        //   console.log(pointerStats.current)
+        // }}
+        onTouchStart={e => {
+          pointerStats.current.start = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+        }}
+        onTouchEnd={e => {
+          pointerStats.current.end = { x: e.changedTouches[0].clientX, y: e.changedTouches[0].clientY };
+          pointerStats.current.diff = {
+            x: pointerStats.current.end.x - pointerStats.current.start.x,
+            y: pointerStats.current.end.y - pointerStats.current.start.y,
+          };
+          console.log(pointerStats.current)
+          setTimeout(() => {
+            console.log("end", {x: ref1.current!.scrollLeft, y: ref1.current!.scrollTop })
+          }, 500);
+        }}
+        >
+        <div
+          className="before:content-['start'] before:absolute before:left-0 before:top-0 after:content-['end'] after:absolute after:right-0 after:bottom-0"
+          style={{
+            background: "rgb(25 118 210 / 20%)",
+            width: 500,
+            height: 1500,
+            position: "relative",
+          }}
+        >
+
+        </div>
+      </div>
+
+      <div
+        ref={ref2}
+        style={{
+          width: 250,
+          height: 250,
+          border: "4px solid black",
+          padding: "0 50px",
+          overflow: "hidden",
+          touchAction: "none",
+        }}
+        // Button 1 = left click and touch click
+        onPointerDown={e => console.log("pointer down", e)}
+        // onPointerMove={e => console.log("pointer move", e)}
+        onPointerUp={e => console.log("pointer up", e)}
+        // onPointerOver={e => console.log("pointer over", e)}
+        // onPointerCancel={e => console.log("pointer cancel", e)}
+        // onPointerEnter={e => console.log("pointer enter", e)}
+        // onPointerLeave={e => console.log("pointer leave", e)}
+        // onPointerOut={e => console.log("pointer out", e)}
+        onScroll={e => {
+          // console.log("scrolling")
+        }}
+      >
+        <div
+          className="before:content-['start'] before:absolute before:left-0 before:top-0 after:content-['end'] after:absolute after:right-0 after:bottom-0"
+          style={{
+            background: "rgb(25 118 210)",
+            width: 500,
+            height: 500,
+            position: "relative",
+          }}
+        >
+
+        </div>
+      </div>
+
+    </div>
+  );
+}
+
+const Test2 = () => {
+  const ref1 = useRef<HTMLDivElement>(null);
+  const ref2 = useRef<HTMLDivElement>(null);
+
+  return (
+    <div
+      className="p-6 flex flex-col gap-4"
+    >
+
+      <div
+        className="w-[400px] h-[400px] border z-0"
+      >
+        <div
+          className="h-full w-full overflow-auto relative"
+        >
+          <div className="h-[1000px] w-[1000px]">
+            <div className="bg-green-100 w-[1000px] flex justify-between sticky top-0 z-[1]">
+              <span>Header L</span>
+              <span>Header R</span>
+            </div>
+
+            <div className="flex">
+              <div className="bg-red-100 flex flex-col justify-between sticky left-0">
+                <span>Body Left T</span>
+                <span>Body Left B</span>
+              </div>
+
+              <div className="bg-blue-100 h-[1000px] w-[1000px] flex flex-col justify-between">
+                <div className="flex justify-between">
+                  <span>Body TL</span>
+                  <span>Body TR</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Body BL</span>
+                  <span>Body BR</span>
+                </div>
+              </div>
+
+              <div className="bg-red-100 flex flex-col justify-between sticky right-0">
+                <span>Body Right T</span>
+                <span>Body Right B</span>
+              </div>
+            </div>
+
+            <div className="bg-purple-100 w-[1000px] flex justify-between sticky bottom-0">
+              <span>Footer L</span>
+              <span>Footer R</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div
+        className="w-[400px] h-[400px] border z-0"
+      >
+        <div
+          className="h-full w-full overflow-auto relative"
+        >
+          <div className="flex">
+            <div>
+              <div className="bg-green-100 sticky top-0 left-0">
+                <span>Header L</span>
+              </div>
+            </div>
+
+            <div>
+              <div className="bg-green-100 w-[1000px] sticky top-0">
+                <span>Header C</span>
+              </div>
+            </div>
+
+            <div>
+              <div className="bg-green-100 sticky top-0 right-0">
+                <span>Header R</span>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <div className="bg-green-100 w-[1000px] flex justify-between sticky top-0 z-[1]">
+              <span>Header L</span>
+              <span>Header R</span>
+            </div>
+
+            <div className="flex">
+              <div className="bg-red-100 flex flex-col justify-between sticky left-0">
+                <span>Body Left T</span>
+                <span>Body Left B</span>
+              </div>
+
+              <div className="bg-blue-100 h-[1000px] w-[1000px] flex flex-col justify-between">
+                <div className="flex justify-between">
+                  <span>Body TL</span>
+                  <span>Body TR</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Body BL</span>
+                  <span>Body BR</span>
+                </div>
+              </div>
+
+              <div className="bg-red-100 flex flex-col justify-between sticky right-0">
+                <span>Body Right T</span>
+                <span>Body Right B</span>
+              </div>
+            </div>
+
+            <div className="bg-purple-100 w-[1000px] flex justify-between sticky bottom-0">
+              <span>Footer L</span>
+              <span>Footer R</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  )
+}
+
+// export default Test2
+// export default Test
 export default DataGridExamplePage;
 
 const cols: ColumnDef<ExampleData>[] = [
