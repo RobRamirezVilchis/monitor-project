@@ -27,7 +27,6 @@ const DataGridBody = <TData extends unknown>({
   ready,
   style,
 }: DataGridBodyProps<TData>) => {
-  const [fillerSize, setFillerSize] = useState<number>(0);
   const cachedWidthRef = useRef({
     viewport: 0,
     content: 0,
@@ -54,7 +53,7 @@ const DataGridBody = <TData extends unknown>({
       const bodyContentWidth = instance.refs.body.main.content.current.clientWidth;
       const totalSize = instance.getTotalSize();
       const fillerSize = bodyViewportWidth - totalSize;
-      setFillerSize(fillerSize);
+      instance.refs.body.main.viewport.current.style.setProperty("--dg-filler-cell-width", `${Math.max(0, fillerSize)}px`);
 
       // Calculate flex for each leaf column
       if (bodyViewportWidth !== cachedWidthRef.current.viewport
@@ -153,7 +152,8 @@ const DataGridBody = <TData extends unknown>({
           ...instance.options.styles?.body?.container,
           width: instance.options.enableColumnsVirtualization 
             ? instance.scrolls.virtualizers.columns.current?.getTotalSize()
-            : instance.getTotalSize() + (fillerSize > 0 ? fillerSize : 0),
+            // : instance.getTotalSize() + (fillerSize > 0 ? fillerSize : 0),
+            : `calc(${instance.getTotalSize()}px + var(--dg-filler-cell-width, 0))`,
           height: instance.options.enableRowsVirtualization
             ? instance.scrolls.virtualizers.rows.current?.getTotalSize()
             : undefined,
@@ -171,7 +171,6 @@ const DataGridBody = <TData extends unknown>({
                 instance={instance}
                 row={row} 
                 rowIndex={virtualRow.index}
-                fillerSize={fillerSize}
                 style={{
                   // height: virtualRow.size,
                   position : "absolute",
@@ -186,7 +185,6 @@ const DataGridBody = <TData extends unknown>({
               key={row.id} 
               instance={instance}
               row={row} 
-              fillerSize={fillerSize}
               rowIndex={rowIdx}
             />
           ))

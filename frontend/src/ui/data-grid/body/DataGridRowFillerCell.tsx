@@ -8,13 +8,11 @@ import { DataGridInstance } from "../types";
 
 export interface DataGridRowFillerCellProps<TData extends RowData> {
   instance: DataGridInstance<TData>;
-  width?: number;
   style?: CSSProperties;
 }
 
 const DataGridRowFillerCell = <TData extends RowData>({
   instance,
-  width,
   style,
 }: DataGridRowFillerCellProps<TData>) => {
   const onBlur = useCallback<FocusEventHandler<HTMLDivElement>>((e) => {
@@ -32,8 +30,8 @@ const DataGridRowFillerCell = <TData extends RowData>({
         height: instance.getDensityModel().rowHeight,
         minHeight: instance.getDensityModel().rowHeight,
         maxHeight: instance.getDensityModel().rowHeight,
-        width,
         ...style,
+        width: "var(--dg-filler-cell-width, 0)",
         padding: 0,
       }}
       onBlur={onBlur}

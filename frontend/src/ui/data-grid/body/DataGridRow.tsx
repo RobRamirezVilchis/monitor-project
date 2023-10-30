@@ -13,7 +13,6 @@ export interface DataGridRowProps<TData extends RowData> {
   row: Row<TData>;
   rowIndex: number;
   style?: CSSProperties;
-  fillerSize: number;
   /**
    * The offset of the row from the top of the viewport.
    * Experimental, only used when rows virtualization is enabled.
@@ -28,7 +27,6 @@ const DataGridRow = <TData extends RowData>({
   row,
   rowIndex,
   style,
-  fillerSize,
   vRowEnd = 0,
 }: DataGridRowProps<TData>) => {
   const onClick = useCallback<MouseEventHandler<HTMLDivElement>>((e) => {
@@ -88,12 +86,9 @@ const DataGridRow = <TData extends RowData>({
           />
         ))}
         
-        {fillerSize > 0.5 ? (
-          <DataGridRowFillerCell
-            instance={instance}
-            width={fillerSize}
-          />
-        ) : null}
+        <DataGridRowFillerCell
+          instance={instance}
+        />
       </div>
 
       {/* Expandable SubComponent */}
