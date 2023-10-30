@@ -228,13 +228,15 @@ const cols: ColumnDef<WhitelistItem>[] = [
         size="sm"
       />
     ) : null,
+    enableResizing: false,
   },
   {
     id: "user.name",
     accessorKey: "user",
     header: "Nombre",
     columnTitle: "Nombre",
-    size: 250,
+    minSize: 250,
+    flex: 1,
     cell: ({ getValue }) => getValue<User | null>() 
       ? `${getValue<User>().first_name ?? ""} ${getValue<User>().last_name ?? ""}`
       : "No registrado",
@@ -243,7 +245,8 @@ const cols: ColumnDef<WhitelistItem>[] = [
     accessorKey: "email",
     header: "Email",
     columnTitle: "Email",
-    size: 250,
+    minSize: 250,
+    flex: 1,
   },
   {
     accessorKey: "group",
@@ -257,7 +260,7 @@ const cols: ColumnDef<WhitelistItem>[] = [
   },
   {
     id: "actions",
-    header: "Acciones",
+    header: "",
     columnTitle: "Acciones",
     size: 100,
     cellClassNames: {
@@ -268,5 +271,6 @@ const cols: ColumnDef<WhitelistItem>[] = [
         <DeleteUserAction whitelistItem={row.original} />
       </>
     ),
+    enableResizing: false,
   },
 ];

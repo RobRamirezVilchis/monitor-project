@@ -288,13 +288,15 @@ const cols: ColumnDef<UserAccess>[] = [
         size="sm"
       />
     ) : null,
+    enableResizing: false,
   },
   {
     id: "user.name",
     accessorKey: "user",
     header: "Nombre",
     columnTitle: "Nombre",
-    size: 250,
+    minSize: 250,
+    flex: 1,
     cell: ({ getValue }) => getValue<User | null>() 
       ? `${getValue<User>().first_name ?? ""} ${getValue<User>().last_name ?? ""}`
       : "No registrado",
@@ -303,20 +305,22 @@ const cols: ColumnDef<UserAccess>[] = [
     accessorKey: "user.email",
     header: "Email",
     columnTitle: "Email",
-    size: 250,
+    minSize: 250,
+    flex: 1,
     cell: ({ getValue }) => getValue<string>() ?? "N/A",
   },
   {
     accessorKey: "last_access",
     header: "Último acceso",
     columnTitle: "Último acceso",
-    size: 200,
+    minSize: 180,
+    flex: 1,
     cell: ({ getValue }) => formatDate(parseISO(getValue<string>()), "P"),
   },
   {
     accessorKey: "access",
     header: "Accesos",
     columnTitle: "Accesos",
-    size: 150,
+    size: 100,
   },
 ];

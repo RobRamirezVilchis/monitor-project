@@ -174,6 +174,13 @@ DistributiveOmit<
     step?: number;
     debounceTime?: number;
   };
+  /**
+   * Indicates that the width of the column should behave like a flex item.
+   * If set, `size` will be ignored unless explicitly set, with resize handlers,
+   * or the columnSizing api, and the column will be sized automatically according
+   * to its flex value and its `minSize` and `maxSize` values.
+   */
+  flex?: number;
 }
 
 // Column ----------------------------------------------------------------------

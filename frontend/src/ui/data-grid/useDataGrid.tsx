@@ -130,8 +130,8 @@ const useDataGrid = <TData extends RowData>(options: DataGridOptions<TData>): Da
     else {
       setDensity(prev => {
         switch (prev) {
-          case "normal":      return "comfortable";
-          case "compact":     return "normal";
+          case "normal"     : return "comfortable";
+          case "compact"    : return "normal";
           case "comfortable": return "compact";
         }
       });
