@@ -11,6 +11,7 @@ export { default as JsonInput, type JsonInputProps } from "./JsonInput";
 export { default as MultiSelect, type MultiSelectProps } from "./MultiSelect";
 export { default as NativeSelect, type NativeSelectProps } from "./NativeSelect";
 export { default as NumberInput, type NumberInputProps } from "./NumberInput";
+export { default as NumericFormatInput, type NumericFormatInputProps } from "./NumericFormatInput";
 export { default as PasswordInput, type PasswordInputProps } from "./PasswordInput";
 export { default as PinInput, type PinInputProps } from "./PinInput";
 export { default as Radio, RadioGroup, type RadioProps, type RadioGroupProps } from "./Radio";
