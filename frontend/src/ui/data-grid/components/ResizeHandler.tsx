@@ -16,14 +16,8 @@ const ResizeHandler = <TData extends unknown, TValue>({
   return (
     <div
       className={clsx(styles.root)}
-      onMouseDown={e => {
-        e.stopPropagation();
-        header.getResizeHandler()(e);
-      }}
-      onTouchStart={e => {
-        e.stopPropagation();
-        header.getResizeHandler()(e);
-      }}
+      onMouseDown={header.getResizeHandler()}
+      onTouchStart={header.getResizeHandler()}
     >
     </div>
   )

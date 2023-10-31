@@ -44,34 +44,28 @@ const DataGridBody = <TData extends unknown>({
   }, [instance.scrolls.main.horizontal, instance.scrolls.main.vertical, instance.refs.body.main.viewport]);
 
   useIsomorphicLayoutEffect(() => {
-    if (!instance.refs.body.main.viewport.current || !instance.refs.body.main.content.current) return;
+    if (!instance.refs.body.main.viewport.current || !instance.refs.columnsHeader.main.content.current) return;
     
     const bodyViewportResizeObserver = new ResizeObserver((entries, observer) => {
-      if (!instance.refs.body.main.viewport.current || !instance.refs.body.main.content.current) return;
+      if (!instance.refs.body.main.viewport.current || !instance.refs.columnsHeader.main.content.current) return;
 
       const bodyViewportWidth = instance.refs.body.main.viewport.current.clientWidth;
-      const bodyContentWidth = instance.refs.body.main.content.current.clientWidth;
-      const totalSize = instance.getTotalSize();
-      const fillerSize = bodyViewportWidth - totalSize;
-      instance.refs.body.main.viewport.current.style.setProperty("--dg-filler-cell-width", `${Math.max(0, fillerSize)}px`);
+      const bodyContentWidth = instance.refs.columnsHeader.main.content.current.clientWidth;
+      let totalSize = instance.getTotalSize();
 
       // Calculate flex for each leaf column
-      if (bodyViewportWidth !== cachedWidthRef.current.viewport
-        || bodyContentWidth !== cachedWidthRef.current.content) {
-        const cols = instance.getAllLeafColumns().map(col => ({
-          id: col.id,
-          def: col.columnDef,
-        }));
+      if (bodyViewportWidth !== cachedWidthRef.current.viewport) {
+        const cols = instance.getAllLeafColumns();
         const sizing = instance.getState().columnSizing;
         if (!flexTracking.current) {
-          const flexCols = cols.filter(col => col.def.flex);
+          const flexCols = cols.filter(col => col.columnDef.flex);
           flexTracking.current = flexCols.reduce((acc, col) => {
             if (!sizing[col.id]) {
               acc[col.id] = { 
-                flex: col.def.flex!, 
-                size: col.def.size ?? 0,
-                minSize: col.def.minSize!,
-                maxSize: col.def.maxSize!,
+                flex: col.columnDef.flex!, 
+                size: col.columnDef.size ?? 0,
+                minSize: col.columnDef.minSize!,
+                maxSize: col.columnDef.maxSize!,
               };
             }
             return acc;
@@ -79,30 +73,40 @@ const DataGridBody = <TData extends unknown>({
         }
         else {
           Object.entries(flexTracking.current).forEach(([id, col]) => {
+            // Stop tracking columns which size has been changed by the user
             if (sizing[id] && sizing[id] !== col.size)
               delete flexTracking.current![id];
           });
         }
-        const flex = Object.values(flexTracking.current).reduce((acc, col) => acc + col.flex, 0);
+        // Cache entries since we are NOT going to mutate flexTracking.current until we are done calculating the new widths
+        const flexTrackingEntries = Object.entries(flexTracking.current);
+        const flex = flexTrackingEntries.reduce((acc, [_, col]) => acc + col.flex, 0);
         if (flex > 0) {
+          // Update totalSize to bodyViewportWidth since we are going to fill the whole viewport with the flex columns
+          totalSize = bodyViewportWidth;
           const nonFlexWidth = cols.reduce((acc, col) => {
             if (!flexTracking.current![col.id])
-              return acc + (sizing[col.id] ?? col.def.size ?? 0)
+              return acc + (sizing[col.id] ?? col.columnDef.size ?? 0)
             return acc;
           }, 0);
           const remainingWidth = bodyViewportWidth - nonFlexWidth;
           const widthPerFlex = remainingWidth / flex;
-          const newWidths = Object.entries(flexTracking.current).reduce((acc, [id, col]) => {
-            return {
-              ...acc,
-              [id]: clamp(widthPerFlex * col.flex, col.minSize, col.maxSize),
-            };
-          }, sizing);
-          Object.keys(flexTracking.current).forEach(id => {
+          const newWidths = flexTrackingEntries.reduce((acc, [id, col]) => ({
+            ...acc,
+            [id]: clamp(widthPerFlex * col.flex, col.minSize, col.maxSize),
+          }), sizing);
+          //* NOTE: We are mutating flexTracking.current here, flexTrackingEntries will be invalid after this!
+          flexTrackingEntries.forEach(([id]) => {
             flexTracking.current![id].size = newWidths[id];
           });
           instance.setColumnSizing(newWidths);
         }
+      }
+
+      // Set filler cell width
+      if (bodyViewportWidth !== cachedWidthRef.current.viewport || bodyContentWidth !== cachedWidthRef.current.content) {
+        const fillerSize = bodyViewportWidth - totalSize;
+        instance.refs.body.main.viewport.current.style.setProperty("--dg-filler-cell-width", `${Math.max(0, fillerSize)}px`);
       }
 
       cachedWidthRef.current = {
@@ -111,12 +115,12 @@ const DataGridBody = <TData extends unknown>({
       };
     });
     bodyViewportResizeObserver.observe(instance.refs.body.main.viewport.current);
-    bodyViewportResizeObserver.observe(instance.refs.body.main.content.current);
+    bodyViewportResizeObserver.observe(instance.refs.columnsHeader.main.content.current);
 
     return () => {
       bodyViewportResizeObserver.disconnect();
     }
-  }, [instance, instance.refs.body.main.viewport, instance.refs.body.main.content]);
+  }, [instance, instance.refs.body.main.viewport, instance.refs.columnsHeader.main.content]);
 
   return (
     // Viewport
@@ -152,7 +156,6 @@ const DataGridBody = <TData extends unknown>({
           ...instance.options.styles?.body?.container,
           width: instance.options.enableColumnsVirtualization 
             ? instance.scrolls.virtualizers.columns.current?.getTotalSize()
-            // : instance.getTotalSize() + (fillerSize > 0 ? fillerSize : 0),
             : `calc(${instance.getTotalSize()}px + var(--dg-filler-cell-width, 0))`,
           height: instance.options.enableRowsVirtualization
             ? instance.scrolls.virtualizers.rows.current?.getTotalSize()
