@@ -313,7 +313,7 @@ const cols: ColumnDef<UserAccess>[] = [
     accessorKey: "last_access",
     header: "Último acceso",
     columnTitle: "Último acceso",
-    minSize: 180,
+    minSize: 200,
     flex: 1,
     cell: ({ getValue }) => formatDate(parseISO(getValue<string>()), "P"),
   },

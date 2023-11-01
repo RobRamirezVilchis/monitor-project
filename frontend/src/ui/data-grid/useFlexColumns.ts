@@ -13,6 +13,8 @@ type FlexItem = {
   maxSize: number;
 };
 
+// TODO: Fix weird behavior when flex property is different to 1
+
 export const useFlexColumns = <TData extends RowData>(instance: DataGridInstance<TData>) => {
   const widthCacheRef = useRef({
     bodyViewport: 0,

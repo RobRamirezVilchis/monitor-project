@@ -252,11 +252,11 @@ const cols: ColumnDef<WhitelistItem>[] = [
     accessorKey: "group",
     header: "Rol",
     columnTitle: "Rol",
-    size: 180,
+    size: 200,
     cell: ({ row, getValue }) => <RoleSelector whitelistItem={row.original} value={getValue<Role>()} />,
     cellClassNames: {
       root: "!p-0"
-    }
+    },
   },
   {
     id: "actions",
