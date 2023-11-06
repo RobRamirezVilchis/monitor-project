@@ -16,6 +16,9 @@ const DataGridColumnFooterCell = <TData extends RowData, TValue>({
   header,
 }: DataGridColumnFooterCellProps<TData, TValue>) => {
   const columnDef = header.column.columnDef;
+  const colDefClassNames = typeof columnDef.headerClassNames === "function"
+    ? columnDef.headerClassNames(header)
+    : columnDef.headerClassNames;
 
   return (
     <div
@@ -23,7 +26,7 @@ const DataGridColumnFooterCell = <TData extends RowData, TValue>({
         "DataGridColumnFootersCell-root", 
         styles.root,
         instance.options.classNames?.columnFootersCell?.root,
-        columnDef.footerClassNames?.root,
+        colDefClassNames?.root,
       )}
       style={{
         ...instance.options.styles?.columnFootersCell?.root,
@@ -36,7 +39,7 @@ const DataGridColumnFooterCell = <TData extends RowData, TValue>({
       {/* Content */}
       {!header.isPlaceholder ? (
         <div
-          className={clsx("DataGridColumnFootersCell-content", styles.content, instance.options.classNames?.columnFootersCell?.content, columnDef.footerClassNames?.content)}
+          className={clsx("DataGridColumnFootersCell-content", styles.content, instance.options.classNames?.columnFootersCell?.content, colDefClassNames?.content)}
           style={{
             ...instance.options.styles?.columnFootersCell?.content,
             ...columnDef.footerStyles?.content,

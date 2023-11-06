@@ -15,16 +15,20 @@ const DataGridRowFillerCell = <TData extends RowData>({
   instance,
   style,
 }: DataGridRowFillerCellProps<TData>) => {
+  const instanceClassNames = typeof instance.options.classNames?.cell === "function" 
+    ? instance.options.classNames?.cell(null) 
+    : instance.options.classNames?.cell;
+
   const onBlur = useCallback<FocusEventHandler<HTMLDivElement>>((e) => {
     e.currentTarget.setAttribute("tabindex", "-1");
     e.currentTarget.classList.remove("DataGridRowCell--focused");
-    if (instance.options.classNames?.cell?.focused)
-      e.currentTarget.classList.remove(instance.options.classNames?.cell?.focused);
-  }, [instance]);
+    if (instanceClassNames?.focused)
+      e.currentTarget.classList.remove(instanceClassNames?.focused);
+  }, [instanceClassNames?.focused]);
 
   return (
     <div
-      className={clsx("DataGridRowCell-root DataGridRowFillerCell", styles.root, instance.options.classNames?.cell?.root)}
+      className={clsx("DataGridRowCell-root DataGridRowFillerCell", styles.root, instanceClassNames?.root)}
       style={{
         ...instance.options.styles?.cell?.root,
         height: instance.getDensityModel().rowHeight,
@@ -38,7 +42,7 @@ const DataGridRowFillerCell = <TData extends RowData>({
       role="cell"
     >
       <div
-        className={clsx("DataGridRowCell-content", styles.content, instance.options.classNames?.cell?.content)}
+        className={clsx("DataGridRowCell-content", styles.content, instanceClassNames?.content)}
         style={{
           ...instance.options.styles?.cell?.content,
           padding: 0,

@@ -29,6 +29,10 @@ const DataGridRow = <TData extends RowData>({
   style,
   vRowEnd = 0,
 }: DataGridRowProps<TData>) => {
+  const instanceClassNames = typeof instance.options.classNames?.row === "function"
+    ? instance.options.classNames?.row(row as any)
+    : instance.options.classNames?.row;
+
   const onClick = useCallback<MouseEventHandler<HTMLDivElement>>((e) => {
     instance.options.onRowClick?.(row as any, instance, e as any);
   }, [row, instance]);
@@ -41,8 +45,8 @@ const DataGridRow = <TData extends RowData>({
     <Fragment>
       <div
         className={clsx("DataGridRow-root", styles.root, {
-          [`DataGridRow--selected ${styles["--selected"]} ${instance.options.classNames?.row?.selected}`]: row.getIsSelected(),
-        }, instance.options.classNames?.row?.root)}
+          [`DataGridRow--selected ${styles["--selected"]} ${instanceClassNames?.selected}`]: row.getIsSelected(),
+        }, instanceClassNames?.root)}
         style={{
           ...instance.options.styles?.row?.root,
           height: instance.getDensityModel().rowHeight,

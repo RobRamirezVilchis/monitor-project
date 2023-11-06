@@ -156,11 +156,15 @@ DistributiveOmit<
     instance: DataGridInstance<TData>;
     column: Column<TData, TValue>;
   }) => JSX.Element[];
-  cellClassNames?: DataGridRowCellClassNames;
+  /**
+   * Sets the cell className.
+   * @param cell The current cell. When null, it refers to the filler cell.
+   */
+  cellClassNames?: DataGridRowCellClassNames | ((cell: Cell<TData, TValue> | null) => DataGridRowCellClassNames);
   cellStyles?: DataGridRowCellStyles;
-  headerClassNames?: DataGridColumnHeadersCellClassNames;
+  headerClassNames?: DataGridColumnHeadersCellClassNames | ((header: Header<TData, TValue>) => DataGridColumnHeadersCellClassNames);
   headerStyles?: DataGridColumnHeadersCellStyles;
-  footerClassNames?: DataGridColumnFootersCellClassNames;
+  footerClassNames?: DataGridColumnFootersCellClassNames | ((footer: Header<TData, TValue>) => DataGridColumnFootersCellClassNames);
   footerStyles?: DataGridColumnFootersCellStyles;
   sortingFn?: _SortingFnOption<TData> | SortingFnOption | string & Record<never, never>;
   filterVariant?: FilterVariant;
@@ -379,8 +383,12 @@ PartialKeys<DataGridOptionsResolved<TData>, "getCoreRowModel" | "onStateChange" 
     columnFootersCell?: DataGridColumnFootersCellClassNames;
     body?: DataGridBodyClassNames;
     footer?: DataGridFooterClassNames;
-    row?: DataGridRowClassNames;
-    cell?: DataGridRowCellClassNames;
+    row?: DataGridRowClassNames | ((row: Row<TData>) => DataGridRowClassNames);
+    /**
+     * Sets the cell classNames
+     * @param cell The current cell. When null, it refers to the filler cell.
+     */
+    cell?: DataGridRowCellClassNames | ((cell: Cell<TData> | null) => DataGridRowCellClassNames);
   };
   styles?: {
     root?: CSSProperties;
