@@ -1,5 +1,3 @@
-import { Loader, Progress } from "@mantine/core";
-
 const ProgressLoadingOverlay = () => {
 
   return (
@@ -10,12 +8,7 @@ const ProgressLoadingOverlay = () => {
         height: "100%",
       }}
     >
-      <Progress 
-        value={100}
-        animated
-        radius="0"
-        size={6}
-      />
+      Loading...
     </div>
   );
 }

@@ -1,15 +1,6 @@
-import { ActionIcon, Tooltip } from "@mantine/core";
-import clsx from "clsx";
-
-import buttonStyles from "../components/BaseButton.module.css";
-
 import { DataGridInstance } from "../types";
 import { RowData } from "@tanstack/react-table";
-
-import { 
-  IconFilter, 
-  IconFilterOff 
-} from "@tabler/icons-react";
+import { getSlotOrNull } from "../utils/slots";
 
 export interface ToolbarFilterToggleProps<TData extends RowData> {
   instance: DataGridInstance<TData>;
@@ -18,26 +9,28 @@ export interface ToolbarFilterToggleProps<TData extends RowData> {
 const ToolbarFilterToggle = <TData extends RowData>({
   instance,
 }: ToolbarFilterToggleProps<TData>) => {
+  const FilterOnIcon  = getSlotOrNull(instance.options.slots?.filterOnIcon);
+  const FilterOffIcon = getSlotOrNull(instance.options.slots?.filterOffIcon);
   
+  const Tooltip =  getSlotOrNull(instance.options.slots?.baseTooltip);
+  const IconButton = getSlotOrNull(instance.options.slots?.baseIconButton);
+
   return (
     <Tooltip 
-      openDelay={250}
-      withinPortal 
-      {...instance.options.slotProps?.baseTooltipProps}
+      {...instance.options.slotProps?.baseTooltip}
       label={instance.localization.toolbarShowHideFilters}
     >
-      <ActionIcon
-        color="black"
-        variant="transparent"
-        {...instance.options.slotProps?.baseActionIconProps}
-        className={clsx(buttonStyles.root, instance.options.slotProps?.baseActionIconProps?.className)}
-        onClick={e => {
+      <IconButton
+        {...instance.options.slotProps?.baseIconButton}
+        onClick={(...args) => {
           instance.setColumnFiltersOpen(prev => !prev);
-          instance.options.slotProps?.baseActionIconProps?.onClick?.(e);
+          instance.options.slotProps?.baseIconButton?.onClick?.(...args);
         }}
       >
-        {instance.getState().columnFiltersOpen ? <IconFilterOff /> : <IconFilter />}
-      </ActionIcon>
+        {instance.getState().columnFiltersOpen 
+        ? <FilterOnIcon  {...instance.options.slotProps?.filterOnIcon}  /> 
+        : <FilterOffIcon {...instance.options.slotProps?.filterOffIcon} />}
+      </IconButton>
     </Tooltip>
   );
 }

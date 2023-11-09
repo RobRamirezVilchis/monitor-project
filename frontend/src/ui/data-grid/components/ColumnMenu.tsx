@@ -1,20 +1,11 @@
-import { ActionIcon, Menu, Tooltip } from "@mantine/core";
+import { JSXElementConstructor, useRef, useState } from "react";
 import { DataGridInstance, Header } from "../types";
-import clsx from "clsx";
 
-import buttonStyles from "./BaseButton.module.css";
+import { getSlotOrNull } from "../utils/slots";
 
-import { 
-  IconArrowsSort,
-  IconDotsVertical,
-  IconSortAscending,
-  IconSortDescending,
-  IconEyeOff,
-} from "@tabler/icons-react";
-
-function addToMenuItemList(items: JSX.Element[], list: Array<JSX.Element | JSX.Element[]>) {
+function addToMenuItemList(items: JSX.Element[], list: Array<JSX.Element | JSX.Element[]>, MenuDivider: JSXElementConstructor<any>, menuDividerProps?: any) {
   if (list.length > 0)
-    list.push(<Menu.Divider key={`divider-${list.length}`} />);
+    list.push(<MenuDivider key={`divider-${list.length}`} {...menuDividerProps} />);
 
   list.push(items);
 }
@@ -29,66 +20,82 @@ const ColumnMenu = <TData extends unknown, TValue>({
   header,
 }: ColumnMenuProps<TData, TValue>) => {
   const sorted = header.column.getIsSorted();
+  const menuTargetRef = useRef<any>(null);
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  const SortAscendingIcon  = getSlotOrNull(instance.options.slots?.sortAscendingIcon);
+  const SortDescendingIcon = getSlotOrNull(instance.options.slots?.sortDescendingIcon);
+  const ClearSortingIcon   = getSlotOrNull(instance.options.slots?.clearSortingIcon);
+  const ColumnMenuIcon     = getSlotOrNull(instance.options.slots?.columnMenuIcon);
+  const HideColumnIcon     = getSlotOrNull(instance.options.slots?.hideColumnIcon);
+
+  const Tooltip =  getSlotOrNull(instance.options.slots?.baseTooltip);
+  const IconButton = getSlotOrNull(instance.options.slots?.baseIconButton);
+  const MenuWrapper = getSlotOrNull(instance.options.slots?.baseMenuWrapper);
+  const MenuContent = getSlotOrNull(instance.options.slots?.baseMenuContent);
+  const MenuTarget = getSlotOrNull(instance.options.slots?.baseMenuTarget);
+  const MenuItem = getSlotOrNull(instance.options.slots?.baseMenuItem);
+  const MenuDivider = getSlotOrNull(instance.options.slots?.baseMenuDivider);
 
   const sortMenuItems = [
-    <Menu.Item
+    <MenuItem
       key="sort-asc"
-      leftSection={<IconSortAscending />}
-      {...instance.options.slotProps?.baseMenuItemProps}
+      icon={<SortAscendingIcon {...instance.options.slotProps?.sortAscendingIcon} />}
+      {...instance.options.slotProps?.baseMenuItem}
       disabled={sorted === "asc"}
-      onClick={e => {
+      onClick={(...args) => {
         header.column.toggleSorting(false);
-        instance.options.slotProps?.baseMenuItemProps?.onClick?.(e);
+        instance.options.slotProps?.baseMenuItem?.onClick?.(...args);
       }}
     >
       {instance.localization.columnMenuSortByAscending(header.column)}
-    </Menu.Item>,
-    <Menu.Item
+    </MenuItem>,
+    <MenuItem
       key="sort-desc"
-      leftSection={<IconSortDescending />}
-      {...instance.options.slotProps?.baseMenuItemProps}
+      icon={<SortDescendingIcon {...instance.options.slotProps?.sortDescendingIcon} />}
+      {...instance.options.slotProps?.baseMenuItem}
       disabled={sorted === "desc"}
-      onClick={e => {
+      onClick={(...args) => {
         header.column.toggleSorting(true);
-        instance.options.slotProps?.baseMenuItemProps?.onClick?.(e);
+        instance.options.slotProps?.baseMenuItem?.onClick?.(...args);
       }}
     >
       {instance.localization.columnMenuSortByDescending(header.column)}
-    </Menu.Item>,
-    <Menu.Item
+    </MenuItem>,
+    <MenuItem
       key="sort-clear"
-      leftSection={<IconArrowsSort />}
-      {...instance.options.slotProps?.baseMenuItemProps}
+      icon={<ClearSortingIcon {...instance.options.slotProps?.clearSortingIcon} />}
+      {...instance.options.slotProps?.baseMenuItem}
       disabled={sorted === false || sorted === undefined}
-      onClick={e => {
+      onClick={(...args) => {
         header.column.clearSorting();
-        instance.options.slotProps?.baseMenuItemProps?.onClick?.(e);
+        instance.options.slotProps?.baseMenuItem?.onClick?.(...args);
       }}
     >
       {instance.localization.columnMenuClearSortBy(header.column)}
-    </Menu.Item>,
+    </MenuItem>,
   ];
 
   const visibilityMenuItems = [
-    <Menu.Item
+    <MenuItem
       key="hide-column"
-      leftSection={<IconEyeOff />}
-      {...instance.options.slotProps?.baseMenuItemProps}
-      onClick={e => {
+      icon={<HideColumnIcon {...instance.options.slotProps?.hideColumnIcon} /> }
+      {...instance.options.slotProps?.baseMenuItem}
+      onClick={(...args) => {
         header.column.toggleVisibility();
-        instance.options.slotProps?.baseMenuItemProps?.onClick?.(e);
+        instance.options.slotProps?.baseMenuItem?.onClick?.(...args);
       }}
     >
       {instance.localization.columnMenuHideColumn}
-    </Menu.Item>,
+    </MenuItem>,
   ];
 
   const menuItems: Array<JSX.Element | JSX.Element[]> = [];
 
   if (header.column.getCanSort())
-    addToMenuItemList(sortMenuItems, menuItems);
+    addToMenuItemList(sortMenuItems, menuItems, MenuDivider, instance.options.slotProps?.baseMenuDivider);
   if (header.column.getCanHide())
-    addToMenuItemList(visibilityMenuItems, menuItems);
+    addToMenuItemList(visibilityMenuItems, menuItems, MenuDivider, instance.options.slotProps?.baseMenuDivider);
 
   if (header.column.columnDef.columnActionsMenuItems) {
     const userColumnActions = header.column.columnDef.columnActionsMenuItems({
@@ -96,36 +103,44 @@ const ColumnMenu = <TData extends unknown, TValue>({
       column: header.column, 
     });
     if (userColumnActions)
-      addToMenuItemList(userColumnActions, menuItems);
+      addToMenuItemList(userColumnActions, menuItems, MenuDivider, instance.options.slotProps?.baseMenuDivider);
   }
 
   if (menuItems.length === 0) return null;
 
   return (
-    <Menu>
-      <Menu.Target>
+    <MenuWrapper
+      {...instance.options.slotProps?.baseMenuWrapper}
+      open={menuOpen}
+      setOpen={setMenuOpen}
+      targetRef={menuTargetRef}
+    >
+      <MenuTarget
+        {...instance.options.slotProps?.baseMenuTarget}
+        ref={menuTargetRef}
+      >
         <Tooltip
-          openDelay={250}
-          withinPortal
-          {...instance.options.slotProps?.baseTooltipProps}
           label={instance.localization.columnPanelMenuLabel}
+          {...instance.options.slotProps?.baseTooltip}
         >
-          <ActionIcon
-            color="black"
-            size="xs"
-            variant="transparent"
-            {...instance.options.slotProps?.baseActionIconProps}
-            className={clsx(buttonStyles.root, instance.options.slotProps?.baseActionIconProps?.className)}
+          <IconButton
+            {...instance.options.slotProps?.baseIconButton}
+            {...instance.options.slotProps?.columnMenuIconButton}
           >
-            <IconDotsVertical />
-          </ActionIcon>
+            <ColumnMenuIcon {...instance.options.slotProps?.columnMenuIcon} />
+          </IconButton>
         </Tooltip>
-      </Menu.Target>
+      </MenuTarget>
 
-      <Menu.Dropdown>
+      <MenuContent
+        {...instance.options.slotProps?.baseMenuContent}
+        open={menuOpen}
+        setOpen={setMenuOpen}
+        targetRef={menuTargetRef}
+      >
         {menuItems}
-      </Menu.Dropdown>
-    </Menu>
+      </MenuContent>
+    </MenuWrapper>
   )
 }
 

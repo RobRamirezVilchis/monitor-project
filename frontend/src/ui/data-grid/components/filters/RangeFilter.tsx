@@ -3,7 +3,8 @@ import { RowData } from "@tanstack/react-table";
 
 import { useDebounce } from "@/hooks/shared";
 import { DataGridInstance, Header } from "../../types";
-import { NumberInput } from "@mantine/core";
+import { getSlotOrNull } from "../../utils/slots";
+import { getInputValue } from "../../utils/getInputValue";
 
 interface RangeFilterProps<TData extends RowData, TValue> {
   header: Header<TData, TValue>;
@@ -26,6 +27,8 @@ const RangeFilter = <TData extends RowData, TValue>({
 
   const [internalValue, setInternalValue] = useState<[string | number, string | number]>([min, max]);
 
+  const NumberInput = getSlotOrNull(instance.options.slots?.baseNumberInput);
+
   return (
     <div
       style={{
@@ -36,35 +39,37 @@ const RangeFilter = <TData extends RowData, TValue>({
       }}
     >
       <NumberInput
-        {...instance.options.slotProps?.baseNumberInputProps}
+        {...instance.options.slotProps?.baseNumberInput}
         placeholder={header.column.columnDef.filterProps?.placeholder 
           || instance.localization.filterMinPlaceholder
         }
         value={internalValue?.[0] ?? ""} 
-        onChange={value => { 
+        onChange={(valueOrEvent, ...args) => {
+          const value = getInputValue<string | number>(valueOrEvent);
           setInternalValue(p => {
             const newMinMax: [string | number, string | number] = [value, p?.[1]];
             debounce(newMinMax);
             return newMinMax;
           });
-          instance.options.slotProps?.baseNumberInputProps?.onChange?.(value);
+          instance.options.slotProps?.baseNumberInput?.onChange?.(valueOrEvent, ...args);
         }}
         min={header.column.columnDef.filterProps?.min}
         max={header.column.columnDef.filterProps?.max}
       />
       <NumberInput 
-        {...instance.options.slotProps?.baseNumberInputProps}
+        {...instance.options.slotProps?.baseNumberInput}
         placeholder={header.column.columnDef.filterProps?.placeholder 
           || instance.localization.filterMaxPlaceholder
         }
         value={internalValue?.[1] ?? ""} 
-        onChange={value => { 
+        onChange={(valueOrEvent, ...args) => {
+          const value = getInputValue<string | number>(valueOrEvent);
           setInternalValue(p => {
             const newMinMax: [string | number, string | number] = [p?.[0], value];
             debounce(newMinMax);
             return newMinMax;
           });
-          instance.options.slotProps?.baseNumberInputProps?.onChange?.(value);
+          instance.options.slotProps?.baseNumberInput?.onChange?.(valueOrEvent, ...args);
         }}
         min={header.column.columnDef.filterProps?.min}
         max={header.column.columnDef.filterProps?.max}

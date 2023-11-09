@@ -3,7 +3,8 @@ import { RowData } from "@tanstack/react-table";
 
 import { useDebounce } from "@/hooks/shared";
 import { DataGridInstance, Header } from "../../types";
-import { TagsInput } from "@mantine/core";
+import { getSlotOrNull } from "../../utils/slots";
+import { getInputValue } from "../../utils/getInputValue";
 
 interface MultiAutocompleteFilterProps<TData extends RowData, TValue> {
   instance: DataGridInstance<TData>;
@@ -23,17 +24,20 @@ const MultiAutocompleteFilter = <TData extends RowData, TValue>({
   });
   const [internalValue, setInternalValue] = useState<string[]>(columnFilterValue);
 
+  const MultiAutocomplete = getSlotOrNull(instance.options.slots?.baseMultiAutocomplete);
+
   return (
-    <TagsInput
-      {...instance.options.slotProps?.baseTagsInputProps}
+    <MultiAutocomplete
+      {...instance.options.slotProps?.baseMultiAutocomplete}
       placeholder={header.column.columnDef.filterProps?.placeholder 
         || instance.localization.filterByPlaceholder(header.column)
       }
       value={internalValue}
-      onChange={(value) => {
+      onChange={(valueOrEvent, ...args) => {
+        const value = getInputValue<string[]>(valueOrEvent);
         setInternalValue(value);
         debounce(value);
-        instance.options.slotProps?.baseTagsInputProps?.onChange?.(value);
+        instance.options.slotProps?.baseMultiAutocomplete?.onChange?.(valueOrEvent, ...args);
       }}
       data={header.column.columnDef.filterProps?.options ?? []}
     />

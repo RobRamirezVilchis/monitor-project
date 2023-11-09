@@ -1,18 +1,9 @@
 import { RowData } from "@tanstack/react-table";
-import { ActionIcon, Select, Tooltip } from "@mantine/core";
-import clsx from "clsx";
-
-import buttonStyles from "./BaseButton.module.css";
+import { useMemo } from "react";
 
 import { DataGridInstance } from "../types";
-
-import { 
-  IconChevronLeft,
-  IconChevronsLeft, 
-  IconChevronRight,
-  IconChevronsRight,
-} from "@tabler/icons-react";
-import { useMemo } from "react";
+import { getSlotOrNull } from "../utils/slots";
+import { getInputValue } from "../utils/getInputValue";
 
 export interface GridPaginationProps<TData extends RowData> {
   instance: DataGridInstance<TData>;
@@ -25,6 +16,15 @@ const GridPagination = <TData extends RowData>({
   const pagination = instance.getState().pagination;
   const pageCount = instance.getPageCount();
 
+  const Tooltip =  getSlotOrNull(instance.options.slots?.baseTooltip);
+  const IconButton = getSlotOrNull(instance.options.slots?.baseIconButton);
+  const Select = getSlotOrNull(instance.options.slots?.baseSelect);
+  
+  const FirstPageIcon    = getSlotOrNull(instance.options.slots?.firstPageIcon);
+  const PreviousPageIcon = getSlotOrNull(instance.options.slots?.previousPageIcon);
+  const NextPageIcon     = getSlotOrNull(instance.options.slots?.nextPageIcon);
+  const LastPageIcon     = getSlotOrNull(instance.options.slots?.lastPageIcon);
+
   const rppOptions = useMemo(
     () => instance.options.pageSizeOptions.map(x => x.toString()), 
     [instance.options.pageSizeOptions]
@@ -36,12 +36,13 @@ const GridPagination = <TData extends RowData>({
         <span>{instance.localization.paginationLabelRowsPerPage}</span>
         <span className="w-20">
           <Select
-            {...instance.options.slotProps?.baseSelectProps}
+            {...instance.options.slotProps?.baseSelect}
             data={rppOptions}
             value={pagination.pageSize.toString()}
-            onChange={(value) => {
+            onChange={(valueOrEvent, ...args) => {
+              const value = getInputValue<string>(valueOrEvent);
               value !== null && instance.setPageSize(Number(value));
-              instance.options.slotProps?.baseSelectProps?.onChange?.(value);
+              instance.options.slotProps?.baseSelect?.onChange?.(valueOrEvent, ...args);
             }}
           />
         </span>
@@ -49,37 +50,29 @@ const GridPagination = <TData extends RowData>({
 
       <div className="flex items-center gap-1">
         <Tooltip label={instance.localization.paginationFirstPage}>
-          <ActionIcon
-            color="black"
-            variant="transparent"
-            radius="xl"
+          <IconButton
             disabled={pagination.pageIndex === 0}
-            {...instance.options.slotProps?.baseActionIconProps}
-            className={clsx(buttonStyles.root, instance.options?.slotProps?.baseActionIconProps?.className)}
-            onClick={e => {
+            {...instance.options.slotProps?.baseIconButton}
+            onClick={(...args) => {
               instance.setPageIndex(0);
-              instance.options.slotProps?.baseActionIconProps?.onClick?.(e);
+              instance.options.slotProps?.baseIconButton?.onClick?.(...args);
             }}
           >
-            <IconChevronsLeft />
-          </ActionIcon>
+            <FirstPageIcon {...instance.options.slotProps?.firstPageIcon}/>
+          </IconButton>
         </Tooltip>
 
         <Tooltip label={instance.localization.paginationPreviousPage}>
-          <ActionIcon
-            color="black"
-            variant="transparent"
-            radius="xl"
+          <IconButton
             disabled={!instance.getCanPreviousPage()}
-            {...instance.options.slotProps?.baseActionIconProps}
-            className={clsx(buttonStyles.root, instance.options?.slotProps?.baseActionIconProps?.className)}
-            onClick={e => {
+            {...instance.options.slotProps?.baseIconButton}
+            onClick={(...args) => {
               instance.previousPage();
-              instance.options.slotProps?.baseActionIconProps?.onClick?.(e);
+              instance.options.slotProps?.baseIconButton?.onClick?.(...args);
             }}
           >
-            <IconChevronLeft />
-          </ActionIcon>
+            <PreviousPageIcon {...instance.options.slotProps?.previousPageIcon} />
+          </IconButton>
         </Tooltip>
 
         <span>
@@ -93,37 +86,29 @@ const GridPagination = <TData extends RowData>({
         </span>
 
         <Tooltip label={instance.localization.paginationNextPage}>
-          <ActionIcon
-            color="black"
-            variant="transparent"
-            radius="xl"
+          <IconButton
             disabled={!instance.getCanNextPage()}
-            {...instance.options.slotProps?.baseActionIconProps}
-            className={clsx(buttonStyles.root, instance.options?.slotProps?.baseActionIconProps?.className)}
-            onClick={e => {
+            {...instance.options.slotProps?.baseIconButton}
+            onClick={(...args) => {
               instance.nextPage();
-              instance.options.slotProps?.baseActionIconProps?.onClick?.(e);
+              instance.options.slotProps?.baseIconButton?.onClick?.(...args);
             }}
           >
-            <IconChevronRight />
-          </ActionIcon>
+            <NextPageIcon {...instance.options.slotProps?.nextPageIcon} />
+          </IconButton>
         </Tooltip>
 
         <Tooltip label={instance.localization.paginationLastPage}>
-          <ActionIcon
-            color="black"
-            variant="transparent"
-            radius="xl"
+          <IconButton
             disabled={pagination.pageIndex === pageCount - 1}
-            {...instance.options.slotProps?.baseActionIconProps}
-            className={clsx(buttonStyles.root, instance.options?.slotProps?.baseActionIconProps?.className)}
-            onClick={e => {
+            {...instance.options.slotProps?.baseIconButton}
+            onClick={(...args) => {
               instance.setPageIndex(pageCount - 1);
-              instance.options.slotProps?.baseActionIconProps?.onClick?.(e);
+              instance.options.slotProps?.baseIconButton?.onClick?.(...args);
             }}
           >
-            <IconChevronsRight />
-          </ActionIcon>
+            <LastPageIcon {...instance.options.slotProps?.lastPageIcon} />
+          </IconButton>
         </Tooltip>
       </div>
     </div>

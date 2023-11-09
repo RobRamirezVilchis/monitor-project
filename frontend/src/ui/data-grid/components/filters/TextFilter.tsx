@@ -3,7 +3,8 @@ import { RowData } from "@tanstack/react-table";
 
 import { useDebounce } from "@/hooks/shared";
 import { DataGridInstance, Header } from "../../types";
-import { TextInput } from "@mantine/core";
+import { getSlotOrNull } from "../../utils/slots";
+import { getInputValue } from "../../utils/getInputValue";
 
 interface TextFilterProps<TData extends RowData, TValue> {
   instance: DataGridInstance<TData>;
@@ -23,17 +24,20 @@ const TextFilter = <TData extends RowData, TValue>({
   });
   const [internalValue, setInternalValue] = useState<string>(columnFilterValue);
 
+  const TextInput = getSlotOrNull(instance.options.slots?.baseTextInput);
+
   return (
     <TextInput
-      {...instance.options.slotProps?.baseTextInputProps}
+      {...instance.options.slotProps?.baseTextInput}
       placeholder={header.column.columnDef.filterProps?.placeholder 
         || instance.localization.filterByPlaceholder(header.column)
       }
       value={internalValue}
-      onChange={(e) => {
-        setInternalValue(e.target.value);
-        debounce(e.target.value);
-        instance.options.slotProps?.baseTextInputProps?.onChange?.(e);
+      onChange={(valueOrEvent, ...args) => {
+        const value = getInputValue<string>(valueOrEvent);
+        setInternalValue(value);
+        debounce(value);
+        instance.options.slotProps?.baseTextInput?.onChange?.(valueOrEvent, ...args);
       }}
     />
   );

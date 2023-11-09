@@ -1,18 +1,15 @@
 import { RowData } from "@tanstack/react-table";
-import { ActionIcon, Checkbox, Tooltip } from "@mantine/core";
-import clsx from "clsx";
-
-import buttonStyles from "./components/BaseButton.module.css";
 
 import { ColumnDef, DataGridOptions } from "./types";
-
-import { IconChevronDown, IconChevronUp } from "@tabler/icons-react";
+import { getSlotOrNull } from "./utils/slots";
 
 export const ROW_SELECTION_COLUMN_ID = "__row_selection__";
 export const EXPANDABLE_COLUMN_ID = "__expandable__";
 export const ROW_NUMBER_COLUMN_ID = "__row_number__";
 
 export function createRowSelectionColumnDef<TData extends RowData>(options?: DataGridOptions<TData>): ColumnDef<TData> {
+  const Checkbox = getSlotOrNull(options?.slots?.baseCheckbox);
+
   return {
     id: ROW_SELECTION_COLUMN_ID,
     hideFromColumnsMenu: true,
@@ -26,22 +23,22 @@ export function createRowSelectionColumnDef<TData extends RowData>(options?: Dat
     enableHiding: false,
     header: (ctx) => (
       <Checkbox 
-        {...options?.slotProps?.baseCheckboxProps}
+        {...options?.slotProps?.baseCheckbox}
         checked={ctx.table.getIsAllRowsSelected()}
         indeterminate={ctx.table.getIsSomeRowsSelected()}
         onChange={e => {
           ctx.table.toggleAllRowsSelected();
-          options?.slotProps?.baseCheckboxProps?.onChange?.(e);
+          options?.slotProps?.baseCheckbox?.onChange?.(e);
         }}
       />
     ),
     cell: (ctx) => (
       <Checkbox 
-        {...options?.slotProps?.baseCheckboxProps}
+        {...options?.slotProps?.baseCheckbox}
         checked={ctx.row.getIsSelected()}
         onChange={e => {
           ctx.row.toggleSelected();
-          options?.slotProps?.baseCheckboxProps?.onChange?.(e);
+          options?.slotProps?.baseCheckbox?.onChange?.(e);
         }}
       />
     )
@@ -49,6 +46,12 @@ export function createRowSelectionColumnDef<TData extends RowData>(options?: Dat
 }
 
 export function createExpandableColumnDef<TData extends RowData>(options?: DataGridOptions<TData>): ColumnDef<TData> {
+  const ExpandIcon   = options?.slots?.expandIcon;
+  const CollapseIcon = options?.slots?.collapseIcon;
+
+  const Tooltip =  getSlotOrNull(options?.slots?.baseTooltip);
+  const IconButton = getSlotOrNull(options?.slots?.baseIconButton);
+
   return  {
     id: EXPANDABLE_COLUMN_ID,
     hideFromColumnsMenu: true,
@@ -61,13 +64,15 @@ export function createExpandableColumnDef<TData extends RowData>(options?: DataG
     enableColumnActions: false,
     enableHiding: false,
     headerStyles: {
-      label: {
+      root: { 
+        padding: 0, 
         display: "grid",
         placeItems: "center",
       },
     },
     cellStyles: {
-      content: {
+      root: { 
+        padding: 0,
         display: "grid",
         placeItems: "center",
       },
@@ -82,24 +87,19 @@ export function createExpandableColumnDef<TData extends RowData>(options?: DataG
             : options?.localization?.expandAllRowsLabel
           }
         >
-          <ActionIcon 
-            color="black"
-            variant="transparent"
-            radius="xl"
-            size="sm"
-            {...options?.slotProps?.baseActionIconProps}
-            className={clsx(buttonStyles.root, options?.slotProps?.baseActionIconProps?.className)}
+          <IconButton 
+            {...options?.slotProps?.baseIconButton}
             onClick={e => {
               ctx.table.toggleAllRowsExpanded();
-              options?.slotProps?.baseActionIconProps?.onClick?.(e);
+              options?.slotProps?.baseIconButton?.onClick?.(e);
             }}
           >
             {expanded ? (
-              <IconChevronUp />
+              (CollapseIcon ? <CollapseIcon {...options?.slotProps?.expandIcon} /> : null)
             ) : (
-              <IconChevronDown />
+              (ExpandIcon ? <ExpandIcon {...options?.slotProps?.collapseIcon} /> : null)
             )}
-          </ActionIcon>
+          </IconButton>
         </Tooltip>
       );
     },
@@ -113,28 +113,23 @@ export function createExpandableColumnDef<TData extends RowData>(options?: DataG
             : options?.localization?.expandRowLabel
           }
         >
-          <ActionIcon 
-            color="black"
-            variant="transparent"
-            radius="xl"
-            size="sm"
-            {...options?.slotProps?.baseActionIconProps}
-            className={clsx(buttonStyles.root, options?.slotProps?.baseActionIconProps?.className)}
+          <IconButton 
+            {...options?.slotProps?.baseIconButton}
             onClick={e => {
-              const expanded = cell.row.getIsExpanded();
-              cell.table.toggleAllRowsExpanded(false);
-              if (!expanded)
+              // const expanded = cell.row.getIsExpanded();
+              // cell.table.toggleAllRowsExpanded(false);
+              // if (!expanded)
                 cell.row.toggleExpanded();
 
-              options?.slotProps?.baseActionIconProps?.onClick?.(e);
+              options?.slotProps?.baseIconButton?.onClick?.(e);
             }}
           >
             {expanded ? (
-              <IconChevronUp />
+              (CollapseIcon ? <CollapseIcon {...options?.slotProps?.expandIcon} /> : null)
             ) : (
-              <IconChevronDown />
+              (ExpandIcon ? <ExpandIcon {...options?.slotProps?.collapseIcon} /> : null)
             )}
-          </ActionIcon>
+          </IconButton>
         </Tooltip>
       );
     },

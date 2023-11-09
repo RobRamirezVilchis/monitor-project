@@ -1,13 +1,8 @@
-import { ActionIcon, Tooltip } from "@mantine/core"
 import { useDraggable } from "@dnd-kit/core";
 import { RowData } from "@tanstack/react-table";
-import clsx from "clsx";
-
-import buttonStyles from "./BaseButton.module.css";
 
 import { DataGridInstance } from "../types";
-
-import { IconGripHorizontal } from "@tabler/icons-react";
+import { getSlotOrNull } from "../utils/slots";
 
 export interface ColumnDragHandleProps<TData extends RowData> {
   instance: DataGridInstance<TData>;
@@ -18,6 +13,11 @@ const ColumnDragHandle = <TData extends RowData>({
   instance,
   draggableCtx,
 }: ColumnDragHandleProps<TData>) => {
+  const ColumnDragHandleIcon = getSlotOrNull(instance.options.slots?.columnDragHandleIcon);
+
+  const Tooltip =  getSlotOrNull(instance.options.slots?.baseTooltip);
+  const IconButton = getSlotOrNull(instance.options.slots?.baseIconButton);
+
   return (
     <span
       // Stop propagation of touch events to prevent scrolling
@@ -28,25 +28,26 @@ const ColumnDragHandle = <TData extends RowData>({
         display: "inline-flex",
       }}
     >
-      <Tooltip 
-        openDelay={250}
-        withinPortal
-        {...instance.options.slotProps?.baseTooltipProps}
+      <Tooltip
+        {...instance.options.slotProps?.baseTooltip}
         label={instance.localization.columnPanelDragHandleLabel}
       >
-        <ActionIcon 
-          color="black"
-          size="xs"
-          variant="transparent"
-          {...instance.options.slotProps?.baseActionIconProps}
-          className={clsx(buttonStyles.root, instance.options.slotProps?.baseActionIconProps?.className)}
+        <span
           ref={draggableCtx.setNodeRef}
+          style={{
+            display: "inline-flex",
+          }}
           {...draggableCtx.listeners}
           {...draggableCtx.attributes}
           suppressHydrationWarning
         >
-          <IconGripHorizontal />
-        </ActionIcon>
+          <IconButton 
+            {...instance.options.slotProps?.baseIconButton}
+            {...instance.options.slotProps?.columnMenuIconButton}
+          >
+            {<ColumnDragHandleIcon {...instance.options.slotProps?.columnDragHandleIcon} />}
+          </IconButton>
+        </span>
       </Tooltip>
     </span>
   )

@@ -15,13 +15,6 @@ export interface DataGridBodyProps<TData extends unknown> {
   style?: CSSProperties;
 }
 
-type FlexTracking = Record<string, { 
-  flex: number; 
-  minSize: number;
-  size: number;
-  maxSize: number;
-}>;
-
 const DataGridBody = <TData extends unknown>({
   instance, 
   ready,
@@ -114,7 +107,7 @@ const DataGridBody = <TData extends unknown>({
       {!instance.getState().loading && instance.getRowModel().rows.length === 0 ? (
         <div className={clsx("DataGrid-overlay DataGrid-overlayEmpty", styles.overlay)}>
           {instance.options.slots?.noRowsOverlay ? (
-            instance.options.slots.noRowsOverlay()
+            <instance.options.slots.noRowsOverlay instance={instance} {...instance.options.slotProps?.noRowsOverlay} />
           ) : (
             <NoRowsOverlay />
           )}

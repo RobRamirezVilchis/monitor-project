@@ -1,16 +1,7 @@
 import { RowData } from "@tanstack/react-table";
-import { ActionIcon, Tooltip } from "@mantine/core";
-import clsx from "clsx";
-
-import buttonStyles from "../components/BaseButton.module.css";
 
 import { DataGridInstance } from "../types";
-
-import { 
-  IconBaselineDensitySmall, 
-  IconBaselineDensityMedium, 
-  IconBaselineDensityLarge,
-} from "@tabler/icons-react";
+import { getSlotOrNull } from "../utils/slots";
 
 export interface ToolbarDensityToggleProps<TData extends RowData> {
   instance: DataGridInstance<TData>;
@@ -19,27 +10,29 @@ export interface ToolbarDensityToggleProps<TData extends RowData> {
 const ToolbarDensityToggle = <TData extends RowData>({
   instance,
 }: ToolbarDensityToggleProps<TData>) => {
+  const DensityCompactIcon     = getSlotOrNull(instance.options.slots?.densityCompactIcon);
+  const DensityNormalIcon      = getSlotOrNull(instance.options.slots?.densityNormalIcon);
+  const DensityComfortableIcon = getSlotOrNull(instance.options.slots?.densityComfortableIcon);
+
+  const Tooltip    = getSlotOrNull(instance.options.slots?.baseTooltip);
+  const IconButton = getSlotOrNull(instance.options.slots?.baseIconButton);
+
   return (
     <Tooltip 
-      openDelay={250}
-      withinPortal 
-      {...instance.options.slotProps?.baseTooltipProps}
+      {...instance.options.slotProps?.baseTooltip}
       label={instance.localization.toolbarToggleDensity}
     >
-      <ActionIcon
-        color="black"
-        variant="transparent"
-        {...instance.options.slotProps?.baseActionIconProps}
-        className={clsx(buttonStyles.root, instance.options.slotProps?.baseActionIconProps?.className)}
-        onClick={e => {
+      <IconButton
+        {...instance.options.slotProps?.baseIconButton}
+        onClick={(...args) => {
           instance.toggleDensity()
-          instance.options.slotProps?.baseActionIconProps?.onClick?.(e);
+          instance.options.slotProps?.baseIconButton?.onClick?.(...args);
         }}
       >
-        {instance.getState().density === "compact" && <IconBaselineDensitySmall />}
-        {instance.getState().density === "normal" && <IconBaselineDensityMedium />}
-        {instance.getState().density === "comfortable" && <IconBaselineDensityLarge />}
-      </ActionIcon>
+        {instance.getState().density === "compact"     ? <DensityCompactIcon {...instance.options.slotProps?.densityCompactIcon} /> : null}
+        {instance.getState().density === "normal"      ? <DensityNormalIcon {...instance.options.slotProps?.densityNormalIcon} /> : null}
+        {instance.getState().density === "comfortable" ? <DensityComfortableIcon {...instance.options.slotProps?.densityComfortableIcon} /> : null}
+      </IconButton>
     </Tooltip>
   )
 }

@@ -37,7 +37,7 @@ const DataGridFooter = <TData extends RowData>({
           style={instance.options.styles?.footer?.pagination}
         >
           {instance.options.slots?.pagination 
-          ? instance.options.slots.pagination({ instance }) 
+          ? <instance.options.slots.pagination instance={instance} /> 
           : <GridPagination instance={instance} />}
         </div>
       ) : null}

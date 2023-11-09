@@ -1,16 +1,7 @@
 import { RowData } from "@tanstack/react-table";
-import { ActionIcon, Tooltip } from "@mantine/core";
-import clsx from "clsx";
-
-import buttonStyles from "../components/BaseButton.module.css";
 
 import { DataGridInstance } from "../types";
-
-import { 
-  IconMaximize,
-  IconMinimize,
-} from "@tabler/icons-react";
-
+import { getSlotOrNull } from "../utils/slots";
 
 export interface ToolbarFullscreenToggleProps<TData extends RowData> {
   instance: DataGridInstance<TData>;
@@ -19,25 +10,28 @@ export interface ToolbarFullscreenToggleProps<TData extends RowData> {
 const ToolbarFullscreenToggle = <TData extends RowData>({
   instance,
 }: ToolbarFullscreenToggleProps<TData>) => {
+  const FullscreenEnterIcon = getSlotOrNull(instance.options.slots?.fullscreenEnterIcon);
+  const FullscreenExitIcon  = getSlotOrNull(instance.options.slots?.fullscreenExitIcon);
+
+  const Tooltip    = getSlotOrNull(instance.options.slots?.baseTooltip);
+  const IconButton = getSlotOrNull(instance.options.slots?.baseIconButton);
+
   return (
     <Tooltip 
-      openDelay={250}
-      withinPortal 
-      {...instance.options.slotProps?.baseTooltipProps}
+      {...instance.options.slotProps?.baseTooltip}
       label={instance.localization.toolbarToggleFullscreen}
     >
-      <ActionIcon
-        color="black"
-        variant="transparent"
-        {...instance.options.slotProps?.baseActionIconProps}
-        className={clsx(buttonStyles.root, instance.options.slotProps?.baseActionIconProps?.className)}
-        onClick={e => {
+      <IconButton
+        {...instance.options.slotProps?.baseIconButton}
+        onClick={(...args) => {
           instance.setFullscreen(!instance.getState().fullscreen);
-          instance.options.slotProps?.baseActionIconProps?.onClick?.(e);
+          instance.options.slotProps?.baseIconButton?.onClick?.(...args);
         }}
       >
-        {instance.getState().fullscreen ? <IconMinimize /> : <IconMaximize />}
-      </ActionIcon>
+        {instance.getState().fullscreen 
+        ? <FullscreenExitIcon  {...instance.options.slotProps?.fullscreenExitIcon} />  
+        : <FullscreenEnterIcon {...instance.options.slotProps?.fullscreenEnterIcon} />}
+      </IconButton>
     </Tooltip>
   );
 }

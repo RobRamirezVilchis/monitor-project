@@ -1,5 +1,3 @@
-import { Loader } from "@mantine/core";
-
 const SpinnerLoadingOverlay = () => {
 
   return (
@@ -12,7 +10,7 @@ const SpinnerLoadingOverlay = () => {
         height: "100%",
       }}
     >
-      <Loader />
+      Loading...
     </div>
   );
 }

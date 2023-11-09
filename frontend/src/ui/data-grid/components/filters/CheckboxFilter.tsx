@@ -1,7 +1,7 @@
 import { RowData } from "@tanstack/react-table";
 
 import { DataGridInstance, Header } from "../../types";
-import { Checkbox } from "@mantine/core";
+import { getSlotOrNull } from "../../utils/slots";
 
 interface CheckboxFilterProps<TData extends RowData, TValue> {
   instance: DataGridInstance<TData>;
@@ -14,18 +14,20 @@ const CheckboxFilter = <TData extends RowData, TValue>({
 }: CheckboxFilterProps<TData, TValue>) => {
   const columnFilterValue = header.column.getFilterValue() as boolean | undefined;
 
+  const Checkbox = getSlotOrNull(instance.options.slots?.baseCheckbox);
+
   return (
     <Checkbox
-      {...instance.options.slotProps?.baseCheckboxProps}
+      {...instance.options.slotProps?.baseCheckbox}
       label={header.column.columnDef.filterProps?.label
         || instance.localization.filterByCheckboxLabel(columnFilterValue, header.column)
       }
       indeterminate={columnFilterValue === undefined}
       checked={columnFilterValue ?? false}
-      onChange={e => {
-        instance.options.slotProps?.baseCheckboxProps?.onChange?.(e);
+      onChange={(...args) => {
+        instance.options.slotProps?.baseCheckbox?.onChange?.(...args);
       }}
-      onClick={e => {
+      onClick={(...args) => {
         const prevValue = columnFilterValue;
         let newValue;
         switch (prevValue) {
@@ -34,7 +36,7 @@ const CheckboxFilter = <TData extends RowData, TValue>({
           case false    : newValue = undefined; break;
         }
         header.column.setFilterValue(newValue);
-        instance.options.slotProps?.baseCheckboxProps?.onClick?.(e);
+        instance.options.slotProps?.baseCheckbox?.onClick?.(...args);
       }}
     />
   );

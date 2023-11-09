@@ -3,7 +3,8 @@ import { RowData } from "@tanstack/react-table";
 
 import { useDebounce } from "@/hooks/shared";
 import { DataGridInstance, Header } from "../../types";
-import { Autocomplete } from "@mantine/core";
+import { getInputValue } from "../../utils/getInputValue";
+import { getSlotOrNull } from "../../utils/slots";
 
 interface AutocompleteFilterProps<TData extends RowData, TValue> {
   instance: DataGridInstance<TData>;
@@ -23,17 +24,20 @@ const AutocompleteFilter = <TData extends RowData, TValue>({
   });
   const [internalValue, setInternalValue] = useState<string>(columnFilterValue);
 
+  const Autocomplete = getSlotOrNull(instance.options.slots?.baseAutocomplete);
+
   return (
     <Autocomplete
-      {...instance.options.slotProps?.baseAutocompleteProps}
+      {...instance.options.slotProps?.baseAutocomplete}
       placeholder={header.column.columnDef.filterProps?.placeholder 
         || instance.localization.filterByPlaceholder(header.column)
       }
       value={internalValue}
-      onChange={(value) => {
+      onChange={(valueOrEvent, ...args) => {
+        const value = getInputValue<string>(valueOrEvent);
         setInternalValue(value);
         debounce(value);
-        instance.options.slotProps?.baseAutocompleteProps?.onChange?.(value);
+        instance.options.slotProps?.baseAutocomplete?.onChange?.(valueOrEvent, ...args);
       }}
       data={header.column.columnDef.filterProps?.options ?? []}
     />
