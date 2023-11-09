@@ -1,33 +1,41 @@
 "use client";
 
 import { Button, Menu } from "@mantine/core";
+import clsx from "clsx";
 
 import dataGridExampleStyles from "./DataGridExample.module.css";
 
 import { exampleData, exampleData2, ExampleData, ExampleData2 } from "./Data";
-import { ColumnDef } from "@/ui/data-grid/types";
+import { ColumnDef, SlotOverridesSignature } from "@/ui/data-grid/types";
 import DataGrid from "@/ui/data-grid/DataGrid";
-import useDataGrid from "@/ui/data-grid/useDataGrid";
+import { useDataGrid } from "@/ui/mantine-data-grid/useDataGrid";
 import { LoadingOverlay as MLoadingOverlay } from "@mantine/core";
 import { es } from "@/ui/data-grid/locales/es";
 
 import { Icon3dRotate } from "@tabler/icons-react";
 import { useEffect, useRef, useState } from "react";
-import { RowSelectionState } from "@tanstack/react-table";
+import { ColumnSizingState, RowSelectionState } from "@tanstack/react-table";
 import ProgressLoadingOverlay from "@/ui/data-grid/components/ProgressLoadingOverlay";
 
-const data = exampleData.slice(0, 100);
+const data = exampleData.slice(0, 10);
 const data2 = exampleData2.slice(0, 100);
 
 const LoadingOverlay = () => <div className="bg-black/20 h-full grid place-items-center text-blue-600">Loading...</div>;
 
 // TODO: Update toolbar controls to be hidden when features are turned off
 
+interface CustomProps {
+  lastPageIcon: {
+    myCustomProp?: string;
+  },
+}
+
 const DataGridExamplePage = () => {
   const [loading, setLoading] = useState(false);
   const [selectedRows, setSelectedRows] = useState<RowSelectionState>({});
+  const [columnSizing, setColumnSizing] = useState<ColumnSizingState>({});
 
-  const grid = useDataGrid<ExampleData2>({
+  const grid = useDataGrid<ExampleData2, CustomProps>({
     localization: es,
     data: data2,
     columns: cols2,
@@ -36,8 +44,9 @@ const DataGridExamplePage = () => {
  
     enableHiding: true,
     enableSorting: true,
-    enableExpanding: false,
+    enableExpanding: true,
     getRowCanExpand: (row) => true,
+    renderSubComponent: (row) => <div>Subcomponent</div>,
     enableFilters: true,
     enableGlobalFilter: true,
     enableColumnFilters: true,
@@ -47,6 +56,10 @@ const DataGridExamplePage = () => {
     enablePagination: true,
     enableRowNumbering: true,
     rowNumberingMode: "static",
+    enableColumnActions: true,
+
+    // enableRowsVirtualization: true,
+    // enableColumnsVirtualization: true,
 
     globalFilterFn: "fuzzy",
     sortDescFirst: false,
@@ -83,16 +96,34 @@ const DataGridExamplePage = () => {
       columnFootersCell: {
         content: "text-sm !font-normal",
       },
-      cell: {
-        focused: "bg-red-100",
+      // cell: {
+      //   focused: "bg-red-100",
+      //   content: "text-sm",
+      // },
+      cell: cell => ({
+        focused: "!bg-red-100",
         content: "text-sm",
-      },
-      row: {
+        root: cell?.row.original.id === 2 && cell.column.id === "id" ? "bg-green-200" : undefined,
+      }),
+      // row: {
+      //   selected: "!bg-red-200",
+      // },
+      row: row => ({
+        root: clsx("!border-none", {
+          "bg-neutral-50": row.original.id % 2 === 0,
+          "bg-neutral-200": row.original.id % 2 !== 0,
+        }),
         selected: "!bg-red-200",
-      },
+      })
     },
-    slots: {
-      loadingOverlay: LoadingOverlay,
+    // slots: {
+    //   loadingOverlay: LoadingOverlay,
+    // },
+    slotProps: {
+      columnMenuIconButton: {
+        color: "white",
+        radius: "sm",
+      },
     },
     filterFns: {
       "test": () => false,
@@ -145,6 +176,18 @@ const DataGridExamplePage = () => {
         >
           Print Table
         </Button>
+
+        <Button
+          onClick={() => {
+            grid.setColumnSizing(prev => ({
+              ...prev,
+              "first_name": 300,
+              "last_name": 300,
+            }))
+          }}
+        >
+          Resize
+        </Button>
       </div>
     </div>
   );
@@ -192,6 +235,7 @@ const cols: ColumnDef<ExampleData>[] = [
   },
   {
     header: "Name",
+    size: 1000,
     columns: [
       {
         accessorKey: "first_name",
@@ -317,6 +361,9 @@ const cols2: ColumnDef<ExampleData2>[] = [
     header: () => "Approved",
     size: 150,
     filterVariant: "checkbox",
+    cellClassNames: cell => ({
+      root: cell?.getValue<boolean>() ? "bg-green-200" : "bg-red-200",
+    })
   },
   {
     accessorKey: "color",
