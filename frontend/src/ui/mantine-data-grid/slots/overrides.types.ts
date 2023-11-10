@@ -29,6 +29,8 @@ import type {
   PopoverContentProps, 
   PopoverTargetProps, 
 } from "./Popover";
+import type { NoResultsOverlayProps } from "./NoResultsOverlay";
+import type { NoRowsOverlayProps } from "./NoRowsOverlay";
 
 export interface MantineSlotOverrides {
   baseAutocomplete: AutocompleteProps;
@@ -56,6 +58,8 @@ export interface MantineSlotOverrides {
   basePopoverTarget: PopoverTargetProps;
 
   loadingOverlay: LoadingOverlayProps;
+  noResultsOverlay: NoResultsOverlayProps;
+  noRowsOverlay: NoRowsOverlayProps;
 
   sortedAscendingIcon: TablerIconsProps;
   sortedDescendingIcon: TablerIconsProps;

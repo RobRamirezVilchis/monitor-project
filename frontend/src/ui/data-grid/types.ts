@@ -426,6 +426,7 @@ export interface DataGridSlotBaseProps<TData extends RowData> {
   loadingOverlay        : { instance: DataGridInstance<TData> };
   noRowsOverlay         : { instance: DataGridInstance<TData> };
   noResultsOverlay      : { instance: DataGridInstance<TData> };
+  
   pagination            : { instance: DataGridInstance<TData> };
   toolbar               : { instance: DataGridInstance<TData> };
   header                : { instance: DataGridInstance<TData> };
@@ -846,11 +847,13 @@ export interface DataGridColumnFootersCellStyles {
 
 export interface DataGridBodyClassNames {
   root?: string;
+  viewport?: string;
   container?: string;
 }
 
 export interface DataGridBodyStyles {
   root?: CSSProperties;
+  viewport?: CSSProperties;
   container?: CSSProperties;
 }
 

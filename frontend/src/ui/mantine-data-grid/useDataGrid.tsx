@@ -46,6 +46,8 @@ import type { DataGridInstance, DataGridOptions, SlotOverridesSignature } from "
 import { MantineSlotOverrides } from "./slots/overrides.types";
 import { MenuWrapper, MenuContent, MenuTarget, MenuItem, MenuDivider } from "./slots/Menu";
 import { PopoverWrapper, PopoverContent, PopoverTarget } from "./slots/Popover";
+import NoResultsOverlay from "./slots/NoResultsOverlay";
+import NoRowsOverlay from "./slots/NoRowsOverlay";
 import _useDataGrid from "../data-grid/useDataGrid";
 
 export const useDataGrid = <TData extends RowData, SlotPropsOverrides extends SlotOverridesSignature = {}>({
@@ -78,7 +80,9 @@ export const useDataGrid = <TData extends RowData, SlotPropsOverrides extends Sl
       basePopoverTarget     : PopoverTarget,
       basePopoverContent    : PopoverContent,
 
-      // loadingOverlay        : LoadingOverlay,
+      loadingOverlay        : LoadingOverlay,
+      noResultsOverlay      : NoResultsOverlay,
+      noRowsOverlay         : NoRowsOverlay,
 
       sortedAscendingIcon   : IconArrowUp,
       sortedDescendingIcon  : IconArrowDown,
@@ -122,10 +126,10 @@ export const useDataGrid = <TData extends RowData, SlotPropsOverrides extends Sl
         size: "1.25rem",
         ...slotProps?.globalSearchIcon,
       },
-      // loadingOverlay: {
-      //   visible: true,
-      //   ...slotProps?.loadingOverlay,
-      // },
+      loadingOverlay: {
+        visible: true,
+        ...slotProps?.loadingOverlay,
+      },
       baseTooltip: {
         openDelay: 250,
         withinPortal: true,

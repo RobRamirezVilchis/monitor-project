@@ -11,9 +11,10 @@ import DataGridColumnHeaders from "./column-headers/DataGridColumnHeaders";
 import DataGridBody from "./body/DataGridBody";
 import DataGridColumnFooters from "./column-footers/DataGridColumnFooters";
 import DataGridFooter from "./footer/DataGridFooter";
+import DataGridOverlay from "./components/overlays/DataGridOverlay";
 import DataGridToolbar from "./toolbar/DataGridToolbar";
-import Scroll from "@/ui/data-grid/scroll/Scroll";
-import SpinnerLoadingOverlay from "@/ui/data-grid/components/SpinnerLoadingOverlay";
+import Scroll from "./scroll/Scroll";
+import LoadingOverlay from "./components/overlays/LoadingOverlay";
 
 export interface DataGridProps<TData extends RowData, SlotPropsOverrides extends SlotOverridesSignature = {}> {
   instance: DataGridInstance<TData, SlotPropsOverrides>;
@@ -134,13 +135,13 @@ const DataGrid = <TData extends RowData, SlotPropsOverrides extends SlotOverride
         />
 
         {instance.getState().loading || !ready ? (
-          <div className={clsx("DataGrid-overlay DataGrid-overlayLoading", styles.overlay)}>
+          <DataGridOverlay className="DataGridOverlay--loading">
             {instance.options.slots?.loadingOverlay ? (
               <instance.options.slots.loadingOverlay instance={instance as any} {...instance.options.slotProps?.loadingOverlay} />
             ) : (
-              <SpinnerLoadingOverlay />
+              <LoadingOverlay instance={instance as any} {...instance.options.slotProps?.loadingOverlay} />
             )}
-          </div>
+          </DataGridOverlay>
         ) : null}
       </div>
 
