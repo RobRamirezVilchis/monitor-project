@@ -125,11 +125,15 @@ class UserWhitelistService:
             if not user.groups.filter(name=group_str).exists():
                 user.groups.add(group)
 
-        return UserWhitelist.objects.create(
+        user_whitelist = UserWhitelist(
             email = email_str, 
             group = group,
             user = user
         )
+        user_whitelist.full_clean()
+        user_whitelist.save()
+        return user_whitelist
+
     
     @classmethod
     @transaction.atomic
@@ -222,4 +226,7 @@ class UserAccessService:
     @classmethod
     def log_access(cls, user):
         if not cls.has_access_today(user):
-            UserAccessLog.objects.create(user=user)
+            log = UserAccessLog(user=user)
+            log.full_clean()
+            log.save()
+            return log
