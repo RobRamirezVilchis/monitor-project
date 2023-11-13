@@ -28,6 +28,7 @@ import {
   InitialTableState as _InitialTableState,
   PaginationInstance as _PaginationInstance,
   PaginationOptions as _PaginationOptions,
+  PaginationState,
   PartialKeys,
   RequiredKeys,
   Row as _Row,
@@ -427,11 +428,11 @@ export interface DataGridSlotBaseProps<TData extends RowData> {
   noRowsOverlay         : { instance: DataGridInstance<TData> };
   noResultsOverlay      : { instance: DataGridInstance<TData> };
   
-  pagination            : { instance: DataGridInstance<TData> };
+  pagination            : { instance: DataGridInstance<TData>; pagination: PaginationState; pageInfo: PaginationPageInfo; };
   toolbar               : { instance: DataGridInstance<TData> };
   header                : { instance: DataGridInstance<TData> };
   footer                : { instance: DataGridInstance<TData> };
-  selectedRowCount      : { instance: DataGridInstance<TData> };
+  selectedRowCount      : { instance: DataGridInstance<TData>; selectedRowCount: number; };
 
   sortedAscendingIcon   : {};
   sortedDescendingIcon  : {};
@@ -724,13 +725,7 @@ export interface DataGridLocalization {
   paginationPreviousPage: string;
   paginationNextPage: string;
   paginationLabelRowsPerPage: string;
-  paginationLabelDisplayRows: (info: {
-    from: number;
-    to: number;
-    count: number;
-    page: number;
-    pageCount: number;
-  }) => string;
+  paginationLabelDisplayRows: (info: PaginationPageInfo) => string;
   
   expandRowLabel: string;
   expandAllRowsLabel: string;
@@ -746,6 +741,14 @@ export interface DataGridLocalization {
   filterByCheckboxLabel: (checked: boolean | undefined, column: Column<any, any>) => string;
   filterMinPlaceholder: string;
   filterMaxPlaceholder: string;
+}
+
+export interface PaginationPageInfo {
+  from: number;
+  to: number;
+  count: number;
+  page: number;
+  pageCount: number;
 }
 
 // Styles ----------------------------------------------------------------------

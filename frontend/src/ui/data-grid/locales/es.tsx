@@ -24,13 +24,7 @@ export const es: DataGridLocalization = {
   paginationPreviousPage: "Página anterior",
   paginationNextPage: "Página siguiente",
   paginationLabelRowsPerPage: "Filas por página",
-  paginationLabelDisplayRows: (info: {
-    from: number;
-    to: number;
-    count: number;
-    page: number;
-    pageCount: number;
-  }) => `${info.from}-${info.to} de ${info.count}`,
+  paginationLabelDisplayRows: (info) => `${info.from}-${info.to} de ${info.count}`,
 
   expandRowLabel: "Expandir fila",
   expandAllRowsLabel: "Expandir todo",

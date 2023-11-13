@@ -3,7 +3,7 @@ import clsx from "clsx";
 
 import styles from "./DataGridFooter.module.css";
 
-import type { DataGridInstance } from "../types";
+import type { DataGridInstance, PaginationPageInfo } from "../types";
 import GridPagination from "../components/GridPagination";
 
 export interface DataGridFooterProps<TData extends RowData> {
@@ -15,6 +15,18 @@ const DataGridFooter = <TData extends RowData>({
 }: DataGridFooterProps<TData>) => {
   const selectedRowModel = instance.getSelectedRowModel();
 
+  const prePagination = instance.getPrePaginationRowModel();
+  const pagination = instance.getState().pagination;
+  const pageCount = instance.getPageCount();
+
+  const paginationPageInfo: PaginationPageInfo = {
+    from: pagination.pageIndex * pagination.pageSize + 1,
+    to: Math.min((pagination.pageIndex + 1) * pagination.pageSize, instance.options.rowCount ?? prePagination.rows.length),
+    count: instance.options.rowCount ?? prePagination.rows.length,
+    page: pagination.pageIndex + 1,
+    pageCount,
+  };
+
   return (
     <div 
       className={clsx("DataGridFooter-root", styles.root, instance.options.classNames?.footer?.root)}
@@ -25,9 +37,13 @@ const DataGridFooter = <TData extends RowData>({
           className={clsx("DataGridFooter-rowSelection", styles.rowSelection, instance.options.classNames?.footer?.rowSelection)}
           style={instance.options.styles?.footer?.rowSelection}
         >
+          {instance.options.slots?.selectedRowCount? (
+            <instance.options.slots.selectedRowCount instance={instance} selectedRowCount={selectedRowModel.rows.length} {...instance.options.slotProps?.selectedRowCount} />
+          ) : (
             <span>
               {instance.localization.footerSelectedRowCount(selectedRowModel.rows.length)}
             </span>
+          )}
         </div>
       ) : null}
 
@@ -37,8 +53,8 @@ const DataGridFooter = <TData extends RowData>({
           style={instance.options.styles?.footer?.pagination}
         >
           {instance.options.slots?.pagination 
-          ? <instance.options.slots.pagination instance={instance} /> 
-          : <GridPagination instance={instance} />}
+          ? <instance.options.slots.pagination instance={instance} pagination={pagination} pageInfo={paginationPageInfo} {...instance.options.slotProps?.pagination} /> 
+          : <GridPagination instance={instance as any} pagination={pagination} pageInfo={paginationPageInfo} {...instance.options.slotProps?.pagination} />}
         </div>
       ) : null}
     </div>

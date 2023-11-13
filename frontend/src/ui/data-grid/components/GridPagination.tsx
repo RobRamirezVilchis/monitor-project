@@ -1,19 +1,17 @@
 import { RowData } from "@tanstack/react-table";
 import { useMemo } from "react";
 
-import { DataGridInstance } from "../types";
+import type { DataGridSlotBaseProps } from "../types";
 import { getSlotOrNull } from "../utils/slots";
 import { getInputValue } from "../utils/getInputValue";
 
-export interface GridPaginationProps<TData extends RowData> {
-  instance: DataGridInstance<TData>;
-}
+export type GridPaginationProps<TData extends RowData> = DataGridSlotBaseProps<TData>["pagination"];
 
 const GridPagination = <TData extends RowData>({
   instance,
+  pagination,
+  pageInfo,
 }: GridPaginationProps<TData>) => {
-  const prePagination = instance.getPrePaginationRowModel();
-  const pagination = instance.getState().pagination;
   const pageCount = instance.getPageCount();
 
   const Tooltip =  getSlotOrNull(instance.options.slots?.baseTooltip);
@@ -76,13 +74,7 @@ const GridPagination = <TData extends RowData>({
         </Tooltip>
 
         <span>
-          {instance.localization.paginationLabelDisplayRows({
-            from: pagination.pageIndex * pagination.pageSize + 1,
-            to: Math.min((pagination.pageIndex + 1) * pagination.pageSize, instance.options.rowCount ?? prePagination.rows.length),
-            count: instance.options.rowCount ?? prePagination.rows.length,
-            page: pagination.pageIndex + 1,
-            pageCount,
-          })}
+          {instance.localization.paginationLabelDisplayRows(pageInfo)}
         </span>
 
         <Tooltip label={instance.localization.paginationNextPage}>
