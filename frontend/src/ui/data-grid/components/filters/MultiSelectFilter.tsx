@@ -16,7 +16,7 @@ const MultiSelectFilter = <TData extends RowData, TValue>({
   header,
 }: MultiSelectFilterProps<TData, TValue>) => {
   const columnFilterValue = header.column.getFilterValue() as string[] ?? [];
-  const debounce = useDebounce({
+  const { debounce } = useDebounce({
     callback: useCallback((searchQuery: string[]) => {
       header.column.setFilterValue(searchQuery);
     }, [header.column]),

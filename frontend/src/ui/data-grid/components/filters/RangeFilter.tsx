@@ -18,7 +18,7 @@ const RangeFilter = <TData extends RowData, TValue>({
   const columnFilterValue = header.column.getFilterValue() as [string | number, string | number];
   const min = columnFilterValue?.[0] ?? "";
   const max = columnFilterValue?.[1] ?? "";
-  const debounce = useDebounce({
+  const { debounce } = useDebounce({
     callback: useCallback((value: [string | number, string | number]) => {
       header.column.setFilterValue(value);
     }, [header.column]),

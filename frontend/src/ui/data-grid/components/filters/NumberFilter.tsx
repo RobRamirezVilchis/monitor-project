@@ -15,7 +15,7 @@ const NumberFilter = <TData extends unknown, TValue>({
   header,
 }: NumberFilterProps<TData, TValue>) => {
   const columnFilterValue = header.column.getFilterValue() as string | number ?? "";
-  const debounce = useDebounce({
+  const { debounce } = useDebounce({
     callback: useCallback((searchQuery: string | number) => {
       header.column.setFilterValue(searchQuery);
     }, [header.column]),

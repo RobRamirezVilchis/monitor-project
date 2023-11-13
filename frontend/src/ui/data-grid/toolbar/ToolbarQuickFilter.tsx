@@ -16,7 +16,7 @@ const ToolbarQuickFilter = <TData extends unknown>({
 }: ToolbarQuickFilterProps<TData>) => {
   const ref = useRef<HTMLInputElement>(null);
   const skipDebounce = useRef(false);
-  const debounce = useDebounce({
+  const { debounce } = useDebounce({
     callback: useCallback((searchQuery: string) => {
       instance.setGlobalFilter(searchQuery);
     }, [instance]),

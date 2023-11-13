@@ -19,7 +19,7 @@ const RangeSliderFilter = <TData extends RowData, TValue>({
   const min = header.column.columnDef.filterProps?.min ?? Number(facetedMinMaxValues?.[0] ?? 0);
   const max = header.column.columnDef.filterProps?.max ?? Number(facetedMinMaxValues?.[1] ?? 100);
   const columnFilterValue = header.column.getFilterValue() as [number, number] ?? [min, max];
-  const debounce = useDebounce({
+  const { debounce } = useDebounce({
     callback: useCallback((value: [number, number]) => {
       header.column.setFilterValue(value);
     }, [header.column]),

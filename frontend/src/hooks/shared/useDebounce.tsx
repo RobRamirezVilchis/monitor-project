@@ -3,34 +3,44 @@
 import { useCallback, useRef, useEffect } from "react";
 
 export interface UseDebounceOptions<T extends unknown[]> {
-    /**
+  /**
    * Time in ms before the callback is called if the debounce 
    * function is not called before the time is elapsed.
    * @default 500
    */
-    debounceTime?: number;
-    callback: (...args: T) => void;
+  debounceTime?: number;
+  callback: (...args: T) => void;
 }
 
 export const useDebounce = <T extends unknown[]>({
   debounceTime = 500,
   callback,
 }: UseDebounceOptions<T>) => {
-  const timeout = useRef<NodeJS.Timeout | null>(null);
-
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const callbackRef = useRef(callback);
+  
   useEffect(() => {
-    return () => {
-      if (timeout.current)
-        clearTimeout(timeout.current);
-    }
-  }, []);
+    callbackRef.current = callback;
+  }, [callback]);
 
   const debounce = useCallback((...args: T) => {
-    if (timeout.current)
-      clearTimeout(timeout.current);
+    if (timeoutRef.current)
+      clearTimeout(timeoutRef.current);
 
-    timeout.current = setTimeout(() => callback(...args), debounceTime);
-  }, [timeout, debounceTime, callback]);
+    timeoutRef.current = setTimeout(() => callbackRef.current(...args), debounceTime);
+  }, [timeoutRef, debounceTime]);
 
-  return debounce;
+  const cancel = useCallback(() => {
+    if (timeoutRef.current)
+      clearTimeout(timeoutRef.current);
+  }, []);
+
+  useEffect(() => {
+    return () => cancel();
+  }, [cancel]);
+
+  return { 
+    debounce,
+    cancel
+  };
 }
