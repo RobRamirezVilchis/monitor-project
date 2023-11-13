@@ -266,7 +266,7 @@ const UsersAccessPage = () => {
         </div>
       </div>
 
-      <div className="flex-[1_0_0] overflow-y-hidden pb-1 pr-1">
+      <div className="flex-[1_0_0] overflow-y-hidden pb-1 pr-1 pl-1">
         <DataGrid instance={grid} />
       </div>
     </section>

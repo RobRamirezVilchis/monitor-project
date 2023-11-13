@@ -1,7 +1,8 @@
 import { RowData } from "@tanstack/react-table";
 
 import { DataGridInstance, Header } from "../../types";
-import { DateInput } from "@mantine/dates";
+import { getSlotOrNull } from "../../utils/slots";
+import { getInputValue } from "../../utils/getInputValue";
 
 interface DateRangeFilterProps<TData extends RowData, TValue> {
   instance: DataGridInstance<TData>;
@@ -14,6 +15,8 @@ const DateRangeFilter = <TData extends RowData, TValue>({
 }: DateRangeFilterProps<TData, TValue>) => {
   const columnFilterValue = header.column.getFilterValue() as [Date | null, Date | null] ?? [null, null];
 
+  const DateInput = getSlotOrNull(instance.options.slots?.baseDateInput);
+
   return (
     <div
       style={{
@@ -24,30 +27,30 @@ const DateRangeFilter = <TData extends RowData, TValue>({
       }}
     >
       <DateInput
-        clearable
-        {...instance.options.slotProps?.baseDateInputProps}
+        {...instance.options.slotProps?.baseDateInput}
         placeholder={header.column.columnDef.filterProps?.placeholder 
           || instance.localization.filterMinPlaceholder
         }
         value={columnFilterValue[0]}
-        onChange={value => {
+        onChange={(valueOrEvent, ...args) => {
+          const value = getInputValue<Date | null>(valueOrEvent);
           header.column.setFilterValue([value, columnFilterValue[1]]);
-          instance.options.slotProps?.baseDateInputProps?.onChange?.(value);
+          instance.options.slotProps?.baseDateInput?.onChange?.(valueOrEvent, ...args);
         }}
         minDate={header.column.columnDef.filterProps?.min}
         maxDate={header.column.columnDef.filterProps?.max}
       />
 
       <DateInput
-        clearable
-        {...instance.options.slotProps?.baseDateInputProps}
+        {...instance.options.slotProps?.baseDateInput}
         placeholder={header.column.columnDef.filterProps?.placeholder 
           || instance.localization.filterMaxPlaceholder
         }
         value={columnFilterValue[1]}
-        onChange={value => {
+        onChange={(valueOrEvent, ...args) => {
+          const value = getInputValue<Date | null>(valueOrEvent);
           header.column.setFilterValue([columnFilterValue[0], value]);
-          instance.options.slotProps?.baseDateInputProps?.onChange?.(value);
+          instance.options.slotProps?.baseDateInput?.onChange?.(valueOrEvent, ...args);
         }}
         minDate={header.column.columnDef.filterProps?.min}
         maxDate={header.column.columnDef.filterProps?.max}

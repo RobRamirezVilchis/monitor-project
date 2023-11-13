@@ -25,16 +25,22 @@ const DataGridRowCell = <TData extends RowData, TValue>({
     ? value.toString()
     : undefined;
   const columnDef = cell.column.columnDef;
+  const instanceClassNames = typeof instance.options.classNames?.cell === "function" 
+    ? instance.options.classNames?.cell(cell as any) 
+    : instance.options.classNames?.cell;
+  const colDefClassNames = typeof columnDef.cellClassNames === "function"
+    ? columnDef.cellClassNames(cell)
+    : columnDef.cellClassNames;
 
   const onClick = useCallback<MouseEventHandler<HTMLDivElement>>((e) => {
     e.currentTarget.setAttribute("tabindex", "0");
     e.currentTarget.focus();
     e.currentTarget.classList.add("DataGridRowCell--focused");
-    if (instance.options.classNames?.cell?.focused)
-      e.currentTarget.classList.add(instance.options.classNames?.cell?.focused);
+    if (instanceClassNames?.focused)
+      e.currentTarget.classList.add(instanceClassNames?.focused);
 
     instance.options.onCellClick?.(cell as any, instance, e as any);
-  }, [cell, instance]);
+  }, [cell, instance, instanceClassNames?.focused]);
 
   const onDoubleClick = useCallback<MouseEventHandler<HTMLDivElement>>((e) => {
     instance.options.onCellDoubleClick?.(cell as any, instance, e as any);
@@ -43,13 +49,13 @@ const DataGridRowCell = <TData extends RowData, TValue>({
   const onBlur = useCallback<FocusEventHandler<HTMLDivElement>>((e) => {
     e.currentTarget.setAttribute("tabindex", "-1");
     e.currentTarget.classList.remove("DataGridRowCell--focused");
-    if (instance.options.classNames?.cell?.focused)
-      e.currentTarget.classList.remove(instance.options.classNames?.cell?.focused);
-  }, [instance]);
+    if (instanceClassNames?.focused)
+      e.currentTarget.classList.remove(instanceClassNames?.focused);
+  }, [instanceClassNames?.focused]);
 
   return (
     <div
-      className={clsx("DataGridRowCell-root", styles.root, instance.options.classNames?.cell?.root, columnDef.cellClassNames?.root)}
+      className={clsx("DataGridRowCell-root", styles.root, instanceClassNames?.root, colDefClassNames?.root)}
       style={{
         ...instance.options.styles?.cell?.root,
         ...columnDef.cellStyles?.root,
@@ -65,7 +71,7 @@ const DataGridRowCell = <TData extends RowData, TValue>({
       role="cell"
     >
       <div
-        className={clsx("DataGridRowCell-content", styles.content, instance.options.classNames?.cell?.content, columnDef.cellClassNames?.content)}
+        className={clsx("DataGridRowCell-content", styles.content, instanceClassNames?.content, colDefClassNames?.content)}
         style={{
           ...instance.options.styles?.cell?.content,
           ...columnDef.cellStyles?.content,

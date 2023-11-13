@@ -24,7 +24,7 @@ const DataGridHeader = <TData extends RowData>({
     >
       {instance.options.hideToolbar ? null : 
         instance.options.slots?.toolbar ? (
-          instance.options.slots.toolbar({instance})
+          <instance.options.slots.toolbar instance={instance} {...instance.options.slotProps?.toolbar} />
         ) : (
           <>
           <div
@@ -45,7 +45,7 @@ const DataGridHeader = <TData extends RowData>({
           >
             {instance.options.hideColumnFiltersSelector
               || !instance.options.enableFilters 
-              || !instance.options.enableColumnFilters   ? null : <ToolbarFilterToggle instance={instance} />}
+              || !instance.options.enableColumnFilters  ? null : <ToolbarFilterToggle instance={instance} />}
             {instance.options.hideColumnSelector        ? null : <ToolbarColumnVisibilityToggle instance={instance} />}
             {instance.options.hideDensitySelector       ? null : <ToolbarDensityToggle instance={instance} />}
             {instance.options.hideFullscreenSelector    ? null : <ToolbarFullscreenToggle instance={instance} />}

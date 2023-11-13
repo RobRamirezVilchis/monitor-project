@@ -3,24 +3,19 @@ import clsx from "clsx";
 
 import styles from "./DataGridBody.module.css";
 
-import { useIsomorphicLayoutEffect } from "@/hooks/shared/useIsomorphicLayoutEffect";
 import type { DataGridInstance } from "../types";
-import DataGridRow from "./DataGridRow";
-import NoRowsOverlay from "../components/NoRowsOverlay";
+import { useIsomorphicLayoutEffect } from "@/hooks/shared/useIsomorphicLayoutEffect";
 import { useFlexColumns } from "../useFlexColumns";
+import DataGridRow from "./DataGridRow";
+import NoRowsOverlay from "../components/overlays/NoRowsOverlay";
+import NoResultsOverlay from "../components/overlays/NoResultsOverlay";
+import DataGridOverlay from "../components/overlays/DataGridOverlay";
 
 export interface DataGridBodyProps<TData extends unknown> {
   instance: DataGridInstance<TData>;
   ready?: boolean;
   style?: CSSProperties;
 }
-
-type FlexTracking = Record<string, { 
-  flex: number; 
-  minSize: number;
-  size: number;
-  maxSize: number;
-}>;
 
 const DataGridBody = <TData extends unknown>({
   instance, 
@@ -40,85 +35,101 @@ const DataGridBody = <TData extends unknown>({
   }, [instance.scrolls.main.horizontal, instance.scrolls.main.vertical, instance.refs.body.main.viewport]);
 
   return (
-    // Viewport
     <div
-      ref={instance.refs.body.main.viewport}
-      className={clsx("DataGridBody-root DataGridBody-viewport", styles.root, instance.options.classNames?.body?.root)}
-      style={{
-        ...instance.options.styles?.body?.root,
-        ...style,
-      }}
-      onWheel={e => {
-        instance.scrolls.main.horizontal.current?.onWheel(e);
-        instance.scrolls.main.vertical.current?.onWheel(e);
-      }}
-      onPointerDown={e => {
-        instance.scrolls.main.horizontal.current?.onPointerDown(e);
-        instance.scrolls.main.vertical.current?.onPointerDown(e);
-      }}
-      onPointerMove={e => {
-        instance.scrolls.main.horizontal.current?.onPointerMove(e);
-        instance.scrolls.main.vertical.current?.onPointerMove(e);
-      }}
-      onPointerUp={e => {
-        instance.scrolls.main.horizontal.current?.onPointerUp(e);
-        instance.scrolls.main.vertical.current?.onPointerUp(e);
-      }}
+      className={clsx("DataGridBody-root", styles.root, instance.options.classNames?.body?.root)}
     >
-      {/* Content */}
+      {/* Viewport */}
       <div
-        ref={instance.refs.body.main.content}
-        className={clsx("DataGridBody-rowsContainer", styles.rowsContainer, instance.options.classNames?.body?.container)}
+        ref={instance.refs.body.main.viewport}
+        className={clsx("DataGridBody-viewport", styles.viewport, instance.options.classNames?.body?.viewport)}
         style={{
-          ...instance.options.styles?.body?.container,
-          width: instance.options.enableColumnsVirtualization 
-            ? instance.scrolls.virtualizers.columns.current?.getTotalSize()
-            : `calc(${instance.getTotalSize()}px + var(--dg-filler-cell-width, 0))`,
-          height: instance.options.enableRowsVirtualization
-            ? instance.scrolls.virtualizers.rows.current?.getTotalSize()
-            : undefined,
+          ...instance.options.styles?.body?.viewport,
+          ...style,
         }}
-        role="rowgroup"
+        onWheel={e => {
+          instance.scrolls.main.horizontal.current?.onWheel(e);
+          instance.scrolls.main.vertical.current?.onWheel(e);
+        }}
+        onPointerDown={e => {
+          instance.scrolls.main.horizontal.current?.onPointerDown(e);
+          instance.scrolls.main.vertical.current?.onPointerDown(e);
+        }}
+        onPointerMove={e => {
+          instance.scrolls.main.horizontal.current?.onPointerMove(e);
+          instance.scrolls.main.vertical.current?.onPointerMove(e);
+        }}
+        onPointerUp={e => {
+          instance.scrolls.main.horizontal.current?.onPointerUp(e);
+          instance.scrolls.main.vertical.current?.onPointerUp(e);
+        }}
       >
-        {ready ? (
-          // Rows
-          instance.options.enableRowsVirtualization
-          ? instance.scrolls.virtualizers.rows.current?.getVirtualItems().map(virtualRow => {
-            const row = instance.getRowModel().rows[virtualRow.index];
-            return (
+        {/* Content */}
+        <div
+          ref={instance.refs.body.main.content}
+          className={clsx("DataGridBody-rowsContainer", styles.rowsContainer, instance.options.classNames?.body?.container)}
+          style={{
+            ...instance.options.styles?.body?.container,
+            width: instance.options.enableColumnsVirtualization 
+              ? instance.scrolls.virtualizers.columns.current?.getTotalSize()
+              : `calc(${instance.getTotalSize()}px + var(--dg-filler-cell-width, 0))`,
+            height: instance.options.enableRowsVirtualization
+              ? instance.scrolls.virtualizers.rows.current?.getTotalSize()
+              : undefined,
+          }}
+          role="rowgroup"
+        >
+          {ready ? (
+            // Rows
+            instance.options.enableRowsVirtualization
+            ? instance.scrolls.virtualizers.rows.current?.getVirtualItems().map(virtualRow => {
+              const row = instance.getRowModel().rows[virtualRow.index];
+              return (
+                <DataGridRow 
+                  key={row.id} 
+                  instance={instance}
+                  row={row} 
+                  rowIndex={virtualRow.index}
+                  style={{
+                    // height: virtualRow.size,
+                    position : "absolute",
+                    transform: `translateY(${virtualRow.start}px)`,
+                  }}
+                  vRowEnd={virtualRow.end}
+                />
+              )
+            }) 
+            : instance.getRowModel().rows.map((row, rowIdx) => (
               <DataGridRow 
                 key={row.id} 
                 instance={instance}
                 row={row} 
-                rowIndex={virtualRow.index}
-                style={{
-                  // height: virtualRow.size,
-                  position : "absolute",
-                  transform: `translateY(${virtualRow.start}px)`,
-                }}
-                vRowEnd={virtualRow.end}
+                rowIndex={rowIdx}
               />
-            )
-          }) 
-          : instance.getRowModel().rows.map((row, rowIdx) => (
-            <DataGridRow 
-              key={row.id} 
-              instance={instance}
-              row={row} 
-              rowIndex={rowIdx}
-            />
-          ))
-        ) : null}
+            ))
+          ) : null}
+        </div>
       </div>
 
-      {!instance.getState().loading && instance.getRowModel().rows.length === 0 ? (
-        <div className={clsx("DataGrid-overlay DataGrid-overlayEmpty", styles.overlay)}>
-          {instance.options.slots?.noRowsOverlay ? (
-            instance.options.slots.noRowsOverlay()
-          ) : (
-            <NoRowsOverlay />
-          )}
-        </div>
+      {instance.getRowModel().rows.length === 0 ? (
+        <DataGridOverlay
+          className="DataGridOverlay--empty"
+          onWheel={instance.scrolls.main.horizontal.current?.onWheel}
+          onPointerDown={instance.scrolls.main.horizontal.current?.onPointerDown}
+          onPointerMove={instance.scrolls.main.horizontal.current?.onPointerMove}
+          onPointerUp={instance.scrolls.main.horizontal.current?.onPointerUp}
+        >
+          
+          {instance.getState().globalFilter || instance.getState().columnFilters.length > 0 
+          ? (instance.options.slots?.noResultsOverlay 
+              ? <instance.options.slots.noResultsOverlay instance={instance} {...instance.options.slotProps?.noRowsOverlay} />
+              : <NoResultsOverlay instance={instance as any} {...instance.options.slotProps?.noRowsOverlay} />
+            )
+          : (instance.options.slots?.noRowsOverlay 
+              ? <instance.options.slots.noRowsOverlay instance={instance} {...instance.options.slotProps?.noResultsOverlay} />
+              : <NoRowsOverlay  instance={instance as any} {...instance.options.slotProps?.noResultsOverlay} />
+            )
+          }
+        </DataGridOverlay>
       ) : null}
     </div>
   );

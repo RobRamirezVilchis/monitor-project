@@ -4,24 +4,25 @@ import clsx from "clsx";
 
 import styles from "./DataGrid.module.css";
 
-import type { DataGridInstance } from "./types";
+import type { DataGridInstance, SlotOverridesSignature } from "./types";
 import { useIsomorphicLayoutEffect } from "@/hooks/shared/useIsomorphicLayoutEffect";
 import { mergeRefs } from "@/hooks/utils/useMergedRef";
 import DataGridColumnHeaders from "./column-headers/DataGridColumnHeaders";
 import DataGridBody from "./body/DataGridBody";
 import DataGridColumnFooters from "./column-footers/DataGridColumnFooters";
 import DataGridFooter from "./footer/DataGridFooter";
+import DataGridOverlay from "./components/overlays/DataGridOverlay";
 import DataGridToolbar from "./toolbar/DataGridToolbar";
-import Scroll from "@/ui/data-grid/scroll/Scroll";
-import SpinnerLoadingOverlay from "@/ui/data-grid/components/SpinnerLoadingOverlay";
+import Scroll from "./scroll/Scroll";
+import LoadingOverlay from "./components/overlays/LoadingOverlay";
 
-export interface DataGridProps<TData extends RowData> {
-  instance: DataGridInstance<TData>;
+export interface DataGridProps<TData extends RowData, SlotPropsOverrides extends SlotOverridesSignature = {}> {
+  instance: DataGridInstance<TData, SlotPropsOverrides>;
 }
 
-const DataGrid = <TData extends RowData>({
+const DataGrid = <TData extends RowData, SlotPropsOverrides extends SlotOverridesSignature = {}>({
   instance,
-}: DataGridProps<TData>) => {
+}: DataGridProps<TData, SlotPropsOverrides>) => {
   const [ready, setReady] = useState(false);
   const [contentRect, setContentRect] = useState({ 
     width: 0, 
@@ -65,7 +66,7 @@ const DataGrid = <TData extends RowData>({
           style={instance.options.styles?.toolbarContainer}
         >
           {instance.options.slots?.toolbar 
-          ? instance.options.slots.toolbar({instance})
+          ? <instance.options.slots.toolbar instance={instance as any} {...instance.options.slotProps?.toolbar} />
           : <DataGridToolbar instance={instance} />}
         </div>
       )}
@@ -134,13 +135,13 @@ const DataGrid = <TData extends RowData>({
         />
 
         {instance.getState().loading || !ready ? (
-          <div className={clsx("DataGrid-overlay DataGrid-overlayLoading", styles.overlay)}>
+          <DataGridOverlay className="DataGridOverlay--loading">
             {instance.options.slots?.loadingOverlay ? (
-              instance.options.slots.loadingOverlay()
+              <instance.options.slots.loadingOverlay instance={instance as any} {...instance.options.slotProps?.loadingOverlay} />
             ) : (
-              <SpinnerLoadingOverlay />
+              <LoadingOverlay instance={instance as any} {...instance.options.slotProps?.loadingOverlay} />
             )}
-          </div>
+          </DataGridOverlay>
         ) : null}
       </div>
 

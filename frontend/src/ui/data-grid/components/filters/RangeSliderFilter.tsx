@@ -3,7 +3,8 @@ import { RowData } from "@tanstack/react-table";
 
 import { useDebounce } from "@/hooks/shared";
 import { DataGridInstance, Header } from "../../types";
-import { RangeSlider } from "@mantine/core";
+import { getSlotOrNull } from "../../utils/slots";
+import { getInputValue } from "../../utils/getInputValue";
 
 interface RangeSliderFilterProps<TData extends RowData, TValue> {
   header: Header<TData, TValue>;
@@ -39,19 +40,21 @@ const RangeSliderFilter = <TData extends RowData, TValue>({
     }
   }, [internalValue, header.column]);
 
+  const RangeSlider = getSlotOrNull(instance.options.slots?.baseRangeSlider);
+
   return (
     <RangeSlider
-      {...instance.options.slotProps?.baseRangeSliderProps}
+      {...instance.options.slotProps?.baseRangeSlider}
       value={internalValue}
       min={min}
       max={max}
       step={header.column.columnDef.filterProps?.step}
-      onChange={(value) => {
+      onChange={(valueOrEvent, ...args) => {
+        const value = getInputValue<[number, number]>(valueOrEvent);
         setInternalValue(value);
         debounce(value);
-        instance.options.slotProps?.baseRangeSliderProps?.onChange?.(value);
+        instance.options.slotProps?.baseRangeSlider?.onChange?.(valueOrEvent, ...args);
       }}
-      
     />
   );
 }

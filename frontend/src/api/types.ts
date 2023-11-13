@@ -9,6 +9,8 @@ export interface ApiError {
   errors: ApiErrorDetail[];
 }
 
+export type Id = string | number;
+
 export type Paginated<T> = {
   data: T[];
   pagination?: {

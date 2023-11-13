@@ -27,6 +27,9 @@ const DataGridColumnHeadersCell = <TData extends RowData, TValue>({
   isOverlay,
 }: DataGridColumnHeadersCellProps<TData, TValue>) => {
   const columnDef = header.column.columnDef;
+  const colDefClassNames = typeof columnDef.headerClassNames === "function"
+    ? columnDef.headerClassNames(header)
+    : columnDef.headerClassNames;
 
   return (
     <div
@@ -39,7 +42,7 @@ const DataGridColumnHeadersCell = <TData extends RowData, TValue>({
           [`${styles.verticalPadding}`]: instance.getState().columnFiltersOpen,
         },
         instance.options.classNames?.columnHeadersCell?.root,
-        columnDef.headerClassNames?.root,
+        colDefClassNames?.root,
       )}
       style={{
         ...instance.options.styles?.columnHeadersCell?.root,
@@ -54,9 +57,9 @@ const DataGridColumnHeadersCell = <TData extends RowData, TValue>({
       {/* Content */}
       {!header.isPlaceholder ? (
         <div
-          className={clsx("DataGridColumnHeadersCell-content", styles.content, instance.options.classNames?.columnHeadersCell?.content, columnDef.headerClassNames?.content, {
-            [`${instance.options.classNames?.columnHeadersCell?.dragOverlay?.content} ${columnDef.headerClassNames?.dragOverlay?.content}`]: isOverlay,
-            [`${instance.options.classNames?.columnHeadersCell?.dragIsOver?.content} ${columnDef.headerClassNames?.dragIsOver?.content}`]: droppableCtx?.isOver,
+          className={clsx("DataGridColumnHeadersCell-content", styles.content, instance.options.classNames?.columnHeadersCell?.content, colDefClassNames?.content, {
+            [`${instance.options.classNames?.columnHeadersCell?.dragOverlay?.content} ${colDefClassNames?.dragOverlay?.content}`]: isOverlay,
+            [`${instance.options.classNames?.columnHeadersCell?.dragIsOver?.content} ${colDefClassNames?.dragIsOver?.content}`]: droppableCtx?.isOver,
           })}
           style={{
             ...instance.options.styles?.columnHeadersCell?.content,
@@ -64,9 +67,9 @@ const DataGridColumnHeadersCell = <TData extends RowData, TValue>({
           }}
         >
           <div
-            className={clsx("DataGridColumnHeadersCell-contentLabel", styles.contentLabel, instance.options.classNames?.columnHeadersCell?.contentLabel, columnDef.headerClassNames?.contentLabel, {
-              [`${instance.options.classNames?.columnHeadersCell?.dragOverlay?.contentLabel} ${columnDef.headerClassNames?.dragOverlay?.contentLabel}`]: isOverlay,
-              [`${instance.options.classNames?.columnHeadersCell?.dragIsOver?.contentLabel} ${columnDef.headerClassNames?.dragIsOver?.contentLabel}`]: droppableCtx?.isOver,
+            className={clsx("DataGridColumnHeadersCell-contentLabel", styles.contentLabel, instance.options.classNames?.columnHeadersCell?.contentLabel, colDefClassNames?.contentLabel, {
+              [`${instance.options.classNames?.columnHeadersCell?.dragOverlay?.contentLabel} ${colDefClassNames?.dragOverlay?.contentLabel}`]: isOverlay,
+              [`${instance.options.classNames?.columnHeadersCell?.dragIsOver?.contentLabel} ${colDefClassNames?.dragIsOver?.contentLabel}`]: droppableCtx?.isOver,
             })}
             style={{
               ...instance.options.styles?.columnHeadersCell?.contentLabel,
@@ -74,9 +77,9 @@ const DataGridColumnHeadersCell = <TData extends RowData, TValue>({
             }}
           >
             <div
-              className={clsx("DataGridColumnHeadersCell-label", styles.label, instance.options.classNames?.columnHeadersCell?.label, columnDef.headerClassNames?.label, {
-                [`${instance.options.classNames?.columnHeadersCell?.dragOverlay?.label} ${columnDef.headerClassNames?.dragOverlay?.label}`]: isOverlay,
-                [`${instance.options.classNames?.columnHeadersCell?.dragIsOver?.label} ${columnDef.headerClassNames?.dragIsOver?.label}`]: droppableCtx?.isOver,
+              className={clsx("DataGridColumnHeadersCell-label", styles.label, instance.options.classNames?.columnHeadersCell?.label, colDefClassNames?.label, {
+                [`${instance.options.classNames?.columnHeadersCell?.dragOverlay?.label} ${colDefClassNames?.dragOverlay?.label}`]: isOverlay,
+                [`${instance.options.classNames?.columnHeadersCell?.dragIsOver?.label} ${colDefClassNames?.dragIsOver?.label}`]: droppableCtx?.isOver,
               })}
               style={{
                 ...instance.options.styles?.columnHeadersCell?.label,
@@ -89,7 +92,7 @@ const DataGridColumnHeadersCell = <TData extends RowData, TValue>({
 
             {header.subHeaders.length === 0 && !isOverlay ? (
               <div
-                className={clsx("DataGridColumnHeadersCell-actions", styles.actions, instance.options.classNames?.columnHeadersCell?.actions, columnDef.headerClassNames?.actions)}
+                className={clsx("DataGridColumnHeadersCell-actions", styles.actions, instance.options.classNames?.columnHeadersCell?.actions, colDefClassNames?.actions)}
                 style={{
                   ...instance.options.styles?.columnHeadersCell?.actions,
                   ...columnDef.headerStyles?.actions,
@@ -112,7 +115,7 @@ const DataGridColumnHeadersCell = <TData extends RowData, TValue>({
             <div
               className={clsx("DataGridColumnHeadersCell-filter", {
                 [`${styles["filter--closed"]}`]: !instance.getState().columnFiltersOpen,
-              }, styles.filter, instance.options.classNames?.columnHeadersCell?.filter, columnDef.headerClassNames?.filter)}
+              }, styles.filter, instance.options.classNames?.columnHeadersCell?.filter, colDefClassNames?.filter)}
               style={{
                 ...instance.options.styles?.columnHeadersCell?.filters,
                 ...columnDef.headerStyles?.filters,  

@@ -18,7 +18,8 @@ import { WhitelistItem } from "@/api/users.types";
 import { ColumnDef } from "@/ui/data-grid/types";
 import { es } from "@/ui/data-grid/locales/es";
 import DataGrid from "@/ui/data-grid/DataGrid";
-import useDataGrid from "@/ui/data-grid/useDataGrid";
+// import useDataGrid from "@/ui/data-grid/useDataGrid";
+import { useDataGrid } from "@/ui/mantine-data-grid/useDataGrid";
 
 import { IconPlus } from "@tabler/icons-react";
 
@@ -85,7 +86,7 @@ const UsersPage = () => {
       footerContainer: "!border-none bg-white",
       columnHeadersCell: {
         root: "text-white font-bold",
-        actions: "bg-white !text-white",
+        actions: "bg-neutral-800 !text-white",
         label: "!font-normal !text-sm",
       },
       columnHeaders: {
@@ -94,16 +95,17 @@ const UsersPage = () => {
       row: {
         root: "border-b border-neutral-200",
       },
-      toolbarContainer: "justify-end text-neutral-800",
+      toolbarContainer: "justify-end",
       footer: {
         root: "pt-1",
-      }
+      },
     },
     globalFilterFn: "fuzzy",
     enableColumnResizing: true,
     columnResizeMode: "onChange",
     hideColumnFooters: true,
-    // enableSorting: true,
+    enableColumnActions: true,
+    enableSorting: false,
 
     enableFilters: true,
     manualFiltering: true,
@@ -134,10 +136,13 @@ const UsersPage = () => {
     },
     
     slotProps: {
-      baseTextInputProps: {
+      baseTextInput: {
         classNames: {
           input: "rounded-none border-t-0 border-l-0 border-r-0 border-b border-b-2 border-neutral-600 hover:border-blue-500 focus:border-blue-500"
         },
+      },
+      baseIconButton: {
+        c: "inherit",
       },
     },
   });
@@ -191,7 +196,7 @@ const UsersPage = () => {
         </div>
       </div>
 
-      <div className="flex-[1_0_0] min-h-[500px] overflow-y-hidden pb-1 pr-1">
+      <div className="flex-[1_0_0] min-h-[500px] overflow-y-hidden pb-1 pr-1 pl-1">
         <DataGrid instance={grid} />
       </div>
 

@@ -1,0 +1,10 @@
+.root {
+  height: 100%;
+  width: 100%;
+  display: grid;
+  place-items: center;
+}
+
+.label {
+  font-size: 1.25rem;
+}

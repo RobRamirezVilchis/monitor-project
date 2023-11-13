@@ -14,7 +14,7 @@ import {
 } from "@tanstack/react-table";
 import { useVirtualizer } from "@tanstack/react-virtual";
 
-import type { DataGridOptions, DataGridInstance, DataGridDensity, ColumnDef } from "./types";
+import type { DataGridOptions, DataGridInstance, DataGridDensity, ColumnDef, SlotOverridesSignature } from "./types";
 import { useScroll } from "./scroll/useScroll";
 import { createExpandableColumnDef, createRowNumberingColumnDef, createRowSelectionColumnDef } from "./reservedColumnDefs";
 import { en } from "./locales/en";
@@ -30,7 +30,9 @@ export const densityFactor: Record<DataGridDensity, number> = {
 const DENSITY_BASE_ROW_HEIGHT = 52;
 const DENSITY_BASE_HEADER_HEIGHT = 56;
 
-const useDataGrid = <TData extends RowData>(options: DataGridOptions<TData>): DataGridInstance<TData> => {
+const useDataGrid = <TData extends RowData, SlotPropsOverrides extends SlotOverridesSignature>(
+  options: DataGridOptions<TData, SlotPropsOverrides>
+): DataGridInstance<TData, SlotPropsOverrides> => {
   const {
     columns: _columns,
     initialState,
@@ -53,11 +55,11 @@ const useDataGrid = <TData extends RowData>(options: DataGridOptions<TData>): Da
   const columns = useMemo(() => {
     const internalColumns: ColumnDef<TData>[] = [];
     if (options.enableRowSelection)
-      internalColumns.push(createRowSelectionColumnDef<TData>(options));
+      internalColumns.push(createRowSelectionColumnDef<TData>(options as unknown as DataGridOptions<TData, {}>));
     if (options.enableExpanding)
-      internalColumns.push(createExpandableColumnDef<TData>(options));
+      internalColumns.push(createExpandableColumnDef<TData>(options as unknown as DataGridOptions<TData, {}>));
     if (options.enableRowNumbering)
-      internalColumns.push(createRowNumberingColumnDef<TData>(options));
+      internalColumns.push(createRowNumberingColumnDef<TData>(options as unknown as DataGridOptions<TData, {}>));
 
     return [
       ...internalColumns,
@@ -111,7 +113,7 @@ const useDataGrid = <TData extends RowData>(options: DataGridOptions<TData>): Da
     getFacetedUniqueValues: options.enableFacetedValues ? _getFacetedUniqueValues ?? getFacetedUniqueValues<TData>() : undefined,
     getGroupedRowModel    : options.enableGrouping      ? _getGroupedRowModel     ?? getGroupedRowModel<TData>()     : undefined,
     getPaginationRowModel : options.enablePagination    ? _getPaginationRowModel  ?? getPaginationRowModel<TData>()  : undefined,
-  } as any) as unknown as DataGridInstance<TData>;
+  } as any) as unknown as DataGridInstance<TData, SlotPropsOverrides>;
 
   useEffect(() => {
     if (instance.getState().columnOrder.length === 0)
@@ -124,7 +126,7 @@ const useDataGrid = <TData extends RowData>(options: DataGridOptions<TData>): Da
     headerHeight: Math.floor(DENSITY_BASE_HEADER_HEIGHT * (densityFactor[density] ?? 1)),
   }), [density]);
   const getDensityModel = useCallback(() => densityModel, [densityModel]);
-  const toggleDensity = useCallback<DataGridInstance<TData>["toggleDensity"]>((density) => {
+  const toggleDensity = useCallback<DataGridInstance<TData, SlotPropsOverrides>["toggleDensity"]>((density) => {
     if (density) 
       setDensity(density);
     else {
@@ -153,7 +155,7 @@ const useDataGrid = <TData extends RowData>(options: DataGridOptions<TData>): Da
   const mainHorizontalScrollRef = useRef(mainHorizontalScroll);
   const mainVerticalScrollRef = useRef(mainVerticalScroll);
 
-  const refs: DataGridInstance<TData>["refs"] = useMemo(() => ({
+  const refs: DataGridInstance<TData, SlotPropsOverrides>["refs"] = useMemo(() => ({
     root: rootRef,
     header: headerRef,
     columnsHeader: {
@@ -219,7 +221,7 @@ const useDataGrid = <TData extends RowData>(options: DataGridOptions<TData>): Da
     options.enableRowsVirtualization ? verticalVirtualizer : null
   );
 
-  const scrolls: DataGridInstance<TData>["scrolls"] = useMemo(() => ({
+  const scrolls: DataGridInstance<TData, SlotPropsOverrides>["scrolls"] = useMemo(() => ({
     main: {
       horizontal: mainHorizontalScrollRef,
       vertical: mainVerticalScrollRef,

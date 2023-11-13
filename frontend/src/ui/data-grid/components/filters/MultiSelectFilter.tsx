@@ -3,7 +3,8 @@ import { RowData } from "@tanstack/react-table";
 
 import { useDebounce } from "@/hooks/shared";
 import { DataGridInstance, Header } from "../../types";
-import { MultiSelect } from "@mantine/core";
+import { getSlotOrNull } from "../../utils/slots";
+import { getInputValue } from "../../utils/getInputValue";
 
 interface MultiSelectFilterProps<TData extends RowData, TValue> {
   instance: DataGridInstance<TData>;
@@ -23,17 +24,20 @@ const MultiSelectFilter = <TData extends RowData, TValue>({
   });
   const [internalValue, setInternalValue] = useState<string[]>(columnFilterValue);
 
+  const MultiSelect = getSlotOrNull(instance.options.slots?.baseMultiSelect);
+
   return (
     <MultiSelect
-      {...instance.options.slotProps?.baseMultiSelectProps}
+      {...instance.options.slotProps?.baseMultiSelect}
       placeholder={header.column.columnDef.filterProps?.placeholder 
         || instance.localization.filterByPlaceholder(header.column)
       }
       value={internalValue}
-      onChange={(value) => {
+      onChange={(valueOrEvent, ...args) => {
+        const value = getInputValue<string[]>(valueOrEvent);
         setInternalValue(value);
         debounce(value);
-        instance.options.slotProps?.baseMultiSelectProps?.onChange?.(value);
+        instance.options.slotProps?.baseMultiSelect?.onChange?.(valueOrEvent, ...args);
       }}
       data={header.column.columnDef.filterProps?.options ?? []}
     />

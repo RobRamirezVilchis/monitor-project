@@ -1,10 +1,11 @@
 import { useCallback, useRef } from "react";
-import { ActionIcon, TextInput } from "@mantine/core";
 
 import { useDebounce } from "@/hooks/shared";
 import type { DataGridInstance } from "../types";
 
-import { IconSearch, IconX } from "@tabler/icons-react";
+import { IconX } from "@tabler/icons-react";
+import { getSlotOrNull } from "../utils/slots";
+import { getInputValue } from "../utils/getInputValue";
 
 export interface ToolbarQuickFilterProps<TData extends unknown> {
   instance: DataGridInstance<TData>;
@@ -22,28 +23,32 @@ const ToolbarQuickFilter = <TData extends unknown>({
     debounceTime: instance.options.globalFilterDebounceTime ?? 300,
   });
 
+  const GlobalSearchIcon = getSlotOrNull(instance.options.slots?.globalSearchIcon);
+
+  const IconButton = getSlotOrNull(instance.options.slots?.baseIconButton);
+
+  const TextInput = getSlotOrNull(instance.options.slots?.baseTextInput);
+
   return (
     <TextInput
-      {...instance.options.slotProps?.baseTextInputProps}
+      {...instance.options.slotProps?.baseTextInput}
       ref={ref}
       placeholder={instance.localization.toolbarQuickFilterPlaceholder}
-      onChange={e => {
+      onChange={(valueOrEvent, ...args) => {
+        const value = getInputValue<string>(valueOrEvent);
         if (skipDebounce.current) {
-          instance.setGlobalFilter(e.target.value);
+          instance.setGlobalFilter(value);
           skipDebounce.current = false;
         }
         else {
-          debounce(e.target.value);
+          debounce(value);
         }
-        instance.options.slotProps?.baseTextInputProps?.onChange?.(e);
+        instance.options.slotProps?.baseTextInput?.onChange?.(valueOrEvent, ...args);
       }}
-      leftSection={<IconSearch size="1.25rem" />}
+      leftSection={<GlobalSearchIcon {...instance.options.slotProps?.globalSearchIcon} />}
       rightSection={
-        <ActionIcon
-          variant="subtle"
-          radius="xl"
-          color="black"
-          size="1.5rem"
+        <IconButton
+          {...instance.options.slotProps?.baseIconButton}
           onClick={() => {
             if (!ref.current) return;
             ref.current.focus();
@@ -56,7 +61,7 @@ const ToolbarQuickFilter = <TData extends unknown>({
           }}
         >
           <IconX size="1rem" />
-        </ActionIcon>
+        </IconButton>
       }
     />
   );

@@ -1,4 +1,4 @@
-import { DistributiveOmit } from "@/utils/types";
+import { CSSProperties, Dispatch, ReactNode, RefObject, SetStateAction, MouseEvent, JSXElementConstructor } from "react";
 import {
   BuiltInFilterFn as _BuiltInFilterFn,
   BuiltInSortingFn as _BuiltInSortingFn,
@@ -28,6 +28,7 @@ import {
   InitialTableState as _InitialTableState,
   PaginationInstance as _PaginationInstance,
   PaginationOptions as _PaginationOptions,
+  PaginationState,
   PartialKeys,
   RequiredKeys,
   Row as _Row,
@@ -44,27 +45,9 @@ import {
   VisibilityInstance as _VisibilityInstance,
   VisibilityOptions,
 } from "@tanstack/react-table";
-import { CSSProperties, Dispatch, ReactNode, RefObject, SetStateAction, MouseEvent } from "react";
 import { Virtualizer, VirtualizerOptions } from "@tanstack/virtual-core";
-import { 
-  ActionIconProps, 
-  ButtonProps, 
-  CheckboxProps, 
-  ComboboxData, 
-  ElementProps,
-  MenuItemProps, 
-  SelectProps, 
-  SwitchProps, 
-  TextInputProps, 
-  TooltipProps,
-  MultiSelectProps,
-  AutocompleteProps,
-  NumberInputProps,
-  TagsInputProps,
-  RangeSliderProps,
-} from "@mantine/core";
-import { DateInputProps } from "@mantine/dates";
 
+import type { DistributiveOmit, Prettify } from "@/utils/types";
 import { type FilterFnOption } from "./filterFns";
 import { type SortingFnOption } from "./sortingFns";
 import { type UseScrollReturn } from "./scroll/useScroll";
@@ -156,11 +139,15 @@ DistributiveOmit<
     instance: DataGridInstance<TData>;
     column: Column<TData, TValue>;
   }) => JSX.Element[];
-  cellClassNames?: DataGridRowCellClassNames;
+  /**
+   * Sets the cell className.
+   * @param cell The current cell. When null, it refers to the filler cell.
+   */
+  cellClassNames?: DataGridRowCellClassNames | ((cell: Cell<TData, TValue> | null) => DataGridRowCellClassNames);
   cellStyles?: DataGridRowCellStyles;
-  headerClassNames?: DataGridColumnHeadersCellClassNames;
+  headerClassNames?: DataGridColumnHeadersCellClassNames | ((header: Header<TData, TValue>) => DataGridColumnHeadersCellClassNames);
   headerStyles?: DataGridColumnHeadersCellStyles;
-  footerClassNames?: DataGridColumnFootersCellClassNames;
+  footerClassNames?: DataGridColumnFootersCellClassNames | ((footer: Header<TData, TValue>) => DataGridColumnFootersCellClassNames);
   footerStyles?: DataGridColumnFootersCellStyles;
   sortingFn?: _SortingFnOption<TData> | SortingFnOption | string & Record<never, never>;
   filterVariant?: FilterVariant;
@@ -168,7 +155,7 @@ DistributiveOmit<
   filterProps?: {
     label?: string;
     placeholder?: string;
-    options?: ComboboxData;
+    options?: any[];
     min?: any;
     max?: any;
     step?: number;
@@ -297,7 +284,7 @@ VirtualizationOptions {}
 
 export type DataGridOptionsResolved<TData extends RowData> = CoreOptions<TData> & FeatureOptions<TData>;
 
-export interface DataGridOptions<TData extends RowData> extends 
+export interface DataGridOptions<TData extends RowData, SlotPropsOverrides extends SlotOverridesSignature = {}> extends 
 PartialKeys<DataGridOptionsResolved<TData>, "getCoreRowModel" | "onStateChange" | "renderFallbackValue"> {
   renderSubComponent?: (row: Row<TData>) => ReactNode;
   /**
@@ -334,31 +321,8 @@ PartialKeys<DataGridOptionsResolved<TData>, "getCoreRowModel" | "onStateChange" 
    */
   rowCount?: number;
   localization?: Partial<DataGridLocalization>;
-  slots?: {
-    noRowsOverlay?: () => ReactNode;
-    loadingOverlay?: () => ReactNode;
-    toolbar?: (props: { instance: DataGridInstance<TData>; }) => ReactNode;
-    pagination?: (props: { instance: DataGridInstance<TData>; }) => ReactNode;
-  };
-  slotProps?: {
-    baseAutocompleteProps?: AutocompleteProps;
-    baseTagsInputProps?: TagsInputProps;
-    baseActionIconProps?: ActionIconProps & ElementProps<"button">;
-    baseButtonProps?: ButtonProps & ElementProps<"button">;
-    baseCheckboxProps?: CheckboxProps;
-    baseMenuItemProps?: MenuItemProps & ElementProps<"button">;
-    baseSelectProps?: SelectProps;
-    baseMultiSelectProps?: MultiSelectProps;
-    baseSwitchProps?: SwitchProps;
-    baseTextInputProps?: TextInputProps;
-    baseTooltipProps?: Omit<TooltipProps, "children" | "label">;
-    baseNumberInputProps?: NumberInputProps;
-    baseRangeSliderProps?: RangeSliderProps;
-    baseDateInputProps?: DateInputProps;
-    scroll?: {
-      thickness?: number;
-    }
-  };
+  slots?: Partial<DataGridSlots<TData, SlotPropsOverrides>>;
+  slotProps?: Partial<DataGridSlotProps<TData, SlotPropsOverrides>>;
 
   onCellClick?: (cell: Cell<TData>, instance: DataGridInstance<TData>, event: MouseEvent<HTMLDivElement, MouseEvent>) => void;
   onCellDoubleClick?: (cell: Cell<TData>, instance: DataGridInstance<TData>, event: MouseEvent<HTMLDivElement, MouseEvent>) => void;
@@ -379,8 +343,12 @@ PartialKeys<DataGridOptionsResolved<TData>, "getCoreRowModel" | "onStateChange" 
     columnFootersCell?: DataGridColumnFootersCellClassNames;
     body?: DataGridBodyClassNames;
     footer?: DataGridFooterClassNames;
-    row?: DataGridRowClassNames;
-    cell?: DataGridRowCellClassNames;
+    row?: DataGridRowClassNames | ((row: Row<TData>) => DataGridRowClassNames);
+    /**
+     * Sets the cell classNames
+     * @param cell The current cell. When null, it refers to the filler cell.
+     */
+    cell?: DataGridRowCellClassNames | ((cell: Cell<TData> | null) => DataGridRowCellClassNames);
   };
   styles?: {
     root?: CSSProperties;
@@ -401,10 +369,127 @@ PartialKeys<DataGridOptionsResolved<TData>, "getCoreRowModel" | "onStateChange" 
   };
 }
 
+export interface SlotBaseProps<TData extends RowData> {
+  instance: DataGridInstance<TData>;
+}
+
+export interface InputSlotCommonProps {
+  value?: unknown;
+  onClick?: (...args: unknown[]) => void;
+  /**
+   * NOTE: The first argument is the one that is considered as the value
+   * of the input, and can be a value or an event.
+   * @param args 
+   * @returns 
+   */
+  onChange?: (...args: unknown[]) => void; 
+  disabled?: boolean;
+  label?: ReactNode;
+  placeholder?: string;
+  ref?: RefObject<any>;
+  leftSection?: ReactNode;
+  rightSection?: ReactNode;
+}
+
+export interface ButtonSlotCommonProps {
+  onClick?: (...args: unknown[]) => void; 
+  onChange?: (...args: unknown[]) => void; 
+  disabled?: boolean;
+  children?: ReactNode;
+  ref?: RefObject<any>;
+}
+
+export interface DataGridSlotBaseProps<TData extends RowData> {
+  baseIconButton        : ButtonSlotCommonProps;
+  baseAutocomplete      : InputSlotCommonProps & { data: any[]; };
+  baseButton            : ButtonSlotCommonProps;
+  baseCheckbox          : InputSlotCommonProps & { checked?: boolean; indeterminate?: boolean; };
+  baseDateInput         : InputSlotCommonProps & { minDate?: Date; maxDate?: Date; };
+  baseMultiSelect       : InputSlotCommonProps & { data: any[]; };
+  baseNumberInput       : InputSlotCommonProps & { min?: number; max?: number; };
+  baseRangeSlider       : InputSlotCommonProps & { min?: number; max?: number; step?: number; };
+  baseSelect            : InputSlotCommonProps & { data: any[]; };
+  baseSwitch            : InputSlotCommonProps & { checked?: boolean; };
+  baseMultiAutocomplete : InputSlotCommonProps & { data: any[]; };
+  baseTextInput         : InputSlotCommonProps;
+  baseTooltip           : { label?: string; children?: ReactNode; };
+
+  baseMenuWrapper       : { children?: ReactNode; open?: boolean; setOpen?: Dispatch<SetStateAction<boolean>>; targetRef?: RefObject<any>; };
+  baseMenuTarget        : { children?: ReactNode; ref?: RefObject<any>; };
+  baseMenuContent       : { children?: ReactNode; open?: boolean; setOpen?: Dispatch<SetStateAction<boolean>>; targetRef?: RefObject<any>; };
+  baseMenuItem          : ButtonSlotCommonProps & { icon?: ReactNode; };
+  baseMenuDivider       : {};
+
+  basePopoverWrapper    : { children?: ReactNode; open?: boolean; setOpen?: Dispatch<SetStateAction<boolean>>; targetRef?: RefObject<any>; };
+  basePopoverTarget     : { children?: ReactNode; ref?: RefObject<any>; };
+  basePopoverContent    : { children?: ReactNode; open?: boolean; setOpen?: Dispatch<SetStateAction<boolean>>; targetRef?: RefObject<any>; };
+
+  loadingOverlay        : { instance: DataGridInstance<TData> };
+  noRowsOverlay         : { instance: DataGridInstance<TData> };
+  noResultsOverlay      : { instance: DataGridInstance<TData> };
+  
+  pagination            : { instance: DataGridInstance<TData>; pagination: PaginationState; pageInfo: PaginationPageInfo; };
+  toolbar               : { instance: DataGridInstance<TData> };
+  header                : { instance: DataGridInstance<TData> };
+  footer                : { instance: DataGridInstance<TData> };
+  selectedRowCount      : { instance: DataGridInstance<TData>; selectedRowCount: number; };
+
+  sortedAscendingIcon   : {};
+  sortedDescendingIcon  : {};
+  unsortedIcon          : {};
+  sortAscendingIcon     : {};
+  sortDescendingIcon    : {};
+  clearSortingIcon      : {};
+  hideColumnIcon        : {};
+  showColumnIcon        : {};
+  columnMenuIcon        : {};
+  columnDragHandleIcon  : {};
+  filterOnIcon          : {};
+  filterOffIcon         : {};
+  columnsVisibilityIcon : {};
+  densityCompactIcon    : {};
+  densityNormalIcon     : {};
+  densityComfortableIcon: {};
+  fullscreenEnterIcon   : {};
+  fullscreenExitIcon    : {};
+  firstPageIcon         : {};
+  previousPageIcon      : {};
+  nextPageIcon          : {};
+  lastPageIcon          : {};
+  globalSearchIcon      : {};
+  expandIcon            : {};
+  collapseIcon          : {};
+}
+
+export type OverridableSlotKeys = keyof DataGridSlotBaseProps<any>;
+
+export type SlotOverridesSignature = {
+  [Key in OverridableSlotKeys]?: unknown;
+};
+
+export type DataGridSlots<TData extends RowData, SlotPropsOverrides extends SlotOverridesSignature = {}> = {
+  [Key in OverridableSlotKeys]: JSXElementConstructor<DataGridSlotBaseProps<TData>[Key] & SlotPropsOverrides[Key]>;
+}
+
+export type DataGridOverridableSlotProps<TData extends RowData, SlotPropsOverrides extends SlotOverridesSignature = {}> = {
+  // [Key in OverridableSlotKeys]: DataGridSlots<TData, SlotPropsOverrides>[Key] extends JSXElementConstructor<infer P> ? P : never;
+  // [Key in OverridableSlotKeys]: Prettify<(DataGridSlotBaseProps<TData>[Key] extends never ? {} : DataGridSlotBaseProps<TData>[Key]) & (SlotPropsOverrides[Key] extends never ? {} : SlotPropsOverrides[Key])>;
+  [Key in OverridableSlotKeys]: Prettify<Partial<(DataGridSlotBaseProps<TData> & SlotPropsOverrides)[Key]>>;
+};
+
+export interface DataGridSlotProps<TData extends RowData, SlotPropsOverrides extends SlotOverridesSignature = {}> 
+  extends DataGridOverridableSlotProps<TData, SlotPropsOverrides> {
+  
+  columnMenuIconButton: DataGridOverridableSlotProps<TData, SlotPropsOverrides>["baseIconButton"];
+  scroll: {
+    thickness?: number;
+  };
+};
+
 // DataGrid Instance ------------------------------------------------------------
 
-export type DataGridInstance<TData extends RowData> = 
-& CoreInstance<TData>
+export type DataGridInstance<TData extends RowData, SlotPropsOverrides extends SlotOverridesSignature = {}> = 
+& CoreInstance<TData, SlotPropsOverrides>
 & HeadersInstance<TData>
 & VisibilityInstance<TData>
 & ColumnOrderInstance<TData>
@@ -462,7 +547,7 @@ export type DataGridInstance<TData extends RowData> =
   localization: DataGridLocalization;
 }
 
-export interface CoreInstance<TData extends RowData> extends 
+export interface CoreInstance<TData extends RowData, SlotPropsOverrides extends SlotOverridesSignature> extends 
 Omit<_CoreInstance<TData>,
   | "options"
   | "setOptions"
@@ -476,7 +561,7 @@ Omit<_CoreInstance<TData>,
   | "getState"
   | "setState"
 > {
-  options: RequiredKeys<DataGridOptions<TData>, "state" | "pageSizeOptions">;
+  options: RequiredKeys<DataGridOptions<TData, SlotPropsOverrides>, "state" | "pageSizeOptions">;
   setOptions: (newOptions: Updater<DataGridOptionsResolved<TData>>) => void;
   getCoreRowModel: () => RowModel<TData>;
   getRowModel: () => RowModel<TData>;
@@ -640,13 +725,7 @@ export interface DataGridLocalization {
   paginationPreviousPage: string;
   paginationNextPage: string;
   paginationLabelRowsPerPage: string;
-  paginationLabelDisplayRows: (info: {
-    from: number;
-    to: number;
-    count: number;
-    page: number;
-    pageCount: number;
-  }) => string;
+  paginationLabelDisplayRows: (info: PaginationPageInfo) => string;
   
   expandRowLabel: string;
   expandAllRowsLabel: string;
@@ -662,6 +741,14 @@ export interface DataGridLocalization {
   filterByCheckboxLabel: (checked: boolean | undefined, column: Column<any, any>) => string;
   filterMinPlaceholder: string;
   filterMaxPlaceholder: string;
+}
+
+export interface PaginationPageInfo {
+  from: number;
+  to: number;
+  count: number;
+  page: number;
+  pageCount: number;
 }
 
 // Styles ----------------------------------------------------------------------
@@ -763,11 +850,13 @@ export interface DataGridColumnFootersCellStyles {
 
 export interface DataGridBodyClassNames {
   root?: string;
+  viewport?: string;
   container?: string;
 }
 
 export interface DataGridBodyStyles {
   root?: CSSProperties;
+  viewport?: CSSProperties;
   container?: CSSProperties;
 }
 
