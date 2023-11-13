@@ -15,7 +15,6 @@ import { es } from "@/ui/data-grid/locales/es";
 import { Icon3dRotate } from "@tabler/icons-react";
 import { useEffect, useRef, useState } from "react";
 import { ColumnSizingState, RowSelectionState } from "@tanstack/react-table";
-import ProgressLoadingOverlay from "@/ui/data-grid/components/ProgressLoadingOverlay";
 
 const data = exampleData.slice(0, 10);
 const data2 = exampleData2.slice(0, 100);
