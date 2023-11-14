@@ -1,17 +1,12 @@
-"use client";
+import { useCallback, useEffect, useRef, useState } from "react";
 
-import { useState, Dispatch, SetStateAction, useCallback, ReducerWithoutAction } from "react";
-
-import { useDebounce } from "./useDebounce";
-
-export interface UseDebouncedValueOptions<T extends unknown> {
+export interface UseDebouncedValueOptions {
   /**
- * Time in ms before the callback is called if the debounce 
- * function is not called before the time is elapsed.
- * @default 500
- */
+   * Time in ms before the callback is called if the debounce 
+   * function is not called before the time is elapsed.
+   * @default 500
+   */
   debounceTime?: number;
-  initialValue: T | (() => T);
   /**
    * If true, the callback is called immediately before the debounce starts.
    * @default false
@@ -21,65 +16,68 @@ export interface UseDebouncedValueOptions<T extends unknown> {
 
 /**
  * Debounces value changes after a given debounce time has elapsed and the debounce function has not been called again.
- * @returns an object containing the debounced value and a function to set the debounced value and a function to cancel the debounce
+ * @param value The value to debounce after each change
+ * @param options Options for the debounce
+ * @returns A tuple containing the debounced value and a function to cancel the debounce
  */
-export const useDebouncedValue = <T extends unknown>({
-  debounceTime = 500,
-  initialValue,
-  immediate = false,
-}: UseDebouncedValueOptions<T>) => {
-  const [value, callback] = useState<T>(initialValue);
-  const { debounce, cancel } = useDebounce({
-    debounceTime,
-    callback,
-    immediate,
-  });
+export const useDebouncedValue = <T extends unknown>(
+  value: T,
+  options?: UseDebouncedValueOptions,
+): [T, () => void] => {
+  const {
+    debounceTime = 500,
+    immediate = false,
+  } = options || {};
 
-  return {
-    value, 
-    debounce,
-    cancel,
+  const [debounced, setValue] = useState(value);
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const immediateCall = useRef(true);
+  const firstDebounce = useRef(true);
+
+  useEffect(() => {
+    // Reset due to refs not restoring properly in strict mode
+    return () => {
+      firstDebounce.current = true;
+    };
+  }, []);
+
+  const clearDebounce = () => {
+    if (timeoutRef.current)
+     clearTimeout(timeoutRef.current);
   };
-}
 
-/**
- * Debounce value changes while also keeping track of non-debounced values.
- * The value is only updated after the debounce time has elapsed and the debounce function has not been called again.
- * @returns an object containing the debounced and non-debounced values, a function to set the debounced value and a function to cancel the debounce
- */
-export const useControlledDebouncedValue = <T extends unknown>({
-  debounceTime = 500,
-  initialValue,
-  immediate = false,
-}: UseDebouncedValueOptions<T>) => {
-  const [state, setState] = useState<T>(initialValue);
-  const [debouncedState, setDebouncedState] = useState<T>(initialValue);
-  
-  const { debounce, cancel: cancelDebounce } = useDebounce({
-    debounceTime,
-    callback: setDebouncedState,
-    immediate,
-  });
+  const cancel = useCallback(() => {
+    clearDebounce();
+    immediateCall.current = true;
+  }, []);
 
-  const setValue = useCallback<Dispatch<SetStateAction<T>>>((value) => {
-    if (typeof value === "function") {
-      const updater = value as ReducerWithoutAction<T>;
-      setState(prev => {
-        const newValue = updater(prev);
-        debounce(newValue);
-        return newValue;
-      });
+  useEffect(() => {
+    clearDebounce();
+
+    if (immediate && immediateCall.current) {
+      setValue(value);
+      if (firstDebounce.current) {
+        firstDebounce.current = false;
+        immediateCall.current = true;
+      }
+      else {
+        immediateCall.current = false;
+
+        timeoutRef.current = setTimeout(() => {
+          immediateCall.current = true;
+          clearDebounce();
+        }, debounceTime);
+      }
     }
     else {
-      setState(value);
-      debounce(value);
+      timeoutRef.current = setTimeout(() => {
+        setValue(value);
+        immediateCall.current = true;
+        clearDebounce();
+      }, debounceTime);
     }
-  }, [debounce]);
+  }, [debounceTime, immediate, value]);
 
-  return {
-    value: state, 
-    debouncedValue: debouncedState, 
-    setValue,
-    cancelDebounce,
-  };
-};
+
+  return [debounced, cancel];
+}
