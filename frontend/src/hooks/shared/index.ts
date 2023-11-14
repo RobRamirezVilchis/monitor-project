@@ -13,4 +13,4 @@ export { usePrevious } from "./usePrevious";
 export { useQueryState, type QueryParam, type QueryParams, type QueryStateOptions, type DispatchState, type ResetState, type UseQueryStateReturn } from "./useQueryState";
 export { useSsr } from "./useSsr";
 export { useTimer, type UseTimerOptions, type TimerStatus, type UseTimerReturn, type TimerStorageData } from "./useTimer";
-export { useToggle, type UseToggleDispatchers } from "./useToggle";
+export { useToggle, type UseToggleOptions } from "./useToggle";
