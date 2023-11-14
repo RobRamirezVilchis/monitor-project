@@ -12,6 +12,11 @@ export interface UseDebouncedValueOptions<T extends unknown> {
  */
   debounceTime?: number;
   initialValue: T | (() => T);
+  /**
+   * If true, the callback is called immediately before the debounce starts.
+   * @default false
+   */
+  immediate?: boolean;
 }
 
 /**
@@ -21,11 +26,13 @@ export interface UseDebouncedValueOptions<T extends unknown> {
 export const useDebouncedValue = <T extends unknown>({
   debounceTime = 500,
   initialValue,
+  immediate = false,
 }: UseDebouncedValueOptions<T>) => {
   const [value, callback] = useState<T>(initialValue);
   const { debounce, cancel } = useDebounce({
     debounceTime,
     callback,
+    immediate,
   });
 
   return {
@@ -43,6 +50,7 @@ export const useDebouncedValue = <T extends unknown>({
 export const useControlledDebouncedValue = <T extends unknown>({
   debounceTime = 500,
   initialValue,
+  immediate = false,
 }: UseDebouncedValueOptions<T>) => {
   const [state, setState] = useState<T>(initialValue);
   const [debouncedState, setDebouncedState] = useState<T>(initialValue);
@@ -50,6 +58,7 @@ export const useControlledDebouncedValue = <T extends unknown>({
   const { debounce, cancel: cancelDebounce } = useDebounce({
     debounceTime,
     callback: setDebouncedState,
+    immediate,
   });
 
   const setValue = useCallback<Dispatch<SetStateAction<T>>>((value) => {
