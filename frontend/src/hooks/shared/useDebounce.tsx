@@ -3,13 +3,13 @@
 import { useCallback, useEffect, useRef } from "react";
 
 export interface UseDebounceOptions<T extends unknown[]> {
+  callback: (...args: T) => void;
   /**
    * Time in ms before the callback is called if the debounce 
    * function is not called before the time is elapsed.
    * @default 500
    */
   debounceTime?: number;
-  callback: (...args: T) => void;
   /**
    * If true, the callback is called immediately before the debounce starts.
    * @default false
@@ -30,24 +30,36 @@ export const useDebounce = <T extends unknown[]>({
     callbackRef.current = callback;
   }, [callback]);
 
-  const cancel = useCallback(() => {
+  const clearDebounce = () => {
     if (timeoutRef.current)
-      clearTimeout(timeoutRef.current);
+     clearTimeout(timeoutRef.current);
+  };
+
+  const cancel = useCallback(() => {
+    clearDebounce();
+    immediateCall.current = true;
   }, []);
 
   const debounce = useCallback((...args: T) => {
-    if (timeoutRef.current)    cancel();
+    clearDebounce();
+    
     if (immediate && immediateCall.current) {
       callbackRef.current(...args);
       immediateCall.current = false;
+
+      timeoutRef.current = setTimeout(() => {
+        immediateCall.current = true;
+        clearDebounce();
+      }, debounceTime);
     }
     else {
       timeoutRef.current = setTimeout(() => {
         callbackRef.current(...args);
         immediateCall.current = true;
+        clearDebounce();
       }, debounceTime);
     }
-  }, [cancel, timeoutRef, debounceTime, immediate]);
+  }, [debounceTime, immediate]);
 
   useEffect(() => {
     return () => cancel();
