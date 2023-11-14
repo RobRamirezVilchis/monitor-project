@@ -3,7 +3,7 @@
   "rules": {
     "react-hooks/rules-of-hooks": "warn",
     "react-hooks/exhaustive-deps": ["warn", {
-      "additionalHooks": "(useIsomorphicLayoutEffect)"
+      "additionalHooks": "(useIsomorphicLayoutEffect|useOnUpdate)"
     }]
   }
 }
