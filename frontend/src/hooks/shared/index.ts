@@ -1,6 +1,9 @@
 export { useConfirmDialog, type UseConfirmDialogOptions } from "./useConfirmDialog";
 export { useDebounce, type UseDebounceOptions } from "./useDebounce";
-export { useDebouncedValue, useControlledDebouncedValue, type UseDebouncedValueOptions } from "./useDebouncedValue";
+export { useDebouncedState, useControlledDebouncedState, type UseDebouncedStateOptions } from "./useDebouncedState";
+export { useDebouncedValue, type UseDebouncedValueOptions } from "./useDebouncedValue";
+export { useIsFirstRender } from "./useIsFirstRender";
+export { useIsMounted } from "./useIsMounted";
 export { useIsomorphicLayoutEffect } from "./useIsomorphicLayoutEffect";
 export { useMediaQuery } from "./useMediaQuery";
 export { usePrevious } from "./usePrevious";
