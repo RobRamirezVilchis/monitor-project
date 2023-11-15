@@ -8,6 +8,7 @@ import { Metadata } from "next";
 import { cookies } from "next/headers";
 
 import { Providers } from "./Providers";
+import { colorSchemeCookieName } from "@/ui/themes/cookieColorSchemeManager";
 import fonts from "@/ui/fonts";
 
 interface RootLayoutProps {
@@ -24,8 +25,12 @@ export const metadata: Metadata = {
 const RootLayout = ({ 
   children 
 }: RootLayoutProps) => {
+  // Set TailwindCSS color scheme based on cookie managed by Mantine ColorSchemeManager
   const cookieStore = cookies();
-  const tailwindCSSColorScheme = cookieStore.get("color-scheme")?.value || "light";
+  let tailwindCSSColorScheme = cookieStore.get(colorSchemeCookieName)?.value;
+  tailwindCSSColorScheme = tailwindCSSColorScheme === "auto" 
+    ? undefined 
+    : tailwindCSSColorScheme;
 
   return (
     <html lang="en" className={tailwindCSSColorScheme}>

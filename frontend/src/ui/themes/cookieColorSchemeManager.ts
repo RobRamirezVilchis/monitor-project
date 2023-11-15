@@ -1,7 +1,6 @@
 import { 
   MantineColorScheme, 
   MantineColorSchemeManager, 
-  isMantineColorScheme,
 } from "@mantine/core";
 import Cookies from "js-cookie";
 
@@ -13,31 +12,55 @@ export interface CookieColorSchemeManagerOptions {
   name?: string;
 }
 
-const colorSchemeOptions: MantineColorScheme[] = ["dark", "light"];
+const colorSchemeOptions: MantineColorScheme[] = ["auto", "light", "dark"];
 
-export function cookieColorSchemeManager({
-  name = "color-scheme",
-}: CookieColorSchemeManagerOptions = {}): MantineColorSchemeManager {
+export const colorSchemeCookieName = "color-scheme";
+
+export function cookieColorSchemeManager(): MantineColorSchemeManager {
+  const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+  const mediaQueryListener = (e: MediaQueryListEvent) => {
+    const colorSchema = e.matches ? "dark" : "light";
+    document.documentElement.classList.remove(...colorSchemeOptions);
+    document.documentElement.classList.add(colorSchema);
+  };
+
   return {
     get: (defaultValue) => {
-      return Cookies.get(name) as MantineColorScheme || defaultValue;
+      const colorSchema = Cookies.get(colorSchemeCookieName) as MantineColorScheme || defaultValue;
+      if (colorSchema === "auto") {
+        document.documentElement.classList.add(
+          window.matchMedia("(prefers-color-scheme: dark)").matches 
+            ? "dark" 
+            : "light"
+        );
+      }
+      return colorSchema;
     },
     set: (value) => {
-      Cookies.set(name, value, {
+      Cookies.set(colorSchemeCookieName, value, {
         path: "/",
         sameSite: "Lax",
       });
       document.documentElement.classList.remove(...colorSchemeOptions);
-      document.documentElement.classList.add(value);
+      if (value === "auto") {
+        document.documentElement.classList.add(
+          window.matchMedia("(prefers-color-scheme: dark)").matches 
+            ? "dark" 
+            : "light"
+        );
+      }
+      else {
+        document.documentElement.classList.add(value);
+      }
     },
     subscribe: (onUpdate) => {
-      
+      mediaQuery.addEventListener("change", mediaQueryListener);
     },
     unsubscribe: () => {
-      
+      mediaQuery.removeEventListener("change", mediaQueryListener);
     },
     clear: () => {
-      Cookies.remove(name);
+      Cookies.remove(colorSchemeCookieName);
     },
   };
 }
