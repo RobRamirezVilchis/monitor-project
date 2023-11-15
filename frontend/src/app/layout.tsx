@@ -5,6 +5,7 @@ import "@/styles/globals.css";
 
 import { ColorSchemeScript } from "@mantine/core";
 import { Metadata } from "next";
+import { cookies } from "next/headers";
 
 import { Providers } from "./Providers";
 import fonts from "@/ui/fonts";
@@ -22,17 +23,22 @@ export const metadata: Metadata = {
 
 const RootLayout = ({ 
   children 
-}: RootLayoutProps) => (
-  <html lang="en">
-    <head>
-      <ColorSchemeScript />
-    </head>
-    <body className={fonts.roboto.className} suppressHydrationWarning>
-      <Providers>
-        {children}
-      </Providers>
-    </body>
-  </html>
-)
+}: RootLayoutProps) => {
+  const cookieStore = cookies();
+  const tailwindCSSColorScheme = cookieStore.get("color-scheme")?.value || "light";
+
+  return (
+    <html lang="en" className={tailwindCSSColorScheme}>
+      <head>
+        <ColorSchemeScript />
+      </head>
+      <body className={fonts.roboto.className} suppressHydrationWarning>
+        <Providers>
+          {children}
+        </Providers>
+      </body>
+    </html>
+  );
+}
 
 export default RootLayout;

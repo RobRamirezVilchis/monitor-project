@@ -11,6 +11,7 @@ import Cookies from "js-cookie";
 
 import { AuthProvider } from "@/components/auth/AuthProvider";
 import { ConfirmDialogProvider } from "@/components/shared";
+import { cookieColorSchemeManager } from "@/ui/themes/cookieColorSchemeManager";
 import defaultTheme from "@/ui/themes/default";
 import defaultQueryClient from "@/api/clients/defaultQueryClient";
 
@@ -24,11 +25,13 @@ Cookies.set("tz", Intl.DateTimeFormat().resolvedOptions().timeZone, {
   sameSite: "Lax",
 });
 
+const colorSchemeManager = cookieColorSchemeManager();
+
 export const Providers = ({ 
   children 
 }: ProvidersProps) => {
   return (
-    <MantineProvider theme={defaultTheme}>
+    <MantineProvider theme={defaultTheme} colorSchemeManager={colorSchemeManager}>
       <DatesProvider settings={{ firstDayOfWeek: 0, locale: "es" }}>
         <Notifications limit={5} autoClose={10000} position="bottom-right" zIndex={1000} />
         <QueryClientProvider client={defaultQueryClient}>
