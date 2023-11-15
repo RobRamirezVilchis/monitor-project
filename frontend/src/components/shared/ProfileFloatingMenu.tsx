@@ -1,5 +1,4 @@
 import { ComponentType, FC, MouseEvent, useMemo, useState } from "react";
-import { NavLink } from "../shared";
 import { useQueryClient } from "@tanstack/react-query";
 import { 
   UnstyledButton, 
@@ -10,13 +9,14 @@ import {
   Popover, 
   Tooltip 
 } from "@mantine/core";
+import { useDisclosure } from "@mantine/hooks";
 
+import { ColorSchemeSwitchToggle, NavLink } from "../shared";
 import { randomColor } from "@/utils/color";
 import { useAuth } from "@/hooks/auth";
 import { UserAvatar } from "./UserAvatar";
 
 import { IconLogin, IconLogout, IconUsers } from "@tabler/icons-react";
-import { useDisclosure } from "@mantine/hooks";
 
 export const ProfileFloatingMenu = () => {
   const { user, isAuthenticated, loading, logout } = useAuth({
@@ -69,6 +69,10 @@ export const ProfileFloatingMenu = () => {
                   </span>
                   <span className="text-sm">{user?.email}</span>
                 </div>
+              </div>
+
+              <div className="flex justify-center">
+                <ColorSchemeSwitchToggle />
               </div>
 
               {isAdmin ? (

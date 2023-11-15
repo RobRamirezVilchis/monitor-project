@@ -1,3 +1,8 @@
+export { 
+  ColorSchemeButtonToggle, type ColorSchemeToggleButtonProps, 
+  ColorSchemaSelectToggle, type ColorSchemaSelectToggleProps, 
+  ColorSchemeSwitchToggle,
+} from "./ColorSchemeToggle";
 export {
     ConfirmDialogProvider,
     ConfirmDialogContext,
