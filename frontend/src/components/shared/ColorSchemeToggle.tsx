@@ -1,3 +1,4 @@
+import { ReactNode } from "react";
 import { 
   ActionIcon, type ActionIconProps,
   Combobox, useCombobox, 
@@ -5,13 +6,15 @@ import {
   InputBase, type InputBaseProps,
   Switch,
   useMantineColorScheme,
-  useMantineTheme,
   MantineColorScheme,
 } from "@mantine/core";
 import clsx from "clsx";
 
-import { IconSun, IconMoon, IconDeviceDesktop } from "@tabler/icons-react";
-import { ReactNode, useEffect, useRef, useState } from "react";
+import switchToggleStyles from "./ColorSchemeSwitchToggle.module.css";
+
+import { IconDeviceDesktop } from "@tabler/icons-react";
+import LightModeOutlinedIcon from '@mui/icons-material/LightModeOutlined';
+import NightlightOutlinedIcon from '@mui/icons-material/NightlightOutlined';
 
 export interface ColorSchemeToggleButtonProps extends Omit<ActionIconProps, "children"> {}
 
@@ -24,7 +27,7 @@ export const ColorSchemeButtonToggle = (props: ColorSchemeToggleButtonProps) => 
       {...props}
       onClick={toggleColorScheme}
     >
-      {colorScheme === "dark" ? <IconMoon /> : <IconSun />}
+      {colorScheme === "dark" ? <NightlightOutlinedIcon /> : <LightModeOutlinedIcon />}
     </ActionIcon>
   )
 }
@@ -57,8 +60,8 @@ export const ColorSchemaSelectToggle = ({
   ];
   const icons: Record<MantineColorScheme, ReactNode> = {
     auto: <IconDeviceDesktop />,
-    light: <IconSun />,
-    dark: <IconMoon />,
+    light: <LightModeOutlinedIcon />,
+    dark: <NightlightOutlinedIcon />,
   };
   const labels: Record<MantineColorScheme, string> = {
     auto: "Auto",
@@ -107,10 +110,14 @@ export const ColorSchemaSelectToggle = ({
   )
 }
 
-// TODO: Update Colors
-export const ColorSchemeSwitchToggle = () => {
+export interface ColorSchemeSwitchToggleProps {
+  size?: InputBaseProps["size"];
+}
+
+export const ColorSchemeSwitchToggle = ({
+  size = "lg",
+}: ColorSchemeSwitchToggleProps) => {
   const { colorScheme, setColorScheme } = useMantineColorScheme();
-  const theme = useMantineTheme();
 
   return (
     <Switch
@@ -119,17 +126,17 @@ export const ColorSchemeSwitchToggle = () => {
         const dark = e.currentTarget.checked;
         setColorScheme(dark ? "dark" : "light");
       }}
-      offLabel={<IconSun color={theme.colors.yellow[4]} stroke={2.5} />}
-      onLabel={<IconMoon color={theme.colors.blue[6]} stroke={2.5} />}
-      size="lg"
+      offLabel={<LightModeOutlinedIcon className="text-white" />}
+      onLabel={<NightlightOutlinedIcon className="text-white" />}
+      size={size}
       classNames={{
         thumb: clsx({
-          "bg-neutral-500": colorScheme === "light",
-          "bg-neutral-200": colorScheme === "dark",
+          [switchToggleStyles["thumb-light"]]: colorScheme === "light",
+          [switchToggleStyles["thumb-dark"]]: colorScheme === "dark",
         }),
         track: clsx({
-          "bg-neutral-400": colorScheme === "light",
-          "bg-gray-800": colorScheme === "dark",
+          [switchToggleStyles["track-light"]]: colorScheme === "light",
+          [switchToggleStyles["track-dark"]]: colorScheme === "dark",
         }),
       }}
     />

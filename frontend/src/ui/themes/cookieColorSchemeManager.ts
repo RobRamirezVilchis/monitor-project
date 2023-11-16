@@ -17,12 +17,16 @@ const colorSchemeOptions: MantineColorScheme[] = ["auto", "light", "dark"];
 export const colorSchemeCookieName = "color-scheme";
 
 export function cookieColorSchemeManager(): MantineColorSchemeManager {
-  const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
-  const mediaQueryListener = (e: MediaQueryListEvent) => {
-    const colorSchema = e.matches ? "dark" : "light";
-    document.documentElement.classList.remove(...colorSchemeOptions);
-    document.documentElement.classList.add(colorSchema);
-  };
+  let mediaQuery: MediaQueryList;
+  let mediaQueryListener: (e: MediaQueryListEvent) => void;
+  if (typeof window !== "undefined") {
+    mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+    mediaQueryListener = (e: MediaQueryListEvent) => {
+      const colorSchema = e.matches ? "dark" : "light";
+      document.documentElement.classList.remove(...colorSchemeOptions);
+      document.documentElement.classList.add(colorSchema);
+    };
+  }
 
   return {
     get: (defaultValue) => {
@@ -54,10 +58,10 @@ export function cookieColorSchemeManager(): MantineColorSchemeManager {
       }
     },
     subscribe: (onUpdate) => {
-      mediaQuery.addEventListener("change", mediaQueryListener);
+      mediaQuery?.addEventListener("change", mediaQueryListener);
     },
     unsubscribe: () => {
-      mediaQuery.removeEventListener("change", mediaQueryListener);
+      mediaQuery?.removeEventListener("change", mediaQueryListener);
     },
     clear: () => {
       Cookies.remove(colorSchemeCookieName);

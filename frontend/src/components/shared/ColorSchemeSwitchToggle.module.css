@@ -1,0 +1,19 @@
+.track-light {
+    background-color: #F2C234;
+    border-color: #FAE9B1;
+}
+
+.track-dark {
+    background-color: #1D2936;
+    border-color: #008BE2;
+}
+
+.thumb-light {
+    background-color: #FAE9B1;
+    border: none;
+}
+
+.thumb-dark {
+    background-color: #008BE2;
+    border: none;
+}
