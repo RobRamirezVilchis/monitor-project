@@ -119,7 +119,6 @@ export const useDataGrid = <TData extends RowData, SlotPropsOverrides extends Sl
       },
       baseIconButton: {
         variant: "subtle",
-        color: "black",
         radius: "xl",
       },
       globalSearchIcon: {

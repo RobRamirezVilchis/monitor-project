@@ -37,6 +37,7 @@ const DataGridBody = <TData extends unknown>({
   return (
     <div
       className={clsx("DataGridBody-root", styles.root, instance.options.classNames?.body?.root)}
+      style={instance.options.styles?.body?.root}
     >
       {/* Viewport */}
       <div
