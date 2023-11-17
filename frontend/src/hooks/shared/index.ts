@@ -6,6 +6,7 @@ export { useIsFirstRender } from "./useIsFirstRender";
 export { useIsMounted } from "./useIsMounted";
 export { useIsomorphicLayoutEffect } from "./useIsomorphicLayoutEffect";
 export { useMediaQuery } from "./useMediaQuery";
+export { useNavLink } from "./useNavLink";
 export { useOnMount } from "./useOnMount";
 export { useOnUnmount } from "./useOnUnmount";
 export { useOnUpdate } from "./useOnUpdate";

@@ -1,22 +1,25 @@
-import { ComponentType, FC, MouseEvent, useMemo, useState } from "react";
+import { FC, ReactNode, useMemo } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { 
-  UnstyledButton, 
   ActionIcon, 
   Button,
   Loader, 
-  Divider, 
+  Divider,
+  Paper, 
   Popover, 
-  Tooltip 
+  Tooltip,
+  NavLink,
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
+import Link from "next/link";
 
-import { ColorSchemeSwitchToggle, NavLink } from "../shared";
+import { ColorSchemeSwitchToggle } from "../shared";
 import { randomColor } from "@/utils/color";
 import { useAuth } from "@/hooks/auth";
 import { UserAvatar } from "./UserAvatar";
 
 import { IconLogin, IconLogout, IconUsers } from "@tabler/icons-react";
+import { useNavLink } from "@/hooks/shared";
 
 export const ProfileFloatingMenu = () => {
   const { user, isAuthenticated, loading, logout } = useAuth({
@@ -42,9 +45,6 @@ export const ProfileFloatingMenu = () => {
     <Popover
       opened={open}
       onChange={toggle}
-      classNames={{
-        dropdown: "bg-neutral-800 text-white border-neutral-600"
-      }}
       shadow="md"
     >
       <Popover.Target>
@@ -76,29 +76,32 @@ export const ProfileFloatingMenu = () => {
               </div>
 
               {isAdmin ? (
-                <div className="flex flex-col !bg-neutral-600 rounded-lg overflow-hidden">
+                <Paper 
+                  withBorder
+                  className="flex flex-col rounded-lg overflow-hidden"
+                >
                   <ListLink
                     href="/users"
-                    Icon={IconUsers}
                     label="Usuarios"
+                    icon={<IconUsers className="w-4 h-4" />}
                     onClick={close}
                   />
+                  <Divider />
                   <ListLink
                     href="/users/access"
-                    Icon={IconLogin}
                     label="Acceso de usuarios"
+                    icon={<IconLogin className="w-4 h-4" />}
                     onClick={close}
                   />
-                </div>
+                </Paper>
               ) : null}
 
-              <Divider className="border-neutral-200" />
+              <Divider />
 
               <div
                 className="flex justify-center items-center w-full"
               >
                 <Button
-                  color="white"
                   leftSection={<IconLogout />}
                   onClick={onLogout}
                   variant="transparent"
@@ -118,23 +121,23 @@ export const ProfileFloatingMenu = () => {
 
 interface ListLinkProps {
   href: string;
-  Icon?: ComponentType<any>;
+  icon?: ReactNode;
   label: string;
   onClick?: () => void;
 }
 
-const ListLink: FC<ListLinkProps> = ({ href, Icon, label, onClick }) => (
-  <UnstyledButton component="div" className="w-full">
+const ListLink: FC<ListLinkProps> = ({ href, icon, label, onClick }) => {
+  const active = useNavLink(href);
+
+  return (
     <NavLink
+      variant="light"
+      component={Link}
       href={href}
-      classes={{
-        root: "text-sm w-full grid grid-cols-[auto,1fr] gap-4 items-center px-8 py-2 hover:bg-neutral-700",
-        active: "bg-neutral-500",
-      }}
       onClick={onClick}
-    >
-      {Icon ? <Icon className="w-4 h-4" /> : null}
-      <span>{label}</span>
-    </NavLink>
-  </UnstyledButton>
-);
+      active={active}
+      leftSection={icon}
+      label={label}
+    />
+  );
+};
