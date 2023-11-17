@@ -39,6 +39,25 @@ const defaultTheme = createTheme({
     fontFamily: fonts.roboto.style.fontFamily,
   },
   cursorType: "pointer",
+  primaryShade: {
+    light: 6,
+    dark: 8,
+  },
+  colors: {
+    // Tooltip bg color is given by the variable --tooltip-bg, or a shade of gray if it does not exist
+    dark: [
+      "#C1C2C5", // base text
+      "#A6A7AB", // segmented control text
+      "#909296",
+      "#5C5F66",
+      "#373A40", // borders/slider track and tooltip
+      "#2C2E33", // kbd bg/variant="filled" input bg/selected segmented control bg/rating bg
+      "#25262B", // input bg/popover bg/alert gb/notification bg/rating filled bg
+      "#1A1B1E", // body bg/modal bg/paper bg
+      "#141517", // segmented control bg
+      "#101113",
+    ],
+  },
   components: {
     // Core
     Autocomplete: {

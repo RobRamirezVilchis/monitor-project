@@ -1,6 +1,6 @@
 "use client";
 
-import { FC, ReactNode, useMemo, useState } from "react";
+import { ReactNode, useMemo, useState } from "react";
 import { AppShell, Burger, Indicator, NavLink } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import clsx from "clsx";
@@ -25,7 +25,9 @@ interface MainLayoutProps {
   children?: ReactNode;
 }
 
-const MainLayout: FC<MainLayoutProps> = ({ children }) => { 
+const MainLayout = ({ 
+  children 
+}: MainLayoutProps) => { 
   const [isOpen, { toggle, close }] = useDisclosure(false);
   const { user } = useAuth();
 
