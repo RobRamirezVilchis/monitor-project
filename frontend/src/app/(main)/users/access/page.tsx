@@ -13,7 +13,7 @@ import { useUsersAccessQuery } from "@/api/queries/users";
 import { ColumnDef } from "@/ui/data-grid/types";
 import { es } from "@/ui/data-grid/locales/es";
 import DataGrid from "@/ui/data-grid/DataGrid";
-import useDataGrid from "@/ui/data-grid/useDataGrid";
+import { useDataGrid } from "@/hooks";
 import { PaginationState } from "@tanstack/react-table";
 
 function localDatetimeToLocalDateStr(datetime: Date | null) {
@@ -118,36 +118,13 @@ const UsersAccessPage = () => {
       },
       globalFilter: filters?.search,
     },
-    classNames: {
-      root: "h-full !border-none text-neutral-800",
-      mainContainer: "rounded shadow-md bg-white",
-      footerContainer: "!border-none bg-white",
-      columnHeadersCell: {
-        root: "text-white font-bold",
-        actions: "bg-white !text-white",
-        label: "!font-normal !text-sm",
-      },
-      columnHeaders: {
-        root: "bg-neutral-800",
-      },
-      row: {
-        root: "border-b border-neutral-200",
-      },
-      toolbarContainer: "justify-end text-neutral-800",
-      footer: {
-        root: "pt-1",
-      }
-    },
-    globalFilterFn: "fuzzy",
     enableColumnResizing: true,
-    columnResizeMode: "onChange",
     hideColumnFooters: true,
-    // enableSorting: true,
+    enableColumnActions: true,
+    enableSorting: false,
 
     enableFilters: true,
     manualFiltering: true,
-    enableGlobalFilter: true,
-    globalFilterDebounceTime: 1000,
     onGlobalFilterChange: (value) => {
       const newValue = typeof value === "function" ? value(filters?.search) : value;
       setFilters(draft => {
@@ -157,7 +134,6 @@ const UsersAccessPage = () => {
 
     enablePagination: true,
     manualPagination: true,
-    pageSizeOptions: [25, 50, 100],
     pageCount: usersAccessQuery.data?.pagination?.pages ?? 0,
     rowCount: usersAccessQuery.data?.pagination?.count ?? 0,
     onPaginationChange: (value) => {
@@ -170,14 +146,6 @@ const UsersAccessPage = () => {
         page: newValue.pageIndex + 1,
         page_size: newValue.pageSize,
       });
-    },
-    
-    slotProps: {
-      baseTextInputProps: {
-        classNames: {
-          input: "rounded-none border-t-0 border-l-0 border-r-0 border-b border-b-2 border-neutral-600 hover:border-blue-500 focus:border-blue-500"
-        },
-      },
     },
   });
 

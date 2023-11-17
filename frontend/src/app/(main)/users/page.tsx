@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Button, Modal } from "@mantine/core";
+import { Button, Modal, useComputedColorScheme, useMantineTheme } from "@mantine/core";
 import { PaginationState } from "@tanstack/react-table";
 import { useImmer } from "use-immer";
 
@@ -16,14 +16,14 @@ import { UserAvatar } from "@/components/shared/UserAvatar";
 import { useWhitelistQuery } from "@/api/queries/users";
 import { WhitelistItem } from "@/api/users.types";
 import { ColumnDef } from "@/ui/data-grid/types";
-import { es } from "@/ui/data-grid/locales/es";
 import DataGrid from "@/ui/data-grid/DataGrid";
-// import useDataGrid from "@/ui/data-grid/useDataGrid";
-import { useDataGrid } from "@/ui/mantine-data-grid/useDataGrid";
+import { useDataGrid } from "@/hooks/useDataGrid";
 
 import { IconPlus } from "@tabler/icons-react";
 
 const UsersPage = () => {
+  const theme = useMantineTheme();
+  const colorScheme = useComputedColorScheme("light");
   const pagination = useQueryState({
     page: {
       defaultValue: 1,
@@ -68,7 +68,6 @@ const UsersPage = () => {
   const grid = useDataGrid<WhitelistItem>({
     data: usersWhitelistQuery.data?.data || [],
     columns: cols,
-    localization: es,
     initialState: {
       density: "compact",
     },
@@ -80,37 +79,13 @@ const UsersPage = () => {
       },
       globalFilter: filters?.search,
     },
-    classNames: {
-      root: "h-full !border-none text-neutral-800",
-      mainContainer: "rounded shadow-md bg-white",
-      footerContainer: "!border-none bg-white",
-      columnHeadersCell: {
-        root: "text-white font-bold",
-        actions: "bg-neutral-800 !text-white",
-        label: "!font-normal !text-sm",
-      },
-      columnHeaders: {
-        root: "bg-neutral-800",
-      },
-      row: {
-        root: "border-b border-neutral-200",
-      },
-      toolbarContainer: "justify-end",
-      footer: {
-        root: "pt-1",
-      },
-    },
-    globalFilterFn: "fuzzy",
     enableColumnResizing: true,
-    columnResizeMode: "onChange",
     hideColumnFooters: true,
     enableColumnActions: true,
     enableSorting: false,
 
     enableFilters: true,
     manualFiltering: true,
-    enableGlobalFilter: true,
-    globalFilterDebounceTime: 1000,
     onGlobalFilterChange: (value) => {
       const newValue = typeof value === "function" ? value(filters?.search) : value;
       setFilters(draft => {
@@ -120,7 +95,6 @@ const UsersPage = () => {
 
     enablePagination: true,
     manualPagination: true,
-    pageSizeOptions: [25, 50, 100],
     pageCount: usersWhitelistQuery.data?.pagination?.pages ?? 0,
     rowCount: usersWhitelistQuery.data?.pagination?.count ?? 0,
     onPaginationChange: (value) => {
@@ -133,17 +107,6 @@ const UsersPage = () => {
         page: newValue.pageIndex + 1,
         page_size: newValue.pageSize,
       });
-    },
-    
-    slotProps: {
-      baseTextInput: {
-        classNames: {
-          input: "rounded-none border-t-0 border-l-0 border-r-0 border-b border-b-2 border-neutral-600 hover:border-blue-500 focus:border-blue-500"
-        },
-      },
-      baseIconButton: {
-        c: "inherit",
-      },
     },
   });
 
@@ -257,7 +220,7 @@ const cols: ColumnDef<WhitelistItem>[] = [
     accessorKey: "group",
     header: "Rol",
     columnTitle: "Rol",
-    size: 200,
+    minSize: 150,
     cell: ({ row, getValue }) => <RoleSelector whitelistItem={row.original} value={getValue<Role>()} />,
     cellClassNames: {
       root: "!p-0"
@@ -267,7 +230,7 @@ const cols: ColumnDef<WhitelistItem>[] = [
     id: "actions",
     header: "",
     columnTitle: "Acciones",
-    size: 100,
+    size: 80,
     cellClassNames: {
       content: "flex w-full justify-center items-center"
     },
