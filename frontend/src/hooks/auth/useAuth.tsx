@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useCallback, useContext, useEffect, useLayoutEffect, useRef } from "react";
+import React, { useCallback, useContext, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 
 import { AuthContext, RedirectToUrl, SocialAction, getRedirectUrl } from "@/components/auth/AuthProvider";

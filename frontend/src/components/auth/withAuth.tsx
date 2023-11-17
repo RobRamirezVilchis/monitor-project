@@ -1,5 +1,5 @@
 import { ComponentType, useEffect, useRef } from "react";
-import { Loader } from "@mantine/core";
+import { Paper, LoadingOverlay, Loader } from "@mantine/core";
 import { useAuth } from "@/hooks/auth";
 import { useRouter } from "next/navigation";
 import { User } from "@/api/auth.types";
@@ -18,9 +18,9 @@ export function withAuth<T extends JSX.IntrinsicAttributes>(
 
     if (loading) {
       return (
-        <div className="h-full bg-neutral-100 grid place-items-center">
-          <Loader />
-        </div>
+        <Paper className="h-full">
+          <LoadingOverlay visible />
+        </Paper>
       );
     }
 
