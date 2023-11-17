@@ -1,7 +1,7 @@
 "use client";
 
 import { ReactNode, useMemo, useState } from "react";
-import { AppShell, Burger, Indicator, NavLink } from "@mantine/core";
+import { AppShell, Burger, Indicator, NavLink, useMantineTheme } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import clsx from "clsx";
 import Link from "next/link";
@@ -111,7 +111,13 @@ interface DesktopNavLinkProps {
 const DesktopNavLink = ({
   item,
 }: DesktopNavLinkProps) => {
+  const theme = useMantineTheme();
   const active = useNavLink(item.href || "#");
+  const primaryColor = theme.variantColorResolver({
+    color: theme.primaryColor,
+    theme: theme,
+    variant: "filled"
+  });
 
   return (
     <NavLink
@@ -119,9 +125,17 @@ const DesktopNavLink = ({
       className="text-center "
       classNames={{
         root: clsx("px-2 py-2.5 min-w-24", {
-          "shadow-[inset_0_-3px] shadow-blue-400 text-blue-400": active,
+          // "shadow-[inset_0_-3px] shadow-blue-400 text-blue-400": active,
         }),
         body: "overflow-visible",
+      }}
+      styles={{
+        root: {
+          boxShadow: active 
+            ? `inset 0 -3px ${primaryColor.background}` 
+            : undefined,
+          color:  active ? primaryColor.background : undefined,
+        }
       }}
       label={
         <Indicator

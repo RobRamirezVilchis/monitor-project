@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Button, Modal, useComputedColorScheme, useMantineTheme } from "@mantine/core";
+import { Button, Modal } from "@mantine/core";
 import { PaginationState } from "@tanstack/react-table";
 import { useImmer } from "use-immer";
 
@@ -22,8 +22,6 @@ import { useDataGrid } from "@/hooks/useDataGrid";
 import { IconPlus } from "@tabler/icons-react";
 
 const UsersPage = () => {
-  const theme = useMantineTheme();
-  const colorScheme = useComputedColorScheme("light");
   const pagination = useQueryState({
     page: {
       defaultValue: 1,
