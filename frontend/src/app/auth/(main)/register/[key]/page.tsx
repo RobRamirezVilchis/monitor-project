@@ -47,7 +47,7 @@ const RegisterActivation: NextPage = () => {
     if (accountVerified) {
       return (
         <div className="text-center">
-          <p className="text-lg text-neutral-800 mb-10">
+          <p className="text-lg mb-10">
             Tu cuenta ha sido verificada con éxito!
           </p>
           <span className="text-sm">
@@ -61,7 +61,7 @@ const RegisterActivation: NextPage = () => {
     else {
       return (
         <div className="text-center">
-          <p className="text-lg text-neutral-800 mb-10">
+          <p className="text-lg mb-10">
             Ha ocurrido un error y tu cuenta no se ha podido activar
             correctamente.
           </p>
@@ -84,7 +84,7 @@ const RegisterActivation: NextPage = () => {
   if (!tokenValid) {
     return (
       <div className="text-center">
-        <p className="text-lg text-neutral-800 mb-10">
+        <p className="text-lg mb-10">
           El token de activación no es válido o ha caducado.
         </p>
 

@@ -60,7 +60,7 @@ const PasswordResetRequest = () => {
   if (emailSent) {
     return (
       <div className="text-center">
-        <p className="text-lg text-neutral-800 mb-10">
+        <p className="text-lg mb-10">
           Se ha enviado correctamente un vínculo para realizar el cambio de
           contraseña al correo ingresado.
         </p>

@@ -28,7 +28,7 @@ const SocialProviders = () => {
               onClick={() => onSocialLogin(providerKey as ProviderKey)}
               radius="xl"
               classNames={{
-                root: "border-neutral-200 px-8 ",
+                root: "px-8",
                 section: "!h-2"
               }}
               size="lg"
