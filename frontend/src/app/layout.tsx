@@ -3,7 +3,7 @@ import "@mantine/dates/styles.css";
 import '@mantine/notifications/styles.css';
 import "@/styles/globals.css";
 
-import { ColorSchemeScript } from "@mantine/core";
+import { ColorSchemeScript, MantineColorScheme } from "@mantine/core";
 import { Metadata } from "next";
 import { cookies } from "next/headers";
 
@@ -25,17 +25,17 @@ export const metadata: Metadata = {
 const RootLayout = ({ 
   children 
 }: RootLayoutProps) => {
-  // Set TailwindCSS color scheme based on cookie managed by Mantine ColorSchemeManager
   const cookieStore = cookies();
-  let tailwindCSSColorScheme = cookieStore.get(colorSchemeCookieName)?.value;
-  tailwindCSSColorScheme = tailwindCSSColorScheme === "auto" 
+  let colorScheme = cookieStore.get(colorSchemeCookieName)?.value as MantineColorScheme | undefined;
+  colorScheme = colorScheme === "auto" 
     ? undefined 
-    : tailwindCSSColorScheme;
+    : colorScheme;
 
   return (
-    <html lang="en" className={tailwindCSSColorScheme}>
+    // Set TailwindCSS color scheme based on cookie managed by Mantine ColorSchemeManager
+    <html lang="en" className={colorScheme}>
       <head>
-        <ColorSchemeScript />
+        <ColorSchemeScript defaultColorScheme={colorScheme} />
       </head>
       <body className={fonts.roboto.className} suppressHydrationWarning>
         <Providers>
