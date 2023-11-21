@@ -7,7 +7,6 @@ import { Button } from "@mantine/core";
 import Link from "next/link";
 
 import { isRegisterTokenValid, verifyAccount } from "@/api/auth";
-import logger from "@/utils/logger";
 
 const RegisterActivation: NextPage = () => {
   const [loading, setLoading] = useState(false);
@@ -35,7 +34,7 @@ const RegisterActivation: NextPage = () => {
       }
     }
     catch (e) {
-      logger.debug("Error", e);
+      console.error("Error", e);
       setAccountVerified(false);
     }
     finally {

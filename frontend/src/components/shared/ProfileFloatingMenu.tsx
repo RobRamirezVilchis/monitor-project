@@ -27,7 +27,6 @@ export const ProfileFloatingMenu = () => {
     redirectIfNotAuthorized: false,
   });
   const [open, { toggle, close }] = useDisclosure(false);
-  const queryClient = useQueryClient();
   // const fallbackAvatarColor = useMemo(
   //   () => !user?.extra?.picture ? randomColor() : "#000",
   //   [user?.extra?.picture]  

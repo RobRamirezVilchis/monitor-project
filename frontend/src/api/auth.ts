@@ -4,7 +4,6 @@ import { parseISO } from "date-fns";
 import api from ".";
 import http from "@/api/http";
 import { AuthError, LoginInfo, LoginUserData, RegisterUserData, UpdateUserData, User } from "./auth.types";
-import logger from "@/utils/logger";
 
 /**
  * @returns True if the user role is in the rolesWhitelist and NOT in the rolesBlacklist
@@ -403,7 +402,7 @@ export async function refreshAccessToken() {
     return resp.data.access;
   }
   catch (e) {
-    logger.log("Failed to refresh access token.", e);
+    console.log("Failed to refresh access token.", e);
   }
   return null;
 }
