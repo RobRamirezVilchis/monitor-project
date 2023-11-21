@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 
 import { AuthContext, RedirectToUrl, SocialAction, getRedirectUrl } from "@/components/auth/AuthProvider";
 import { isUserInAuthorizedRoles } from "@/api/auth";
-import { ProviderKey, User } from "@/api/auth.types";
+import { LoginUserData, ProviderKey, User } from "@/api/auth.types";
 import { ProvidersOptions } from "@/utils/auth/oauth";
 
 export const useAuth = (options?: {
@@ -74,12 +74,13 @@ export const useAuth = (options?: {
   callbackUrlParamName?: string,
 }) => {
   const {
-    authState,
+    user,
+    loading,
+    errors,
     dispatchAuth,
     emailLogin,
     socialLogin,
     logout,
-    changeName,
     refetchUser,
     lastAction,
     defaultRedirectTo,
@@ -123,41 +124,41 @@ export const useAuth = (options?: {
       ...options
     };
 
-    if (!authState.loading && !opts.skipAll && lastAction !== "logout") {
-      if (!authState.user) {
+    if (!loading && !opts.skipAll && lastAction !== "logout") {
+      if (!user) {
         setIsAuthorized(false);
   
         if (opts.redirectIfNotAuthenticated && opts.redirectTo) {
           if (opts.setCallbackUrlParam) {
-            const url = new URL(getRedirectUrl(authState.user, opts.redirectTo), window.location.origin);
+            const url = new URL(getRedirectUrl(user, opts.redirectTo), window.location.origin);
             url.search = new URLSearchParams({
               [opts.callbackUrlParamName!]: window.location.href
             }).toString();
             router.push(url.toString());
           }
           else {
-            router.push(getRedirectUrl(authState.user, opts.redirectTo).toString());
+            router.push(getRedirectUrl(user, opts.redirectTo).toString());
           }
         }
       }
       else if (!opts.skipAuthorization) {
-        const authorized = isUserInAuthorizedRoles(authState.user, opts.rolesWhitelist, opts.rolesBlacklist, opts.permissionsRequired);
+        const authorized = isUserInAuthorizedRoles(user, opts.rolesWhitelist, opts.rolesBlacklist, opts.permissionsRequired);
         setIsAuthorized(authorized);
         if (!authorized && opts.redirectIfNotAuthorized && opts.redirectTo) {
           if (opts.setCallbackUrlParam) {
-            const url = new URL(getRedirectUrl(authState.user, opts.redirectTo), window.location.origin);
+            const url = new URL(getRedirectUrl(user, opts.redirectTo), window.location.origin);
             url.search = new URLSearchParams({
               [opts.callbackUrlParamName!]: window.location.href
             }).toString();
             router.push(url.toString());
           }
           else {
-            router.push(getRedirectUrl(authState.user, opts.redirectTo).toString());
+            router.push(getRedirectUrl(user, opts.redirectTo).toString());
           }
         }
       }
     }
-  }, [router, options, authState.loading, authState.user, defaultRedirectTo, defaultSetCallbackUrlParam, defaultCallbackUrlParamName, lastAction]);
+  }, [router, options, loading, user, defaultRedirectTo, defaultSetCallbackUrlParam, defaultCallbackUrlParamName, lastAction]);
 
   /**
    * Login the user using email login or social login (i.e. Google)
@@ -169,11 +170,7 @@ export const useAuth = (options?: {
    */
   const login = useCallback(async (
     data: {
-      emailLogin?: { 
-        username?: string, 
-        email?: string, 
-        password?: string,
-      },
+      emailLogin?: LoginUserData,
       socialLogin?: {
         provider: ProviderKey, 
         type?: SocialAction,
@@ -215,14 +212,13 @@ export const useAuth = (options?: {
   }, [dispatchAuth, emailLogin, socialLogin]);
 
   return {
-    user: authState.user,
-    isAuthenticated: authState.user !== null,
+    user: user,
+    isAuthenticated: !!user,
     isAuthorized,
-    loading: authState.loading,
-    errors: authState.errors,
+    loading,
+    errors,
     login,
     logout: logout,
     refetchUser,
-    changeName,
   };
 }

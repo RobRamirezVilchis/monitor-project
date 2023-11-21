@@ -102,7 +102,7 @@ const MainLayout = ({
   );
 }
 
-export default withAuth<any>(MainLayout);
+export default withAuth(MainLayout);
 
 interface DesktopNavLinkProps {
   item: NavMenuItem;
@@ -125,7 +125,6 @@ const DesktopNavLink = ({
       className="text-center "
       classNames={{
         root: clsx("px-2 py-2.5 min-w-24", {
-          // "shadow-[inset_0_-3px] shadow-blue-400 text-blue-400": active,
         }),
         body: "overflow-visible",
       }}

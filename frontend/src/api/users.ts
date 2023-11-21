@@ -74,11 +74,11 @@ export async function deleteWhitelistItem(
   config?: Parameters<typeof http.delete>[1]
 ) {
   try {
-    const resp = await http.delete(
+    const { data } = await http.delete(
       api.endpoints.users.whitelist.delete(id),
       config
     );
-    return resp.data;
+    return data;
   }
   catch (error) {
     throw error;

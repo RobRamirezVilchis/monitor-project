@@ -1,4 +1,4 @@
-import { ComponentType, useEffect, useRef } from "react";
+import { ComponentType, JSXElementConstructor, useEffect, useRef } from "react";
 import { Paper, LoadingOverlay, Loader } from "@mantine/core";
 import { useAuth } from "@/hooks/auth";
 import { useRouter } from "next/navigation";
@@ -9,8 +9,8 @@ import { User } from "@/api/auth.types";
  * After authentication/authorization is checked, the component is rendered.
  * NOTE: client-side only.
  */
-export function withAuth<T extends JSX.IntrinsicAttributes>(
-  Component: ComponentType<T>, 
+export function withAuth<T>(
+  Component: JSXElementConstructor<T>, 
   options?: Parameters<typeof useAuth>[0]
 ) {
   const AuthProtected = (props: T) => {
@@ -24,7 +24,7 @@ export function withAuth<T extends JSX.IntrinsicAttributes>(
       );
     }
 
-    return isAuthenticated && isAuthorized ? <Component {...props} /> : null;
+    return isAuthenticated && isAuthorized ? <Component {...props as any} /> : null;
   };
 
   return AuthProtected;
@@ -37,8 +37,8 @@ export function withAuth<T extends JSX.IntrinsicAttributes>(
  * NOTE: client-side only.
  * @param redirectTo The URL to redirect to if the user is authenticated. Defaults to "/".
  */
-export function withRedirectIfLoggedIn<T extends JSX.IntrinsicAttributes>(
-  Component: ComponentType<T>, redirectTo?: (user: User | null) => string | URL
+export function withRedirectIfLoggedIn<T>(
+  Component: JSXElementConstructor<T>, redirectTo?: (user: User | null) => string | URL
 ) {
   const AuthProtected = (props: T) => {
     const { user, isAuthenticated, loading } = useAuth({
@@ -59,7 +59,7 @@ export function withRedirectIfLoggedIn<T extends JSX.IntrinsicAttributes>(
     }, [user, loading, router]);
 
     return (<>
-      <Component {...props} />
+      <Component {...props as any} />
       {(!firstLoad.current && loading) || isAuthenticated ? (
         <div className="absolute inset-0 h-full bg-neutral-100 grid place-items-center">
           <Loader />

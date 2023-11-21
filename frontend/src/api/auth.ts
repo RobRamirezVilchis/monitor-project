@@ -3,7 +3,7 @@ import { parseISO } from "date-fns";
 
 import api from ".";
 import http from "@/api/http";
-import { AuthError, User } from "./auth.types";
+import { AuthError, LoginInfo, LoginUserData, RegisterUserData, UpdateUserData, User } from "./auth.types";
 import logger from "@/utils/logger";
 
 /**
@@ -23,113 +23,272 @@ export function isUserInAuthorizedRoles(
   return authorized;
 }
 
-export const fetchMyUser = async (config?: Parameters<typeof http.get>[1]): Promise<AxiosResponse<User, any>> => {
-  return http.get<User>(api.endpoints.auth.user, config);
-}
-
-export const getMyUser = async (config?: Parameters<typeof http.get>[1]): Promise<User | null> => {
+export async function getMyUser(
+  config?: Parameters<typeof http.get>[1]
+) {
   try {
-    const resp = await fetchMyUser(config);
-    if (resp.status === 200)
-      return resp.data;
+    const { data } = await http.get<User | null>(
+      api.endpoints.auth.user, 
+      config
+    );
+    return data;
   }
-  catch (e) {
-    logger.debug("Failed to fetch user profile.", e);
+  catch (error) {
+    throw error;
   }
-
-  return null;
 }
 
-export const updateMyInfo = (
-  data: {
-    username?: string,
-    first_name?: string,
-    last_name?: string,
-  },
+export async function updateMyInfo(
+  data: UpdateUserData,
   config?: Parameters<typeof http.patch>[2]
-) => {
-  return http.patch<User>(api.endpoints.auth.user, data, config);
+) {
+  try {
+    const resp = await http.patch<User>(
+      api.endpoints.auth.user, 
+      data, 
+      config
+    );
+    return resp.data;
+  }
+  catch (error) {
+    throw error;
+  } 
 };
 
-export const deleteMyAccount = (config?: Parameters<typeof http.delete>[1]) => {
-  return http.delete(api.endpoints.auth.user, config);
+export async function deleteMyAccount(
+  config?: Parameters<typeof http.delete>[1]
+) {
+  try {
+    const { data } = await http.delete(
+      api.endpoints.auth.user, 
+      config
+    );
+    return data;
+  }
+  catch (error) {
+    throw error;
+  }
 };
 
-export interface RegisterUserData {
-  username: string;
-  email: string;
-  password1: string;
-  password2: string;
-  first_name: string;
-  last_name: string;
+export async function registerUser(
+  data: RegisterUserData, 
+  config?: Parameters<typeof http.post>[2]
+) {
+  try {
+    const resp = await http.post(
+      api.endpoints.auth.register, 
+      data, 
+      config
+    );
+    return resp.data;
+  }
+  catch (error) {
+    throw error;
+  }
+};
+
+export async function login(
+  data: LoginUserData,
+  config?: Parameters<typeof http.post>[2]
+) {
+  try {
+    const resp = await http.post<LoginInfo>(
+      api.endpoints.auth.login, 
+      data, 
+      config
+    );
+    return resp.data;
+  }
+  catch (error) {
+    throw error;
+  }
+};
+
+export async function unsafeSocialLogin(
+  url: string,
+  data: any,
+  config?: Parameters<typeof http.post>[2]
+) {
+  try {
+    const resp = await http.post<LoginInfo>(
+      url, 
+      data,
+      config
+    );
+    return resp.data;
+  }
+  catch (error) {
+    throw error;
+  }
 }
 
-export const registerUser = (data: RegisterUserData, config?: Parameters<typeof http.post>[2]) => {
-  return http.post(api.endpoints.auth.register, data, config);
-};
-
-export const isRegisterTokenValid = async (key: string, config?: Parameters<typeof http.get>[1]) => {
+export async function logout(
+  config?: Parameters<typeof http.post>[2]
+) {
   try {
-    const resp = await http.get(api.endpoints.auth.registerTokenValidity, { ...config, params: { key } });
+    const resp = await http.post(
+      api.endpoints.auth.logout, 
+      undefined, 
+      config
+    );
+    return resp.data;
+  }
+  catch (error) {
+    throw error;
+  }
+}
+
+export async function isRegisterTokenValid(
+  key: string, 
+  config?: Parameters<typeof http.get>[1]
+) {
+  try {
+    await http.get(api.endpoints.auth.registerTokenValidity, { ...config, params: { key } });
     return true;
   }
   catch (e) { }
   return false;
 };
 
-export const verifyAccount = (key: string, config?: Parameters<typeof http.post>[2]) => {
-  return http.post(api.endpoints.auth.registerVerifyEmail, { key }, config);
-};
-
-export const resendActivationEmail = (email: string, config?: Parameters<typeof http.post>[2]) => {
-  return http.post(api.endpoints.auth.registerResendEmail, { email }, config);
-};
-
-export const getConnectedSocialAccounts = async (config?: Parameters<typeof http.get>[1]) => {
+export async function verifyAccount(
+  key: string, 
+  config?: Parameters<typeof http.post>[2]
+) {
   try {
-    const resp = await http.get(api.endpoints.auth.connectedSocialAccounts, config);
+    const resp = await http.post(
+      api.endpoints.auth.registerVerifyEmail, 
+      { key }, 
+      config
+    );
     return resp.data;
   }
-  catch (e) {
-    return [];
+  catch (error) {
+    throw error;
   }
 };
 
-export const disconnectSocialAccount = (socialAccountId: number, config?: Parameters<typeof http.post>[2]) => {
-  return http.post(api.endpoints.auth.disconnectSocialAccount(socialAccountId), undefined, config);
-}
-
-export const requestPasswordReset = (email: string, config?: Parameters<typeof http.post>[2]) => {
-  return http.post(api.endpoints.auth.passwordResetRequest, { email }, config);
+export async function resendActivationEmail(
+  email: string, 
+  config?: Parameters<typeof http.post>[2]
+) {
+  try {
+    const { data } = await http.post(
+      api.endpoints.auth.registerResendEmail, 
+      { email }, 
+      config
+    );
+    return data;
+  }
+  catch (error) {
+    throw error;
+  }
 };
 
-export const confirmPasswordReset = (
+export async function getConnectedSocialAccounts(
+  config?: Parameters<typeof http.get>[1]
+) {
+  try {
+    const resp = await http.get(
+      api.endpoints.auth.connectedSocialAccounts, 
+      config
+    );
+    return resp.data;
+  }
+  catch (error) {
+    throw error;
+  }
+};
+
+export async function disconnectSocialAccount(
+  socialAccountId: number, 
+  config?: Parameters<typeof http.post>[2]
+) {
+  try {
+    http.post(api.endpoints.auth.disconnectSocialAccount(socialAccountId), undefined, config);
+    const resp = await http.post(
+      api.endpoints.auth.disconnectSocialAccount(socialAccountId), 
+      undefined, 
+      config
+    );
+    return resp.data;
+  }
+  catch (error) {
+    throw error;
+  }
+}
+
+export async function requestPasswordReset(
+  email: string, 
+  config?: Parameters<typeof http.post>[2]
+) {
+  try {
+    const { data } = await http.post(
+      api.endpoints.auth.passwordResetRequest, 
+      { email }, 
+      config
+    );
+    return data;
+  }
+  catch (error) {
+    throw error;
+  }
+};
+
+export async function confirmPasswordReset(
   uid: string,
   token: string,
   newPassword1: string,
   newPassword2: string,
   config?: Parameters<typeof http.post>[2]
-) => {
-  return http.post(api.endpoints.auth.passwordResetConfirm, 
-    { uid, token, new_password1: newPassword1, new_password2: newPassword2 },
-    config
-  );
+) {
+  try {
+    const resp = await http.post(
+      api.endpoints.auth.passwordResetConfirm, 
+      { uid, token, new_password1: newPassword1, new_password2: newPassword2 }, 
+      config
+    );
+    return resp.data;
+  }
+  catch (error) {
+    throw error;
+  }
 };
 
-export const isPasswordResetTokenValid = async (uid: string, token: string, config?: Parameters<typeof http.get>[1]) => {
+export async function isPasswordResetTokenValid(
+  uid: string, 
+  token: string, 
+  config?: Parameters<typeof http.get>[1]
+) {
   try {
-    const resp = await http.get(api.endpoints.auth.passwordResetValidity, { ...config, params: { uid, token } });
+    await http.get(
+      api.endpoints.auth.passwordResetValidity, 
+      { 
+        ...config, 
+        params: { uid, token },
+      }
+    );
     return true;
   }
   catch (e) { }
   return false;
 };
 
-export const changePassword = (newPassword1: string, newPassword2: string, config?: Parameters<typeof http.post>[2]) => {
-  return http.post(api.endpoints.auth.passwordChange, 
-    { new_password1: newPassword1, new_password2: newPassword2 },
-    config
-  );
+export async function changePassword(
+  newPassword1: string, 
+  newPassword2: string, 
+  config?: Parameters<typeof http.post>[2]
+) {
+  try {
+    const resp = await http.post(
+      api.endpoints.auth.passwordChange, 
+      { new_password1: newPassword1, new_password2: newPassword2 },
+      config
+    );
+    return resp.data;
+  }
+  catch (error) {
+    throw error;
+  }
 };
 
 export const getAuthErrorString = (error: AuthError) => {
