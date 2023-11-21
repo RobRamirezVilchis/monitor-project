@@ -7,7 +7,6 @@ import { useRouter } from "next/navigation";
 
 import api from "@/api";
 import { ApiError } from "@/api/types";
-import logger from "@/utils/logger";
 import { AuthError, User, ProviderKey, JWTLoginInfo, LoginUserData } from "@/api/auth.types";
 import { AuthAction, AuthState, authReducer } from "./AuthReducer";
 import { ProvidersOptions, startSocialLogin } from "@/utils/auth/oauth";
@@ -119,6 +118,7 @@ export const AuthProvider = ({
   const myUserQuery = useMyUserQuery({
     enabled: state.registeredHooks > 0,
     refetchOnWindowFocus: false,
+    retry: false,
   });
   const loginMutation = useLoginMutation();
   const logoutMutation = useLogoutMutation();
@@ -178,14 +178,17 @@ export const AuthProvider = ({
     lastAction.current = "login";
 
     dispatch({ type: "loading", payload: true });
-    let newUser: User | null = null;
+    let user: User | null = null;
 
     try {
       const resp = await loginMutation.mutateAsync(loginData);
-      if ((resp as JWTLoginInfo)?.user)
-        newUser = (resp as JWTLoginInfo).user;
-      else
-        newUser = await useMyUserQuery.refetch() ?? null;
+      if ((resp as JWTLoginInfo)?.user) {
+        user = (resp as JWTLoginInfo).user;
+        useMyUserQuery.setData(user);
+      }
+      else {
+        user = await useMyUserQuery.refetch() ?? null;
+      }
     }
     catch {
       console.log("Error signing in.");
@@ -193,10 +196,10 @@ export const AuthProvider = ({
 
     dispatch({ type: "loading", payload: false });
     
-    if (opts.redirect && opts.redirectTo && newUser)
-      router.push(getRedirectUrl(newUser, opts.redirectTo).toString());
+    if (opts.redirect && opts.redirectTo && user)
+      router.push(getRedirectUrl(user, opts.redirectTo).toString());
 
-    return newUser;
+    return user;
   }, [dispatch, loginMutation, router]);
 
   const socialLoginAction = useCallback(async (
@@ -219,7 +222,7 @@ export const AuthProvider = ({
 
     if (!socialUrls) {
       dispatch({ type: "addError", payload: AuthError.ProviderNotFound })
-      logger.error(
+      console.error(
         `No valid ${socialAction === "connect" ? "connection" : "login"} url for the ${provider} was found.`
       );
     }
@@ -232,11 +235,13 @@ export const AuthProvider = ({
       if (url) {
         try {
           const resp = await unsafeSocialLoginMutation.mutateAsync({ url, data });
-          
-          if ((resp as JWTLoginInfo)?.user)
+          if ((resp as JWTLoginInfo)?.user) {
             user = (resp as JWTLoginInfo).user;
-          else
+            useMyUserQuery.setData(user);
+          }
+          else {
             user = await useMyUserQuery.refetch() ?? null;
+          }
         }
         catch (e) {
           console.log("Error authenticating user.", e);
@@ -298,7 +303,7 @@ export const AuthProvider = ({
       await logoutMutation.mutateAsync();
     }
     catch (e) {
-      logger.debug("Error.", e);
+      console.error("Error.", e);
     }
 
     if (opts.redirect && opts.redirectTo) {
@@ -306,9 +311,7 @@ export const AuthProvider = ({
     }
   }, [defaultRedirectTo, logoutMutation, router, myUserQuery.data]);
 
-  const refetchUser = useCallback(async () => {
-    myUserQuery.refetch();
-  }, [myUserQuery]);
+  const refetchUser = useCallback(() => myUserQuery.refetch(), [myUserQuery]);
 
   const contextValue: AuthContextProps = useMemo(() => ({
     user: myUserQuery.data ?? null,
