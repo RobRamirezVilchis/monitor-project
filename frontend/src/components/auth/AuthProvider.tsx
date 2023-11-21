@@ -13,7 +13,6 @@ import { AuthAction, AuthState, authReducer } from "./AuthReducer";
 import { ProvidersOptions, startSocialLogin } from "@/utils/auth/oauth";
 import { useMyUserQuery } from "@/api/queries/auth";
 import { useLoginMutation, useLogoutMutation, useUnsafeSocialLogin } from "@/api/mutations/auth";
-import { useQueryClient } from "@tanstack/react-query";
 
 // Reducer ---------------------------------------------------------------------
 const authReducerDefaults: AuthState = {
@@ -117,7 +116,6 @@ export const AuthProvider = ({
   const [state, dispatch] = useImmerReducer(authReducer, authReducerDefaults);
   const router = useRouter();
   const lastAction = useRef<AuthContextProps["lastAction"]>(null);
-  const queryClient = useQueryClient();
   const myUserQuery = useMyUserQuery({
     enabled: state.registeredHooks > 0,
     refetchOnWindowFocus: false,
