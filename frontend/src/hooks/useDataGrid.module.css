@@ -1,3 +1,11 @@
 .row-root:hover {
     background-color: var(--mantine-color-default-hover);
 }
+
+.columnHeaders {
+    background-color: light-dark(var(--mantine-color-dark-9), var(--mantine-color-dark-8));
+}
+
+.body {
+    background-color: light-dark(var(--mantine-color-white), var(--mantine-color-dark-6));
+}
