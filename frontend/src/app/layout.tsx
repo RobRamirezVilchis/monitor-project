@@ -4,7 +4,7 @@ import '@mantine/notifications/styles.css';
 import "@/styles/globals.css";
 
 import { ColorSchemeScript, MantineColorScheme } from "@mantine/core";
-import { Metadata } from "next";
+import { Metadata, Viewport } from "next";
 import { cookies } from "next/headers";
 
 import { Providers } from "./Providers";
@@ -18,8 +18,12 @@ interface RootLayoutProps {
 export const metadata: Metadata = {
   title: "App Title",
   description: "Description",
-  viewport: "width=device-width, initial-scale=1",
   icons: [ { rel: "icon", url: "/favicon.ico" } ]
+}
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
 }
 
 const RootLayout = ({ 
