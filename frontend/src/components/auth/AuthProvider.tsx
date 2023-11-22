@@ -126,7 +126,7 @@ export const AuthProvider = ({
   const router = useRouter();
   const lastAction = useRef<AuthContextProps["lastAction"]>(null);
   const myUserQuery = useMyUserQuery({
-    enabled: state.registeredHooks > 0,
+    enabled: state.registeredHooks > 0 && lastAction.current !== "logout",
     refetchOnWindowFocus: false,
     retry: false,
   });
