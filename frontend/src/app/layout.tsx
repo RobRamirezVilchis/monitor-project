@@ -6,6 +6,7 @@ import "@/styles/globals.css";
 import { ColorSchemeScript, MantineColorScheme } from "@mantine/core";
 import { Metadata, Viewport } from "next";
 import { cookies } from "next/headers";
+import Script from "next/script";
 
 import { Providers } from "./Providers";
 import { colorSchemeCookieName } from "@/ui/themes/cookieColorSchemeManager";
@@ -39,6 +40,10 @@ const RootLayout = ({
     // Set TailwindCSS color scheme based on cookie managed by Mantine ColorSchemeManager
     <html lang="en" className={colorScheme}>
       <head>
+        {/* Google 3P Authorization Library */}
+        {/* Types package: @types/google.accounts */}
+        <Script src="https://accounts.google.com/gsi/client" />
+
         <ColorSchemeScript defaultColorScheme={colorScheme} />
       </head>
       <body className={fonts.roboto.className} suppressHydrationWarning>

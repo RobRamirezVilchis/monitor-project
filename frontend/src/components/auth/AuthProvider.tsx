@@ -5,13 +5,13 @@ import { isAxiosError } from "axios";
 import { useImmerReducer } from "use-immer";
 import { useRouter } from "next/navigation";
 
-import api from "@/api";
 import { ApiError } from "@/api/types";
-import { AuthError, User, ProviderKey, JWTLoginInfo, LoginUserData } from "@/api/auth.types";
+import { AuthError, User, JWTLoginInfo, LoginUserData } from "@/api/auth.types";
 import { AuthAction, AuthState, authReducer } from "./AuthReducer";
-import { ProvidersOptions, startSocialLogin } from "@/utils/auth/oauth";
+import { ProviderErrors, ProviderKey, ProviderResponse, ProvidersOptions, startSocialLogin } from "@/utils/auth/oauth";
 import { useMyUserQuery } from "@/api/queries/auth";
 import { useLoginMutation, useLogoutMutation, useUnsafeSocialLogin } from "@/api/mutations/auth";
+import api from "@/api";
 
 // Reducer ---------------------------------------------------------------------
 const authReducerDefaults: AuthState = {
@@ -31,13 +31,10 @@ export interface AuthContextProps {
     options?: { redirect?: boolean, redirectTo?: RedirectToUrl }) => Promise<User | null>;
   socialLogin: (provider: ProviderKey,
     type: SocialAction, 
-    options?: { 
+    options?: SocialLoginCallbacks & { 
       redirect?: boolean;
       redirectTo?: RedirectToUrl;
       providersOptions?: ProvidersOptions;
-      onPopupClosed?: () => void;
-      onFinish?: (user: User | null) => void;
-      onError?: (error: any) => void;
     }) => void;
   logout: (options?: { redirect?: boolean, redirectTo?: RedirectToUrl }) => void,
   refetchUser: () => void;
@@ -105,6 +102,19 @@ export interface AuthProviderProps {
 }
 
 export type SocialAction = "login" | "connect" | null;
+
+export interface SocialLoginCallbacks {
+  onPopupClosed?: (error: ProviderErrors) => void;
+  onFinish?: (user: User | null) => void;
+  onError?: (
+    error: ProviderErrors 
+    | { 
+      provider: "_"; 
+      type: "invalid_url" | "authentication_error"; 
+      payload: any;
+    }
+  ) => void;
+}
 
 export const AuthProvider = ({
   children, 
@@ -202,91 +212,81 @@ export const AuthProvider = ({
     return user;
   }, [dispatch, loginMutation, router]);
 
-  const socialLoginAction = useCallback(async (
-    provider: ProviderKey,
-    socialAction: SocialAction, 
-    data: any,
-    options?: { redirect?: boolean, redirectTo?: RedirectToUrl }
-  ): Promise<User | null> => {
-    const opts: typeof options = {
-      redirect: true,
-      redirectTo: "/",
-      ...options
-    };
-    lastAction.current = "login";
-
-    dispatch({ type: "loading", payload: true });
-    const socialUrls = api.endpoints.auth.social[provider as keyof typeof api.endpoints.auth.social];
-
-    let user: User | null = null;
-
-    if (!socialUrls) {
-      dispatch({ type: "addError", payload: AuthError.ProviderNotFound })
-      console.error(
-        `No valid ${socialAction === "connect" ? "connection" : "login"} url for the ${provider} was found.`
-      );
-    }
-    else {
-      let url = socialUrls.login;
-
-      if (socialAction === "connect")
-        url = socialUrls.connect;
-
-      if (url) {
-        try {
-          const resp = await unsafeSocialLoginMutation.mutateAsync({ url, data });
-          if ((resp as JWTLoginInfo)?.user) {
-            user = (resp as JWTLoginInfo).user;
-            useMyUserQuery.setData(user);
-          }
-          else {
-            user = await useMyUserQuery.refetch() ?? null;
-          }
-        }
-        catch (e) {
-          console.log("Error authenticating user.", e);
-        }
-      }
-    }
-  
-    dispatch({ type: "loading", payload: false });
-
-    if (opts?.redirect && opts.redirectTo && user)
-      router.push(getRedirectUrl(user, opts.redirectTo).toString());
-
-    return user;
-  }, [dispatch, router, unsafeSocialLoginMutation]);
-
   const socialLogin = useCallback(async (
     provider: ProviderKey,
     type: SocialAction, 
-    options?: { 
+    options?: SocialLoginCallbacks & { 
       redirect?: boolean;
       redirectTo?: RedirectToUrl;
       providersOptions?: ProvidersOptions;
-      onPopupClosed?: () => void;
-      onFinish?: (user: User | null) => void;
-      onError?: (error: any) => void;
     }
   ) => {
+    const {
+      redirect = true,
+      redirectTo = "/",
+    } = options ?? {};
+
     startSocialLogin(provider, {
-      callback: async (data) => {
-        if (data.error) {
-          options?.onError?.(data.error);
-          return;
-        }
-        const user = await socialLoginAction(
-          provider, 
-          type, 
-          data, 
-          options
-        );
-        options?.onFinish?.(user);
-      },
-      providers: options?.providersOptions,
+      onError: options?.onError,
       onPopupClosed: options?.onPopupClosed,
-    });
-  }, [socialLoginAction]);
+      callback: async (data) => {
+        lastAction.current = "login";
+
+        dispatch({ type: "loading", payload: true });
+        const socialUrls = api.endpoints.auth.social[provider as keyof typeof api.endpoints.auth.social];
+
+        let user: User | null = null;
+
+        if (!socialUrls) {
+          dispatch({ type: "addError", payload: AuthError.ProviderNotFound });
+          const message = `No valid ${type === "connect" ? "connection" : "login"} url for the ${provider} was found.`;
+          console.error(message);
+          options?.onError?.({
+            provider: "_",
+            type: "invalid_url",
+            payload: message,
+          });
+        }
+        else {
+          let url = socialUrls.login;
+
+          if (type === "connect")
+            url = socialUrls.connect;
+
+          if (url) {
+            try {
+              const resp = await unsafeSocialLoginMutation.mutateAsync({ 
+                url,
+                data: getProviderLoginDataFromResponse(data),
+              });
+              if ((resp as JWTLoginInfo)?.user) {
+                user = (resp as JWTLoginInfo).user;
+                useMyUserQuery.setData(user);
+              }
+              else {
+                user = await useMyUserQuery.refetch() ?? null;
+              }
+            }
+            catch (e) {
+              console.error("Error authenticating user.");
+              options?.onError?.({
+                provider: "_",
+                type: "authentication_error",
+                payload: e,
+              });
+            }
+          }
+        }
+      
+        dispatch({ type: "loading", payload: false });
+
+        options?.onFinish?.(user);
+
+        if (redirect && redirectTo && user)
+          router.push(getRedirectUrl(user, redirectTo).toString());
+      },
+    })
+  }, [dispatch, router, unsafeSocialLoginMutation]);
 
   const logout = useCallback(async (options?: {
     redirect?: boolean,
@@ -335,3 +335,14 @@ export const AuthProvider = ({
     </AuthContext.Provider>
   );
 };
+
+function getProviderLoginDataFromResponse(data: ProviderResponse) {
+  switch (data.provider) {
+    case "google": 
+      return {
+        code: data.code,
+      };
+    default: 
+      return undefined;
+  }
+}

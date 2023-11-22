@@ -3,10 +3,10 @@
 import React, { useCallback, useContext, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 
-import { AuthContext, RedirectToUrl, SocialAction, getRedirectUrl } from "@/components/auth/AuthProvider";
+import { AuthContext, RedirectToUrl, SocialAction, SocialLoginCallbacks, getRedirectUrl } from "@/components/auth/AuthProvider";
 import { isUserInAuthorizedRoles } from "@/api/auth";
-import { LoginUserData, ProviderKey, User } from "@/api/auth.types";
-import { ProvidersOptions } from "@/utils/auth/oauth";
+import { LoginUserData, User } from "@/api/auth.types";
+import { ProviderKey, ProvidersOptions } from "@/utils/auth/oauth";
 
 export const useAuth = (options?: {
   /**
@@ -171,13 +171,10 @@ export const useAuth = (options?: {
   const login = useCallback(async (
     data: {
       emailLogin?: LoginUserData,
-      socialLogin?: {
+      socialLogin?: SocialLoginCallbacks & {
         provider: ProviderKey, 
         type?: SocialAction,
         providersOptions?: ProvidersOptions;
-        onPopupClosed?: () => void,
-        onFinish?: (user: User | null) => void,
-        onError?: (error: any) => void,
       }
     },
     options?: {

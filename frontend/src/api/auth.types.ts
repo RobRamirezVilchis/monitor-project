@@ -1,5 +1,3 @@
-import { providers } from "./auth";
-
 export const userRoles = [
   "Admin",
   "User",
@@ -18,12 +16,6 @@ export interface User {
     picture?: string;
   };
 }
-
-export type Providers = typeof providers;
-
-export type ProviderKey = keyof Providers;
-
-export type Provider = Providers[ProviderKey];
 
 export enum AuthError {
   IncorrectCredentials,

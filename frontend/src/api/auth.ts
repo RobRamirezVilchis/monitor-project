@@ -338,10 +338,3 @@ export const getAuthErrorString = (error: AuthError) => {
       return "Error en la aplicación.";
   }
 }
-
-export const providers = {
-  google: {
-    id: "google",
-    name: "Google",
-  }
-};

@@ -20,6 +20,10 @@ from . import listeners #? Necessary to register the listeners
 class GoogleLoginView(SocialLoginView):
     authentication_classes = []
     adapter_class = GoogleOAuth2Adapter
+    """
+        `postmessage` should be used when the client uses the `popup` ux_mode
+        see: https://stackoverflow.com/questions/55222501/google-oauth-redirect-uri-mismatch-when-exchanging-one-time-code-for-refresh-tok?rq=1
+    """
     callback_url = settings.GOOGLE_CALLBACK_URL
     client_class = OAuth2Client
 

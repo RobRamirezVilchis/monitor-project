@@ -11,7 +11,7 @@ import jwt from "../jwt";
 
 export const useLoginMutation = createMutation({
   mutationKey: ["user-login"],
-  mutationFn: (data: LoginUserData) => login(data, { rejectRequest: false, onError: false }),
+  mutationFn: (data: LoginUserData) => login(data, { rejectRequest: false, onError: false, useJWT: false }),
   onSuccess: (data) => {
     useMyUserQuery.invalidatePrimaryKey();
 
@@ -47,7 +47,7 @@ export const useLogoutMutation = createMutation({
 export const useUnsafeSocialLogin = createMutation({
   mutationKey: ["user-social-login"],
   mutationFn: ({ url, data }: { url: string; data: any }) => 
-    unsafeSocialLogin(url, data, { rejectRequest: false, onError: false }),
+    unsafeSocialLogin(url, data, { rejectRequest: false, onError: false, useJWT: false }),
   onSuccess: (data) => {
     if (jwt.useJwt) {
       data = data as JWTLoginInfo;
