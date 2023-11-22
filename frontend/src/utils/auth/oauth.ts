@@ -29,7 +29,7 @@ export const providersInfo: ProvidersInfo = {
 };
 
 export type ProvidersOptions = 
-  & ProviderOption<"google", Omit<google.accounts.oauth2.CodeClientConfig, "client_id" | "callback" | "error_callback">>
+  & ProviderOption<"google", Omit<google.accounts.oauth2.CodeClientConfig, "callback" | "client_id" | "error_callback">>
 
 export type ProviderResponse =
   | ProviderUnion<"google", google.accounts.oauth2.CodeResponse & { authuser: string; hd: string; prompt: string; }>
@@ -40,8 +40,8 @@ export type ProviderErrors =
 export function startSocialLogin(
   provider: ProviderKey, 
   options: {
-    callback?: (data: ProviderResponse) => void;
     providers?: ProvidersOptions;
+    callback?: (data: ProviderResponse) => void;
     onPopupClosed?: (error: ProviderErrors) => void;
     onError?: (error: ProviderErrors) => void;
   }

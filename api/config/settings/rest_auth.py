@@ -57,8 +57,8 @@ SOCIALACCOUNT_PROVIDERS = {
         "AUTH_PARAMS": {
             "access_type": "offline",
             "prompt": "consent",
-        }
-    }
+        },
+    },
 }
 
 GOOGLE_CALLBACK_URL = env.str("GOOGLE_CALLBACK_URL")

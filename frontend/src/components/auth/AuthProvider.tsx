@@ -227,6 +227,7 @@ export const AuthProvider = ({
     } = options ?? {};
 
     startSocialLogin(provider, {
+      providers: options?.providersOptions,
       onError: options?.onError,
       onPopupClosed: options?.onPopupClosed,
       callback: async (data) => {

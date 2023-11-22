@@ -72,6 +72,42 @@ const Home = () => {
           >
             Connect account to Google
           </button>
+
+          <button
+            className="p-2 bg-blue-500 text-white rounded-md"
+            onClick={async () => {
+              login({
+                socialLogin: { 
+                  provider: "google",
+                  providersOptions: {
+                    google: {
+                      scope: "https://www.googleapis.com/auth/calendar.readonly",
+                    },
+                  },
+                },
+              });
+            }}
+          >
+            Add Google Calendar Scope
+          </button>
+
+          <button
+            className="p-2 bg-blue-500 text-white rounded-md"
+            onClick={async () => {
+              login({ 
+                socialLogin: { 
+                  provider: "google",
+                  providersOptions: {
+                    google: {
+                      scope: "https://spreadsheets.google.com/feeds/",
+                    },
+                  },
+                },
+              });
+            }}
+          >
+            Add Google SpreadSheets Scope
+          </button>
         </div>
       ) : (
         null
