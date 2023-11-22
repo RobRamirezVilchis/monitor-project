@@ -68,3 +68,8 @@ export interface LoginUserData {
   email?: string;
   password: string;
 }
+
+export interface RefreshTokenResponse {
+  access: string;
+  access_token_expiration: string;
+}

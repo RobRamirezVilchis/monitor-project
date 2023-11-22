@@ -1,9 +1,6 @@
-import { AxiosResponse } from "axios";
-import { parseISO } from "date-fns";
-
 import api from ".";
 import http from "@/api/http";
-import { AuthError, LoginInfo, LoginUserData, RegisterUserData, UpdateUserData, User } from "./auth.types";
+import { AuthError, LoginInfo, LoginUserData, RefreshTokenResponse, RegisterUserData, UpdateUserData, User } from "./auth.types";
 
 /**
  * @returns True if the user role is in the rolesWhitelist and NOT in the rolesBlacklist
@@ -290,6 +287,41 @@ export async function changePassword(
   }
 };
 
+export async function verifyToken(
+  token: string, 
+  config?: Parameters<typeof http.post>[2]
+) {
+  try {
+    const resp = await http.post(
+      api.endpoints.auth.tokenVerify, 
+      { token }, 
+      config
+    );
+    return resp.data;
+  }
+  catch (error) {
+    throw error;
+  }
+}
+
+export async function refreshToken(
+  refreshToken?: string, 
+  config?: Parameters<typeof http.post>[2]
+) {
+  const data = refreshToken ? { refresh: refreshToken } : undefined;
+  try {
+    const resp = await http.post<RefreshTokenResponse>(
+      api.endpoints.auth.tokenRefresh, 
+      data, 
+      config
+    );
+    return resp.data;
+  }
+  catch (error) {
+    throw error;
+  }
+}
+
 export const getAuthErrorString = (error: AuthError) => {
   switch(error) {
     case AuthError.IncorrectCredentials:
@@ -313,110 +345,3 @@ export const providers = {
     name: "Google",
   }
 };
-
-// JWT
-
-export const useJwt = process.env.NEXT_PUBLIC_USE_JWT_AUTH?.toLocaleLowerCase() === "true" ?? false;
-export const jwtStorage = process.env.NEXT_PUBLIC_JWT_STORAGE?.toLocaleLowerCase() ?? "local";
-export const jwtCookie = process.env.NEXT_PUBLIC_JWT_STORAGE?.toLocaleLowerCase() === "cookie";
-export const jwtCookieAccessTokenName = process.env.NEXT_PUBLIC_JWT_COOKIE_ACCESS_TOKEN_NAME ?? "auth";
-export const jwtCookieRefreshTokenName = process.env.NEXT_PUBLIC_JWT_REFRESH_TOKEN_NAME ?? "refresh";
-export const jwtCookieHttpOnly = process.env.NEXT_PUBLIC_JWT_HTTPONLY?.toLocaleLowerCase() === "true" ?? false;
-
-const cookieStorage: Pick<Storage, "getItem" | "setItem" | "removeItem"> = {
-  getItem: (key: string) => null,
-  setItem: (key: string, value: string) => { },
-  removeItem: (key: string) => { },
-}
-
-let storage = cookieStorage;
-let expStorage = cookieStorage;
-if (typeof window !== "undefined") {
-  if (jwtStorage === "cookie") {
-    storage = cookieStorage;
-    expStorage = localStorage;
-  }
-  else if (jwtStorage === "session") {
-    storage = sessionStorage;
-    expStorage = sessionStorage;
-  }
-  else {
-    storage = localStorage;
-    expStorage = localStorage;
-  }
-}
-
-export function getAccessToken() {
-  return storage.getItem("auth");
-}
-
-export function getRefreshToken() {
-  return storage.getItem("refresh");
-}
-
-export function setAccessToken(token: string) {
-  storage.setItem("auth", token);
-}
-
-export function setRefreshToken(token: string) {
-  storage.setItem("refresh", token);
-}
-
-export function getAccessTokenExpiration() {
-  return expStorage.getItem("auth_exp");
-}
-
-export function getRefreshTokenExpiration() {
-  return expStorage.getItem("refresh_exp");
-}
-
-export function setAccessTokenExpiration(exp: string) {
-  expStorage.setItem("auth_exp", exp);
-}
-
-export function setRefreshTokenExpiration(exp: string) {
-  expStorage.setItem("refresh_exp", exp);
-}
-
-export function isAccessTokenExpired() {
-  const exp = getAccessTokenExpiration();
-  if (!exp) return true;
-  return Date.now() >= parseISO(exp).getDate();
-}
-
-export function isRefreshTokenExpired() {
-  const exp = getRefreshTokenExpiration();
-  if (!exp) return true;
-  return Date.now() >= parseISO(exp).getDate();
-}
-
-export async function refreshAccessToken() {
-  try {
-    const resp = await http.post(
-      api.endpoints.auth.tokenRefresh, 
-      jwtCookie ? undefined : { refresh: getRefreshToken() },
-      { setJwtToken: false, rejectRequest: false, onError: false }
-    );
-    setAccessToken(resp.data.access);
-    setAccessTokenExpiration(resp.data.access_token_expiration);
-    return resp.data.access;
-  }
-  catch (e) {
-    console.log("Failed to refresh access token.", e);
-  }
-  return null;
-}
-
-export function getOrRefreshAccessToken() {
-  if (isAccessTokenExpired()) {
-    return refreshAccessToken();
-  }
-  return getAccessToken();
-}
-
-export function clearJwtStorage() {
-  storage.removeItem("auth");
-  storage.removeItem("auth_exp");
-  expStorage.removeItem("refresh");
-  expStorage.removeItem("refresh_exp");
-}

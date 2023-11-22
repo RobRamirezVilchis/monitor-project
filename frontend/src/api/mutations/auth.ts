@@ -1,19 +1,13 @@
 import { createMutation } from "../helpers/createMutation";
 import { 
   login,
-  clearJwtStorage,
-  jwtCookie,
-  setAccessToken,
-  setAccessTokenExpiration,
-  setRefreshToken,
-  setRefreshTokenExpiration,
-  useJwt,
   logout,
   unsafeSocialLogin,
 } from "../auth";
 import { JWTLoginInfo, LoginUserData } from "../auth.types";
 import { useMyUserQuery } from "../queries/auth";
 import defaultQueryClient from "../clients/defaultQueryClient";
+import jwt from "../jwt";
 
 export const useLoginMutation = createMutation({
   mutationKey: ["user-login"],
@@ -21,15 +15,15 @@ export const useLoginMutation = createMutation({
   onSuccess: (data) => {
     useMyUserQuery.invalidatePrimaryKey();
 
-    if (useJwt) {
+    if (jwt.useJwt) {
       data = data as JWTLoginInfo;
-      clearJwtStorage();
-      if (!jwtCookie) {
-        setAccessToken(data.access_token);
-        setRefreshToken(data.refresh_token);
+      jwt.clearStorage();
+      if (jwt.storageType !== "cookie") {
+        jwt.setAccessToken(data.access_token);
+        jwt.setRefreshToken(data.refresh_token);
       }
-      setAccessTokenExpiration(data.access_token_expiration);
-      setRefreshTokenExpiration(data.refresh_token_expiration);
+      jwt.setAccessTokenExpiration(new Date(data.access_token_expiration).toISOString());
+      jwt.setRefreshTokenExpiration(new Date(data.refresh_token_expiration).toISOString());
     }
   },
 });
@@ -39,7 +33,7 @@ export const useLogoutMutation = createMutation({
   mutationFn: () => logout({ rejectRequest: false, onError: false }),
   onMutate: () => {
     defaultQueryClient.invalidateQueries();
-    clearJwtStorage();
+    jwt.clearStorage();
   },
   onSuccess: () => {
     defaultQueryClient.cancelQueries();
@@ -55,15 +49,15 @@ export const useUnsafeSocialLogin = createMutation({
   mutationFn: ({ url, data }: { url: string; data: any }) => 
     unsafeSocialLogin(url, data, { rejectRequest: false, onError: false }),
   onSuccess: (data) => {
-    if (useJwt) {
+    if (jwt.useJwt) {
       data = data as JWTLoginInfo;
-      clearJwtStorage();
-      if (!jwtCookie) {
-        setAccessToken(data.access_token);
-        setRefreshToken(data.refresh_token);
+      jwt.clearStorage();
+      if (jwt.storageType !== "cookie") {
+        jwt.setAccessToken(data.access_token);
+        jwt.setRefreshToken(data.refresh_token);
       }
-      setAccessTokenExpiration(data.access_token_expiration);
-      setRefreshTokenExpiration(data.refresh_token_expiration);
+      jwt.setAccessTokenExpiration(new Date(data.access_token_expiration).toISOString());
+      jwt.setRefreshTokenExpiration(new Date(data.refresh_token_expiration).toISOString());
     }
   }
 });

@@ -9,10 +9,8 @@ import { Button } from "@mantine/core";
 import Link from "next/link";
 import z from "zod";
 
-import {
-  registerUser,
-  RegisterUserData,
-} from "@/api/auth";
+import type { RegisterUserData } from "@/api/auth.types";
+import { registerUser } from "@/api/auth";
 import { TextInput, PasswordInput, MeteredPasswordInput } from "@/ui/core";
 import { showSuccessNotification, showErrorNotification } from "@/ui/notifications";
 
