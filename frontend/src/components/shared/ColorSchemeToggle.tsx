@@ -1,3 +1,5 @@
+"use client";
+
 import { ReactNode } from "react";
 import { 
   ActionIcon, type ActionIconProps,
@@ -6,11 +8,12 @@ import {
   InputBase, type InputBaseProps,
   Switch,
   useMantineColorScheme,
+  useComputedColorScheme,
   MantineColorScheme,
 } from "@mantine/core";
 import clsx from "clsx";
 
-import switchToggleStyles from "./ColorSchemeSwitchToggle.module.css";
+import toggleStyles from "./ColorSchemeSwitchToggle.module.css";
 
 import { IconDeviceDesktop } from "@tabler/icons-react";
 import LightModeOutlinedIcon from '@mui/icons-material/LightModeOutlined';
@@ -19,15 +22,17 @@ import NightlightOutlinedIcon from '@mui/icons-material/NightlightOutlined';
 export interface ColorSchemeToggleButtonProps extends Omit<ActionIconProps, "children"> {}
 
 export const ColorSchemeButtonToggle = (props: ColorSchemeToggleButtonProps) => {
-  const { colorScheme, toggleColorScheme } = useMantineColorScheme();
+  const { setColorScheme } = useMantineColorScheme();
+  const colorScheme = useComputedColorScheme("light", { getInitialValueInEffect: true });
 
   return (
     <ActionIcon 
-      color={colorScheme === "dark" ? "white" : "black"}
+      className={toggleStyles.track}
       {...props}
-      onClick={toggleColorScheme}
+      onClick={() => setColorScheme(colorScheme === 'light' ? 'dark' : 'light')}
     >
-      {colorScheme === "dark" ? <NightlightOutlinedIcon /> : <LightModeOutlinedIcon />}
+      <LightModeOutlinedIcon  className={toggleStyles["icon-light"]} />
+      <NightlightOutlinedIcon className={toggleStyles["icon-dark"]} />
     </ActionIcon>
   )
 }
@@ -48,7 +53,8 @@ export interface ColorSchemaSelectToggleProps {
 export const ColorSchemaSelectToggle = ({
   classNames,
 }: ColorSchemaSelectToggleProps) => {
-  const { colorScheme, setColorScheme } = useMantineColorScheme();
+  const { setColorScheme } = useMantineColorScheme();
+  const colorScheme = useComputedColorScheme("light", { getInitialValueInEffect: true });
   const combobox = useCombobox({
     onDropdownClose: () => combobox.resetSelectedOption(),
   });
@@ -117,11 +123,12 @@ export interface ColorSchemeSwitchToggleProps {
 export const ColorSchemeSwitchToggle = ({
   size = "lg",
 }: ColorSchemeSwitchToggleProps) => {
-  const { colorScheme, setColorScheme } = useMantineColorScheme();
+  const { setColorScheme } = useMantineColorScheme();
+  const colorScheme = useComputedColorScheme("light", { getInitialValueInEffect: true });
 
   return (
     <Switch
-      checked={colorScheme === "dark"}
+      defaultChecked={colorScheme === "dark"}
       onChange={e => {
         const dark = e.currentTarget.checked;
         setColorScheme(dark ? "dark" : "light");
@@ -130,14 +137,8 @@ export const ColorSchemeSwitchToggle = ({
       onLabel={<NightlightOutlinedIcon className="text-white" />}
       size={size}
       classNames={{
-        thumb: clsx({
-          [switchToggleStyles["thumb-light"]]: colorScheme === "light",
-          [switchToggleStyles["thumb-dark"]]: colorScheme === "dark",
-        }),
-        track: clsx({
-          [switchToggleStyles["track-light"]]: colorScheme === "light",
-          [switchToggleStyles["track-dark"]]: colorScheme === "dark",
-        }),
+        thumb: toggleStyles["thumb"],
+        track: toggleStyles["track"],
       }}
     />
   )
