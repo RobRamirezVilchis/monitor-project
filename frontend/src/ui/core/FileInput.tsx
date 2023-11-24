@@ -20,9 +20,6 @@ const FileInput = <
   control,
   rules,
   shouldUnregister,
-  defaultValue,
-  onChange: _onChange,
-  onBlur: _onBlur,
   inputRef,
   ...props
 }: FileInputProps<Multiple, TFieldValues>) => {

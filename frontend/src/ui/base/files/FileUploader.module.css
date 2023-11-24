@@ -1,0 +1,9 @@
+.file-root {
+    border-radius: .25rem;
+    padding: .5rem;
+
+    @mixin dark {
+        background-color: var(--mantine-color-dark-6);
+        border-color: var(--mantine-color-dark-4);
+    }
+}

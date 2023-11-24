@@ -37,6 +37,7 @@
     "react": "^18.2.0",
     "react-datepicker": "^4.11.0",
     "react-dom": "^18.2.0",
+    "react-dropzone": "^14.2.3",
     "react-hook-form": "^7.43.9",
     "react-imask": "^7.1.3",
     "react-number-format": "^5.3.1",
