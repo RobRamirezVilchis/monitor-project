@@ -78,6 +78,7 @@ class FileStandardUploadService:
             original_file_name=file_name,
             file_name=file_generate_name(file_name),
             file_type=file_type,
+            file_size=self.file_obj.size,
             uploaded_by=self.user,
             upload_finished_at=timezone.now(),
         )
@@ -97,6 +98,7 @@ class FileStandardUploadService:
         file.original_file_name = file_name
         file.file_name = file_generate_name(file_name)
         file.file_type = file_type
+        file.file_size = self.file_obj.size
         file.uploaded_by = self.user
         file.upload_finished_at = timezone.now()
 
@@ -117,6 +119,7 @@ class FileDirectUploadService:
             original_file_name=file_name,
             file_name=file_generate_name(file_name),
             file_type=file_type,
+            file_size=0,
             uploaded_by=self.user,
             file=None,
         )
@@ -158,6 +161,7 @@ class FileDirectUploadService:
 
         # Potentially, check against user
         file.file = file_obj
+        file.file_size = file_obj.size
         file.full_clean()
         file.save()
 

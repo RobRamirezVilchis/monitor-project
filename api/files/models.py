@@ -13,6 +13,7 @@ class File(BaseModel):
 
     file_name = models.CharField(max_length=255, unique=True)
     file_type = models.CharField(max_length=255)
+    file_size = models.IntegerField()
 
     # We might want to preserve files after the uploader has been deleted.
     # In case you want to delete the files too, use models.CASCADE & drop the null=True
