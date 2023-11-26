@@ -37,7 +37,7 @@ export const ColorSchemeButtonToggle = (props: ColorSchemeToggleButtonProps) => 
   )
 }
 
-export interface ColorSchemaSelectToggleProps {
+export interface ColorSchemeSelectToggleProps {
   classNames?: {
     input?: InputBaseProps["classNames"];
     dropdown?: ComboboxDropdownProps["classNames"];
@@ -50,9 +50,9 @@ export interface ColorSchemaSelectToggleProps {
   };
 }
 
-export const ColorSchemaSelectToggle = ({
+export const ColorSchemeSelectToggle = ({
   classNames,
-}: ColorSchemaSelectToggleProps) => {
+}: ColorSchemeSelectToggleProps) => {
   const { setColorScheme } = useMantineColorScheme();
   const colorScheme = useComputedColorScheme("light", { getInitialValueInEffect: true });
   const combobox = useCombobox({
