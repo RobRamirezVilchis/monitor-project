@@ -1,9 +1,8 @@
-import { Dispatch, MouseEvent, MouseEventHandler, ReactNode, SetStateAction, useLayoutEffect, useRef, useState } from "react";
+import { Dispatch, MouseEvent, MouseEventHandler, ReactNode, SetStateAction, useRef, useState } from "react";
 import { ActionIcon, Loader, Progress, Tooltip, ThemeIcon } from "@mantine/core";
 import { useUncontrolled } from "@mantine/hooks";
 
-import type { FileDetails } from "./FileDetails";
-import { useIsomorphicLayoutEffect, useOnMount, useOnUnmount, usePrevious } from "@/hooks/shared";
+import { useIsomorphicLayoutEffect, useOnMount, useOnUnmount } from "@/hooks/shared";
 import { Dropzone, type DropzoneProps } from "./Dropzone";
 import { useImmer } from "use-immer";
 import clsx from "clsx";
@@ -11,6 +10,26 @@ import clsx from "clsx";
 import styles from "./FileUploader.module.css";
 
 import { formatBytes } from "@/utils/utils";
+
+export interface FileDetails<D = any> {
+  readonly name: string;
+  readonly size: number;
+  readonly type: string;
+  readonly file?: File;
+  /**
+   * Data used by the downloadFn. This is set after a successful upload.
+   * If undefined, the file allows uploading.
+   * If null, the file is considered uploaded, but won't allow download.
+   * For any other value, the file is considered uploaded and allows download.
+   */
+  downloadData?: D | null;
+}
+
+export type FileUploadDetails<D = any> = Required<Omit<FileDetails<D>, "downloadData">>;
+
+export type FileDownloadDetails<D = any> = Required<Omit<FileDetails<D>, "file" | "downloadData">> & {
+  downloadData: D;
+};
 
 import {
   IconCheck,
@@ -23,28 +42,85 @@ import {
   IconX,
 } from "@tabler/icons-react";
 
-type EditableFileDetails = Pick<FileDetails, "meta">;
-
-// TODO: Add check for when file is already uploaded so it allow download instead of upload
 // TODO: Fix auto upload initial error even when file is uploaded
 
-export interface FileUploaderProps extends DropzoneProps {
-  value?: FileDetails[];
-  defaultValue?: FileDetails[];
-  onChange?: (value: FileDetails[]) => void;
+export interface FileUploaderProps<D = any> extends DropzoneProps, FileUploaderConfig<D>, FileUploaderClickCallbacks {
+  value?: FileDetails<D>[];
+  defaultValue?: FileDetails<D>[];
+  onChange?: (value: FileDetails<D>[]) => void;
   error?: ReactNode;
+}
 
+export interface FileUploaderConfig<D = any> {
+  /**
+   * If true, files will be uploaded as soon as they are dropped.
+   * 
+   * WARNING: This will also affect initial files if the file property is set!
+   * @default false
+   */
   autoUpload?: boolean;
+  /** If true, the upload progress will be shown. */
   showUploadProgress?: boolean;
+  /** If true, the download progress will be shown. */
   showDownloadProgress?: boolean;
-  uploadFn?: (file: FileDetails, signal: AbortSignal, setProgress: Dispatch<SetStateAction<number>>) => Promise<unknown>;
-  downloadFn?: (file: FileDetails, signal: AbortSignal, setProgress: Dispatch<SetStateAction<number>>) => Promise<unknown>;
-  onFileUpload?: (file: FileDetails, data: any, update: (file: EditableFileDetails) => void) => void;
-  onFileDownload?: (file: FileDetails, data: any, update: (file: EditableFileDetails) => void) => void;
-  onFileUploadError?: (file: FileDetails, error: any) => void;
-  onFileDownloadError?: (file: FileDetails, error: any) => void;
-  onRemoveFile?: (file: FileDetails) => void;
-  
+  /**
+   * Function to upload a file.
+   * 
+   * The function must return a promise that resolves when the upload is complete and
+   * the data returned will be set as the file `downloadData` property.
+   * 
+   * If the promise rejects, the upload is considered failed.
+   * @param file The file details for the file to upload.
+   * @param signal An AbortSignal to abort the upload when the component unmounts or the upload is cancelled by the user.
+   * @param setProgress A function to update the upload progress.
+   * @returns A promise with the data to update the file details object `downloadData` property.
+   */
+  uploadFn?: (file: FileUploadDetails<D>, signal: AbortSignal, setProgress: Dispatch<SetStateAction<number>>) => Promise<D | null>;
+  /**
+   * Function to download a file.
+   * 
+   * The function must return a promise that resolves when the download is complete.
+   * 
+   * If the promise rejects, the download is considered failed.
+   * @param file The file details for the file to download.
+   * @param signal An AbortSignal to abort the download when the component unmounts or the download is cancelled by the user.
+   * @param setProgress A function to update the download progress.
+   * @returns A promise with the data to update the file details object `downloadData` property.
+   */
+  downloadFn?: (file: FileDownloadDetails<D>, signal: AbortSignal, setProgress: Dispatch<SetStateAction<number>>) => Promise<unknown>;
+  /**
+   * Function called when a file upload succeeds.
+   * 
+   * @param file The file details for the file that was uploaded.
+   * @param data The data returned by the uploadFn.
+   */
+  onFileUpload?: (file: FileUploadDetails<D>, data: any) => void;
+  /**
+   * Function called when a file download succeeds.
+   * @param file The file details for the file that was downloaded.
+   * @param data The data returned by the downloadFn.
+   */
+  onFileDownload?: (file: FileDownloadDetails<D>, data: any) => void;
+  /**
+   * Function called when a file upload fails.
+   * @param file The file details for the file that failed to upload.
+   * @param error The error returned by the uploadFn.
+   */
+  onFileUploadError?: (file: FileUploadDetails<D>, error: any) => void;
+  /**
+   * Function called when a file download fails.
+   * @param file The file details for the file that failed to download.
+   * @param error The error returned by the downloadFn.
+   */
+  onFileDownloadError?: (file: FileDownloadDetails<D>, error: any) => void;
+  /**
+   * Function called when a file is removed.
+   * @param file The file details for the file that was removed.
+   */
+  onFileRemoved?: (file: FileDetails<D>) => void;
+}
+
+export interface FileUploaderClickCallbacks {
   onFileUploadClick?: MouseEventHandler<HTMLButtonElement>;
   onFileDownloadClick?: MouseEventHandler<HTMLButtonElement>;
   onCancelUploadClick?: MouseEventHandler<HTMLButtonElement>;
@@ -54,7 +130,7 @@ export interface FileUploaderProps extends DropzoneProps {
   onRemoveFileClick?: MouseEventHandler<HTMLButtonElement>;
 }
 
-export const FileUploader = ({
+export const FileUploader = <D extends unknown = any>({
   value,
   defaultValue,
   onChange,
@@ -69,7 +145,7 @@ export const FileUploader = ({
   onFileDownload,
   onFileUploadError,
   onFileDownloadError,
-  onRemoveFile,
+  onFileRemoved,
 
   onFileUploadClick,
   onFileDownloadClick,
@@ -80,25 +156,27 @@ export const FileUploader = ({
   onRemoveFileClick,
 
   ...props
-}: FileUploaderProps) => {
-  const [files, setFiles] = useUncontrolled<FileDetails[]>({
+}: FileUploaderProps<D>) => {
+  const [files, setFiles] = useUncontrolled<FileDetails<D>[]>({
     value,
     defaultValue,
     finalValue: [],
     onChange,
   });
 
-  const updateFile = (file: FileDetails, index: number) => {
-    const copy = [...files];
-    copy[index] = file;
-    setFiles(copy);
-  }
-
-  const removeFile = (file: FileDetails, index: number) => {
+  const removeFile = (file: FileDetails<D>, index: number) => {
     const copy = [...files];
     copy.splice(index, 1);
     setFiles(copy);
-    onRemoveFile?.(file);
+    onFileRemoved?.(file);
+  };
+
+  const fileUploadHandler = (file: FileDetails<D>, index: number, data: any) => {
+    onFileUpload?.(file as FileUploadDetails<D>, data);
+
+    const copy = [...files];
+    copy[index].downloadData = data;
+    setFiles(copy);
   };
 
   return (
@@ -107,7 +185,7 @@ export const FileUploader = ({
         {...props}
         onDropAccepted={(droppedFiles, event) => {
           const copy = [...files];
-          const newFiles: FileDetails[] = droppedFiles.map((file) => ({
+          const newFiles: FileDetails<D>[] = droppedFiles.map((file) => ({
             name: file.name,
             size: file.size,
             type: file.type,
@@ -130,26 +208,8 @@ export const FileUploader = ({
             showDownloadProgress={showDownloadProgress}
             uploadFn={uploadFn}
             downloadFn={downloadFn}
-            onFileUpload={(file, data) => {
-              const copy = { ...file };
-              let updated = false;
-              const update = (file: EditableFileDetails) => {
-                Object.assign(file, copy);
-                updated = true;
-              }
-              onFileUpload?.(file, data, update);
-              if (updated) updateFile(copy, idx);
-            }}
-            onFileDownload={(file, data) => {
-              const copy = { ...file };
-              let updated = false;
-              const update = (file: EditableFileDetails) => {
-                Object.assign(file, copy);
-                updated = true;
-              }
-              onFileDownload?.(file, data, update);
-              if (updated) updateFile(copy, idx);
-            }}
+            onFileUpload={(file, data) => fileUploadHandler(file, idx, data)}
+            onFileDownload={onFileDownload}
             onFileUploadError={onFileUploadError}
             onFileDownloadError={onFileDownloadError}
 
@@ -171,31 +231,13 @@ export const FileUploader = ({
 };
 
 
-interface FileUploaderItemProps {
+interface FileUploaderItemProps<D = any> extends FileUploaderConfig<D>, FileUploaderClickCallbacks {
   file: FileDetails;
-
-  autoUpload?: boolean;
-  showUploadProgress?: boolean;
-  showDownloadProgress?: boolean;
-  uploadFn?: (file: FileDetails, signal: AbortSignal, setProgress: Dispatch<SetStateAction<number>>) => Promise<unknown>;
-  downloadFn?: (file: FileDetails, signal: AbortSignal, setProgress: Dispatch<SetStateAction<number>>) => Promise<unknown>;
-  onFileUpload?: (file: FileDetails, data: unknown) => void;
-  onFileDownload?: (file: FileDetails, data: unknown) => void;
-  onFileUploadError?: (file: FileDetails, error: unknown) => void;
-  onFileDownloadError?: (file: FileDetails, error: unknown) => void;
-  
-  onFileUploadClick?: MouseEventHandler<HTMLButtonElement>;
-  onFileDownloadClick?: MouseEventHandler<HTMLButtonElement>;
-  onCancelUploadClick?: MouseEventHandler<HTMLButtonElement>;
-  onCancelDownloadClick?: MouseEventHandler<HTMLButtonElement>;
-  onRetryUploadClick?: MouseEventHandler<HTMLButtonElement>;
-  onRetryDownloadClick?: MouseEventHandler<HTMLButtonElement>;
-  onRemoveFileClick?: MouseEventHandler<HTMLButtonElement>;
 }
 
 type FileUploadState = "idle" | "uploading" | "downloading" | "success" | "upload-error" | "download-error";
 
-const FileUploaderItem = ({
+const FileUploaderItem = <D extends unknown = any>({
   file,
 
   autoUpload = false,
@@ -215,7 +257,7 @@ const FileUploaderItem = ({
   onRetryUploadClick,
   onRetryDownloadClick,
   onRemoveFileClick,
-}: FileUploaderItemProps) => {
+}: FileUploaderItemProps<D>) => {
   const [state, setState] = useState<FileUploadState>("idle");
   const [progress, setProgress] = useState(0);
   const abortController = useRef<AbortController | null>(null);
@@ -223,7 +265,6 @@ const FileUploaderItem = ({
 
   useOnMount(() => {
     if (autoUpload) uploadFile();
-    console.log("FileUploaderItem: useOnMount")
   });
   
   useOnUnmount(() => {
@@ -241,19 +282,25 @@ const FileUploaderItem = ({
   }, [state]);
 
   const uploadFile = async () => {
-    if (!file.file) return;
+    if (!file.file) {
+      setState("upload-error");
+      onFileUploadError?.(file as FileUploadDetails<D>, {
+        message: `File ${file.name} not found`,
+      });
+      return;
+    }
 
     setState("uploading");
     abortController.current = new AbortController();
     const signal = abortController.current.signal;
     try {
-      const data = await uploadFn?.(file, signal, setProgress);
+      const data = await uploadFn?.(file as FileUploadDetails<D>, signal, setProgress);
       setState("success");
-      onFileUpload?.(file, data);
+      onFileUpload?.(file as FileUploadDetails<D>, data);
     }
     catch (error) {
       setState("upload-error");
-      onFileUploadError?.(file, error);
+      onFileUploadError?.(file as FileUploadDetails<D>, error);
     }
     finally {
       setProgress(0);
@@ -262,17 +309,25 @@ const FileUploaderItem = ({
   };
 
   const downloadFile = async () => {
+    if (file.downloadData === undefined || file.downloadData === null) {
+      setState("download-error");
+      onFileDownloadError?.(file as FileDownloadDetails<D>, {
+        message: `File ${file.name} does not allow download`,
+      });
+      return;
+    }
+
     setState("downloading");
     abortController.current = new AbortController();
     const signal = abortController.current.signal;
     try {
-      const data = await downloadFn?.(file, signal, setProgress);
+      const data = await downloadFn?.(file as FileDownloadDetails<D>, signal, setProgress);
       setState("success");
-      onFileDownload?.(file, data);
+      onFileDownload?.(file as FileDownloadDetails<D>, data);
     }
     catch (error) {
       setState("download-error");
-      onFileDownloadError?.(file, error);
+      onFileDownloadError?.(file as FileDownloadDetails<D>, error);
     }
     finally {
       setProgress(0);
@@ -311,15 +366,12 @@ const FileUploaderItem = ({
   };
 
   const _onRetryClick: MouseEventHandler<HTMLButtonElement> = (event) => {
-    console.log(state)
     switch (state) {
       case "upload-error":
-        console.log("retry upload")
         onRetryUploadClick?.(event);
         uploadFile();
         break;
       case "download-error":
-        console.log("retry download")
         onRetryDownloadClick?.(event);
         downloadFile();
         break;
@@ -360,7 +412,7 @@ const FileUploaderItem = ({
       {state === "uploading" && !showUploadProgress ? <Loader size="sm" /> : null}
       {state === "downloading" && !showDownloadProgress ? <Loader size="sm" /> : null}
 
-      {state === "idle" && file?.file ? (
+      {state === "idle" && file?.file && file.downloadData === undefined ? (
         <Tooltip label="Upload">
           <ActionIcon radius="xl" variant="light"
             onClick={_onFileUploadClick}
@@ -370,7 +422,7 @@ const FileUploaderItem = ({
         </Tooltip>
       ) : null}
 
-      {state === "idle" && !file.file ? (
+      {state === "idle" && file.downloadData !== undefined && file.downloadData !== null ? (
         <Tooltip label="Download">
           <ActionIcon radius="xl" variant="light"
             onClick={_onFileDownloadClick}
@@ -397,7 +449,7 @@ const FileUploaderItem = ({
       ) : null}
 
       {state !== "success" ? (
-        <Tooltip label="Cancel">
+        <Tooltip label={state === "uploading" || state === "downloading" ? "Cancel" : "Remove"}>
           <ActionIcon radius="xl" variant="light" color="red"
             onClick={_onCancelClick}
           >
