@@ -8,7 +8,7 @@ import clsx from "clsx";
 
 import styles from "./FileUploader.module.css";
 
-import { formatBytes } from "@/utils/utils";
+import { formatBytes, sleep } from "@/utils/utils";
 
 export interface FileDetails<D = any> {
   readonly name: string;
@@ -59,10 +59,14 @@ export interface FileUploaderConfig<D = any> {
   /** If true, the download progress will be shown. */
   showDownloadProgress?: boolean;
   /**
-   * The duration in milliseconds to show the success icon after a successful upload.
+   * The duration in milliseconds to show the success icon after a successful upload/download.
    * @default 750
    */
   successDuration?: number;
+  /**
+   * Time in milliseconds to wait before showing the success icon after a successful upload/download.
+   */
+  successDelay?: number;
   /**
    * Tooltips for the action icons.
    * If not set, the default tooltips will be used.
@@ -151,6 +155,8 @@ export const FileUploader = <D extends unknown = any>({
   showUploadProgress = true,
   showDownloadProgress = true,
   successDuration = 750,
+  successDelay = 200,
+  actionTooltips,
   uploadFn,
   downloadFn,
   onFileUpload,
@@ -166,8 +172,6 @@ export const FileUploader = <D extends unknown = any>({
   onRetryUploadClick,
   onRetryDownloadClick,
   onRemoveFileClick,
-
-  actionTooltips,
 
   ...props
 }: FileUploaderProps<D>) => {
@@ -220,6 +224,8 @@ export const FileUploader = <D extends unknown = any>({
             autoUpload={autoUpload}
             showUploadProgress={showUploadProgress}
             showDownloadProgress={showDownloadProgress}
+            successDuration={successDuration}
+            successDelay={successDelay}
             uploadFn={uploadFn}
             downloadFn={downloadFn}
             onFileUpload={(file, data) => fileUploadHandler(file, idx, data)}
@@ -260,6 +266,8 @@ const FileUploaderItem = <D extends unknown = any>({
   showUploadProgress = true,
   showDownloadProgress = true,
   successDuration = 750,
+  successDelay = 200,
+  actionTooltips,
   uploadFn,
   downloadFn,
   onFileUpload,
@@ -274,8 +282,6 @@ const FileUploaderItem = <D extends unknown = any>({
   onRetryUploadClick,
   onRetryDownloadClick,
   onRemoveFileClick,
-
-  actionTooltips,
 }: FileUploaderItemProps<D>) => {
   const [state, setState] = useState<FileUploadState>("idle");
   const [progress, setProgress] = useState(0);
@@ -314,6 +320,7 @@ const FileUploaderItem = <D extends unknown = any>({
     const signal = abortController.current.signal;
     try {
       const data = await uploadFn?.(file as FileUploadDetails<D>, signal, setProgress);
+      if (successDelay > 0) await sleep(successDelay);
       setState("success");
       onFileUpload?.(file as FileUploadDetails<D>, data);
     }
@@ -341,6 +348,7 @@ const FileUploaderItem = <D extends unknown = any>({
     const signal = abortController.current.signal;
     try {
       const data = await downloadFn?.(file as FileDownloadDetails<D>, signal, setProgress);
+      if (successDelay > 0) await sleep(successDelay);
       setState("success");
       onFileDownload?.(file as FileDownloadDetails<D>, data);
     }
