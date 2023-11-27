@@ -22,6 +22,8 @@ class ExceptionHandler(_ExceptionHandler):
                 None: exc.detail,
                 **exc.extra,
             }, exc.code)
+        elif isinstance(exc, dj_exceptions.ValidationError):
+            return drf_exceptions.ValidationError(as_serializer_error(exc))
         else:
             return super().convert_known_exceptions(exc)
         

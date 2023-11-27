@@ -1,4 +1,4 @@
-import { Dispatch, MouseEvent, MouseEventHandler, ReactNode, SetStateAction, useRef, useState } from "react";
+import { Dispatch, MouseEventHandler, ReactNode, SetStateAction, useRef, useState } from "react";
 import { ActionIcon, Loader, Progress, Tooltip, ThemeIcon } from "@mantine/core";
 import { useUncontrolled } from "@mantine/hooks";
 
@@ -34,14 +34,10 @@ import {
   IconCheck,
   IconCloudDownload,
   IconCloudUpload,
-  IconDownload, 
   IconFile,
   IconRefresh,
-  IconUpload, 
   IconX,
 } from "@tabler/icons-react";
-
-// TODO: Fix auto upload initial error even when file is uploaded
 
 export interface FileUploaderProps<D = any> extends DropzoneProps, FileUploaderConfig<D>, FileUploaderClickCallbacks {
   value?: FileDetails<D>[];

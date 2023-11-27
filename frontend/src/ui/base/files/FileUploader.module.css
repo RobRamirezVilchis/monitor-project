@@ -1,4 +1,5 @@
 .file-root {
+    background-color: var(--mantine-color-gray-1);
     border-radius: .25rem;
     padding: .5rem;
 

@@ -1,9 +1,9 @@
 from cryptography.fernet import Fernet, MultiFernet
 from django.conf import settings
 from django.contrib.auth import get_user_model
-from django.core.exceptions import ValidationError
 from django.db import transaction
 from django.utils import timezone
+from rest_framework.exceptions import ValidationError
 from typing import Any, Dict, Tuple
 import base64
 import mimetypes
@@ -61,7 +61,7 @@ class FileStandardUploadService:
             guessed_file_type, encoding = mimetypes.guess_type(file_name)
 
             if guessed_file_type is None:
-                file_type = ""
+                file_type = self.file_obj.content_type or ""
             else:
                 file_type = guessed_file_type
 

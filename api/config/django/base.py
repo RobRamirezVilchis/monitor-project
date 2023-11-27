@@ -198,6 +198,7 @@ REST_FRAMEWORK = {
         "django_filters.rest_framework.DjangoFilterBackend",
     ],
     "EXCEPTION_HANDLER": "drf_standardized_errors.handler.exception_handler",
+    "EXCEPTION_HANDLER_CLASS": "api.exception_handlers.ExceptionHandler",
     "DEFAULT_PAGINATION_CLASS": "api.pagination.PageNumberPagination",
     # "PAGE_SIZE": 25,
     "DEFAULT_SCHEMA_CLASS": "api.openapi.AutoSchema",

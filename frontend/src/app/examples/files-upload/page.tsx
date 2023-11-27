@@ -9,6 +9,8 @@ import { ColorSchemeButtonToggle } from "@/components/shared";
 import { FileInput } from "@/ui/base/files/FileInput";
 import http from "@/api/http";
 import { downloadFileFromApi, sleep } from "@/utils/utils";
+import { showErrorNotification } from "@/ui/notifications";
+import { AxiosError } from "axios";
 
 const FileUploadPage = () => {
   const dropzoneRef = useRef<DropzoneRef>(null);
@@ -18,14 +20,23 @@ const FileUploadPage = () => {
       <ColorSchemeButtonToggle />
 
       <div className="w-full max-w-xl">
-        <FileUploader
+        <FileUploader<{ id: string }>
           dropzoneRef={dropzoneRef}
           noClick
-          // autoUpload
+          autoUpload
+          maxSize={1024 * 1024 * 10}
           classNames={{
             content: {
               root: "flex flex-col gap-4",
             }
+          }}
+          onDropRejected={files => {
+            console.log("onDropRejected:", files);
+            const message = JSON.stringify(files.map(file => file.errors.map(error => error.message)), null, 2);
+            showErrorNotification({
+              title: "File upload error",
+              message,
+            });
           }}
           uploadFn={async (file, signal, setProgress) => {
             const formData = new FormData();
@@ -60,6 +71,7 @@ const FileUploadPage = () => {
                 },
               }
             );
+            downloadFileFromApi(data, file.name);
             return data;
           }}
           onFileUpload={(file, data) => {
@@ -67,13 +79,21 @@ const FileUploadPage = () => {
           }}
           onFileUploadError={(file, error) => {
             console.log("onFileUploadError:", file, error);
+            if (error?.code === AxiosError.ERR_CANCELED) return;
+            showErrorNotification({
+              title: "File upload error",
+              message: error?.response?.data ? error.response.data.errors[0].detail : "Unknown error",
+            });
           }}
           onFileDownload={(file, data: any) => {
             console.log("onFileDownload:", file, data);
-            downloadFileFromApi(data, file.name);
           }}
           onFileDownloadError={(file, error) => {
             console.log("onFileDownloadError:", file, error);
+            showErrorNotification({
+              title: "File download error",
+              message: error.response.data.errors[0].detail,
+            });
           }}
           onFileRemoved={(file) => {
             console.log("onRemoveFile:", file);
