@@ -4,7 +4,6 @@ import { useUncontrolled } from "@mantine/hooks";
 
 import { useIsomorphicLayoutEffect, useOnMount, useOnUnmount } from "@/hooks/shared";
 import { Dropzone, type DropzoneProps } from "./Dropzone";
-import { useImmer } from "use-immer";
 import clsx from "clsx";
 
 import styles from "./FileUploader.module.css";
@@ -63,6 +62,22 @@ export interface FileUploaderConfig<D = any> {
   showUploadProgress?: boolean;
   /** If true, the download progress will be shown. */
   showDownloadProgress?: boolean;
+  /**
+   * The duration in milliseconds to show the success icon after a successful upload.
+   * @default 750
+   */
+  successDuration?: number;
+  /**
+   * Tooltips for the action icons.
+   * If not set, the default tooltips will be used.
+   */
+  actionTooltips?: {
+    upload?: string;
+    download?: string;
+    cancel?: string;
+    retry?: string;
+    remove?: string;
+  };
   /**
    * Function to upload a file.
    * 
@@ -139,6 +154,7 @@ export const FileUploader = <D extends unknown = any>({
   autoUpload = false,
   showUploadProgress = true,
   showDownloadProgress = true,
+  successDuration = 750,
   uploadFn,
   downloadFn,
   onFileUpload,
@@ -154,6 +170,8 @@ export const FileUploader = <D extends unknown = any>({
   onRetryUploadClick,
   onRetryDownloadClick,
   onRemoveFileClick,
+
+  actionTooltips,
 
   ...props
 }: FileUploaderProps<D>) => {
@@ -223,6 +241,8 @@ export const FileUploader = <D extends unknown = any>({
               onRemoveFileClick?.(event);
               removeFile(file, idx);
             }}
+
+            actionTooltips={actionTooltips}
           />
         ))}
       </div>
@@ -243,6 +263,7 @@ const FileUploaderItem = <D extends unknown = any>({
   autoUpload = false,
   showUploadProgress = true,
   showDownloadProgress = true,
+  successDuration = 750,
   uploadFn,
   downloadFn,
   onFileUpload,
@@ -257,6 +278,8 @@ const FileUploaderItem = <D extends unknown = any>({
   onRetryUploadClick,
   onRetryDownloadClick,
   onRemoveFileClick,
+
+  actionTooltips,
 }: FileUploaderItemProps<D>) => {
   const [state, setState] = useState<FileUploadState>("idle");
   const [progress, setProgress] = useState(0);
@@ -276,10 +299,10 @@ const FileUploaderItem = <D extends unknown = any>({
     switch (state) {
       case "success":
         if (timeoutRef.current) clearTimeout(timeoutRef.current);
-        timeoutRef.current = setTimeout(() => setState("idle"), 1000);
+        timeoutRef.current = setTimeout(() => setState("idle"), successDuration);
         break;
     }
-  }, [state]);
+  }, [state, successDuration]);
 
   const uploadFile = async () => {
     if (!file.file) {
@@ -413,7 +436,7 @@ const FileUploaderItem = <D extends unknown = any>({
       {state === "downloading" && !showDownloadProgress ? <Loader size="sm" /> : null}
 
       {state === "idle" && file?.file && file.downloadData === undefined ? (
-        <Tooltip label="Upload">
+        <Tooltip label={actionTooltips?.upload || "Upload"}>
           <ActionIcon radius="xl" variant="light"
             onClick={_onFileUploadClick}
           >
@@ -423,7 +446,7 @@ const FileUploaderItem = <D extends unknown = any>({
       ) : null}
 
       {state === "idle" && file.downloadData !== undefined && file.downloadData !== null ? (
-        <Tooltip label="Download">
+        <Tooltip label={actionTooltips?.download || "Download"}>
           <ActionIcon radius="xl" variant="light"
             onClick={_onFileDownloadClick}
           >
@@ -433,7 +456,7 @@ const FileUploaderItem = <D extends unknown = any>({
       ) : null}
 
       {state === "upload-error" || state === "download-error" ? (
-        <Tooltip label="Retry">
+        <Tooltip label={actionTooltips?.retry || "Retry"}>
           <ActionIcon radius="xl" variant="light"
             onClick={_onRetryClick}
           >
@@ -449,7 +472,13 @@ const FileUploaderItem = <D extends unknown = any>({
       ) : null}
 
       {state !== "success" ? (
-        <Tooltip label={state === "uploading" || state === "downloading" ? "Cancel" : "Remove"}>
+        <Tooltip 
+          label={
+            state === "uploading" || state === "downloading" 
+            ? (actionTooltips?.cancel || "Cancel")
+            : (actionTooltips?.remove || "Remove")
+          }
+        >
           <ActionIcon radius="xl" variant="light" color="red"
             onClick={_onCancelClick}
           >
