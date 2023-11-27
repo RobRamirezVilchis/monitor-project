@@ -1,3 +1,4 @@
+from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from rest_framework import serializers, status
 from rest_framework.response import Response
@@ -82,3 +83,12 @@ class FileDirectUploadLocalApi(APIView):
         file = service.upload_local(file=file, file_obj=file_obj)
 
         return Response({"id": file.id})
+
+
+class FileDownloadApi(APIView):
+
+    def get(self, request, file_id, *args, **kwargs):
+        file = get_object_or_404(File, id=file_id)
+        file_obj = file.file
+
+        return HttpResponse(file_obj, content_type=file.file_type or "none")

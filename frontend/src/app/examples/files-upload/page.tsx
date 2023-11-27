@@ -27,26 +27,31 @@ const FileUploadPage = () => {
               root: "flex flex-col gap-4",
             }
           }}
-          uploadFn={(file, signal, setProgress) => {
-            if (!file.file) return Promise.reject("No file");
+          uploadFn={async (file, signal, setProgress) => {
             const formData = new FormData();
             formData.append("file", file.file);
-            return http.post(
-              "api/v1/files/upload/standard/", 
-              formData, {
-                signal,
-                headers: {
-                  "Content-Type": "multipart/form-data",
-                },
-                onUploadProgress: (event) => {
-                  setProgress(Math.round(event.loaded * 100 / (event.total || 1)));
-                },
-              }
-            );
+            try {
+              const resp = await http.post(
+                "api/v1/files/upload/standard/", 
+                formData, {
+                  signal,
+                  headers: {
+                    "Content-Type": "multipart/form-data",
+                  },
+                  onUploadProgress: (event) => {
+                    setProgress(Math.round(event.loaded * 100 / (event.total || 1)));
+                  },
+                }
+              );
+              return resp.data as { id: string };
+            }
+            catch (error) {
+              throw error;
+            }
           }}
           downloadFn={async (file, signal, setProgress) => {
             const { data } = await http.get(
-              `media/files/${"0b9e9241c75b47e4b96b968424c407ac.jpg"}`,
+              `api/v1/files/${file.downloadData.id}/download/`,
               {
                 signal,
                 responseType: "blob",
@@ -70,7 +75,7 @@ const FileUploadPage = () => {
           onFileDownloadError={(file, error) => {
             console.log("onFileDownloadError:", file, error);
           }}
-          onRemoveFile={(file) => {
+          onFileRemoved={(file) => {
             console.log("onRemoveFile:", file);
           }}
           // showDownloadProgress={false}
