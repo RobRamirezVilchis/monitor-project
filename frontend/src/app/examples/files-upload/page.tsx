@@ -27,9 +27,11 @@ const FileUploadPage = () => {
           maxSize={1024 * 1024 * 10}
           successDelay={750}
           classNames={{
-            content: {
-              root: "flex flex-col gap-4",
-            }
+            dropzone: {
+              content: {
+                root: "flex flex-col gap-4",
+              },
+            },
           }}
           showPreview
           previewProps={{

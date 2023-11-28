@@ -46,11 +46,16 @@ export type FileDownloadDetails<D = any> = Required<Omit<FileDetails<D>, "file" 
   downloadData: D;
 };
 
-export interface FileUploaderProps<D = any> extends DropzoneProps, FileUploaderConfig<D>, FileUploaderClickCallbacks {
+export interface FileUploaderProps<D = any> extends Omit<DropzoneProps, "classNames">, FileUploaderConfig<D>, FileUploaderClickCallbacks {
   value?: FileDetails<D>[];
   defaultValue?: FileDetails<D>[];
   onChange?: (value: FileDetails<D>[]) => void;
-  error?: ReactNode;
+  classNames?: {
+    root?: string;
+    dropzone?: DropzoneProps["classNames"];
+    fileItemsList?: string;
+    fileItem?: FileUploaderItemProps["classNames"];
+  };
 }
 
 export type IconConstructor = ComponentType<{ width?: string | number; height?: string | number; size?: string | number; className?: string; }>;
@@ -184,7 +189,7 @@ export const FileUploader = <D extends unknown = any>({
   value,
   defaultValue,
   onChange,
-  error,
+  classNames,
 
   allowUpload = true,
   allowDownload = true,
@@ -237,9 +242,10 @@ export const FileUploader = <D extends unknown = any>({
   };
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className={clsx("flex flex-col gap-4", classNames?.root)}>
       <Dropzone 
         {...props}
+        classNames={classNames?.dropzone}
         onDropAccepted={(droppedFiles, event) => {
           const copy = [...files];
           const newFiles: FileDetails<D>[] = droppedFiles.map((file) => ({
@@ -254,11 +260,12 @@ export const FileUploader = <D extends unknown = any>({
         }}
       />
 
-      <div className="flex flex-col gap-2">
+      <div className={clsx("flex flex-col gap-2", classNames?.fileItemsList)}>
         {files.map((file, idx) => (
           <FileUploaderItem 
             key={idx} 
             file={file}
+            classNames={classNames?.fileItem}
 
             allowUpload={allowUpload}
             allowDownload={allowDownload}
@@ -299,12 +306,25 @@ export const FileUploader = <D extends unknown = any>({
 
 interface FileUploaderItemProps<D = any> extends FileUploaderConfig<D>, FileUploaderClickCallbacks {
   file: FileDetails;
+  classNames?: {
+    root?: string;
+    content?: {
+      root?: string;
+      mainContainer?: string;
+      labelContainer?: string;
+      fileNameLabel?: string;
+      fileSizeLabel?: string;
+      progressLabel?: string;
+      progress?: string;
+    }
+  };
 }
 
 type FileUploadState = "idle" | "uploading" | "downloading" | "success" | "upload-error" | "download-error";
 
 const FileUploaderItem = <D extends unknown = any>({
   file,
+  classNames,
 
   allowUpload = true,
   allowDownload = true,
@@ -491,7 +511,7 @@ const FileUploaderItem = <D extends unknown = any>({
 
   return (  
     <div
-      className={clsx("flex items-center gap-2", styles["file-root"], {
+      className={clsx("flex items-center gap-2", styles["file-root"], classNames?.root, {
         "border !border-red-500 !text-red-400": state === "upload-error" || state === "download-error",
       })}
     >
@@ -516,24 +536,29 @@ const FileUploaderItem = <D extends unknown = any>({
         })} />
       )}
 
-      <div className="flex-1 truncate flex flex-col gap-2">
-        <div className="flex-1 flex gap-2">
-          <div className="flex-1 truncate flex flex-col">
-            <span className="truncate text-lg font-semibold" title={file.name}>
+      <div className={clsx("flex-1 truncate flex flex-col gap-2", classNames?.content?.root)}>
+        <div className={clsx("flex-1 flex gap-2", classNames?.content?.mainContainer)}>
+          <div className={clsx("flex-1 truncate flex flex-col", classNames?.content?.labelContainer)}>
+            <span 
+              className={clsx("truncate text-lg font-semibold", classNames?.content?.fileNameLabel)} 
+              title={file.name}
+            >
               {file.name}
             </span>
 
-            <span className="text-sm text-gray-400">
+            <span className={clsx("text-sm text-gray-400", classNames?.content?.fileSizeLabel)}>
               {formatBytes(file.size)}
             </span>
           </div>
 
-          {state === "uploading" && showUploadProgress ? <span>{progress}%</span> : null}
-          {state === "downloading" && showDownloadProgress ? <span>{progress}%</span> : null}
+          {state === "uploading" && showUploadProgress ? <span className={classNames?.content?.progressLabel}>{progress}%</span> : null}
+          {state === "downloading" && showDownloadProgress ? <span className={classNames?.content?.progressLabel}>{progress}%</span> : null}
         </div>
 
-        {state === "uploading" && showUploadProgress ? <Progress size="sm" value={progress} /> : null}
-        {state === "downloading" && showDownloadProgress ? <Progress size="sm" value={progress} /> : null}
+        <div className={classNames?.content?.progress}>
+          {state === "uploading" && showUploadProgress ? <Progress size="sm" value={progress} /> : null}
+          {state === "downloading" && showDownloadProgress ? <Progress size="sm" value={progress} /> : null}
+        </div>
       </div>
 
       {state === "uploading" && !showUploadProgress ? <Loader size="sm" /> : null}
