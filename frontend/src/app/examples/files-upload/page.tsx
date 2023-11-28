@@ -23,8 +23,9 @@ const FileUploadPage = () => {
         <FileUploader<{ id: string }>
           dropzoneRef={dropzoneRef}
           noClick
-          autoUpload
+          // autoUpload
           maxSize={1024 * 1024 * 10}
+          successDelay={750}
           classNames={{
             content: {
               root: "flex flex-col gap-4",
@@ -80,6 +81,13 @@ const FileUploadPage = () => {
           onFileUploadError={(file, error) => {
             console.log("onFileUploadError:", file, error);
             if (error?.code === AxiosError.ERR_CANCELED) return;
+            if (error?.code === AxiosError.ERR_BAD_RESPONSE) {
+              showErrorNotification({
+                title: "File upload error",
+                message: "An error ocurred, please try again later",
+              });
+              return;
+            }
             showErrorNotification({
               title: "File upload error",
               message: error?.response?.data ? error.response.data.errors[0].detail : "Unknown error",

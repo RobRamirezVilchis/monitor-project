@@ -1,14 +1,23 @@
-import { Dispatch, MouseEventHandler, ReactNode, SetStateAction, useRef, useState } from "react";
+import { ComponentType, Dispatch, MouseEventHandler, ReactNode, SetStateAction, useRef, useState } from "react";
 import { ActionIcon, Loader, Progress, Tooltip, ThemeIcon } from "@mantine/core";
 import { useUncontrolled } from "@mantine/hooks";
+import clsx from "clsx";
+import dynamic from "next/dynamic";
 
 import { useIsomorphicLayoutEffect, useOnMount, useOnUnmount } from "@/hooks/shared";
 import { Dropzone, type DropzoneProps } from "./Dropzone";
-import clsx from "clsx";
+import { formatBytes, sleep } from "@/utils/utils";
 
 import styles from "./FileUploader.module.css";
 
-import { formatBytes, sleep } from "@/utils/utils";
+import {
+  IconCheck,
+  IconCloudDownload,
+  IconCloudUpload,
+  IconFile,
+  IconRefresh,
+  IconX,
+} from "@tabler/icons-react";
 
 export interface FileDetails<D = any> {
   readonly name: string;
@@ -30,21 +39,15 @@ export type FileDownloadDetails<D = any> = Required<Omit<FileDetails<D>, "file" 
   downloadData: D;
 };
 
-import {
-  IconCheck,
-  IconCloudDownload,
-  IconCloudUpload,
-  IconFile,
-  IconRefresh,
-  IconX,
-} from "@tabler/icons-react";
-
 export interface FileUploaderProps<D = any> extends DropzoneProps, FileUploaderConfig<D>, FileUploaderClickCallbacks {
   value?: FileDetails<D>[];
   defaultValue?: FileDetails<D>[];
   onChange?: (value: FileDetails<D>[]) => void;
   error?: ReactNode;
 }
+
+export type IconConstructor = ComponentType<{ size?: string | number; className?: string; }>;
+export type IconMapping = Record<string, IconConstructor>;
 
 export interface FileUploaderConfig<D = any> {
   /**
@@ -133,6 +136,13 @@ export interface FileUploaderConfig<D = any> {
    * @param file The file details for the file that was removed.
    */
   onFileRemoved?: (file: FileDetails<D>) => void;
+  /**
+   * File icons to be shown for each of the supported file types.
+   * The key is the file mime type and the value is the icon to show.
+   * The key can be a file extension (i.e. ".pdf"), a complete mime type (i.e. "application/pdf") 
+   * or a partial mime type (i.e. "pdf"), in order of priority.
+   */
+  icons?: IconMapping;
 }
 
 export interface FileUploaderClickCallbacks {
@@ -226,6 +236,7 @@ export const FileUploader = <D extends unknown = any>({
             showDownloadProgress={showDownloadProgress}
             successDuration={successDuration}
             successDelay={successDelay}
+            actionTooltips={actionTooltips}
             uploadFn={uploadFn}
             downloadFn={downloadFn}
             onFileUpload={(file, data) => fileUploadHandler(file, idx, data)}
@@ -244,7 +255,7 @@ export const FileUploader = <D extends unknown = any>({
               removeFile(file, idx);
             }}
 
-            actionTooltips={actionTooltips}
+            icons={props.icons}
           />
         ))}
       </div>
@@ -282,6 +293,8 @@ const FileUploaderItem = <D extends unknown = any>({
   onRetryUploadClick,
   onRetryDownloadClick,
   onRemoveFileClick,
+
+  icons,
 }: FileUploaderItemProps<D>) => {
   const [state, setState] = useState<FileUploadState>("idle");
   const [progress, setProgress] = useState(0);
@@ -405,13 +418,15 @@ const FileUploaderItem = <D extends unknown = any>({
     }
   };
 
+  const FileIcon = getFileIconConstructor(file, icons);
+
   return (  
     <div
       className={clsx("flex items-center gap-2", styles["file-root"], {
         "border !border-red-500 !text-red-400": state === "upload-error" || state === "download-error",
       })}
     >
-      <IconFile size={36} className={clsx({
+      <FileIcon size={36} className={clsx({
         "text-gray-400": state !== "upload-error" && state !== "download-error",
         "text-red-400": state === "upload-error" || state === "download-error",
       })} />
@@ -493,3 +508,63 @@ const FileUploaderItem = <D extends unknown = any>({
     </div>
   );
 }
+
+export function getFileIconConstructor(
+  file: FileDetails,
+  iconsMapping?: IconMapping,
+  defaultIcon: IconConstructor = IconFile
+): IconConstructor {
+  const extension = file.name.substring(file.name.lastIndexOf("."));
+  const mimeType = file.type;
+  const type = mimeType.split("/")[0];
+
+  console.log(file.type, extension)
+
+  const Icon = 
+    iconsMapping?.[extension]
+    ?? iconsMapping?.[mimeType]
+    ?? iconsMapping?.[type]
+    ?? defaultFileIcons[extension]
+    ?? defaultFileIcons[mimeType]
+    ?? defaultFileIcons[type]
+    ?? defaultIcon;
+  return Icon;
+}
+
+const loadingIcon = () => <IconFile size={36} className="text-gray-400" />;
+
+const defaultFileIcons: IconMapping = {
+  // Media
+  image: dynamic(() => import("@tabler/icons-react").then(m => m.IconPhoto), { loading: loadingIcon, }),
+  "image/bmp": dynamic(() => import("@tabler/icons-react").then(m => m.IconFileTypeBmp), { loading: loadingIcon, }),
+  "image/svg+xml": dynamic(() => import("@tabler/icons-react").then(m => m.IconFileTypeSvg), { loading: loadingIcon, }),
+  audio: dynamic(() => import("@tabler/icons-react").then(m => m.IconHeadphones), { loading: loadingIcon, }),
+  video: dynamic(() => import("@tabler/icons-react").then(m => m.IconVideo), { loading: loadingIcon, }),
+  "application/pdf": dynamic(() => import("@tabler/icons-react").then(m => m.IconFileTypePdf), { loading: loadingIcon, }),
+  "application/msword": dynamic(() => import("@tabler/icons-react").then(m => m.IconFileTypeDocx), { loading: loadingIcon, }),
+  "application/vnd.ms-word": dynamic(() => import("@tabler/icons-react").then(m => m.IconFileTypeDocx), { loading: loadingIcon, }),
+  "application/vnd.oasis.opendocument.text": dynamic(() => import("@tabler/icons-react").then(m => m.IconFileTypeDocx), { loading: loadingIcon, }),
+  "application/vnd.openxmlformats-officedocument.wordprocessingml": dynamic(() => import("@tabler/icons-react").then(m => m.IconFileTypeDocx), { loading: loadingIcon, }),
+  "application/vnd.ms-excel": dynamic(() => import("@tabler/icons-react").then(m => m.IconFileTypeXls), { loading: loadingIcon, }),
+  "application/vnd.openxmlformats-officedocument.spreadsheetml": dynamic(() => import("@tabler/icons-react").then(m => m.IconFileTypeXls), { loading: loadingIcon, }),
+  "application/vnd.oasis.opendocument.spreadsheet": dynamic(() => import("@tabler/icons-react").then(m => m.IconFileTypeXls), { loading: loadingIcon, }),
+  "application/vnd.ms-powerpoint": dynamic(() => import("@tabler/icons-react").then(m => m.IconFileTypePpt), { loading: loadingIcon, }),
+  "application/vnd.openxmlformats-officedocument.presentationml": dynamic(() => import("@tabler/icons-react").then(m => m.IconFileTypePpt), { loading: loadingIcon, }),
+  "application/vnd.oasis.opendocument.presentation": dynamic(() => import("@tabler/icons-react").then(m => m.IconFileTypePpt), { loading: loadingIcon, }),
+  "text/csv": dynamic(() => import("@tabler/icons-react").then(m => m.IconFileTypeCsv), { loading: loadingIcon, }),
+  "text/plain": dynamic(() => import("@tabler/icons-react").then(m => m.IconFileTypeTxt), { loading: loadingIcon, }),
+  "text/html": dynamic(() => import("@tabler/icons-react").then(m => m.IconFileTypeHtml), { loading: loadingIcon, }),
+  "text/css": dynamic(() => import("@tabler/icons-react").then(m => m.IconFileTypeCss), { loading: loadingIcon, }),
+  "text/xml": dynamic(() => import("@tabler/icons-react").then(m => m.IconFileTypeXml), { loading: loadingIcon, }),
+  "text/javascript": dynamic(() => import("@tabler/icons-react").then(m => m.IconFileTypeJs), { loading: loadingIcon, }),
+  ".jsx": dynamic(() => import("@tabler/icons-react").then(m => m.IconFileTypeJs), { loading: loadingIcon, }),
+  ".ts": dynamic(() => import("@tabler/icons-react").then(m => m.IconFileTypeTs), { loading: loadingIcon, }),
+  ".tsx": dynamic(() => import("@tabler/icons-react").then(m => m.IconFileTypeTsx), { loading: loadingIcon, }),
+  ".vue": dynamic(() => import("@tabler/icons-react").then(m => m.IconFileTypeVue), { loading: loadingIcon, }),
+  "application/json": dynamic(() => import("@tabler/icons-react").then(m => m.IconJson), { loading: loadingIcon, }),
+  "application/sql": dynamic(() => import("@tabler/icons-react").then(m => m.IconFileTypeSql), { loading: loadingIcon, }),
+  "application/gzip": dynamic(() => import("@tabler/icons-react").then(m => m.IconFileZip), { loading: loadingIcon, }),
+  "application/zip": dynamic(() => import("@tabler/icons-react").then(m => m.IconFileZip), { loading: loadingIcon, }),
+  "application/object": dynamic(() => import("@tabler/icons-react").then(m => m.IconFile3d), { loading: loadingIcon, }),
+  "application/vnd.sqlite3": dynamic(() => import("@tabler/icons-react").then(m => m.IconDatabase), { loading: loadingIcon, }),
+};
