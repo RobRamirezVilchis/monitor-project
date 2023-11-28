@@ -1,4 +1,4 @@
-import { ComponentPropsWithoutRef, ForwardedRef, InputHTMLAttributes, ReactNode, forwardRef } from "react";
+import { ComponentPropsWithoutRef, ForwardedRef, ReactNode, forwardRef } from "react";
 import { 
   CloseButton, 
   type ElementProps, 
@@ -7,9 +7,15 @@ import {
   InputBase, type InputBaseProps,
 } from "@mantine/core";
 
-import { FileDetails } from "./FileDetails";
 import { useUncontrolled } from "@mantine/hooks";
 import { formatBytes } from "@/utils/utils";
+
+export interface FileDetails {
+  readonly name: string;
+  readonly size: number;
+  readonly type: string;
+  readonly file?: File;
+}
 
 export interface FileInputProps<Multiple extends boolean = false> 
   extends InputBaseProps,
