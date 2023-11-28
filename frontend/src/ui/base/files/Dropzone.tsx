@@ -103,6 +103,7 @@ export const Dropzone = forwardRef<HTMLDivElement, DropzoneProps>(({
     ...paperProps,
     className: clsx("relative p-5", styles.root, classNames?.root, {
       "cursor-pointer": !props.noClick,
+      "cursor-not-allowed": props.disabled,
     }),
     style: {
       borderColor: isFocused || isDragActive ? primaryColorFilled.background : undefined,
@@ -143,7 +144,9 @@ export const Dropzone = forwardRef<HTMLDivElement, DropzoneProps>(({
             {isDragReject && (rejectedFilesIcon ||  <IconX size={48} color={primaryColorFilled.background} />)}
 
             <span 
-              className={clsx("text-xl", classNames?.content?.label)} 
+              className={clsx("text-xl", classNames?.content?.label, {
+                [styles.dimmed]: props.disabled,
+              })} 
               style={{ color: isDragReject ? primaryColorSubtle.color : undefined }}
             >
               {label

@@ -6,14 +6,15 @@ import { useRef } from "react";
 
 import { FileUploader } from "@/ui/base/files/FileUploader";
 import { ColorSchemeButtonToggle } from "@/components/shared";
-import { FileInput } from "@/ui/base/files/FileInput";
 import http from "@/api/http";
-import { downloadFileFromApi, sleep } from "@/utils/utils";
+import { downloadFileFromApi } from "@/utils/utils";
 import { showErrorNotification } from "@/ui/notifications";
 import { AxiosError } from "axios";
 
 const FileUploadPage = () => {
   const dropzoneRef = useRef<DropzoneRef>(null);
+
+  const disabled = false;
 
   return (
     <div className="p-8">
@@ -26,6 +27,7 @@ const FileUploadPage = () => {
           // autoUpload
           maxSize={1024 * 1024 * 10}
           successDelay={750}
+          disabled={disabled}
           classNames={{
             dropzone: {
               content: {
@@ -129,7 +131,10 @@ const FileUploadPage = () => {
 
           <div className="flex justify-center">
             <Button
-              onClick={() => dropzoneRef.current?.open()}
+                disabled={disabled}
+                onClick={() => {
+                dropzoneRef.current?.open?.();
+              }}
             >
               Upload files
             </Button>

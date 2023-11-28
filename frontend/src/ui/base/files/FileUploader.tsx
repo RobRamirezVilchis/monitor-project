@@ -266,6 +266,7 @@ export const FileUploader = <D extends unknown = any>({
             key={idx} 
             file={file}
             classNames={classNames?.fileItem}
+            disabled={props.disabled}
 
             allowUpload={allowUpload}
             allowDownload={allowDownload}
@@ -318,6 +319,7 @@ interface FileUploaderItemProps<D = any> extends FileUploaderConfig<D>, FileUplo
       progress?: string;
     }
   };
+  disabled?: boolean;
 }
 
 type FileUploadState = "idle" | "uploading" | "downloading" | "success" | "upload-error" | "download-error";
@@ -325,6 +327,7 @@ type FileUploadState = "idle" | "uploading" | "downloading" | "success" | "uploa
 const FileUploaderItem = <D extends unknown = any>({
   file,
   classNames,
+  disabled,
 
   allowUpload = true,
   allowDownload = true,
@@ -540,7 +543,9 @@ const FileUploaderItem = <D extends unknown = any>({
         <div className={clsx("flex-1 flex gap-2", classNames?.content?.mainContainer)}>
           <div className={clsx("flex-1 truncate flex flex-col", classNames?.content?.labelContainer)}>
             <span 
-              className={clsx("truncate text-lg font-semibold", classNames?.content?.fileNameLabel)} 
+              className={clsx("truncate text-lg font-semibold", classNames?.content?.fileNameLabel, {
+                "text-gray-400": disabled,
+              })} 
               title={file.name}
             >
               {file.name}
@@ -568,6 +573,7 @@ const FileUploaderItem = <D extends unknown = any>({
         <Tooltip label={actionTooltips?.upload || "Upload"}>
           <ActionIcon radius="xl" variant="light"
             onClick={_onFileUploadClick}
+            disabled={disabled}
           >
             <IconCloudUpload />
           </ActionIcon>
@@ -578,6 +584,7 @@ const FileUploaderItem = <D extends unknown = any>({
         <Tooltip label={actionTooltips?.download || "Download"}>
           <ActionIcon radius="xl" variant="light"
             onClick={_onFileDownloadClick}
+            disabled={disabled}
           >
             <IconCloudDownload />
           </ActionIcon>
@@ -588,6 +595,7 @@ const FileUploaderItem = <D extends unknown = any>({
         <Tooltip label={actionTooltips?.retry || "Retry"}>
           <ActionIcon radius="xl" variant="light"
             onClick={_onRetryClick}
+            disabled={disabled}
           >
             <IconRefresh />
           </ActionIcon>
@@ -610,6 +618,7 @@ const FileUploaderItem = <D extends unknown = any>({
         >
           <ActionIcon radius="xl" variant="light" color="red"
             onClick={_onCancelClick}
+            disabled={disabled}
           >
             <IconX />
           </ActionIcon>
