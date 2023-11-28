@@ -14,5 +14,6 @@ upload_patterns = [
 ]
 
 urlpatterns = [
-    path("upload/", include((upload_patterns, "upload")))
+    path("upload/", include((upload_patterns, "upload"))),
+    path("<str:file_id>/download/", apis.FileDownloadApi.as_view(), name="download"),
 ]

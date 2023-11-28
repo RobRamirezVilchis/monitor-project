@@ -5,7 +5,7 @@ import Link from "next/link";
 
 import { ConfirmDialogProvider, NavLink } from "@/components/shared";
 import { useAuth } from "@/hooks/auth";
-import { getOrRefreshAccessToken } from "@/api/auth";
+import { refreshToken } from "@/api/auth";
 import {
   showSuccessNotification,
   showErrorNotification,
@@ -14,6 +14,7 @@ import {
 } from "@/ui/notifications";
 import { useConfirmDialog } from "@/hooks/shared";
 import { sleep } from "@/utils/utils";
+import jwt from "@/api/jwt";
 
 
 const Home = () => {
@@ -57,7 +58,7 @@ const Home = () => {
           <button
             className="p-2 bg-blue-500 text-white rounded-md"
             onClick={async () => {
-              console.log(await getOrRefreshAccessToken())
+              console.log(await jwt.getOrRefreshAccessToken((refresh) => refreshToken(refresh ?? undefined, { useJWT: false, rejectRequest: false, onError: false })))
             }}
           >
             Refresh token
@@ -70,6 +71,42 @@ const Home = () => {
             }}
           >
             Connect account to Google
+          </button>
+
+          <button
+            className="p-2 bg-blue-500 text-white rounded-md"
+            onClick={async () => {
+              login({
+                socialLogin: { 
+                  provider: "google",
+                  providersOptions: {
+                    google: {
+                      scope: "https://www.googleapis.com/auth/calendar.readonly",
+                    },
+                  },
+                },
+              });
+            }}
+          >
+            Add Google Calendar Scope
+          </button>
+
+          <button
+            className="p-2 bg-blue-500 text-white rounded-md"
+            onClick={async () => {
+              login({ 
+                socialLogin: { 
+                  provider: "google",
+                  providersOptions: {
+                    google: {
+                      scope: "https://spreadsheets.google.com/feeds/",
+                    },
+                  },
+                },
+              });
+            }}
+          >
+            Add Google SpreadSheets Scope
           </button>
         </div>
       ) : (

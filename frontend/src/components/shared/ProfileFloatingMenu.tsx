@@ -1,4 +1,4 @@
-import { FC, ReactNode, useMemo } from "react";
+import { ReactNode, useMemo } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { 
   ActionIcon, 
@@ -27,15 +27,13 @@ export const ProfileFloatingMenu = () => {
     redirectIfNotAuthorized: false,
   });
   const [open, { toggle, close }] = useDisclosure(false);
-  const queryClient = useQueryClient();
-  const fallbackAvatarColor = useMemo(
-    () => !user?.extra?.picture ? randomColor() : "#000",
-    [user?.extra?.picture]  
-  );
+  // const fallbackAvatarColor = useMemo(
+  //   () => !user?.extra?.picture ? randomColor() : "#000",
+  //   [user?.extra?.picture]  
+  // );
 
   const onLogout = () => {
     close();
-    queryClient.invalidateQueries();
     logout();
   };
 
@@ -52,7 +50,7 @@ export const ProfileFloatingMenu = () => {
           <ActionIcon
             onClick={toggle}
           >
-            <UserAvatar user={user} fallbackColor={fallbackAvatarColor} />
+            <UserAvatar user={user} fallbackColor={"#fff"/*fallbackAvatarColor*/} />
           </ActionIcon>
         </Tooltip>
       </Popover.Target>
@@ -62,7 +60,7 @@ export const ProfileFloatingMenu = () => {
           {isAuthenticated && !loading ? (
             <>
               <div className="flex flex-col gap-3 justify-center items-center">
-                <UserAvatar user={user} fallbackColor={fallbackAvatarColor} />
+                <UserAvatar user={user} fallbackColor={"#fff"/*fallbackAvatarColor*/} />
                 <div className="flex flex-col gap-1 justify-center items-center">
                   <span className="text-base font-semibold">
                     {user?.first_name} {user?.last_name}
@@ -126,7 +124,12 @@ interface ListLinkProps {
   onClick?: () => void;
 }
 
-const ListLink: FC<ListLinkProps> = ({ href, icon, label, onClick }) => {
+const ListLink = ({ 
+  href, 
+  icon, 
+  label, 
+  onClick 
+}: ListLinkProps) => {
   const active = useNavLink(href);
 
   return (

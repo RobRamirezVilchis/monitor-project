@@ -1,7 +1,13 @@
 "use client";
 
 import { ReactNode, useMemo, useState } from "react";
-import { AppShell, Burger, Indicator, NavLink, useMantineTheme } from "@mantine/core";
+import { 
+  AppShell, 
+  Burger, 
+  Indicator, 
+  NavLink, type NavLinkProps, 
+  useMantineTheme,
+} from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import clsx from "clsx";
 import Link from "next/link";
@@ -92,7 +98,7 @@ const MainLayout = ({
       <AppShell.Navbar 
         classNames={{ navbar: "px-2.5 py-2.5" }}
       >
-        {visibleLinks.map((item) => <MobileNavLink key={item.href} item={item} />)}
+        {visibleLinks.map((item) => <MobileNavLink key={item.href} item={item} onClick={close} />)}
       </AppShell.Navbar>
 
       <AppShell.Main>
@@ -102,14 +108,16 @@ const MainLayout = ({
   );
 }
 
-export default withAuth<any>(MainLayout);
+export default withAuth(MainLayout);
 
 interface DesktopNavLinkProps {
   item: NavMenuItem;
+  onClick?: NavLinkProps["onClick"];
 }
 
 const DesktopNavLink = ({
   item,
+  onClick,
 }: DesktopNavLinkProps) => {
   const theme = useMantineTheme();
   const active = useNavLink(item.href || "#");
@@ -121,11 +129,12 @@ const DesktopNavLink = ({
 
   return (
     <NavLink
+      component={Link}
       href={item.href || "#"}
-      className="text-center "
+      onClick={onClick}
+      className="text-center"
       classNames={{
         root: clsx("px-2 py-2.5 min-w-24", {
-          // "shadow-[inset_0_-3px] shadow-blue-400 text-blue-400": active,
         }),
         body: "overflow-visible",
       }}
@@ -141,7 +150,7 @@ const DesktopNavLink = ({
         <Indicator
           disabled={!item.badgeCount}
           label={
-            typeof item.badgeCount === "number" && item.badgeCount > 99 
+            typeof item.badgeCount === "number" && item.badgeCount > 99
             ? "99+" 
             : item.badgeCount
           }
@@ -160,16 +169,20 @@ const DesktopNavLink = ({
 
 interface MobileNavLinkProps {
   item: NavMenuItem;
+  onClick?: NavLinkProps["onClick"];
 }
 
 const MobileNavLink = ({
   item,
+  onClick,
 }: MobileNavLinkProps) => {
   const active = useNavLink(item.href || "#");
 
   return (
     <NavLink
+      component={Link}
       href={item.href || "#"}
+      onClick={onClick}
       className="text-center"
       classNames={{
         root: "px-2 py-2.5 min-w-24",
@@ -177,7 +190,6 @@ const MobileNavLink = ({
         label: "flex justify-center",
       }}
       active={active}
-      onClick={close}
       label={
         <Indicator
           disabled={!item.badgeCount}

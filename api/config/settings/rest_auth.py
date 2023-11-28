@@ -22,11 +22,11 @@ REST_AUTH = {
     "PASSWORD_RESET_SERIALIZER": "authentication.serializers.CustomPasswordResetSerializer",
 
     "SESSION_LOGIN": True,
-    "USE_JWT": False,
+    "USE_JWT": True,
 
     "JWT_AUTH_COOKIE": "auth",
     "JWT_AUTH_REFRESH_COOKIE": "refresh",
-    "JWT_AUTH_SECURE": False,
+    "JWT_AUTH_SECURE": True,
     "JWT_AUTH_HTTPONLY": True,
     "JWT_AUTH_SAMESITE": "Lax",
     "JWT_AUTH_RETURN_EXPIRATION": True,
@@ -34,8 +34,8 @@ REST_AUTH = {
 }
 
 SIMPLE_JWT = {
-    "ACCESS_TOKEN_LIFETIME": timedelta(hours=1),
-    "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
+    "ACCESS_TOKEN_LIFETIME": timedelta(seconds=env.int("ACCESS_TOKEN_LIFETIME", default=3600)), # 1 hour
+    "REFRESH_TOKEN_LIFETIME": timedelta(seconds=env.int("REFRESH_TOKEN_LIFETIME", default=2592000)), # 1 month
     "UPDATE_LAST_LOGIN": True,
 }
 
@@ -57,8 +57,8 @@ SOCIALACCOUNT_PROVIDERS = {
         "AUTH_PARAMS": {
             "access_type": "offline",
             "prompt": "consent",
-        }
-    }
+        },
+    },
 }
 
 GOOGLE_CALLBACK_URL = env.str("GOOGLE_CALLBACK_URL")

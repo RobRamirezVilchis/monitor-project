@@ -1,19 +1,40 @@
-.track-light {
+.icon-light {
+    @mixin light {
+        display: block;
+    }
+
+    @mixin dark {
+        display: none;
+    }
+}
+
+.icon-dark {
+    @mixin light {
+        display: none;
+    }
+
+    @mixin dark {
+        display: block;
+    }
+}
+
+.track {
     background-color: #F2C234;
     border-color: #FAE9B1;
+
+    @mixin dark {
+        background-color: #1D2936;
+        border-color: #008BE2;
+    }
 }
 
-.track-dark {
-    background-color: #1D2936;
-    border-color: #008BE2;
-}
-
-.thumb-light {
+.thumb {
     background-color: #FAE9B1;
     border: none;
+
+    @mixin dark {
+        background-color: #008BE2;
+        border: none;
+    }
 }
 
-.thumb-dark {
-    background-color: #008BE2;
-    border: none;
-}

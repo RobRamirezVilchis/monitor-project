@@ -1,9 +1,9 @@
 from cryptography.fernet import Fernet, MultiFernet
 from django.conf import settings
 from django.contrib.auth import get_user_model
-from django.core.exceptions import ValidationError
 from django.db import transaction
 from django.utils import timezone
+from rest_framework.exceptions import ValidationError
 from typing import Any, Dict, Tuple
 import base64
 import mimetypes
@@ -61,7 +61,7 @@ class FileStandardUploadService:
             guessed_file_type, encoding = mimetypes.guess_type(file_name)
 
             if guessed_file_type is None:
-                file_type = ""
+                file_type = self.file_obj.content_type or ""
             else:
                 file_type = guessed_file_type
 
@@ -78,6 +78,7 @@ class FileStandardUploadService:
             original_file_name=file_name,
             file_name=file_generate_name(file_name),
             file_type=file_type,
+            file_size=self.file_obj.size,
             uploaded_by=self.user,
             upload_finished_at=timezone.now(),
         )
@@ -97,6 +98,7 @@ class FileStandardUploadService:
         file.original_file_name = file_name
         file.file_name = file_generate_name(file_name)
         file.file_type = file_type
+        file.file_size = self.file_obj.size
         file.uploaded_by = self.user
         file.upload_finished_at = timezone.now()
 
@@ -117,6 +119,7 @@ class FileDirectUploadService:
             original_file_name=file_name,
             file_name=file_generate_name(file_name),
             file_type=file_type,
+            file_size=0,
             uploaded_by=self.user,
             file=None,
         )
@@ -158,6 +161,7 @@ class FileDirectUploadService:
 
         # Potentially, check against user
         file.file = file_obj
+        file.file_size = file_obj.size
         file.full_clean()
         file.save()
 

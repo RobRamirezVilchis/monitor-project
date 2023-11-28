@@ -24,5 +24,5 @@ def file_generate_local_upload_url(*, file_id: str, api_version: str):
 
 
 def bytes_to_mb(value: int) -> float:
-    # 1 bytes = 1e-6 megabytes
-    return value * 1e-6
+    # 1 Megabyte = 1024^2 bytes
+    return value / 1048576
