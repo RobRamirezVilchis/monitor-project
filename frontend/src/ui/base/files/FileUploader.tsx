@@ -46,14 +46,25 @@ export interface FileUploaderProps<D = any> extends DropzoneProps, FileUploaderC
   error?: ReactNode;
 }
 
-export type IconConstructor = ComponentType<{ size?: string | number; className?: string; }>;
+export type IconConstructor = ComponentType<{ width?: string | number; height?: string | number; size?: string | number; className?: string; }>;
+
 export type IconMapping = Record<string, IconConstructor>;
 
 export interface FileUploaderConfig<D = any> {
+  /** 
+   * If true, files can be uploaded. 
+   * @default true
+   */
+  allowUpload?: boolean;
+  /** 
+   * If true, files can be downloaded. 
+   * @default true
+   */
+  allowDownload?: boolean;
   /**
    * If true, files will be uploaded as soon as they are dropped.
    * 
-   * WARNING: This will also affect initial files if the file property is set!
+   * WARNING: This will also affect initial files if the `file` property is set!
    * @default false
    */
   autoUpload?: boolean;
@@ -161,11 +172,13 @@ export const FileUploader = <D extends unknown = any>({
   onChange,
   error,
 
+  allowUpload = true,
+  allowDownload = true,
   autoUpload = false,
   showUploadProgress = true,
   showDownloadProgress = true,
   successDuration = 750,
-  successDelay = 200,
+  successDelay = 750,
   actionTooltips,
   uploadFn,
   downloadFn,
@@ -231,6 +244,8 @@ export const FileUploader = <D extends unknown = any>({
             key={idx} 
             file={file}
 
+            allowUpload={allowUpload}
+            allowDownload={allowDownload}
             autoUpload={autoUpload}
             showUploadProgress={showUploadProgress}
             showDownloadProgress={showDownloadProgress}
@@ -273,11 +288,13 @@ type FileUploadState = "idle" | "uploading" | "downloading" | "success" | "uploa
 const FileUploaderItem = <D extends unknown = any>({
   file,
 
+  allowUpload = true,
+  allowDownload = true,
   autoUpload = false,
   showUploadProgress = true,
   showDownloadProgress = true,
   successDuration = 750,
-  successDelay = 200,
+  successDelay = 750,
   actionTooltips,
   uploadFn,
   downloadFn,
@@ -320,9 +337,19 @@ const FileUploaderItem = <D extends unknown = any>({
   }, [state, successDuration]);
 
   const uploadFile = async () => {
+    if (!allowUpload) {
+      setState("upload-error");
+      onFileUploadError?.(file as FileUploadDetails<D>, {
+        code: "upload-not-allowed",
+        message: "Upload not allowed",
+      });
+      return;
+    }
+
     if (!file.file) {
       setState("upload-error");
       onFileUploadError?.(file as FileUploadDetails<D>, {
+        code: "file-not-found",
         message: `File ${file.name} not found`,
       });
       return;
@@ -348,9 +375,19 @@ const FileUploaderItem = <D extends unknown = any>({
   };
 
   const downloadFile = async () => {
+    if (!allowDownload) {
+      setState("download-error");
+      onFileDownloadError?.(file as FileDownloadDetails<D>, {
+        code: "download-not-allowed",
+        message: "Download not allowed",
+      });
+      return;
+    }
+
     if (file.downloadData === undefined || file.downloadData === null) {
       setState("download-error");
       onFileDownloadError?.(file as FileDownloadDetails<D>, {
+        code: "download-not-allowed",
         message: `File ${file.name} does not allow download`,
       });
       return;
@@ -426,7 +463,7 @@ const FileUploaderItem = <D extends unknown = any>({
         "border !border-red-500 !text-red-400": state === "upload-error" || state === "download-error",
       })}
     >
-      <FileIcon size={36} className={clsx({
+      <FileIcon width={32} height={32} size={32} className={clsx({
         "text-gray-400": state !== "upload-error" && state !== "download-error",
         "text-red-400": state === "upload-error" || state === "download-error",
       })} />
@@ -454,7 +491,7 @@ const FileUploaderItem = <D extends unknown = any>({
       {state === "uploading" && !showUploadProgress ? <Loader size="sm" /> : null}
       {state === "downloading" && !showDownloadProgress ? <Loader size="sm" /> : null}
 
-      {state === "idle" && file?.file && file.downloadData === undefined ? (
+      {allowUpload && state === "idle" && file?.file && file.downloadData === undefined ? (
         <Tooltip label={actionTooltips?.upload || "Upload"}>
           <ActionIcon radius="xl" variant="light"
             onClick={_onFileUploadClick}
@@ -464,7 +501,7 @@ const FileUploaderItem = <D extends unknown = any>({
         </Tooltip>
       ) : null}
 
-      {state === "idle" && file.downloadData !== undefined && file.downloadData !== null ? (
+      {allowDownload && state === "idle" && file.downloadData !== undefined && file.downloadData !== null ? (
         <Tooltip label={actionTooltips?.download || "Download"}>
           <ActionIcon radius="xl" variant="light"
             onClick={_onFileDownloadClick}
@@ -518,8 +555,6 @@ export function getFileIconConstructor(
   const mimeType = file.type;
   const type = mimeType.split("/")[0];
 
-  console.log(file.type, extension)
-
   const Icon = 
     iconsMapping?.[extension]
     ?? iconsMapping?.[mimeType]
@@ -531,22 +566,25 @@ export function getFileIconConstructor(
   return Icon;
 }
 
-const loadingIcon = () => <IconFile size={36} className="text-gray-400" />;
+const loadingIcon = () => <IconFile width={32} height={32} size={32} className="text-gray-400" />;
 
 const defaultFileIcons: IconMapping = {
-  // Media
   image: dynamic(() => import("@tabler/icons-react").then(m => m.IconPhoto), { loading: loadingIcon, }),
   "image/bmp": dynamic(() => import("@tabler/icons-react").then(m => m.IconFileTypeBmp), { loading: loadingIcon, }),
   "image/svg+xml": dynamic(() => import("@tabler/icons-react").then(m => m.IconFileTypeSvg), { loading: loadingIcon, }),
   audio: dynamic(() => import("@tabler/icons-react").then(m => m.IconHeadphones), { loading: loadingIcon, }),
   video: dynamic(() => import("@tabler/icons-react").then(m => m.IconVideo), { loading: loadingIcon, }),
+  font: dynamic(() => import("@tabler/icons-react").then(m => m.IconFileTypography), { loading: loadingIcon, }),
+  "application/vnd.ms-fontobject": dynamic(() => import("@tabler/icons-react").then(m => m.IconFileTypography), { loading: loadingIcon, }),
   "application/pdf": dynamic(() => import("@tabler/icons-react").then(m => m.IconFileTypePdf), { loading: loadingIcon, }),
-  "application/msword": dynamic(() => import("@tabler/icons-react").then(m => m.IconFileTypeDocx), { loading: loadingIcon, }),
+  "application/msword": dynamic(() => import("@tabler/icons-react").then(m => m.IconFileTypeDoc), { loading: loadingIcon, }),
   "application/vnd.ms-word": dynamic(() => import("@tabler/icons-react").then(m => m.IconFileTypeDocx), { loading: loadingIcon, }),
   "application/vnd.oasis.opendocument.text": dynamic(() => import("@tabler/icons-react").then(m => m.IconFileTypeDocx), { loading: loadingIcon, }),
   "application/vnd.openxmlformats-officedocument.wordprocessingml": dynamic(() => import("@tabler/icons-react").then(m => m.IconFileTypeDocx), { loading: loadingIcon, }),
+  "application/vnd.openxmlformats-officedocument.wordprocessingml.document": dynamic(() => import("@tabler/icons-react").then(m => m.IconFileTypeDocx), { loading: loadingIcon, }),
   "application/vnd.ms-excel": dynamic(() => import("@tabler/icons-react").then(m => m.IconFileTypeXls), { loading: loadingIcon, }),
   "application/vnd.openxmlformats-officedocument.spreadsheetml": dynamic(() => import("@tabler/icons-react").then(m => m.IconFileTypeXls), { loading: loadingIcon, }),
+  "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": dynamic(() => import("@tabler/icons-react").then(m => m.IconFileTypeXls), { loading: loadingIcon, }),
   "application/vnd.oasis.opendocument.spreadsheet": dynamic(() => import("@tabler/icons-react").then(m => m.IconFileTypeXls), { loading: loadingIcon, }),
   "application/vnd.ms-powerpoint": dynamic(() => import("@tabler/icons-react").then(m => m.IconFileTypePpt), { loading: loadingIcon, }),
   "application/vnd.openxmlformats-officedocument.presentationml": dynamic(() => import("@tabler/icons-react").then(m => m.IconFileTypePpt), { loading: loadingIcon, }),
@@ -555,8 +593,9 @@ const defaultFileIcons: IconMapping = {
   "text/plain": dynamic(() => import("@tabler/icons-react").then(m => m.IconFileTypeTxt), { loading: loadingIcon, }),
   "text/html": dynamic(() => import("@tabler/icons-react").then(m => m.IconFileTypeHtml), { loading: loadingIcon, }),
   "text/css": dynamic(() => import("@tabler/icons-react").then(m => m.IconFileTypeCss), { loading: loadingIcon, }),
-  "text/xml": dynamic(() => import("@tabler/icons-react").then(m => m.IconFileTypeXml), { loading: loadingIcon, }),
   "text/javascript": dynamic(() => import("@tabler/icons-react").then(m => m.IconFileTypeJs), { loading: loadingIcon, }),
+  "text/xml": dynamic(() => import("@tabler/icons-react").then(m => m.IconFileTypeXml), { loading: loadingIcon, }),
+  "application/xml": dynamic(() => import("@tabler/icons-react").then(m => m.IconFileTypeXml), { loading: loadingIcon, }),
   ".jsx": dynamic(() => import("@tabler/icons-react").then(m => m.IconFileTypeJs), { loading: loadingIcon, }),
   ".ts": dynamic(() => import("@tabler/icons-react").then(m => m.IconFileTypeTs), { loading: loadingIcon, }),
   ".tsx": dynamic(() => import("@tabler/icons-react").then(m => m.IconFileTypeTsx), { loading: loadingIcon, }),
@@ -564,7 +603,16 @@ const defaultFileIcons: IconMapping = {
   "application/json": dynamic(() => import("@tabler/icons-react").then(m => m.IconJson), { loading: loadingIcon, }),
   "application/sql": dynamic(() => import("@tabler/icons-react").then(m => m.IconFileTypeSql), { loading: loadingIcon, }),
   "application/gzip": dynamic(() => import("@tabler/icons-react").then(m => m.IconFileZip), { loading: loadingIcon, }),
+  "application/vnd.rar": dynamic(() => import("@tabler/icons-react").then(m => m.IconFileZip), { loading: loadingIcon, }),
   "application/zip": dynamic(() => import("@tabler/icons-react").then(m => m.IconFileZip), { loading: loadingIcon, }),
   "application/object": dynamic(() => import("@tabler/icons-react").then(m => m.IconFile3d), { loading: loadingIcon, }),
   "application/vnd.sqlite3": dynamic(() => import("@tabler/icons-react").then(m => m.IconDatabase), { loading: loadingIcon, }),
+  ".mdb": dynamic(() => import("@tabler/icons-react").then(m => m.IconDatabase), { loading: loadingIcon, }),
+  ".mdf": dynamic(() => import("@tabler/icons-react").then(m => m.IconDatabase), { loading: loadingIcon, }),
+  ".sdf": dynamic(() => import("@tabler/icons-react").then(m => m.IconDatabase), { loading: loadingIcon, }),
+  ".db": dynamic(() => import("@tabler/icons-react").then(m => m.IconDatabase), { loading: loadingIcon, }),
+  ".myd": dynamic(() => import("@tabler/icons-react").then(m => m.IconDatabase), { loading: loadingIcon, }),
+  "application/x-php": dynamic(() => import("@tabler/icons-react").then(m => m.IconFileTypePhp), { loading: loadingIcon, }),
+  "application/octet-stream": dynamic(() => import("@tabler/icons-react").then(m => m.IconFileDigit), { loading: loadingIcon, }),
+  "application/x-sh": dynamic(() => import("@tabler/icons-react").then(m => m.IconBrandPowershell), { loading: loadingIcon, }),
 };

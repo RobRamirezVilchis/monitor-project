@@ -20,7 +20,7 @@ const FileUploadPage = () => {
       <ColorSchemeButtonToggle />
 
       <div className="w-full max-w-xl">
-        <FileUploader<{ id: string }>
+        <FileUploader<{ id: string | number }>
           dropzoneRef={dropzoneRef}
           noClick
           // autoUpload
@@ -31,6 +31,16 @@ const FileUploadPage = () => {
               root: "flex flex-col gap-4",
             }
           }}
+          defaultValue={[
+            {
+              name: "test.txt",
+              size: 1024,
+              type: "text/plain",
+              downloadData: {
+                id: 3,
+              },
+            }
+          ]}
           onDropRejected={files => {
             console.log("onDropRejected:", files);
             const message = JSON.stringify(files.map(file => file.errors.map(error => error.message)), null, 2);
