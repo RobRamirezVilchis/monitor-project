@@ -1,5 +1,12 @@
-import { ComponentType, Dispatch, MouseEventHandler, ReactNode, SetStateAction, useRef, useState } from "react";
-import { ActionIcon, Loader, Progress, Tooltip, ThemeIcon } from "@mantine/core";
+import { ComponentType, Dispatch, MouseEventHandler, ReactNode, SetStateAction, useEffect, useMemo, useRef, useState } from "react";
+import { 
+  ActionIcon,
+  Image, type ImageProps,
+  Loader,
+  Progress,
+  Tooltip,
+  ThemeIcon,
+} from "@mantine/core";
 import { useUncontrolled } from "@mantine/hooks";
 import clsx from "clsx";
 import dynamic from "next/dynamic";
@@ -72,6 +79,13 @@ export interface FileUploaderConfig<D = any> {
   showUploadProgress?: boolean;
   /** If true, the download progress will be shown. */
   showDownloadProgress?: boolean;
+  /**
+   * If true, an image preview will be shown for image files.
+   * @default false
+   */
+  showPreview?: boolean;
+  /** Props to pass to the preview image if `showPreview` is true. */
+  previewProps?: Omit<ImageProps, "src" | "alt">;
   /**
    * The duration in milliseconds to show the success icon after a successful upload/download.
    * @default 750
@@ -177,6 +191,8 @@ export const FileUploader = <D extends unknown = any>({
   autoUpload = false,
   showUploadProgress = true,
   showDownloadProgress = true,
+  showPreview = false,
+  previewProps,
   successDuration = 750,
   successDelay = 750,
   actionTooltips,
@@ -249,6 +265,8 @@ export const FileUploader = <D extends unknown = any>({
             autoUpload={autoUpload}
             showUploadProgress={showUploadProgress}
             showDownloadProgress={showDownloadProgress}
+            showPreview={showPreview}
+            previewProps={previewProps}
             successDuration={successDuration}
             successDelay={successDelay}
             actionTooltips={actionTooltips}
@@ -293,6 +311,8 @@ const FileUploaderItem = <D extends unknown = any>({
   autoUpload = false,
   showUploadProgress = true,
   showDownloadProgress = true,
+  showPreview = false,
+  previewProps,
   successDuration = 750,
   successDelay = 750,
   actionTooltips,
@@ -317,6 +337,19 @@ const FileUploaderItem = <D extends unknown = any>({
   const [progress, setProgress] = useState(0);
   const abortController = useRef<AbortController | null>(null);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const FileIcon = useMemo(() => getFileIconConstructor(file, icons), [file, icons]);
+
+  useEffect(() => {
+    let url: string | null = null;
+    if (showPreview && file?.file && file.type.startsWith("image"))
+      url = URL.createObjectURL(file.file);
+    setPreviewUrl(url);
+
+    return () => {
+      if (url) URL.revokeObjectURL(url);
+    };
+  }, [file.file, file.type, showPreview]);
 
   useOnMount(() => {
     if (autoUpload) uploadFile();
@@ -325,6 +358,7 @@ const FileUploaderItem = <D extends unknown = any>({
   useOnUnmount(() => {
     abortController.current?.abort();
     if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    if (previewUrl) URL.revokeObjectURL(previewUrl);
   });
 
   useIsomorphicLayoutEffect(() => {
@@ -455,18 +489,32 @@ const FileUploaderItem = <D extends unknown = any>({
     }
   };
 
-  const FileIcon = getFileIconConstructor(file, icons);
-
   return (  
     <div
       className={clsx("flex items-center gap-2", styles["file-root"], {
         "border !border-red-500 !text-red-400": state === "upload-error" || state === "download-error",
       })}
     >
-      <FileIcon width={32} height={32} size={32} className={clsx({
-        "text-gray-400": state !== "upload-error" && state !== "download-error",
-        "text-red-400": state === "upload-error" || state === "download-error",
-      })} />
+      {showPreview && previewUrl ? (
+        <Image
+          radius="sm"
+          w={64}
+          h={64}
+          {...previewProps}
+          src={previewUrl}
+          alt={file.name}
+          onError={(e) => {
+            previewProps?.onError?.(e);
+            if (previewUrl) URL.revokeObjectURL(previewUrl);
+            setPreviewUrl(null);
+          }}
+        />
+      ) : (
+        <FileIcon width={32} height={32} size={32} className={clsx({
+          "text-gray-400": state !== "upload-error" && state !== "download-error",
+          "text-red-400": state === "upload-error" || state === "download-error",
+        })} />
+      )}
 
       <div className="flex-1 truncate flex flex-col gap-2">
         <div className="flex-1 flex gap-2">
@@ -511,7 +559,7 @@ const FileUploaderItem = <D extends unknown = any>({
         </Tooltip>
       ) : null}
 
-      {state === "upload-error" || state === "download-error" ? (
+      {(state === "upload-error" && allowUpload) || (state === "download-error" && allowDownload) ? (
         <Tooltip label={actionTooltips?.retry || "Retry"}>
           <ActionIcon radius="xl" variant="light"
             onClick={_onRetryClick}

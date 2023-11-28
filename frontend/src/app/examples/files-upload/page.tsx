@@ -31,6 +31,11 @@ const FileUploadPage = () => {
               root: "flex flex-col gap-4",
             }
           }}
+          showPreview
+          previewProps={{
+            h: 124,
+            w: 124,
+          }}
           defaultValue={[
             {
               name: "test.txt",
