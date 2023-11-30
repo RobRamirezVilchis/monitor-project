@@ -3,6 +3,7 @@ import {
   login,
   logout,
   unsafeSocialLogin,
+  verifyAccount,
 } from "../auth";
 import { JWTLoginInfo, LoginUserData } from "../auth.types";
 import { useMyUserQuery } from "../queries/auth";
@@ -44,7 +45,7 @@ export const useLogoutMutation = createMutation({
   },
 });
 
-export const useUnsafeSocialLogin = createMutation({
+export const useUnsafeSocialLoginMutation = createMutation({
   mutationKey: ["user-social-login"],
   mutationFn: ({ url, data }: { url: string; data: any }) => 
     unsafeSocialLogin(url, data, { rejectRequest: false, onError: false, useJWT: false }),
@@ -60,4 +61,10 @@ export const useUnsafeSocialLogin = createMutation({
       jwt.setRefreshTokenExpiration(new Date(data.refresh_token_expiration).toISOString());
     }
   }
+});
+
+export const useActivateAccountMutation = createMutation({
+  mutationKey: ["user-activate-account"],
+  mutationFn: ({ key }: { key: string; }) => 
+    verifyAccount(key, { rejectRequest: false, onError: false, useJWT: false }),
 });

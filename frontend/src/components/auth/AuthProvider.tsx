@@ -10,7 +10,7 @@ import { AuthError, User, JWTLoginInfo, LoginUserData } from "@/api/auth.types";
 import { AuthAction, AuthState, authReducer } from "./AuthReducer";
 import { ProviderErrors, ProviderKey, ProviderResponse, ProvidersOptions, startSocialLogin } from "@/utils/auth/oauth";
 import { useMyUserQuery } from "@/api/queries/auth";
-import { useLoginMutation, useLogoutMutation, useUnsafeSocialLogin } from "@/api/mutations/auth";
+import { useLoginMutation, useLogoutMutation, useUnsafeSocialLoginMutation } from "@/api/mutations/auth";
 import api from "@/api";
 
 // Reducer ---------------------------------------------------------------------
@@ -132,7 +132,7 @@ export const AuthProvider = ({
   });
   const loginMutation = useLoginMutation();
   const logoutMutation = useLogoutMutation();
-  const unsafeSocialLoginMutation = useUnsafeSocialLogin({
+  const unsafeSocialLoginMutation = useUnsafeSocialLoginMutation({
     onError: (error) => {
       if (isAxiosError(error)) {
         if (isAxiosError<ApiError>(error)) {
