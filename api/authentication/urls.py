@@ -27,8 +27,8 @@ urlpatterns = [
     path("password/reset-token-valid/", apis.PasswordResetKeyValidApi.as_view(), name="password_reset_token_valid"),
     path("register/", include(dj_rest_auth_registration_urls)),
     path("register/token-valid/", apis.RegistrationKeyValidApi.as_view(), name="register_token_valid"),
-    path("register/passwordless/", apis.RegisterWithoutPasswordApi.as_view(), name="register_passwordless"),
-    path("register/passwordless/confirm/", apis.RegisterWithoutPasswordConfirmApi.as_view(), name="register_passwordless_confirm"),
+    # path("register/passwordless/", apis.RegisterWithoutPasswordApi.as_view(), name="register_passwordless"),
+    # path("register/passwordless/confirm/", apis.RegisterWithoutPasswordConfirmApi.as_view(), name="register_passwordless_confirm"),
     
     # Social:
     path("socialaccounts/", SocialAccountListView.as_view(), name="social_account_list"),

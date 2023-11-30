@@ -166,5 +166,4 @@ class RegisterWithoutPasswordApi(RegisterView):
 
 class RegisterWithoutPasswordConfirmApi(PasswordResetConfirmView):
     serializer_class = RegisterWithoutPasswordConfirmSerializer
-    permission_classes = []
     
