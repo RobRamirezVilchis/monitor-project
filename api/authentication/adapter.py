@@ -1,28 +1,29 @@
 from allauth.account.adapter import DefaultAccountAdapter
-from allauth.socialaccount.adapter import app_settings, DefaultSocialAccountAdapter
+from allauth.socialaccount.adapter import app_settings as auth_settings, DefaultSocialAccountAdapter
 from allauth.socialaccount.providers.google.views import GoogleOAuth2Adapter as DefaultGoogleOAuth2Adapter
 from allauth.socialaccount.providers.oauth2.client import OAuth2Error
-from allauth.utils import build_absolute_uri
 from django.conf import settings
 from django.contrib.sites.shortcuts import get_current_site
-from django.core.mail import EmailMessage, EmailMultiAlternatives
 from django.http import HttpResponseRedirect
-from django.template import TemplateDoesNotExist
-from django.template.loader import render_to_string
 from django.urls import reverse
+from django.utils.encoding import force_str
+from rest_framework import exceptions, status
+from rest_framework.response import Response
 import jwt
 
-from .services import get_frontend_url
-
+from users.services import UserWhitelistService
 
 class AccountAdapter(DefaultAccountAdapter):
    
+    def format_email_subject(self, subject):
+        prefix = getattr(auth_settings, "EMAIL_SUBJECT_PREFIX", None)
+        if prefix is None:
+            return subject
+        return prefix + force_str(subject)
+
     def send_confirmation_mail(self, request, emailconfirmation, signup):
-        frontend_url = get_frontend_url()
-        # activation_url = f"{frontend_url}/auth/register/{emailconfirmation.key}"
-        register_confirm_path = settings.FRONTEND_REGISTER_CONFIRM_PATH
-        register_confirm_path = register_confirm_path.replace("<key>", emailconfirmation.key)
-        activation_url = f"{frontend_url}/{register_confirm_path}"
+        frontend_url = settings.FRONTEND_URL
+        activation_url = self.get_email_confirmation_url(None, emailconfirmation)
         
         ctx = {
             "frontend_url": frontend_url,
@@ -35,42 +36,6 @@ class AccountAdapter(DefaultAccountAdapter):
             email_template = "email_confirmation"
         self.send_mail(email_template, emailconfirmation.email_address.email, ctx)
 
-    def render_mail(self, template_prefix, email, context, headers=None):
-        """
-        Renders an e-mail to `email`.  `template_prefix` identifies the
-        e-mail that is to be sent, e.g. "account/email/email_confirmation"
-        """
-        to = [email] if isinstance(email, str) else email
-        subject = render_to_string("{0}_subject.txt".format(template_prefix), context)
-        # remove superfluous line breaks
-        subject = " ".join(subject.splitlines()).strip()
-
-        from_email = self.get_from_email()
-
-        bodies = {}
-        for ext in ["html", "txt"]:
-            try:
-                template_name = "{0}_message.{1}".format(template_prefix, ext)
-                bodies[ext] = render_to_string(
-                    template_name,
-                    context,
-                    self.request,
-                ).strip()
-            except TemplateDoesNotExist:
-                if ext == "txt" and not bodies:
-                    # We need at least one body
-                    raise
-        if "txt" in bodies:
-            msg = EmailMultiAlternatives(
-                subject, bodies["txt"], from_email, to, headers=headers
-            )
-            if "html" in bodies:
-                msg.attach_alternative(bodies["html"], "text/html")
-        else:
-            msg = EmailMessage(subject, bodies["html"], from_email, to, headers=headers)
-            msg.content_subtype = "html"  # Main content is now text/html
-        return msg
-
     def get_email_confirmation_url(self, request, emailconfirmation):
         """Constructs the email confirmation (activation) url.
 
@@ -78,15 +43,31 @@ class AccountAdapter(DefaultAccountAdapter):
         confirmations are sent outside of the request context `request`
         can be `None` here.
         """
-        url = reverse("api:authentication:account_confirm_email", args = [emailconfirmation.key], kwargs = { "version": "v1" })
-        ret = build_absolute_uri(request, url)
-        return ret
+        frontend_url = settings.FRONTEND_URL
+        register_confirm_path = settings.FRONTEND_REGISTER_CONFIRM_PATH
+        register_confirm_path = register_confirm_path.replace("<key>", emailconfirmation.key)
+        return f"{frontend_url}/{register_confirm_path}"
     
     def respond_user_inactive(self, request, user):
-        return HttpResponseRedirect(reverse("api:authentication:account_inactive"), kwargs = { "version": "v1" })
+        return exceptions.PermissionDenied("User inactive or deleted.")
 
     def respond_email_verification_sent(self, request, user):
-        return HttpResponseRedirect(reverse("api:authentication:account_email_verification_sent"), kwargs = { "version": "v1" })
+        return Response({"detail": "Verification e-mail sent."}, status=status.HTTP_200_OK)
+    
+    # def pre_login(
+    #     self,
+    #     request,
+    #     user,
+    #     **kwargs
+    # ):
+    #     if not UserWhitelistService.is_email_whitelisted(user.email):
+    #         raise exceptions.PermissionDenied("Registration invalid.")
+    #     return super().pre_login(request, user, **kwargs)
+    
+    # def is_open_for_signup(self, request):
+    #     if not UserWhitelistService.is_email_whitelisted(request.user.email):
+    #         raise exceptions.PermissionDenied("Registration invalid.")
+    #     return True
 
 
 class SocialAccountAdapter(DefaultSocialAccountAdapter):
@@ -95,7 +76,7 @@ class SocialAccountAdapter(DefaultSocialAccountAdapter):
         # NOTE: Avoid loading models at top due to registry boot...
         from allauth.socialaccount.models import SocialApp
 
-        config = config or app_settings.PROVIDERS.get(provider, {}).get("APP")
+        config = config or auth_settings.PROVIDERS.get(provider, {}).get("APP")
         if config:
             # app = SocialApp(provider=provider)
             app = SocialApp.objects.get_or_create(provider=provider)[0]
@@ -113,6 +94,16 @@ class SocialAccountAdapter(DefaultSocialAccountAdapter):
         """
         url = reverse("api:authentication:socialaccount_connections", kwargs = { "version": "v1" })
         return url
+    
+    # def pre_social_login(self, request, sociallogin):
+    #     if not UserWhitelistService.is_email_whitelisted(sociallogin.user.email):
+    #         raise exceptions.PermissionDenied("Registration invalid.")
+    #     return True
+
+    # def is_open_for_signup(self, request, sociallogin):
+    #     if not UserWhitelistService.is_email_whitelisted(sociallogin.user.email):
+    #         raise exceptions.PermissionDenied("Registration invalid.")
+    #     return True
 
 
 class GoogleOAuth2Adapter(DefaultGoogleOAuth2Adapter):

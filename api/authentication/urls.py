@@ -6,7 +6,7 @@ from dj_rest_auth.registration.views import (
     SocialAccountListView, SocialAccountDisconnectView
 )
 
-from . import views
+from . import apis
 
 
 urlpatterns = [
@@ -21,17 +21,20 @@ urlpatterns = [
     path("fake-socialaccount-connections", TemplateView.as_view(), name="socialaccount_connections"), 
 
     # Auth endpoints: ------------------------------------------------
-    path("user/", views.UserView.as_view(), name="user"),
+    path("user/", apis.UserApi.as_view(), name="rest_user_details"),
+    path("login/", apis.LoginApi.as_view(), name="rest_login"),
     path("", include(dj_rest_auth_urls)),
-    path("password/reset-token-valid/", views.PasswordResetKeyValidView.as_view(), name="password_reset_token_valid"),
+    path("password/reset-token-valid/", apis.PasswordResetKeyValidApi.as_view(), name="password_reset_token_valid"),
     path("register/", include(dj_rest_auth_registration_urls)),
-    path("register/token-valid/", views.RegistrationKeyValidView.as_view(), name="register_token_valid"),
+    path("register/token-valid/", apis.RegistrationKeyValidApi.as_view(), name="register_token_valid"),
+    path("register/passwordless/", apis.RegisterWithoutPasswordApi.as_view(), name="register_passwordless"),
+    path("register/passwordless/confirm/", apis.RegisterWithoutPasswordConfirmApi.as_view(), name="register_passwordless_confirm"),
     
     # Social:
     path("socialaccounts/", SocialAccountListView.as_view(), name="social_account_list"),
     path("socialaccounts/<int:pk>/disconnect/", SocialAccountDisconnectView.as_view(), name="social_account_disconnect"),
 
     # Providers
-    path("social/google/", views.GoogleLoginView.as_view(), name="google"),
-    path("social/google/connect/", views.GoogleConnectView.as_view(), name="google_connect"),
+    path("social/google/", apis.GoogleLoginApi.as_view(), name="google"),
+    path("social/google/connect/", apis.GoogleConnectApi.as_view(), name="google_connect"),
 ]

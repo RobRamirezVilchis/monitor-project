@@ -23,8 +23,8 @@ class Fix_SocialAccountListView(OpenApiViewExtension):
         return Fixed
     
 
-class Fix_GoogleLoginView(OpenApiViewExtension):
-    target_class = "authentication.views.GoogleLoginView"
+class Fix_GoogleLoginApi(OpenApiViewExtension):
+    target_class = "authentication.views.GoogleLoginApi"
 
     def view_replacement(self):
         class Fixed(self.target_class):
@@ -40,8 +40,8 @@ class Fix_GoogleLoginView(OpenApiViewExtension):
         return Fixed
     
 
-class Fix_GoogleConnectView(OpenApiViewExtension):
-    target_class = "authentication.views.GoogleConnectView"
+class Fix_GoogleConnectApi(OpenApiViewExtension):
+    target_class = "authentication.views.GoogleConnectApi"
 
     def view_replacement(self):
         class Fixed(self.target_class):
@@ -70,8 +70,8 @@ class Fix_SocialAccountDisconnectView(OpenApiViewExtension):
         return Fixed
 
 
-class Fix_RegistrationKeyValidView(OpenApiViewExtension):
-    target_class = "authentication.views.RegistrationKeyValidView"
+class Fix_RegistrationKeyValidApi(OpenApiViewExtension):
+    target_class = "authentication.views.RegistrationKeyValidApi"
 
     def view_replacement(self):
         class Fixed(self.target_class):
@@ -88,8 +88,8 @@ class Fix_RegistrationKeyValidView(OpenApiViewExtension):
         return Fixed
     
 
-class Fix_PasswordResetKeyValidView(OpenApiViewExtension):
-    target_class = "authentication.views.PasswordResetKeyValidView"
+class Fix_PasswordResetKeyValidApi(OpenApiViewExtension):
+    target_class = "authentication.views.PasswordResetKeyValidApi"
 
     def view_replacement(self):
         from authentication.serializers import PasswordResetKeyValidSerializer

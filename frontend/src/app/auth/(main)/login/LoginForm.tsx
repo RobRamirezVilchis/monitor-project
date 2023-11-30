@@ -43,10 +43,7 @@ export const LoginForm = () => {
   const onSubmit = async (values: BasicLoginData) => {
     setLoading(true);
     try {
-      await login({ emailLogin: { 
-        username: values.email,
-        password: values.password,
-      } }, { redirectTo });
+      await login({ emailLogin: values }, { redirectTo });
     }
     catch (e) { 
       // Errors are handled by the provider and hook

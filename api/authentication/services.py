@@ -31,8 +31,3 @@ def user_soft_delete(user):
         social_account.delete()
     except (SocialAccount.DoesNotExist):
         pass
-
-
-def get_frontend_url():
-    frontend_url = settings.FRONTEND_URL
-    return frontend_url
