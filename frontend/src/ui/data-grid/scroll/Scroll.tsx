@@ -2,7 +2,7 @@ import { DetailedHTMLProps, HTMLAttributes, forwardRef, useRef, useState } from 
 import { Property } from "csstype";
 
 import { mergeRefs } from "@/hooks/utils/useMergedRef";
-import { useIsomorphicLayoutEffect } from "@/hooks/shared/useIsomorphicLayoutEffect";
+import { useOnIsomorphicLayoutMount } from "@/hooks/shared";
 
 export type ScrollOrientation = "horizontal" | "vertical";
 
@@ -59,7 +59,7 @@ const Scroll = forwardRef<HTMLDivElement, ScrollProps>(({
   const resizeObserverRef = useRef<ResizeObserver>();
   const [hide, setHide] = useState(true);
 
-  useIsomorphicLayoutEffect(() => {
+  useOnIsomorphicLayoutMount(() => {
     resizeObserverRef.current = new ResizeObserver((entries, observer) => {
       if (!contentRef.current || !viewportRef.current) return;
 
@@ -88,7 +88,7 @@ const Scroll = forwardRef<HTMLDivElement, ScrollProps>(({
     resizeObserverRef.current.observe(contentRef.current!);
 
     return () => resizeObserverRef.current?.disconnect();
-  }, []);
+  });
 
   return (
     // Viewport

@@ -7,7 +7,7 @@ export { useIsMounted } from "./useIsMounted";
 export { useIsomorphicLayoutEffect } from "./useIsomorphicLayoutEffect";
 export { useMediaQuery } from "./useMediaQuery";
 export { useNavLink } from "./useNavLink";
-export { useOnMount } from "./useOnMount";
+export { useOnMount, useOnLayoutMount, useOnIsomorphicLayoutMount } from "./useOnMount";
 export { useOnUnmount } from "./useOnUnmount";
 export { useOnUpdate } from "./useOnUpdate";
 export { usePrevious } from "./usePrevious";
