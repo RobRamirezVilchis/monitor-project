@@ -15,6 +15,9 @@ export const useCreateUserMutation = createMutation({
     useUsersQuery.invalidatePrimaryKey({
       refetchType: "active",
     });
+    useWhitelistQuery.invalidatePrimaryKey({
+      refetchType: "active",
+    });
   },
 });
 
@@ -73,10 +76,13 @@ export const useUpdateUserMutation = createMutation({
     });
   },
   onSuccess: (data, vars, ctx) => {
+    useWhitelistQuery.invalidatePrimaryKey({
+      refetchType: "active",
+    });
     if (vars.optimistic) return;
     // On success, refetch active queries when not making optimistic updates
     useUsersQuery.invalidatePrimaryKey({
-      refetchType: "active"
+      refetchType: "active",
     });
   },
 });
@@ -88,6 +94,9 @@ export const useDeleteUserMutation = createMutation({
     useUsersQuery.invalidatePrimaryKey({
       refetchType: "active",
     });
+    useWhitelistQuery.invalidatePrimaryKey({
+      refetchType: "active",
+    });
   },
 });
 
@@ -96,6 +105,9 @@ export const useAddToWhitelistMutation = createMutation({
   mutationFn: (data: CreateWhitelistItemData) => addToWhitelist(data),
   onSuccess: (data, vars, ctx) => {
     useWhitelistQuery.invalidatePrimaryKey({
+      refetchType: "active",
+    });
+    useUsersQuery.invalidatePrimaryKey({
       refetchType: "active",
     });
   },
@@ -158,6 +170,9 @@ export const useUpdateWhitelistItemMutation = createMutation({
     });
   },
   onSuccess: (data, vars, ctx) => {
+    useUsersQuery.invalidatePrimaryKey({
+      refetchType: "active",
+    });
     if (vars.optimistic) return;
     // On success, refetch active queries when not making optimistic updates
     useWhitelistQuery.invalidatePrimaryKey({
@@ -172,6 +187,9 @@ export const useDeleteWhitelistItemMutation = createMutation({
   onSuccess: (data, vars, ctx) => {
     useWhitelistQuery.invalidatePrimaryKey({
       refetchType: "active"
+    });
+    useUsersQuery.invalidatePrimaryKey({
+      refetchType: "active",
     });
   },
 });
