@@ -18,6 +18,10 @@ To select the configuration file to be used the environment variable `DJANGO_SET
 
 Another option to set the configuration file to be used instead of setting it through the environment variable is is to hardcode it in the `manage.py`, `asgi.py` and `wsgi.py` files.
 
+### Environment Variables
+
+Environment variables can be prefixed by setting the value of `env.prefix` to the prefix to use in the `config/env.py` file.
+
 ### Commands
 
 - `seed_roles`: Seed the database with the default user groups/roles.
