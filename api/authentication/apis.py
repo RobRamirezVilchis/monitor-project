@@ -138,7 +138,7 @@ class RegisterWithoutPasswordApi(RegisterView):
             from django.contrib.auth.tokens import default_token_generator
         reset_form = PasswordResetForm(data={"email": user.email})
         if not reset_form.is_valid():
-            raise serializers.ValidationError(self.reset_form.errors)
+            raise serializers.ValidationError(reset_form.errors)
         opts = {
             "use_https": request.is_secure(),
             "from_email": getattr(settings, "DEFAULT_FROM_EMAIL"),
@@ -149,7 +149,7 @@ class RegisterWithoutPasswordApi(RegisterView):
             "base_url": settings.FRONTEND_URL,
             "url_path": "register/<uid>/<token>/",
 
-            # "send_email": False
+            # "send_mail": False
         }
         reset_form.save(**opts)
         return Response(

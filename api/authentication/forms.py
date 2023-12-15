@@ -17,7 +17,7 @@ class PasswordResetForm(AllAuthPasswordResetForm):
         extra_context=None,
         base_url=None,
         url_path=None,
-        send_email=True,
+        send_mail=True,
         **kwargs
     ):
         email = self.cleaned_data["email"]
@@ -45,11 +45,11 @@ class PasswordResetForm(AllAuthPasswordResetForm):
             }
             if app_settings.AUTHENTICATION_METHOD != app_settings.AuthenticationMethod.EMAIL:
                 context["username"] = user_username(user)
-            if send_email:
+            if send_mail:
                 get_adapter(request).send_mail(
                     email_template_name, email, context
                 )
-        if send_email:  
+        if send_mail:  
             return self.cleaned_data["email"]
         else:
             return self.cleaned_data["email"], tokens
