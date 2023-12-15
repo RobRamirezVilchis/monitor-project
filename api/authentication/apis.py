@@ -13,7 +13,8 @@ from rest_framework.generics import DestroyAPIView
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 
-from users.services import UserService, UserAccessService
+from common.services import model_update
+from users.services import UsersService, UserAccessService
 
 from users.services import UserWhitelistService
 from .adapter import GoogleOAuth2Adapter
@@ -99,7 +100,7 @@ class UserApi(UserDetailsView, DestroyAPIView):
     Reads and updates UserModel fields
     Accepts GET, PUT, PATCH, DELETE methods.
 
-    Default accepted fields: username, first_name, last_name
+    Default accepted fields: first_name, last_name, password1, password2
     Default display fields: pk, username, email, first_name, last_name
     Read-only fields: pk, email
 
@@ -113,8 +114,53 @@ class UserApi(UserDetailsView, DestroyAPIView):
 
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
-        UserService.soft_delete(instance)
+        service = UsersService(instance)
+        service.soft_delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+    
+    class UpdateSerializer(serializers.Serializer):
+        first_name = serializers.CharField(max_length=150, required=False, allow_blank=True)
+        last_name = serializers.CharField(max_length=150, required=False)
+        password1 = serializers.CharField(required=False)
+        password2 = serializers.CharField(required=False)
+
+        def validate(self, data):
+            if data.get("password1") != data.get("password2"):
+                raise serializers.ValidationError("Passwords do not match.")
+            data.pop("password2", None)
+            password = data.pop("password1", None)
+            if password:
+                data["password"] = password
+            return data
+
+        def validate_username(self, username):
+            username = get_adapter().clean_username(username, True)
+            return username
+        
+    def update(self, request, *args, **kwargs):
+        partial = kwargs.pop("partial", False)
+        instance = self.get_object()
+        serializer = self.UpdateSerializer(instance, data=request.data, partial=partial)
+        serializer.is_valid(raise_exception=True)
+
+        password = serializer.validated_data.pop("password", None)
+
+        if password:
+            instance.set_password(password)
+            instance.save()
+
+        instance, updated = model_update(
+            instance=instance, 
+            fields=serializer.validated_data.keys(), 
+            data=serializer.validated_data
+        )
+
+        if getattr(instance, "_prefetched_objects_cache", None):
+            # If 'prefetch_related' has been applied to a queryset, we need to
+            # forcibly invalidate the prefetch cache on the instance.
+            instance._prefetched_objects_cache = {}
+
+        return Response(serializer.data)
 
 
 class RegisterWithoutPasswordApi(RegisterView):

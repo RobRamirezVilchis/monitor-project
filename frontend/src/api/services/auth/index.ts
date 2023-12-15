@@ -1,6 +1,6 @@
-import api from ".";
+import api from "../..";
 import http from "@/api/http";
-import { AuthError, LoginInfo, LoginUserData, RefreshTokenResponse, RegisterUserData, Role, UpdateUserData, User } from "./auth.types";
+import { AuthError, LoginInfo, LoginUserData, RefreshTokenResponse, RegisterUserData, Role, UpdateUserData, User } from "./types";
 
 /**
  * @returns True if the user role is in the rolesWhitelist and NOT in the rolesBlacklist

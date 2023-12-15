@@ -2,7 +2,7 @@ import { ComponentType, JSXElementConstructor, useEffect, useRef } from "react";
 import { Paper, LoadingOverlay, Loader } from "@mantine/core";
 import { useAuth } from "@/hooks/auth";
 import { useRouter } from "next/navigation";
-import { User } from "@/api/auth.types";
+import { User } from "@/api/services/auth/types";
 
 /**
  * Shows a spinner while user authentication/authorization is being checked.

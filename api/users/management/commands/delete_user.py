@@ -1,7 +1,7 @@
 from django.core.management.base import BaseCommand, CommandError
 from django.contrib.auth import get_user_model
 
-from users.services import UserService
+from users.services import UsersService
 
 
 User = get_user_model()
@@ -27,5 +27,6 @@ class Command(BaseCommand):
         if answer != "yes":
             self.stdout.write(self.style.ERROR("Aborted. No changes were made."))
             return
-        UserService.soft_delete(user)
+        service = UsersService(user)
+        service.soft_delete()
         self.stdout.write(self.style.SUCCESS("Successfully deleted user with email %s." % email))

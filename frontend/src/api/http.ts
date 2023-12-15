@@ -14,7 +14,7 @@ import {
     createAxiosInstance,
     defaultExtraConfig,
 } from "@/utils/http/axios";
-import { refreshToken } from "./auth";
+import { refreshToken } from "./services/auth";
 import api from "./";
 import jwt from "./jwt";
 

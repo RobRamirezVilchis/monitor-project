@@ -9,7 +9,7 @@ import Link from "next/link";
 import z from "zod";
 
 import { ApiError } from "@/api/types";
-import { requestPasswordReset } from "@/api/auth";
+import { requestPasswordReset } from "@/api/services/auth";
 import { TextInput } from "@/ui/core";
 
 const schema = z.object({

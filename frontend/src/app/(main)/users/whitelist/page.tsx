@@ -7,14 +7,14 @@ import { useImmer } from "use-immer";
 
 import { DeleteUserAction } from "./Actions";
 import { NewUserForm } from "./NewUserForm";
-import { Role, User } from "@/api/auth.types"; 
+import { Role, User } from "@/api/services/auth/types"; 
 import { RoleSelector } from "./RoleSelector";
 import { showSuccessNotification, showErrorNotification } from "@/ui/notifications";
 import { useAddToWhitelistMutation } from "@/api/mutations/users";
 import { useQueryState } from "@/hooks/shared";
 import { UserAvatar } from "@/components/shared/UserAvatar";
 import { useWhitelistQuery } from "@/api/queries/users";
-import { WhitelistItem } from "@/api/users.types";
+import { WhitelistItem } from "@/api/services/users/types";
 import { ColumnDef } from "@/ui/data-grid/types";
 import DataGrid from "@/ui/data-grid/DataGrid";
 import { useDataGrid } from "@/hooks/useDataGrid";
@@ -41,14 +41,10 @@ const UsersPage = () => {
   });
   const usersWhitelistQuery = useWhitelistQuery({
     variables: {
-      pagination: {
-        page: pagination.state.page,
-        page_size: pagination.state.page_size,
-      },
-      filters: {
-        ...filters,
-        // sort: "-user",
-      },
+      page: pagination.state.page,
+      page_size: pagination.state.page_size,
+      ...filters,
+      // sort: "-user",
     },
   });
   const addToWhitelistMutation = useAddToWhitelistMutation({
@@ -115,11 +111,9 @@ const UsersPage = () => {
       if (paginationInfo.page > 1) {
         useWhitelistQuery.prefetch({
           variables: {
-            filters: usersWhitelistQuery.variables.filters,
-            pagination: {
-              page: paginationInfo.page - 1,
-              page_size: usersWhitelistQuery.variables.pagination?.page_size,
-            }
+            ...usersWhitelistQuery.variables,
+            page: paginationInfo.page - 1,
+            page_size: usersWhitelistQuery.variables.page_size,
           },
           staleTime: 5 * 60 * 1000,
         });
@@ -127,17 +121,15 @@ const UsersPage = () => {
       if (paginationInfo.page < paginationInfo.pages) {
         useWhitelistQuery.prefetch({
           variables: {
-            filters: usersWhitelistQuery.variables.filters,
-            pagination: {
-              page: paginationInfo.page + 1,
-              page_size: usersWhitelistQuery.variables.pagination?.page_size,
-            }
+            ...usersWhitelistQuery.variables,
+            page: paginationInfo.page + 1,
+            page_size: usersWhitelistQuery.variables.page_size,
           },
           staleTime: 5 * 60 * 1000,
         });
       }
     }
-  }, [usersWhitelistQuery.data, usersWhitelistQuery.isPreviousData, usersWhitelistQuery.variables.filters, usersWhitelistQuery.variables.pagination?.page_size]);
+  }, [usersWhitelistQuery.data, usersWhitelistQuery.isPreviousData, usersWhitelistQuery.variables]);
 
   return (
     <section className="flex flex-col h-full lg:container mx-auto pb-2 md:pb-6 px-2 md:px-4 lg:px-0">

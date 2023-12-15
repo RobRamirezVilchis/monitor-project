@@ -6,8 +6,8 @@ import { useEffect, useState } from "react";
 import { useImmer } from "use-immer";
 
 import { DatePickerInput, DateRangePresets } from "@/ui/dates";
-import { User } from "@/api/auth.types";
-import { UserAccess } from "@/api/users.types";
+import { User } from "@/api/services/auth/types";
+import { UserAccess } from "@/api/services/users/types";
 import { UserAvatar } from "@/components/shared/UserAvatar";
 import { useUsersAccessQuery } from "@/api/queries/users";
 import { ColumnDef } from "@/ui/data-grid/types";
@@ -91,16 +91,12 @@ const UsersAccessPage = () => {
   });
   const usersAccessQuery = useUsersAccessQuery({
     variables: {
-      pagination: {
-        page: usersAccessQueryParams.state.page,
-        page_size: usersAccessQueryParams.state.page_size,
-      },
-      filters: {
-        start_date: usersAccessQueryParams.state.start_date.toISOString(),
-        end_date: usersAccessQueryParams.state.end_date.toISOString(),
-        sort: "-user",
-        ...filters,
-      },
+      page: usersAccessQueryParams.state.page,
+      page_size: usersAccessQueryParams.state.page_size,
+      start_date: usersAccessQueryParams.state.start_date.toISOString(),
+      end_date: usersAccessQueryParams.state.end_date.toISOString(),
+      sort: "-user",
+      ...filters,
     },
   });
   const grid = useDataGrid<UserAccess>({
@@ -156,11 +152,9 @@ const UsersAccessPage = () => {
       if (paginationInfo.page > 1) {
         useUsersAccessQuery.prefetch({
           variables: {
-            filters: usersAccessQuery.variables.filters,
-            pagination: {
-              page: paginationInfo.page - 1,
-              page_size: usersAccessQuery.variables.pagination?.page_size,
-            }
+            ...usersAccessQuery.variables,
+            page: paginationInfo.page - 1,
+            page_size: usersAccessQuery.variables.page_size,
           },
           staleTime: 5 * 60 * 1000,
         });
@@ -168,17 +162,15 @@ const UsersAccessPage = () => {
       if (paginationInfo.page < paginationInfo.pages) {
         useUsersAccessQuery.prefetch({
           variables: {
-            filters: usersAccessQuery.variables.filters,
-            pagination: {
-              page: paginationInfo.page + 1,
-              page_size: usersAccessQuery.variables.pagination?.page_size,
-            }
+            ...usersAccessQuery.variables,
+            page: paginationInfo.page + 1,
+            page_size: usersAccessQuery.variables.page_size,
           },
           staleTime: 5 * 60 * 1000,
         });
       }
     }
-  }, [usersAccessQuery.data, usersAccessQuery.isPreviousData, usersAccessQuery.variables.filters, usersAccessQuery.variables.pagination?.page_size]);
+  }, [usersAccessQuery.data, usersAccessQuery.isPreviousData, usersAccessQuery.variables]);
 
   const setQueryDates = (startDate: Date | null, endDate: Date | null) => {
     usersAccessQueryParams.update({

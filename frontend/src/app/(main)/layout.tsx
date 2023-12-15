@@ -13,13 +13,13 @@ import clsx from "clsx";
 import Link from "next/link";
 
 import { ProfileFloatingMenu } from "@/components/shared";
-import { Role } from "@/api/auth.types";
+import { Role } from "@/api/services/auth/types";
 import { useNavLink } from "@/hooks/shared";
-import { isUserInAuthorizedRoles } from "@/api/auth";
+import { isUserInAuthorizedRoles } from "@/api/services/auth";
 import { useAuth } from "@/hooks/auth";
 import { withAuth } from "@/components/auth/withAuth";
 
-export interface NavMenuItem {
+interface NavMenuItem {
   label: string,
   href?: string,
   rolesWhitelist?: Role[];

@@ -17,6 +17,7 @@ export interface User {
   extra?: {
     picture?: string;
   };
+  verified?: boolean;
 }
 
 export enum AuthError {
@@ -43,9 +44,10 @@ export interface JWTLoginInfo {
 export type LoginInfo = BasicLoginInfo | JWTLoginInfo;
 
 export interface UpdateUserData {
-  username?: string,
   first_name?: string,
   last_name?: string,
+  password1?: string,
+  password2?: string,
 }
 
 export interface RegisterUserData {

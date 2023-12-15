@@ -3,16 +3,23 @@ from django.urls import path, include
 from . import apis
 
 
-user_access_patterns = [
-    path("", apis.UserAccessListApi.as_view(), name="list"),
-]
-
-user_whitelist_patterns = [
-    path("", apis.UsersWhitelistListApi.as_view(), name="list"),
-    path("<int:pk>/", apis.UsersWhitelistDetailApi.as_view(), name="detail"),
-]
-
 urlpatterns = [
-    path("access/", include((user_access_patterns, "user_access"))),
-    path("whitelist/", include((user_whitelist_patterns, "user_whitelist"))),
+    path("", 
+        include(([
+            path("", apis.UsersListApi.as_view(), name="list"),
+            path("<int:pk>/", apis.UsersDetailApi.as_view(), name="detail"),
+        ], "users"))
+    ),
+    path("access/", 
+        include(([
+            path("", apis.UserAccessListApi.as_view(), name="list"),
+        ], "user_access"))
+    ),
+    path("roles/", apis.UserRolesListApi.as_view(), name="user_roles"),
+    path("whitelist/", 
+        include(([
+            path("", apis.UsersWhitelistListApi.as_view(), name="list"),
+            path("<int:pk>/", apis.UsersWhitelistDetailApi.as_view(), name="detail"),
+        ], "user_whitelist"))
+    ),
 ]

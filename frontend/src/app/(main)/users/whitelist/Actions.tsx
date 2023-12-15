@@ -5,7 +5,7 @@ import { showSuccessNotification, showErrorNotification } from "@/ui/notificatio
 import { useAuth } from "@/hooks/auth";
 import { useConfirmDialog } from "@/hooks/shared/useConfirmDialog";
 import { useDeleteWhitelistItemMutation } from "@/api/mutations/users";
-import { WhitelistItem } from "@/api/users.types";
+import { WhitelistItem } from "@/api/services/users/types";
 
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 

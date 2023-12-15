@@ -11,7 +11,7 @@ import z from "zod";
 import {
   isPasswordResetTokenValid,
   confirmPasswordReset,
-} from "@/api/auth";
+} from "@/api/services/auth";
 import { PasswordInput, MeteredPasswordInput } from "@/ui/core";
 
 const schema = z.object({

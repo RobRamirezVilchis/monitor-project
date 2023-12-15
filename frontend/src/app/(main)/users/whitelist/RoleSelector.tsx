@@ -3,10 +3,10 @@ import { Select } from "@/ui/core";
 
 import { showSuccessNotification, showErrorNotification } from "@/ui/notifications";
 import { useAuth } from "@/hooks/auth";
-import { userRoles } from "@/api/auth.types";
+import { userRoles } from "@/api/services/auth/types";
 import { useUpdateWhitelistItemMutation } from "@/api/mutations/users";
-import { WhitelistItem } from "@/api/users.types";
-import { getUserRoleLocalized } from "@/api/users";
+import { WhitelistItem } from "@/api/services/users/types";
+import { getUserRoleLocalized } from "@/api/services/users";
 
 export interface RoleSelectorProps {
   whitelistItem: WhitelistItem;

@@ -1,5 +1,4 @@
-import { ReactNode, useMemo } from "react";
-import { useQueryClient } from "@tanstack/react-query";
+import { Fragment, ReactNode, useMemo } from "react";
 import { 
   ActionIcon, 
   Button,
@@ -14,12 +13,23 @@ import { useDisclosure } from "@mantine/hooks";
 import Link from "next/link";
 
 import { ColorSchemeSwitchToggle } from "../shared";
+import { isUserInAuthorizedRoles } from "@/api/services/auth";
 import { randomColor } from "@/utils/color";
+import { Role } from "@/api/services/auth/types";
 import { useAuth } from "@/hooks/auth";
+import { useImmer } from "use-immer";
+import { useNavLink } from "@/hooks/shared";
 import { UserAvatar } from "./UserAvatar";
 
-import { IconLogin, IconLogout, IconUsers } from "@tabler/icons-react";
-import { useNavLink } from "@/hooks/shared";
+import { IconLogin, IconLogout, IconShieldLock, IconUser, IconUsers } from "@tabler/icons-react";
+
+interface NavMenuItem {
+  label: string,
+  href?: string,
+  icon?: ReactNode,
+  rolesWhitelist?: Role[];
+  rolesBlacklist?: Role[];
+}
 
 export const ProfileFloatingMenu = () => {
   const { user, isAuthenticated, loading, logout } = useAuth({
@@ -31,13 +41,41 @@ export const ProfileFloatingMenu = () => {
   //   () => !user?.extra?.picture ? randomColor() : "#000",
   //   [user?.extra?.picture]  
   // );
+  
+  const [links, setLinks] = useImmer<NavMenuItem[]>([
+    {
+      label: "Mi usuario",
+      href: "/users/me",
+      icon: <IconUser className="w-4 h-4" />,
+    },
+    {
+      label: "Usuarios",
+      href: "/users",
+      icon: <IconUsers className="w-4 h-4" />,
+      rolesWhitelist: ["Admin"],
+    },
+    {
+      label: "Whitelist",
+      href: "/users/whitelist",
+      icon: <IconShieldLock className="w-4 h-4" />,
+      rolesWhitelist: ["Admin"],
+    },
+    {
+      label: "Acceso de usuarios",
+      href: "/users/access",
+      icon: <IconLogin className="w-4 h-4" />,
+      rolesWhitelist: ["Admin"],
+    },
+  ]);
+  const visibleLinks = useMemo(
+    () => links.filter(link => isUserInAuthorizedRoles(user, link.rolesWhitelist, link.rolesBlacklist)), 
+    [links, user]
+  );
 
   const onLogout = () => {
     close();
     logout();
   };
-
-  const isAdmin = user?.roles?.includes("Admin");
 
   return (
     <Popover
@@ -49,6 +87,8 @@ export const ProfileFloatingMenu = () => {
         <Tooltip label="Yo">
           <ActionIcon
             onClick={toggle}
+            radius="xl"
+            variant="transparent"
           >
             <UserAvatar user={user} fallbackColor={"#fff"/*fallbackAvatarColor*/} />
           </ActionIcon>
@@ -73,26 +113,22 @@ export const ProfileFloatingMenu = () => {
                 <ColorSchemeSwitchToggle />
               </div>
 
-              {isAdmin ? (
-                <Paper 
-                  withBorder
-                  className="flex flex-col rounded-lg overflow-hidden"
-                >
-                  <ListLink
-                    href="/users"
-                    label="Usuarios"
-                    icon={<IconUsers className="w-4 h-4" />}
-                    onClick={close}
-                  />
-                  <Divider />
-                  <ListLink
-                    href="/users/access"
-                    label="Acceso de usuarios"
-                    icon={<IconLogin className="w-4 h-4" />}
-                    onClick={close}
-                  />
-                </Paper>
-              ) : null}
+              <Paper 
+                withBorder
+                className="flex flex-col rounded-lg overflow-hidden"
+              >
+                {visibleLinks.map((item, idx) => (
+                  <Fragment key={item.href ?? item.label}>
+                    <ListLink
+                      href={item.href ?? "#"}
+                      label={item.label}
+                      icon={item.icon}
+                      onClick={close}
+                    />
+                    {idx < visibleLinks.length - 1 ? <Divider /> : null}
+                  </Fragment>
+                ))}
+              </Paper>
 
               <Divider />
 

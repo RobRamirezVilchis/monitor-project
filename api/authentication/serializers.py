@@ -152,7 +152,7 @@ class RegisterWithoutPasswordConfirmSerializer(PasswordResetConfirmSerializer):
         email_address.save()
 
 
-class GroupNamesSerializer(serializers.ModelSerializer):
+class GroupNameSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Group
@@ -173,7 +173,7 @@ class PermissionSerializer(serializers.ModelSerializer):
 
 
 class CustomUserDetailsSerializer(UserDetailsSerializer):
-    roles = GroupNamesSerializer(many=True, read_only=True, source="groups")
+    roles = GroupNameSerializer(many=True, read_only=True, source="groups")
     permissions = PermissionSerializer(many=True, read_only=True, source="user_permissions")
     # permissions = serializers.SerializerMethodField()
     extra = serializers.SerializerMethodField()

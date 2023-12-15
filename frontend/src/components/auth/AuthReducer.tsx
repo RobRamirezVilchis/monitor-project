@@ -3,7 +3,7 @@
 import { ImmerReducer } from "use-immer";
 
 import { ReducerAction as Action } from "@/utils/types";
-import { AuthError, User } from "@/api/auth.types";
+import { AuthError } from "@/api/services/auth/types";
 
 export interface AuthState {
   loading: boolean;

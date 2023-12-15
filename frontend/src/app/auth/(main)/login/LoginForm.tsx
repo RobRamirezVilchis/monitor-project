@@ -8,8 +8,8 @@ import { Button } from "@mantine/core";
 import z from "zod";
 
 import { useAuth } from "@/hooks/auth";
-import { AuthError } from "@/api/auth.types";
-import { getAuthErrorString } from "@/api/auth";
+import { AuthError } from "@/api/services/auth/types";
+import { getAuthErrorString } from "@/api/services/auth";
 import { TextInput, PasswordInput } from "@/ui/core";
 
 const schema = z.object({

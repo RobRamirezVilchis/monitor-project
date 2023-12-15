@@ -5,9 +5,9 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import z from "zod";
 
 import { Select, TextInput } from "@/ui/core";
-import { CreateWhitelistItemData } from "@/api/users.types";
-import { getUserRoleLocalized } from "@/api/users";
-import { userRoles } from "@/api/auth.types";
+import { CreateWhitelistItemData } from "@/api/services/users/types";
+import { getUserRoleLocalized } from "@/api/services/users";
+import { userRoles } from "@/api/services/auth/types";
 
 export interface NewUserFormProps {
   onSubmit: (data: CreateWhitelistItemData) => void;

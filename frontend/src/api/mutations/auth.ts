@@ -3,9 +3,10 @@ import {
   login,
   logout,
   unsafeSocialLogin,
+  updateMyInfo,
   verifyAccount,
-} from "../auth";
-import { JWTLoginInfo, LoginUserData } from "../auth.types";
+} from "../services/auth";
+import { JWTLoginInfo, LoginUserData } from "../services/auth/types";
 import { useMyUserQuery } from "../queries/auth";
 import defaultQueryClient from "../clients/defaultQueryClient";
 import jwt from "../jwt";
@@ -67,4 +68,12 @@ export const useActivateAccountMutation = createMutation({
   mutationKey: ["user-activate-account"],
   mutationFn: ({ key }: { key: string; }) => 
     verifyAccount(key, { rejectRequest: false, onError: false, useJWT: false }),
+});
+
+export const useUpdateMyUserMutation = createMutation({
+  mutationKey: ["user-update-my-user"],
+  mutationFn: updateMyInfo,
+  onSuccess: () => {
+    useMyUserQuery.invalidatePrimaryKey();
+  }
 });

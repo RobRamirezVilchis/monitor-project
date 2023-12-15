@@ -1,7 +1,7 @@
 import { Avatar, AvatarProps } from "@mantine/core";
 import { FC, useMemo } from "react";
 
-import { User } from "@/api/auth.types";
+import { User } from "@/api/services/auth/types";
 import { 
   randomColor, 
   // colorContrast,
@@ -35,7 +35,7 @@ export const UserAvatar: FC<UserAvatarProps> = ({ user, fallbackColor, ...avatar
     >
       {
         user 
-        ? `${user?.first_name[0]?.toUpperCase()}${user?.last_name[0]?.toUpperCase()}` 
+        ? `${user?.first_name ? user?.first_name[0]?.toUpperCase() : ""}${user?.last_name ? user?.last_name[0]?.toUpperCase() : ""}` || "NA"
         : "NA"
       }
     </Avatar>
