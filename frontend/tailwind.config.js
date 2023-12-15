@@ -8,23 +8,6 @@ module.exports = {
     "./src/**/*.{js,ts,jsx,tsx,mdx}",
   ],
   theme: {
-    extend: {
-      colors: {
-        current: "currentColor",
-        dark: {
-          50 : "#C1C2C5",
-          100: "#A6A7AB",
-          200: "#909296",
-          300: "#5C5F66",
-          400: "#373A40",
-          500: "#2C2E33",
-          600: "#25262B",
-          700: "#1A1B1E",
-          800: "#141517",
-          900: "#101113",
-        },
-      },
-    },
     screens: {
       "sm": "640px",
       // => @media (min-width: 640px) { ... }
@@ -36,7 +19,38 @@ module.exports = {
       // => @media (min-width: 1280px) { ... }
       "2xl": "1536px",
       // => @media (min-width: 1536px) { ... }
-    }
+    },
+    extend: {
+      colors: {
+        current: "currentColor",
+        dark: {
+          50 : "#ffffff", // "#C1C2C5",
+          100: "#9CA3AF", // "#A6A7AB",
+          200: "#909296",
+          300: "#5C5F66",
+          400: "#373A40",
+          500: "#2C2E33",
+          600: "#222222", // "#25262B",
+          700: "#171717", // "#1A1B1E",
+          800: "#0F0F0F", // "#141517",
+          900: "#000000", // "#101113",
+        },
+        // forem: {
+        //   green: {
+        //     50 : "var(--forem-green-50)",
+        //     100: "var(--forem-green-100)",
+        //     200: "var(--forem-green-200)",
+        //     300: "var(--forem-green-300)",
+        //     400: "var(--forem-green-400)",
+        //     500: "var(--forem-green-500)",
+        //     600: "var(--forem-green-600)",
+        //     700: "var(--forem-green-700)",
+        //     800: "var(--forem-green-800)",
+        //     900: "var(--forem-green-900)",
+        //   },
+        // },
+      },
+    },
   },
   plugins: [],
 }

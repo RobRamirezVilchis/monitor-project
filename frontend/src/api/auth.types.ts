@@ -1,17 +1,19 @@
+import { StringUnion } from "@/utils/types";
+
 export const userRoles = [
   "Admin",
   "User",
 ] as const;
 
-export type Role =  typeof userRoles[number];
+export type Role =  StringUnion<typeof userRoles[number]>;
 
 export interface User {
   id?: number;
   email: string;
   first_name: string;
   last_name: string;
-  roles: string[];
-  permissions: string[];
+  roles: Role[];
+  permissions?: string[];
   extra?: {
     picture?: string;
   };

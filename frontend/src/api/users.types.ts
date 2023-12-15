@@ -1,3 +1,5 @@
+import { PageNumberPaginationParams } from "./types";
+
 export interface WhitelistItem {
   id: number;
   email: string;
@@ -16,10 +18,7 @@ export interface BasicUserDetails {
 }
 
 export type WhitelistParams = {
-  pagination?: {
-    page?: number;
-    page_size?: number;
-  };
+  pagination?: Partial<PageNumberPaginationParams>;
   filters?: {
     search?: string;
     sort?: string;
@@ -38,10 +37,7 @@ export type UserAccess = {
 }
 
 export type UserAccessParams = {
-  pagination?: {
-    page?: number;
-    page_size?: number;
-  };
+  pagination?: Partial<PageNumberPaginationParams>;
   filters?: {
     start_date?: string;
     end_date?: string;

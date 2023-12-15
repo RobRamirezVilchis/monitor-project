@@ -1,20 +1,20 @@
 import api from ".";
 import http from "@/api/http";
-import { AuthError, LoginInfo, LoginUserData, RefreshTokenResponse, RegisterUserData, UpdateUserData, User } from "./auth.types";
+import { AuthError, LoginInfo, LoginUserData, RefreshTokenResponse, RegisterUserData, Role, UpdateUserData, User } from "./auth.types";
 
 /**
  * @returns True if the user role is in the rolesWhitelist and NOT in the rolesBlacklist
  * or if both lists are undefined. False otherwise or if the user is null or undefined.
  */
 export function isUserInAuthorizedRoles(
-  user?: User | null, rolesWhitelist?: string[], rolesBlacklist?: string[], permissionsRequired?: string[]
+  user?: User | null, rolesWhitelist?: Role[], rolesBlacklist?: Role[], permissionsRequired?: string[]
 ) {
   if (!user) 
     return false;
 
   const whitelisted = !rolesWhitelist || rolesWhitelist.some(x => user.roles.includes(x));
   const blacklisted = rolesBlacklist && rolesBlacklist.some(x => user.roles.includes(x));
-  const permissions = !permissionsRequired || permissionsRequired.every(x => user.permissions.includes(x));
+  const permissions = !permissionsRequired || (!!user?.permissions && permissionsRequired.every(x => user.permissions!.includes(x)));
   const authorized = whitelisted && !blacklisted && permissions;
   return authorized;
 }

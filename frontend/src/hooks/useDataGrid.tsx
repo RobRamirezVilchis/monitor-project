@@ -49,7 +49,7 @@ export const useDataGrid: typeof _useDataGrid = (options) => _useDataGrid({
   slotProps: {
     baseTextInput: {
       classNames: {
-        input: "rounded-none border-t-0 border-l-0 border-r-0 border-b border-b-2",
+        input: "rounded-none border-t-0 border-l-0 border-r-0 border-b border-b-2 !bg-transparent",
       },
     } as any,
     // baseIconButton: {
