@@ -47,7 +47,7 @@ import {
 } from "@tanstack/react-table";
 import { Virtualizer, VirtualizerOptions } from "@tanstack/virtual-core";
 
-import type { DistributiveOmit, Prettify } from "@/utils/types";
+import type { DistributiveOmit, NoDecayStringUnion, Prettify } from "@/utils/types";
 import { type FilterFnOption } from "./filterFns";
 import { type SortingFnOption } from "./sortingFns";
 import { type UseScrollReturn } from "./scroll/useScroll";
@@ -149,9 +149,9 @@ DistributiveOmit<
   headerStyles?: DataGridColumnHeadersCellStyles;
   footerClassNames?: DataGridColumnFootersCellClassNames | ((footer: Header<TData, TValue>) => DataGridColumnFootersCellClassNames);
   footerStyles?: DataGridColumnFootersCellStyles;
-  sortingFn?: _SortingFnOption<TData> | SortingFnOption | string & Record<never, never>;
+  sortingFn?: _SortingFnOption<TData> | SortingFnOption | NoDecayStringUnion;
   filterVariant?: FilterVariant;
-  filterFn?: _FilterFnOption<TData> | FilterFnOption | string & Record<never, never>;
+  filterFn?: _FilterFnOption<TData> | FilterFnOption | NoDecayStringUnion;
   filterProps?: {
     label?: string;
     placeholder?: string;
@@ -230,7 +230,7 @@ export interface FiltersOptions<TData extends RowData> extends
 Omit<_FiltersOptions<TData>,
   "globalFilterFn"
 > {
-  globalFilterFn?: _FilterFnOption<TData> | FilterFnOption | string & Record<never, never>;
+  globalFilterFn?: _FilterFnOption<TData> | FilterFnOption | NoDecayStringUnion;
   /**
    * The debounce time in milliseconds for the global filter.
    * @default 300
@@ -324,6 +324,11 @@ PartialKeys<DataGridOptionsResolved<TData>, "getCoreRowModel" | "onStateChange" 
   slots?: Partial<DataGridSlots<TData, SlotPropsOverrides>>;
   slotProps?: Partial<DataGridSlotProps<TData, SlotPropsOverrides>>;
 
+  /** 
+   * If `true`, the selection on click on a cell is disabled 
+   * @default false
+   */
+  disableCellSelectionOnClick?: boolean;
   onCellClick?: (cell: Cell<TData>, instance: DataGridInstance<TData>, event: MouseEvent<HTMLDivElement, MouseEvent>) => void;
   onCellDoubleClick?: (cell: Cell<TData>, instance: DataGridInstance<TData>, event: MouseEvent<HTMLDivElement, MouseEvent>) => void;
   onRowClick?: (row: Row<TData>, instance: DataGridInstance<TData>, event: MouseEvent<HTMLDivElement, MouseEvent>) => void;

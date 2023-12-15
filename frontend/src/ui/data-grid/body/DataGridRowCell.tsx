@@ -33,11 +33,13 @@ const DataGridRowCell = <TData extends RowData, TValue>({
     : columnDef.cellClassNames;
 
   const onClick = useCallback<MouseEventHandler<HTMLDivElement>>((e) => {
-    e.currentTarget.setAttribute("tabindex", "0");
-    e.currentTarget.focus();
-    e.currentTarget.classList.add("DataGridRowCell--focused");
-    if (instanceClassNames?.focused)
-      e.currentTarget.classList.add(instanceClassNames?.focused);
+    if (!instance.options.disableCellSelectionOnClick) {
+      e.currentTarget.setAttribute("tabindex", "0");
+      e.currentTarget.focus();
+      e.currentTarget.classList.add("DataGridRowCell--focused");
+      if (instanceClassNames?.focused)
+        e.currentTarget.classList.add(instanceClassNames?.focused);
+    }
 
     instance.options.onCellClick?.(cell as any, instance, e as any);
   }, [cell, instance, instanceClassNames?.focused]);
