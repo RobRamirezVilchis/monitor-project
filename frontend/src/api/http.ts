@@ -53,13 +53,12 @@ export const defaultConfig: HttpClientConfig = {
     return false;
   },
   onError: (error) => {
-    if (!error.config
-      && (error?.response?.status === 401 || error?.response?.status === 403)) {
+    if (error?.response?.status === 401 || error?.response?.status === 403) {
       const url = new URL("/auth/login", window.location.origin);
-      const query = new URLSearchParams({
-        callbackUrl: window.location.href,
-      });
-      url.search = query.toString();
+      // const query = new URLSearchParams({
+      //   callbackUrl: window.location.href,
+      // });
+      // url.search = query.toString();
       window.location.assign(url.toString());
     }
 

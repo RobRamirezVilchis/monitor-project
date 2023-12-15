@@ -70,6 +70,7 @@ const MainLayout = ({
         root: "h-full",
         header: "flex items-center gap-1 px-3 py-2",
         main: "h-full min-h-full",
+        navbar: "border-none",
       }}
     >
       <AppShell.Header>

@@ -18,10 +18,10 @@ export const useDataGrid: typeof _useDataGrid = (options) => _useDataGrid({
   },
   classNames: {
     root: "h-full !border-none",
-    mainContainer: "rounded shadow-md",
+    mainContainer: "rounded-lg shadow-md",
     footerContainer: "!border-none",
     columnHeaders: {
-      root: styles.columnHeaders,
+      root: clsx(styles.columnHeaders, "!border-none"),
     },
     columnHeadersCell: {
       root: "text-white",
