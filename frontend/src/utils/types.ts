@@ -30,9 +30,10 @@ export type PartialKeys<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>
 
 export type RequiredKeys<T, K extends keyof T> = Omit<T, K> & Required<Pick<T, K>>;
 
+// https://www.totaltypescript.com/concepts/the-prettify-helper
 export type Prettify<T> = {
   [K in keyof T]: T[K];
-};
+} & {};
 
 export type DistributiveOmit<T, K extends keyof any> = T extends any
   ? Omit<T, K>
