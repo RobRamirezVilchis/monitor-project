@@ -71,12 +71,17 @@ Omit<
 
 export type QueryInvalidateOptions = Omit<InvalidateQueryFilters, "queryKey">;
 
-export type UseCreatedQueryResult<TVariables, TQueryFnData, TData, TError> = UseQueryResult<TData, TError> & {
+export type UseCreatedQueryResult<TVariables, TQueryFnData, TData, TError, TQueryKey extends QueryKey = QueryKey> = UseQueryResult<TData, TError> & {
   queryPrimaryKey: string,
   queryKey: QueryKey;
   invalidate: (options?: QueryInvalidateOptions) => Promise<void>;
   setData: (updater: Updater<TQueryFnData | undefined, TQueryFnData | undefined>, options?: SetDataOptions) => TQueryFnData | undefined;
   getData: (filters?: QueryFilters) => TQueryFnData | undefined;
+  prefetch: (
+    options?: TVariables extends undefined 
+      ? FetchQueryOptions<TQueryFnData, TError, TData, UnionFlatten<string, TQueryKey>>
+      : FetchQueryOptions<TQueryFnData, TError, TData, UnionFlatten<string, TQueryKey>> & { variables?: TVariables; }
+  ) => Promise<TQueryFnData>;
   queryClient: QueryClient,
 } & (
   TVariables extends undefined 
@@ -91,8 +96,8 @@ export type UseCreatedQuery<
   TData = TQueryFnData, 
   TQueryKey extends QueryKey = QueryKey
 > = TVariables extends undefined
-  ? <TRData = TData>(options?: QueryOptions<TVariables, TQueryFnData,  TError, TRData, TQueryKey>) => UseCreatedQueryResult<TVariables, TQueryFnData, TRData, TError> 
-  : <TRData = TData>(options: QueryOptions<TVariables, TQueryFnData,  TError, TRData, TQueryKey>) => UseCreatedQueryResult<TVariables, TQueryFnData, TRData, TError>
+  ? <TRData = TData>(options?: QueryOptions<TVariables, TQueryFnData,  TError, TRData, TQueryKey>) => UseCreatedQueryResult<TVariables, TQueryFnData, TRData, TError, TQueryKey> 
+  : <TRData = TData>(options: QueryOptions<TVariables, TQueryFnData,  TError, TRData, TQueryKey>) => UseCreatedQueryResult<TVariables, TQueryFnData, TRData, TError, TQueryKey>
 
 export function createQuery<
   TVariables = undefined, 
@@ -241,6 +246,26 @@ export function createQuery<
       [queryClient, queryKey]
     );
 
+    const prefetch = useCallback(
+      (prefetchOptions?: FetchQueryOptions<TQueryFnData, TError, TData, UnionFlatten<string, TQueryKeyVariables>>) => { 
+        const { variables, ...opts } = prefetchOptions as any || {};
+        if (variables) {
+          const mergedVariables = {
+            ...options?.variables,
+            ...variables,
+          }
+          const queryKey = queryKeyFn(mergedVariables);
+          return queryClient.prefetchQuery(
+            queryKey, ctx => queryFn(ctx, mergedVariables), opts
+          );
+        }
+        return queryClient.prefetchQuery(
+          queryKey, ctx => queryFn(ctx, variables), opts
+        );
+      },
+      [options, queryClient, queryKey]
+    );
+
     const useQueryResult = useQuery<TQueryFnData, TError, TData, UnionFlatten<string, TQueryKeyVariables>>({
       queryKey,
       queryFn: ctx => queryFn(ctx, options?.variables),
@@ -254,6 +279,7 @@ export function createQuery<
       invalidate,
       setData,
       getData,
+      prefetch,
       queryClient,
       variables: options?.variables,
     });
