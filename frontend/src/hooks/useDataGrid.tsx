@@ -43,7 +43,7 @@ export const useDataGrid: typeof _useDataGrid = (options) => _useDataGrid({
   columnResizeMode: "onChange",
   enableColumnActions: true,
   enableGlobalFilter: true,
-  globalFilterDebounceTime: 1000,
+  globalFilterDebounceTime: 500,
   pageSizeOptions: [25, 50, 100],
   
   slotProps: {

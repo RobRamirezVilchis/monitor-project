@@ -16,20 +16,21 @@ const DateFilter = <TData extends RowData, TValue>({
 }: DateFilterProps<TData, TValue>) => {
   const columnFilterValue = header.column.getFilterValue() as Date | null ?? null;
 
-  const DateInput = getSlotOrNull(instance.options.slots?.baseDateInput);
+  const DateTimeInput = getSlotOrNull(instance.options.slots?.baseDateTimeInput);
 
   return (
-    <DateInput
-      {...instance.options.slotProps?.baseDateInput}
+    <DateTimeInput
+      {...instance.options.slotProps?.baseDateTimeInput}
       placeholder={header.column.columnDef.filterProps?.placeholder 
         || instance.localization.filterByPlaceholder(header.column)
       }
       value={columnFilterValue}
       onChange={(valueOrEvent, ...args) => {
-        const value = getInputValue<Date | null>(valueOrEvent);
-        value?.setHours(0, 0, 0, 0);
+        let value = getInputValue<Date | null>(valueOrEvent);
+        const zeroTime = header.column.columnDef.filterProps?.zeroTimeUpTo;
+        if (value && zeroTime) value = zeroDateUpTo(value, zeroTime);
         header.column.setFilterValue(value);
-        instance.options.slotProps?.baseDateInput?.onChange?.(valueOrEvent, ...args);
+        instance.options.slotProps?.baseDateTimeInput?.onChange?.(valueOrEvent, ...args);
       }}
       minDate={header.column.columnDef.filterProps?.min}
       maxDate={header.column.columnDef.filterProps?.max}

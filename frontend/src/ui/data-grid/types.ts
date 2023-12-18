@@ -65,6 +65,8 @@ export type FilterVariant =
   | "range-slider"
   | "date"
   | "date-range"
+  | "datetime"
+  | "datetime-range"
   | "checkbox";
 
 // Cell ------------------------------------------------------------------------
@@ -160,6 +162,17 @@ DistributiveOmit<
     max?: any;
     step?: number;
     debounceTime?: number;
+    /**
+     * Make the dates given by the `datetime` filters to be zeroed up to the given unit.
+     * @example
+     * // Given the date 2021-01-01 12:34:56.789
+     * zeroTimeUpTo: "hours"        // 2021-01-01 00:00:00.000
+     * zeroTimeUpTo: "minutes"      // 2021-01-01 12:00:00.000
+     * zeroTimeUpTo: "seconds"      // 2021-01-01 12:34:00.000
+     * zeroTimeUpTo: "milliseconds" // 2021-01-01 12:34:56.000
+     * zeroTimeUpTo: undefined      // 2021-01-01 12:34:56.789
+     */
+    zeroTimeUpTo?: "hours" | "minutes" | "seconds" | "milliseconds";
   };
   /**
    * Indicates that the width of the column should behave like a flex item.
@@ -410,6 +423,7 @@ export interface DataGridSlotBaseProps<TData extends RowData> {
   baseButton            : ButtonSlotCommonProps;
   baseCheckbox          : InputSlotCommonProps & { checked?: boolean; indeterminate?: boolean; };
   baseDateInput         : InputSlotCommonProps & { minDate?: Date; maxDate?: Date; };
+  baseDateTimeInput     : InputSlotCommonProps & { minDate?: Date; maxDate?: Date; };
   baseMultiSelect       : InputSlotCommonProps & { data: any[]; };
   baseNumberInput       : InputSlotCommonProps & { min?: number; max?: number; };
   baseRangeSlider       : InputSlotCommonProps & { min?: number; max?: number; step?: number; };

@@ -46,6 +46,7 @@ import type { DataGridInstance, DataGridOptions, SlotOverridesSignature } from "
 import { MantineSlotOverrides } from "./slots/overrides.types";
 import { MenuWrapper, MenuContent, MenuTarget, MenuItem, MenuDivider } from "./slots/Menu";
 import { PopoverWrapper, PopoverContent, PopoverTarget } from "./slots/Popover";
+import { DateTimeInput } from "./slots/DateTimeInput";
 import NoResultsOverlay from "./slots/NoResultsOverlay";
 import NoRowsOverlay from "./slots/NoRowsOverlay";
 import _useDataGrid from "../data-grid/useDataGrid";
@@ -69,6 +70,7 @@ export const useDataGrid = <TData extends RowData, SlotPropsOverrides extends Sl
       baseNumberInput       : NumberInput,
       baseRangeSlider       : RangeSlider,
       baseDateInput         : DateInput,
+      baseDateTimeInput     : DateTimeInput,
 
       baseMenuWrapper       : MenuWrapper,
       baseMenuContent       : MenuContent,
@@ -116,10 +118,12 @@ export const useDataGrid = <TData extends RowData, SlotPropsOverrides extends Sl
       ...slotProps,
       baseButton: {
         variant: "subtle",
+        ...slotProps?.baseButton,
       },
       baseIconButton: {
         variant: "subtle",
         radius: "xl",
+        ...slotProps?.baseIconButton,
       },
       globalSearchIcon: {
         size: "1.25rem",
@@ -141,9 +145,16 @@ export const useDataGrid = <TData extends RowData, SlotPropsOverrides extends Sl
       },
       basePopoverWrapper: {
         position: "bottom-end",
+        ...slotProps?.basePopoverWrapper,
       },
       baseDateInput: {
         clearable: true,
+        ...slotProps?.baseDateInput,
+      },
+      baseDateTimeInput: {
+        clearable: true,
+        withSeconds: true,
+        ...slotProps?.baseDateTimeInput,
       },
     },
   });

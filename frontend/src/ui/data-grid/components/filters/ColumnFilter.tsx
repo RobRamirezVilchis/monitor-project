@@ -7,6 +7,8 @@ import RangeFilter from "./RangeFilter";
 import RangeSliderFilter from "./RangeSliderFilter";
 import DateFilter from "./DateFilter";
 import DateRangeFilter from "./DateRangeFilter";
+import DateTimeFilter from "./DateTimeFilter";
+import DateTimeRangeFilter from "./DateTimeRangeFilter";
 import CheckboxFilter from "./CheckboxFilter";
 import AutocompleteFilter from "./AutocompleteFilter";
 import SelectFilter from "./SelectFilter";
@@ -39,6 +41,8 @@ const ColumnFilter = <TData extends RowData, TValue>({
     case "range-slider"        : return <RangeSliderFilter header={header} instance={instance} />;
     case "date"                : return <DateFilter header={header} instance={instance} />;
     case "date-range"          : return <DateRangeFilter header={header} instance={instance} />;
+    case "datetime"            : return <DateTimeFilter header={header} instance={instance} />;
+    case "datetime-range"      : return <DateTimeRangeFilter header={header} instance={instance} />;
     case "checkbox"            : return <CheckboxFilter header={header} instance={instance} />;
 
     default: return null;

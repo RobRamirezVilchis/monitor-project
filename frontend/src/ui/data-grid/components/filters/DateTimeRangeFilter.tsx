@@ -3,6 +3,7 @@ import { RowData } from "@tanstack/react-table";
 import { DataGridInstance, Header } from "../../types";
 import { getSlotOrNull } from "../../utils/slots";
 import { getInputValue } from "../../utils/getInputValue";
+import { zeroDateUpTo } from "../../utils/zeroDateUpTo";
 
 interface DateRangeFilterProps<TData extends RowData, TValue> {
   instance: DataGridInstance<TData>;
@@ -15,7 +16,7 @@ const DateRangeFilter = <TData extends RowData, TValue>({
 }: DateRangeFilterProps<TData, TValue>) => {
   const columnFilterValue = header.column.getFilterValue() as [Date | null, Date | null] ?? [null, null];
 
-  const DateInput = getSlotOrNull(instance.options.slots?.baseDateInput);
+  const DateTimeInput = getSlotOrNull(instance.options.slots?.baseDateTimeInput);
 
   return (
     <div
@@ -26,33 +27,35 @@ const DateRangeFilter = <TData extends RowData, TValue>({
         gridTemplateColumns: "1fr 1fr",
       }}
     >
-      <DateInput
-        {...instance.options.slotProps?.baseDateInput}
+      <DateTimeInput
+        {...instance.options.slotProps?.baseDateTimeInput}
         placeholder={header.column.columnDef.filterProps?.placeholder 
           || instance.localization.filterMinPlaceholder
         }
         value={columnFilterValue[0]}
         onChange={(valueOrEvent, ...args) => {
-          const value = getInputValue<Date | null>(valueOrEvent);
-          value?.setHours(0, 0, 0, 0);
+          let value = getInputValue<Date | null>(valueOrEvent);
+          const zeroTime = header.column.columnDef.filterProps?.zeroTimeUpTo;
+          if (value && zeroTime) value = zeroDateUpTo(value, zeroTime);
           header.column.setFilterValue([value, columnFilterValue[1]]);
-          instance.options.slotProps?.baseDateInput?.onChange?.(valueOrEvent, ...args);
+          instance.options.slotProps?.baseDateTimeInput?.onChange?.(valueOrEvent, ...args);
         }}
         minDate={header.column.columnDef.filterProps?.min}
         maxDate={header.column.columnDef.filterProps?.max}
       />
 
-      <DateInput
-        {...instance.options.slotProps?.baseDateInput}
+      <DateTimeInput
+        {...instance.options.slotProps?.baseDateTimeInput}
         placeholder={header.column.columnDef.filterProps?.placeholder 
           || instance.localization.filterMaxPlaceholder
         }
         value={columnFilterValue[1]}
         onChange={(valueOrEvent, ...args) => {
-          const value = getInputValue<Date | null>(valueOrEvent);
-          value?.setHours(23, 59, 59, 999);
+          let value = getInputValue<Date | null>(valueOrEvent);
+          const zeroTime = header.column.columnDef.filterProps?.zeroTimeUpTo;
+          if (value && zeroTime) value = zeroDateUpTo(value, zeroTime);
           header.column.setFilterValue([columnFilterValue[0], value]);
-          instance.options.slotProps?.baseDateInput?.onChange?.(valueOrEvent, ...args);
+          instance.options.slotProps?.baseDateTimeInput?.onChange?.(valueOrEvent, ...args);
         }}
         minDate={header.column.columnDef.filterProps?.min}
         maxDate={header.column.columnDef.filterProps?.max}

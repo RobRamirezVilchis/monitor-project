@@ -146,7 +146,7 @@ export const dateEqualsTo: FilterFn<any> = (row, columnId, filterValue: number) 
   return value.valueOf() === filterValue;
 }
 dateEqualsTo.autoRemove = (v) => !v || !v?.valueOf;
-dateEqualsTo.resolveFilterValue = (v) => v.valueOf();
+dateEqualsTo.resolveFilterValue = (v: Date) => v.valueOf();
 
 export const isAfter: FilterFn<any> = (row, columnId, filterValue: number) => {
   const value = row.getValue<Date>(columnId);
@@ -154,7 +154,7 @@ export const isAfter: FilterFn<any> = (row, columnId, filterValue: number) => {
   return value.valueOf() > filterValue;
 }
 isAfter.autoRemove = (v) => !v || !v?.valueOf;
-isAfter.resolveFilterValue = (v) => v.valueOf();
+isAfter.resolveFilterValue = (v: Date) => v.valueOf();
 
 export const isAfterOrEqualTo: FilterFn<any> = (row, columnId, filterValue: number) => {
   const value = row.getValue<Date>(columnId);
@@ -162,7 +162,7 @@ export const isAfterOrEqualTo: FilterFn<any> = (row, columnId, filterValue: numb
   return value.valueOf() >= filterValue;
 }
 isAfterOrEqualTo.autoRemove = (v) => !v || !v?.valueOf;
-isAfterOrEqualTo.resolveFilterValue = (v) => v.valueOf();
+isAfterOrEqualTo.resolveFilterValue = (v: Date) => v.valueOf();
 
 export const isBefore: FilterFn<any> = (row, columnId, filterValue: number) => {
   const value = row.getValue<Date>(columnId);
@@ -170,7 +170,7 @@ export const isBefore: FilterFn<any> = (row, columnId, filterValue: number) => {
   return value.valueOf() < filterValue;
 }
 isBefore.autoRemove = (v) => !v || !v?.valueOf;
-isBefore.resolveFilterValue = (v) => v.valueOf();
+isBefore.resolveFilterValue = (v: Date) => v.valueOf();
 
 export const isBeforeOrEqualTo: FilterFn<any> = (row, columnId, filterValue: number) => {
   const value = row.getValue<Date>(columnId);
@@ -178,23 +178,39 @@ export const isBeforeOrEqualTo: FilterFn<any> = (row, columnId, filterValue: num
   return value.valueOf() <= filterValue;
 }
 isBeforeOrEqualTo.autoRemove = (v) => !v || !v?.valueOf;
-isBeforeOrEqualTo.resolveFilterValue = (v) => v.valueOf();
+isBeforeOrEqualTo.resolveFilterValue = (v: Date) => v.valueOf();
 
-export const isDateBetween: FilterFn<any> = (row, columnId, filterValue: [number, number]) => {
+export const isDateBetween: FilterFn<any> = (row, columnId, filterValue: [number | undefined, number | undefined]) => {
   const value = row.getValue<Date>(columnId);
   if (!value) return false;
-  return value.valueOf() >= filterValue[0] && value.valueOf() <= filterValue[1];
+  
+  if (filterValue[0] && filterValue[1])
+    return value.valueOf() > filterValue[0] && value.valueOf() < filterValue[1];
+  else if (filterValue[0])
+    return value.valueOf() > filterValue[0];
+  else if (filterValue[1])
+    return value.valueOf() < filterValue[1];
+  else
+    return false;
 }
-isDateBetween.autoRemove = (v) => !v || !v?.length;
-isDateBetween.resolveFilterValue = (v) => [v[0].valueOf(), v[1].valueOf()];
+isDateBetween.autoRemove = (v) => !v || !v?.length || (!v[0] && !v[1]);
+isDateBetween.resolveFilterValue = (v: [Date | null, Date | null]) => [v[0]?.valueOf(), v[1]?.valueOf()];
 
-export const isDateBetweenExclusive: FilterFn<any> = (row, columnId, filterValue: [number, number]) => {
+export const isDateBetweenOrEquals: FilterFn<any> = (row, columnId, filterValue: [number | undefined, number | undefined]) => {
   const value = row.getValue<Date>(columnId);
   if (!value) return false;
-  return value.valueOf() > filterValue[0] && value.valueOf() < filterValue[1];
+  
+  if (filterValue[0] && filterValue[1])
+    return value.valueOf() >= filterValue[0] && value.valueOf() <= filterValue[1];
+  else if (filterValue[0])
+    return value.valueOf() >= filterValue[0];
+  else if (filterValue[1])
+    return value.valueOf() <= filterValue[1];
+  else
+    return false;
 }
-isDateBetweenExclusive.autoRemove = (v) => !v || !v?.length;
-isDateBetweenExclusive.resolveFilterValue = (v) => [v[0].valueOf(), v[1].valueOf()];
+isDateBetweenOrEquals.autoRemove = (v) => !v || !v?.length || (!v[0] && !v[1]);
+isDateBetweenOrEquals.resolveFilterValue = (v: [Date | null, Date | null]) => [v[0]?.valueOf(), v[1]?.valueOf()];
 
 // Utils
 
@@ -267,7 +283,7 @@ export const filterFns = {
   isBefore,
   isBeforeOrEqualTo,
   isDateBetween,
-  isDateBetweenExclusive,
+  isDateBetweenOrEquals,
 
   isNull,
   isNotNull,
