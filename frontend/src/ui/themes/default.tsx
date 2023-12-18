@@ -178,8 +178,8 @@ const defaultTheme = createTheme({
     DateInput: DateInput.extend({
       defaultProps: {
         size: baseMantineSize,
-        rightSection: <IconCalendarEvent className="w-5 h-5" />,
-        rightSectionPointerEvents: "none",
+        leftSection: <IconCalendarEvent className="w-5 h-5" />,
+        leftSectionPointerEvents: "none",
       },
     }),
     DatePicker: {
@@ -190,13 +190,15 @@ const defaultTheme = createTheme({
     DatePickerInput: DatePickerInput.extend({
       defaultProps: {
         size: baseMantineSize,
-        rightSection: <IconCalendarEvent className="w-5 h-5" />,
-        rightSectionPointerEvents: "none",
+        leftSection: <IconCalendarEvent className="w-5 h-5" />,
+        leftSectionPointerEvents: "none",
       },
     }),
     DateTimePicker: {
       defaultProps: {
         size: baseMantineSize,
+        leftSection: <IconCalendarEvent className="w-5 h-5" />,
+        leftSectionPointerEvents: "none",
       },
     },
     MonthPìcker: {
