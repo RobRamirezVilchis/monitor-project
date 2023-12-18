@@ -20,50 +20,24 @@ import DataGrid from "@/ui/data-grid/DataGrid";
 import { IconPlus } from "@tabler/icons-react";
 import { withAuth } from "@/components/auth/withAuth";
 
-import { useDataGridSsrFilters, usePrefetchPaginatedAdjacentQuery } from "@/hooks/useSsrDataGrid";
+import { useSsrDataGridFilters, usePrefetchPaginatedAdjacentQuery } from "@/hooks/useSsrDataGrid";
 
 const UsersPage = () => {
   const {
-    state: ssrState,
-    dataGridConfig: ssrDataGridConfig,
-    queryVariables: ssrQueryVariables,
-  } = useDataGridSsrFilters({});
-
-  // const pagination = useQueryState({
-  //   page: {
-  //     defaultValue: 1,
-  //     parse: (value) => parseInt(value),
-  //     serialize: (value) => value.toString(),
-  //   },
-  //   page_size: {
-  //     defaultValue: 25,
-  //     parse: (value) => parseInt(value),
-  //     serialize: (value) => value.toString(),
-  //   },
-  // });
-  // const [sortingState, setSortingState] = useState<SortingState>([{ id: "first_name", desc: false }]);
-  // const [filters, setFilters] = useImmer<{  
-  //   search?: string;
-  // }>({
-  //   search: "",
-  // });
+    state: dataGridState,
+    queryVariables,
+    dataGridConfig,
+  } = useSsrDataGridFilters<{ some: string }>();
   const usersQuery = useUsersQuery({
-    // variables: {
-    //   page: pagination.state.page,
-    //   page_size: pagination.state.page_size,
-    //   ...filters,
-    //   sort: sortingState.map(x => `${x.desc ? "-" : ""}${x.id}`).join(","),
-    // },
-    variables: ssrQueryVariables,
+    variables: queryVariables,
     refetchOnWindowFocus: false,
   });
   usePrefetchPaginatedAdjacentQuery({
     query: usersQuery,
-    options: {
+    prefetchOptions: {
       staleTime: 5 * 60 * 1000,
     },
   });
-
   const createUserMutation = useCreateUserMutation({
     onSuccess: () => {
       showSuccessNotification({
@@ -76,6 +50,7 @@ const UsersPage = () => {
     }),
   });
   const [newUserFormOpen, setNewUserFormOpen] = useState(false);
+
   const grid = useDataGrid<User>({
     data: usersQuery.data?.data || [],
     columns: cols,
@@ -87,84 +62,16 @@ const UsersPage = () => {
     },
     state: {
       loading: usersQuery.isLoading || usersQuery.isFetching,
-      // pagination: {
-      //   pageIndex: pagination.state.page - 1,
-      //   pageSize: pagination.state.page_size,
-      // },
-      // globalFilter: filters?.search,
-      // sorting: sortingState,
-      ...ssrState,
+      ...dataGridState,
     },
     enableColumnResizing: true,
     hideColumnFooters: true,
     enableColumnActions: true,
 
-    // enableSorting: true,
-    // manualSorting: true,
-    // onSortingChange: (value) => {
-    //   const newValue = typeof value === "function" ? value(sortingState) : value;
-    //   setSortingState(newValue);
-    // },
- 
-    // enableFilters: true,
-    // manualFiltering: true,
-    // onGlobalFilterChange: (value) => {
-    //   const newValue = typeof value === "function" ? value(filters?.search) : value;
-    //   setFilters(draft => {
-    //     draft.search = newValue;
-    //   });
-    // },
-
-    // enablePagination: true,
-    // manualPagination: true,
-    // pageCount: usersQuery.data?.pagination?.pages ?? 0,
-    // rowCount: usersQuery.data?.pagination?.count ?? 0,
-    // onPaginationChange: (value) => {
-    //   const old: PaginationState = {
-    //     pageIndex :pagination.state.page - 1,
-    //     pageSize  :pagination.state.page_size,
-    //   };
-    //   const newValue = typeof value === "function" ? value(old) : value;
-    //   pagination.update({
-    //     page: newValue.pageIndex + 1,
-    //     page_size: newValue.pageSize,
-    //   });
-    // },
-    ...ssrDataGridConfig,
+    ...dataGridConfig,
     pageCount: usersQuery.data?.pagination?.pages ?? 0,
     rowCount: usersQuery.data?.pagination?.count ?? 0,
-
-    pageSizeOptions: [1, 25, 50, 100],
   });
-
-  // //* Prefetch adjacent pages
-  // useEffect(() => {
-  //   if (usersQuery.data && usersQuery.data.pagination && !usersQuery.isPreviousData) {
-  //     console.log("prefetching adjacent pages")
-  //     const paginationInfo = usersQuery.data.pagination;
-  //     if (paginationInfo.page > 1) {
-  //       usersQuery.prefetch({
-  //         variables: {
-  //           // ...usersQuery.variables,
-  //           page: paginationInfo.page - 1,
-  //           page_size: usersQuery.variables.page_size,
-  //         },
-  //         staleTime: 5 * 60 * 1000,
-  //       });
-  //     }
-  //     if (paginationInfo.page < paginationInfo.pages) {
-  //       usersQuery.prefetch({
-  //         variables: {
-  //           // ...usersQuery.variables,
-  //           page: paginationInfo.page + 1,
-  //           page_size: usersQuery.variables.page_size,
-  //         },
-  //         staleTime: 5 * 60 * 1000,
-  //       });
-  //     }
-  //   }
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [usersQuery.prefetch, usersQuery.data, usersQuery.isPreviousData, usersQuery.variables]);
 
   return (
     <section className="flex flex-col h-full lg:container mx-auto pb-2 md:pb-6">

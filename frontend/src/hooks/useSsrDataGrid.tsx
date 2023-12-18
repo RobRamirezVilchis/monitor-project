@@ -1,6 +1,5 @@
-import { QueryOptions, UseCreatedQuery, UseCreatedQueryResult, createQuery } from "@/api/helpers/createQuery";
-// import { OptionallyPaginated, Paginated, isPaginated } from "@/api/types";
-import { FetchQueryOptions, QueryKey } from "@tanstack/react-query";
+import { UseCreatedQueryResult } from "@/api/helpers/createQuery";
+import { FetchQueryOptions } from "@tanstack/react-query";
 import { Prettify } from "@/utils/types";
 import { PaginationState, SortingState } from "@tanstack/react-table";
 import { useQueryState } from "./shared";
@@ -16,24 +15,62 @@ export interface UseDataGridSsrFiltersOptions<
 
   Pagination = { [Key in PageName | PageSizeName]: number }
 > {
+  /**
+   * The name of the query parameter that will be used to store the page number.
+   * @default "page"
+   */
   pageParamName?: PageName;
+  /**
+   * The name of the query parameter that will be used to store the page size.
+   * @default "page_size"
+   */
   pageSizeParamName?: PageSizeName;
+  /**
+   * The name of the query parameter that will be used to store the global filter.
+   * @default "search"
+   */
   globalFilterName?: GlobalFilterName;
+  /**
+   * The name of the query parameter that will be used to store the sorting.
+   * @default "sort"
+   */
   sortingParamName?: SortingName;
 
+  /**
+   * The default pagination values.
+   * @default { page: 1, page_size: 25 }
+   */
   defaultPagination?: Pagination;
+  /**
+   * The default global filter value.
+   * @default ""
+   */
   defaultGlobalFilter?: string;
+  /**
+   * The default filters values.
+   * @default {}
+   */
   defaultFilters?: Partial<Filters>;
+  /**
+   * The default sorting values.
+   * @default []
+   */
   defaultSorting?: SortingState;
 
   /** 
    * If true, empty values, such as empty strings, null, undefined, 
-   * or empty arrays, will be removed from the query variables. 
+   * or empty arrays, will be removed from the returned query variables. 
    * */
   removeEmpty?: boolean;
 }
 
-export const useDataGridSsrFilters = <
+/**
+ * Hook used to manage data-grid pagination, sorting, and other filters in SSR.
+ * @returns An object containing the current `state` of the data-grid filters,
+ * the current `query variables` (this assumes that all filters are inside the same object), 
+ * and the data-grid configuration boilerplate for the SSR data-grid.
+ */
+export const useSsrDataGridFilters = <
   Filters,
   GlobalFilterName extends string = "search",
   PageName extends string = "page", 
@@ -42,16 +79,20 @@ export const useDataGridSsrFilters = <
 
   Pagination = { [Key in PageName | PageSizeName]: number },
   QueryVariables = Partial<Prettify<Pagination & Filters & { [Key in GlobalFilterName]: string; }>>
->({
-  defaultPagination,
-  defaultFilters = {} as Filters,
-  defaultSorting = [],
-  removeEmpty = true,
-  globalFilterName = "search" as GlobalFilterName,
-  pageParamName = "page" as PageName,
-  pageSizeParamName = "page_size" as PageSizeName,
-  sortingParamName = "sort" as SortingName,
-}: UseDataGridSsrFiltersOptions<Filters, GlobalFilterName, PageName, PageSizeName, SortingName>) => {
+>(options?: UseDataGridSsrFiltersOptions<Filters, GlobalFilterName, PageName, PageSizeName, SortingName>) => {
+  const {
+    defaultPagination,
+    defaultGlobalFilter = "",
+    defaultFilters = {} as Filters,
+    defaultSorting = [],
+
+    removeEmpty = true,
+    globalFilterName = "search" as GlobalFilterName,
+    pageParamName = "page" as PageName,
+    pageSizeParamName = "page_size" as PageSizeName,
+    sortingParamName = "sort" as SortingName,
+  } = options || {};
+
   const pagination = useQueryState({
     [pageParamName]: {
       defaultValue: defaultPagination?.[pageParamName] ?? 1,
@@ -65,7 +106,7 @@ export const useDataGridSsrFilters = <
     },
   });
   const [sorting, setSorting] = useState<SortingState>(defaultSorting);
-  const [globalFilter, setGlobalFilter] = useState<string>("");
+  const [globalFilter, setGlobalFilter] = useState<string>(defaultGlobalFilter);
   const [filters, setFilters] = useImmer<Partial<Filters>>(defaultFilters);
 
   const state = useMemo(() => ({
@@ -153,8 +194,20 @@ export interface UsePrefetchPaginatedAdjacentQueryParams<
   TOptions = FetchQueryOptions<any, any, any, any>,
   PageName extends string = "page",
 > {
+  /**
+   * The query to prefetch. Result of a call to `useQuery`.
+   */
   query: TQuery,
-  options?: TOptions,
+  /**
+   * The options to use when prefetching the query.
+   */
+  prefetchOptions?: TOptions,
+  
+  prefetchPages?: number,
+  /**
+   * The name of the query parameter that will be used to store the page number.
+   * @default "page"
+   */
   pageName?: PageName,
 };
 
@@ -164,7 +217,7 @@ export function usePrefetchPaginatedAdjacentQuery<
   PageName extends string = "page"
 >({
   query,
-  options,
+  prefetchOptions: options,
   pageName = "page" as PageName,
 }: UsePrefetchPaginatedAdjacentQueryParams<TQuery, TOptions, PageName>) {
   const _query = query as UseCreatedQueryResult<{ [Key in PageName]?: number }, any, any, any>;
