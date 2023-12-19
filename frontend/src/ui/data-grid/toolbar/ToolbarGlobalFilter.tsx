@@ -7,13 +7,13 @@ import { IconX } from "@tabler/icons-react";
 import { getSlotOrNull } from "../utils/slots";
 import { getInputValue } from "../utils/getInputValue";
 
-export interface ToolbarQuickFilterProps<TData extends unknown> {
+export interface ToolbarGlobalFilterProps<TData extends unknown> {
   instance: DataGridInstance<TData>;
 }
 
-const ToolbarQuickFilter = <TData extends unknown>({
+const ToolbarGlobalFilter = <TData extends unknown>({
   instance,
-}: ToolbarQuickFilterProps<TData>) => {
+}: ToolbarGlobalFilterProps<TData>) => {
   const ref = useRef<HTMLInputElement>(null);
   const skipDebounce = useRef(false);
   const { debounce } = useDebounce({
@@ -33,7 +33,7 @@ const ToolbarQuickFilter = <TData extends unknown>({
     <TextInput
       {...instance.options.slotProps?.baseTextInput}
       ref={ref}
-      placeholder={instance.localization.toolbarQuickFilterPlaceholder}
+      placeholder={instance.localization.toolbarGlobalFilterPlaceholder}
       onChange={(valueOrEvent, ...args) => {
         const value = getInputValue<string>(valueOrEvent);
         if (skipDebounce.current) {
@@ -67,4 +67,4 @@ const ToolbarQuickFilter = <TData extends unknown>({
   );
 }
 
-export default ToolbarQuickFilter;
+export default ToolbarGlobalFilter;

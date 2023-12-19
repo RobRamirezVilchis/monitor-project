@@ -420,6 +420,7 @@ export interface ButtonSlotCommonProps {
 export interface DataGridSlotBaseProps<TData extends RowData> {
   baseIconButton        : ButtonSlotCommonProps;
   baseAutocomplete      : InputSlotCommonProps & { data: any[]; };
+  baseBadge             : { label?: ReactNode; children?: ReactNode; disabled?: boolean; };
   baseButton            : ButtonSlotCommonProps;
   baseCheckbox          : InputSlotCommonProps & { checked?: boolean; indeterminate?: boolean; };
   baseDateInput         : InputSlotCommonProps & { minDate?: Date; maxDate?: Date; };
@@ -725,7 +726,7 @@ export interface DataGridLocalization {
   toolbarHideAllColumns: string;
   toolbarToggleDensity: string;
   toolbarToggleFullscreen: string;
-  toolbarQuickFilterPlaceholder: string;
+  toolbarGlobalFilterPlaceholder: string;
   
   columnPanelSortByLabel: (sortInfo: { 
     direction: SortDirection | false;

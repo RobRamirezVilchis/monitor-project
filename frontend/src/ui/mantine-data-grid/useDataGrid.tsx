@@ -2,6 +2,7 @@ import {
   ActionIcon,
   Button,
   Checkbox,
+  Indicator,
   Select,
   Switch,
   TextInput,
@@ -58,6 +59,7 @@ export const useDataGrid = <TData extends RowData, SlotPropsOverrides extends Sl
     ...options,
     slots: {
       baseAutocomplete      : Autocomplete,
+      baseBadge             : Indicator,
       baseMultiAutocomplete : TagsInput,
       baseIconButton        : ActionIcon,
       baseButton            : Button,
@@ -116,6 +118,13 @@ export const useDataGrid = <TData extends RowData, SlotPropsOverrides extends Sl
     },
     slotProps: {
       ...slotProps,
+      baseBadge: {
+        classNames: {
+          indicator: "py-2",
+          root: "grid place-items-center"
+        },
+        ...slotProps?.baseBadge,
+      },
       baseButton: {
         variant: "subtle",
         ...slotProps?.baseButton,

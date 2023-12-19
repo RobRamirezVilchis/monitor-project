@@ -3,6 +3,7 @@ import type {
   ActionIconProps,
   ButtonProps,
   CheckboxProps,
+  IndicatorProps,
   SelectProps,
   SwitchProps,
   TextInputProps,
@@ -35,6 +36,7 @@ import type { DateTimeInputProps } from "./DateTimeInput";
 
 export interface MantineSlotOverrides {
   baseAutocomplete     : AutocompleteProps;
+  baseBadge            : IndicatorProps;
   baseMultiAutocomplete: TagsInputProps;
   baseIconButton       : PolymorphicComponentProps<"button", ActionIconProps>;
   baseButton           : PolymorphicComponentProps<"button", ButtonProps>;

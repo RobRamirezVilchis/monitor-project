@@ -1,6 +1,6 @@
 import "@mantine/core/styles.css";
 import "@mantine/dates/styles.css";
-import '@mantine/notifications/styles.css';
+import "@mantine/notifications/styles.css";
 import "@/styles/globals.css";
 
 import { ColorSchemeScript, MantineColorScheme } from "@mantine/core";
