@@ -1,12 +1,12 @@
 import { UseCreatedQueryResult } from "@/api/helpers/createQuery";
 import { FetchQueryOptions } from "@tanstack/react-query";
 import { Prettify } from "@/utils/types";
-import { PaginationState, SortingState } from "@tanstack/react-table";
+import { ColumnFiltersState, PaginationState, SortingState } from "@tanstack/react-table";
 import { useQueryState } from "./shared";
 import { useEffect, useMemo, useState } from "react";
 import { useImmer } from "use-immer";
 
-export interface UseDataGridSsrFiltersOptions<
+export interface UseDataGridSsrOptions<
   Filters, 
   GlobalFilterName extends string = "search",
   PageName extends string = "page", 
@@ -70,7 +70,7 @@ export interface UseDataGridSsrFiltersOptions<
  * the current `query variables` (this assumes that all filters are inside the same object), 
  * and the data-grid configuration boilerplate for the SSR data-grid.
  */
-export const useSsrDataGridFilters = <
+export const useSsrDataGrid = <
   Filters,
   GlobalFilterName extends string = "search",
   PageName extends string = "page", 
@@ -79,7 +79,7 @@ export const useSsrDataGridFilters = <
 
   Pagination = { [Key in PageName | PageSizeName]: number },
   QueryVariables = Partial<Prettify<Pagination & Filters & { [Key in GlobalFilterName]: string; }>>
->(options?: UseDataGridSsrFiltersOptions<Filters, GlobalFilterName, PageName, PageSizeName, SortingName>) => {
+>(options?: UseDataGridSsrOptions<Filters, GlobalFilterName, PageName, PageSizeName, SortingName>) => {
   const {
     defaultPagination,
     defaultGlobalFilter = "",
@@ -107,6 +107,7 @@ export const useSsrDataGridFilters = <
   });
   const [sorting, setSorting] = useState<SortingState>(defaultSorting);
   const [globalFilter, setGlobalFilter] = useState<string>(defaultGlobalFilter);
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [filters, setFilters] = useImmer<Partial<Filters>>(defaultFilters);
 
   const state = useMemo(() => ({
@@ -115,8 +116,9 @@ export const useSsrDataGridFilters = <
       pageSize: pagination.state[pageSizeParamName],
     },
     globalFilter,
+    columnFilters,
     sorting,
-  }), [pagination.state, pageParamName, pageSizeParamName, globalFilter, sorting]);
+  }), [pagination.state, pageParamName, pageSizeParamName, globalFilter, columnFilters, sorting]);
   
   const queryVariables = useMemo(() => {
     const _queryVariables = {
@@ -124,6 +126,10 @@ export const useSsrDataGridFilters = <
       ...filters,
       [globalFilterName]: globalFilter,
       [sortingParamName]: sorting.map(x => `${x.desc ? "-" : ""}${x.id}`).join(","),
+      ...columnFilters.reduce((acc, curr) => {
+        acc[curr.id] = curr.value;
+        return acc;
+      }, {} as any),
     } as QueryVariables;
     
     if (removeEmpty) {
@@ -139,11 +145,11 @@ export const useSsrDataGridFilters = <
     }
 
     return _queryVariables;
-  }, [pagination.state, filters, globalFilterName, globalFilter, sortingParamName, sorting, removeEmpty]);
+  }, [pagination.state, filters, globalFilterName, globalFilter, sortingParamName, sorting, columnFilters, removeEmpty]);
 
   return {
-    state,
     queryVariables,
+    dataGridState: state,
     dataGridConfig: {
       enableSorting: true,
       manualSorting: true,
@@ -158,6 +164,11 @@ export const useSsrDataGridFilters = <
       onGlobalFilterChange: (value: any) => {
         const newValue = typeof value === "function" ? value(globalFilter) : value;
         setGlobalFilter(newValue);
+      },
+      enableColumnFilters: true,
+      onColumnFiltersChange: (values: any) => {
+        const newValue = typeof values === "function" ? values(columnFilters) : values;
+        setColumnFilters(newValue);
       },
   
       enablePagination: true,

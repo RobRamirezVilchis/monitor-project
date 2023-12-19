@@ -1,15 +1,12 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Button, Modal } from "@mantine/core";
-import { PaginationState, SortingState } from "@tanstack/react-table";
-import { useImmer } from "use-immer";
 
 import { DeleteUserAction, SendPasswordChangeAction, UpdateUserAction } from "./Actions";
 import { UserForm } from "./UserForm";
 import { User } from "@/api/services/auth/types"; 
 import { showSuccessNotification, showErrorNotification } from "@/ui/notifications";
-import { useQueryState } from "@/hooks/shared";
 import { useUsersQuery } from "@/api/queries/users";
 import { getUserRoleLocalized } from "@/api/services/users";
 import { ColumnDef } from "@/ui/data-grid/types";
@@ -20,14 +17,16 @@ import DataGrid from "@/ui/data-grid/DataGrid";
 import { IconPlus } from "@tabler/icons-react";
 import { withAuth } from "@/components/auth/withAuth";
 
-import { useSsrDataGridFilters, usePrefetchPaginatedAdjacentQuery } from "@/hooks/useSsrDataGrid";
+import { useSsrDataGrid, usePrefetchPaginatedAdjacentQuery } from "@/hooks/useSsrDataGrid";
 
 const UsersPage = () => {
   const {
-    state: dataGridState,
     queryVariables,
+    dataGridState,
     dataGridConfig,
-  } = useSsrDataGridFilters<{ some: string }>();
+  } = useSsrDataGrid({
+    
+  });
   const usersQuery = useUsersQuery({
     variables: queryVariables,
     refetchOnWindowFocus: false,
@@ -150,6 +149,13 @@ const cols: ColumnDef<User>[] = [
     columnTitle: "Roles",
     minSize: 350,
     enableSorting: false,
+    filterVariant: "multi-select",
+    filterProps: {
+      options: [
+        { value: "Admin", label: "Administrador" },
+        { value: "User",  label: "Usuario" },
+      ]
+    },
   },
   {
     id: "actions",
