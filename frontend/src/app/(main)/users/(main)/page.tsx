@@ -25,6 +25,12 @@ const UsersPage = () => {
   } = useSsrDataGrid({
     enableColumnFilters: false,
     defaultSorting: ["first_name"],
+    queryStateOptions: {
+      navigateOptions: {
+        scroll: false,
+      },
+      history: "replace",
+    },
   });
   const usersQuery = useUsersQuery({
     variables: queryVariables,

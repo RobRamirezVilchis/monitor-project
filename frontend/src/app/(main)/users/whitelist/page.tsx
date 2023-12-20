@@ -1,9 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Button, Modal } from "@mantine/core";
-import { PaginationState } from "@tanstack/react-table";
-import { useImmer } from "use-immer";
 
 import { DeleteUserAction } from "./Actions";
 import { NewUserForm } from "./NewUserForm";
@@ -11,7 +9,6 @@ import { Role, User } from "@/api/services/auth/types";
 import { RoleSelector } from "./RoleSelector";
 import { showSuccessNotification, showErrorNotification } from "@/ui/notifications";
 import { useAddToWhitelistMutation } from "@/api/mutations/users";
-import { useQueryState } from "@/hooks/shared";
 import { UserAvatar } from "@/components/shared/UserAvatar";
 import { useWhitelistQuery } from "@/api/queries/users";
 import { WhitelistItem } from "@/api/services/users/types";
@@ -28,6 +25,12 @@ const UsersPage = () => {
   } = useSsrDataGrid({
     enableColumnFilters: false,
     defaultSorting: ["first_name"],
+    queryStateOptions: {
+      navigateOptions: {
+        scroll: false,
+      },
+      history: "replace",
+    },
   });
   const usersWhitelistQuery = useWhitelistQuery({
     variables: queryVariables,

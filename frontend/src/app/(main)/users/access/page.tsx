@@ -56,7 +56,7 @@ const UsersAccessPage = () => {
   const today = new Date();
   today.setHours(23, 59, 59, 999);
 
-  const usersAccessQueryParams = useQueryState({
+  const usersAccessQueryParams = useQueryState<{ start_date: Date | null, end_date: Date | null }>({
     start_date: {
       defaultValue: aMonthAgo,
       parse: (value) => dateStrToDatetime(value as string, "start"),
@@ -78,12 +78,18 @@ const UsersAccessPage = () => {
   } = useSsrDataGrid({
     enableColumnFilters: false,
     defaultSorting: ["first_name"],
+    queryStateOptions: {
+      navigateOptions: {
+        scroll: false,
+      },
+      history: "replace",
+    },
   });
   const usersAccessQuery = useUsersAccessQuery({
     variables: {
       ...queryVariables,
-      start_date: usersAccessQueryParams.state.start_date.toISOString(),
-      end_date: usersAccessQueryParams.state.end_date.toISOString(),
+      start_date: usersAccessQueryParams.state.start_date?.toISOString(),
+      end_date: usersAccessQueryParams.state.end_date?.toISOString(),
     },
   });
   usePrefetchPaginatedAdjacentQuery({

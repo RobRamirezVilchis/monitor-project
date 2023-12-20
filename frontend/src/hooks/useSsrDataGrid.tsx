@@ -89,8 +89,9 @@ export interface UseDataGridSsrOptions<
   defaultColumnFilters?: ColumnFilters;
 
   /** 
-   * If true, empty values, such as empty strings, null, undefined, 
-   * or empty arrays, will be removed from the returned query variables. 
+   * If true, empty values such as empty strings, null, undefined, 
+   * or empty arrays, will be removed from the returned query variables.
+   * @default true
    * */
   removeEmpty?: boolean;
 
@@ -115,7 +116,7 @@ export interface UseDataGridSsrOptions<
    * Note: Using this property will make the `defaultColumnFilters` property to be ignored,
    * if both are given at the same time, the ColumnFilters type will complain 
    * as `defaultColumnFilters` takes precedence over `columnFiltersInUrl`.
-   * @default false
+   * @default undefined
    */
   columnFiltersInUrl?: ReducedQueryParams<ColumnFilters>; 
 
@@ -325,7 +326,7 @@ export const useSsrDataGrid = <
         if (vars[key] === undefined 
             || vars[key] === null 
             || (vars[key] as any) === "" 
-            || (vars[key] as any)?.length === 0
+            || (Array.isArray(vars[key]) && (vars[key] as any[]).length === 0)
         ) {
           delete vars[key];
         }
