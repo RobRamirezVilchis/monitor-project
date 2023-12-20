@@ -33,6 +33,7 @@ const ToolbarGlobalFilter = <TData extends unknown>({
     <TextInput
       {...instance.options.slotProps?.baseTextInput}
       ref={ref}
+      defaultValue={instance.getState().globalFilter}
       placeholder={instance.localization.toolbarGlobalFilterPlaceholder}
       onChange={(valueOrEvent, ...args) => {
         const value = getInputValue<string>(valueOrEvent);

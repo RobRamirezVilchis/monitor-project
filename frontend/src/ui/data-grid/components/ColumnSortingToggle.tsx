@@ -38,7 +38,7 @@ const ColumnSortingToggle = <TData extends unknown, TValue>({
         {...instance.options.slotProps?.baseIconButton}
         {...instance.options.slotProps?.columnMenuIconButton}
         onClick={(...args) => {
-          header.column.toggleSorting();
+          header.column.getToggleSortingHandler()?.(args?.[0]);
           instance.options.slotProps?.baseIconButton?.onClick?.(...args);
         }}
       >

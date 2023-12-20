@@ -393,6 +393,8 @@ export interface SlotBaseProps<TData extends RowData> {
 
 export interface InputSlotCommonProps {
   value?: unknown;
+  defaultValue?: unknown;
+  defaultChecked?: unknown;
   onClick?: (...args: unknown[]) => void;
   /**
    * NOTE: The first argument is the one that is considered as the value
