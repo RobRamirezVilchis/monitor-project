@@ -68,7 +68,7 @@ const MainLayout = ({
       }}
       classNames={{
         root: "h-full",
-        header: "flex items-center gap-1 px-3 py-2 border-none",
+        header: "flex items-center gap-1 px-3 py-2 bg-dark-900 text-neutral-300 border-none",
         main: "h-full min-h-full",
         navbar: "border-none",
       }}

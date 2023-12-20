@@ -26,7 +26,6 @@ export const useDataGrid: typeof _useDataGrid = (options) => _useDataGrid({
     columnHeadersCell: {
       root: "text-white",
       label: "!font-normal !text-sm !font-semibold",
-      // actions: "bg-neutral-800 !text-white",
     },
     body: {
       root: styles.body,
@@ -45,6 +44,8 @@ export const useDataGrid: typeof _useDataGrid = (options) => _useDataGrid({
   enableGlobalFilter: true,
   globalFilterDebounceTime: 500,
   pageSizeOptions: [25, 50, 100],
+  enableMultiSort: false,
+  isMultiSortEvent: e => (e as MouseEvent).ctrlKey,
   
   slotProps: {
     baseTextInput: {
@@ -52,9 +53,6 @@ export const useDataGrid: typeof _useDataGrid = (options) => _useDataGrid({
         input: "rounded-none border-t-0 border-l-0 border-r-0 border-b border-b-2 !bg-transparent",
       },
     } as any,
-    // baseIconButton: {
-    //   c: "inherit",
-    // },
   },
   ...options,
 });
