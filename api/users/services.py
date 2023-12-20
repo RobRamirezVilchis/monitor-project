@@ -30,7 +30,7 @@ class UsersService:
         This is cached in the instance to avoid multiple queries.
         """
         if not self.roles:
-            self.roles = list(self.user.groups.filter(name__in=self.values).values_list("name", flat=True).all())
+            self.roles = list(self.user.groups.filter(name__in=UserRolesService.values).values_list("name", flat=True).all())
         return self.roles
     
     def has_role(self, role: UserRoles):
@@ -156,7 +156,7 @@ class UserWhitelistService:
             return False
         
     @classmethod
-    def list(cls, filters = None):
+    def list(cls, *, filters = None):
         qs = UserWhitelist.objects.select_related("group", "user").prefetch_related(
             Prefetch(
                 "user__socialaccount_set",
@@ -264,7 +264,7 @@ class UserWhitelistService:
 class UserAccessService:
 
     @classmethod
-    def list_grouped(cls, filters = None):
+    def list_grouped(cls, *, filters = None):
         """
         List all access logs for a user and apply filters if context is provided
         """
