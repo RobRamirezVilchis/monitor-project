@@ -5,7 +5,7 @@ import Link from "next/link";
 
 import { ConfirmDialogProvider, NavLink } from "@/components/shared";
 import { useAuth } from "@/hooks/auth";
-import { refreshToken } from "@/api/auth";
+import { refreshToken } from "@/api/services/auth";
 import {
   showSuccessNotification,
   showErrorNotification,

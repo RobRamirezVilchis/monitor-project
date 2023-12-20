@@ -46,16 +46,16 @@ const defaultTheme = createTheme({
   colors: {
     // Tooltip bg color is given by the variable --tooltip-bg, or a shade of gray if it does not exist
     dark: [
-      "#C1C2C5", // base text
-      "#A6A7AB", // segmented control text
+      "#ffffff", // "#C1C2C5", // base text
+      "#9CA3AF", // "#A6A7AB", // segmented control text
       "#909296",
       "#5C5F66",
       "#373A40", // borders/slider track and tooltip
       "#2C2E33", // kbd bg/variant="filled" input bg/selected segmented control bg/rating bg
-      "#25262B", // input bg/popover bg/alert gb/notification bg/rating filled bg
-      "#1A1B1E", // body bg/modal bg/paper bg
-      "#141517", // segmented control bg
-      "#101113",
+      "#222222", // "#25262B", // input bg/popover bg/alert gb/notification bg/rating filled bg
+      "#171717", // "#1A1B1E", // body bg/modal bg/paper bg
+      "#0F0F0F", // "#141517", // segmented control bg
+      "#000000", // "#101113",
     ],
   },
   components: {
@@ -178,8 +178,8 @@ const defaultTheme = createTheme({
     DateInput: DateInput.extend({
       defaultProps: {
         size: baseMantineSize,
-        rightSection: <IconCalendarEvent className="w-5 h-5" />,
-        rightSectionPointerEvents: "none",
+        leftSection: <IconCalendarEvent className="w-5 h-5" />,
+        leftSectionPointerEvents: "none",
       },
     }),
     DatePicker: {
@@ -190,13 +190,15 @@ const defaultTheme = createTheme({
     DatePickerInput: DatePickerInput.extend({
       defaultProps: {
         size: baseMantineSize,
-        rightSection: <IconCalendarEvent className="w-5 h-5" />,
-        rightSectionPointerEvents: "none",
+        leftSection: <IconCalendarEvent className="w-5 h-5" />,
+        leftSectionPointerEvents: "none",
       },
     }),
     DateTimePicker: {
       defaultProps: {
         size: baseMantineSize,
+        leftSection: <IconCalendarEvent className="w-5 h-5" />,
+        leftSectionPointerEvents: "none",
       },
     },
     MonthPìcker: {

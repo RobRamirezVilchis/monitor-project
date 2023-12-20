@@ -20,7 +20,7 @@ const DataGridFooter = <TData extends RowData>({
   const pageCount = instance.getPageCount();
 
   const paginationPageInfo: PaginationPageInfo = {
-    from: pagination.pageIndex * pagination.pageSize + 1,
+    from: Math.min(pagination.pageIndex * pagination.pageSize + 1, instance.options.rowCount ?? prePagination.rows.length),
     to: Math.min((pagination.pageIndex + 1) * pagination.pageSize, instance.options.rowCount ?? prePagination.rows.length),
     count: instance.options.rowCount ?? prePagination.rows.length,
     page: pagination.pageIndex + 1,

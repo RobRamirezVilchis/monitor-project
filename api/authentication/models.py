@@ -15,4 +15,9 @@ from guardian.mixins import GuardianUserMixin
 # settings.AUTH_USER_MODEL
 
 class User(AbstractUser, GuardianUserMixin):
-    pass
+    
+    class Meta(AbstractUser.Meta):
+        permissions = [
+            ("view_roles", "Can view roles"),
+        ]
+

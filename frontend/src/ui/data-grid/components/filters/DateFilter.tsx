@@ -3,6 +3,7 @@ import { RowData } from "@tanstack/react-table";
 import { DataGridInstance, Header } from "../../types";
 import { getSlotOrNull } from "../../utils/slots";
 import { getInputValue } from "../../utils/getInputValue";
+import { zeroDateUpTo } from "../../utils/zeroDateUpTo";
 
 interface DateFilterProps<TData extends RowData, TValue> {
   instance: DataGridInstance<TData>;
@@ -20,12 +21,13 @@ const DateFilter = <TData extends RowData, TValue>({
   return (
     <DateInput
       {...instance.options.slotProps?.baseDateInput}
-        placeholder={header.column.columnDef.filterProps?.placeholder 
+      placeholder={header.column.columnDef.filterProps?.placeholder 
         || instance.localization.filterByPlaceholder(header.column)
       }
       value={columnFilterValue}
       onChange={(valueOrEvent, ...args) => {
         const value = getInputValue<Date | null>(valueOrEvent);
+        value?.setHours(0, 0, 0, 0);
         header.column.setFilterValue(value);
         instance.options.slotProps?.baseDateInput?.onChange?.(valueOrEvent, ...args);
       }}

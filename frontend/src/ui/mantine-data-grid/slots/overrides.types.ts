@@ -3,6 +3,7 @@ import type {
   ActionIconProps,
   ButtonProps,
   CheckboxProps,
+  IndicatorProps,
   SelectProps,
   SwitchProps,
   TextInputProps,
@@ -14,7 +15,7 @@ import type {
   RangeSliderProps,
   LoadingOverlayProps,
 } from "@mantine/core";
-import type { DateInputProps } from "@mantine/dates";
+import type { DateInputProps, DateTimePickerProps } from "@mantine/dates";
 import type { TablerIconsProps } from "@tabler/icons-react";
 
 import type { 
@@ -31,59 +32,62 @@ import type {
 } from "./Popover";
 import type { NoResultsOverlayProps } from "./NoResultsOverlay";
 import type { NoRowsOverlayProps } from "./NoRowsOverlay";
+import type { DateTimeInputProps } from "./DateTimeInput";
 
 export interface MantineSlotOverrides {
-  baseAutocomplete: AutocompleteProps;
+  baseAutocomplete     : AutocompleteProps;
+  baseBadge            : IndicatorProps;
   baseMultiAutocomplete: TagsInputProps;
-  baseIconButton: PolymorphicComponentProps<"button", ActionIconProps>;
-  baseButton: PolymorphicComponentProps<"button", ButtonProps>;
-  baseCheckbox: CheckboxProps;
-  baseSelect: SelectProps;
-  baseMultiSelect: MultiSelectProps;
-  baseSwitch: SwitchProps;
-  baseTextInput: TextInputProps;
-  baseTooltip: TooltipProps;
-  baseNumberInput: NumberInputProps;
-  baseRangeSlider: RangeSliderProps;
-  baseDateInput: DateInputProps;
+  baseIconButton       : PolymorphicComponentProps<"button", ActionIconProps>;
+  baseButton           : PolymorphicComponentProps<"button", ButtonProps>;
+  baseCheckbox         : CheckboxProps;
+  baseSelect           : SelectProps;
+  baseMultiSelect      : MultiSelectProps;
+  baseSwitch           : SwitchProps;
+  baseTextInput        : TextInputProps;
+  baseTooltip          : TooltipProps;
+  baseNumberInput      : NumberInputProps;
+  baseRangeSlider      : RangeSliderProps;
+  baseDateInput        : DateInputProps;
+  baseDateTimeInput    : DateTimeInputProps;
 
   baseMenuWrapper: MenuWrapperProps;
   baseMenuContent: MenuContentProps;
-  baseMenuTarget: MenuTargetProps;
-  baseMenuItem: MenuItemProps;
+  baseMenuTarget : MenuTargetProps;
+  baseMenuItem   : MenuItemProps;
   baseMenuDivider: MenuDividerProps;
 
   basePopoverWrapper: PopoverWrapperProps;
   basePopoverContent: PopoverContentProps;
-  basePopoverTarget: PopoverTargetProps;
+  basePopoverTarget : PopoverTargetProps;
 
-  loadingOverlay: LoadingOverlayProps;
+  loadingOverlay  : LoadingOverlayProps;
   noResultsOverlay: NoResultsOverlayProps;
-  noRowsOverlay: NoRowsOverlayProps;
+  noRowsOverlay   : NoRowsOverlayProps;
 
-  sortedAscendingIcon: TablerIconsProps;
-  sortedDescendingIcon: TablerIconsProps;
-  unsortedIcon: TablerIconsProps;
-  sortAscendingIcon: TablerIconsProps;
-  sortDescendingIcon: TablerIconsProps;
-  clearSortingIcon: TablerIconsProps;
-  hideColumnIcon: TablerIconsProps;
-  showColumnIcon: TablerIconsProps;
-  columnMenuIcon: TablerIconsProps;
-  columnDragHandleIcon: TablerIconsProps;
-  filterOnIcon: TablerIconsProps;
-  filterOffIcon: TablerIconsProps;
-  columnsVisibilityIcon: TablerIconsProps;
-  densityCompactIcon: TablerIconsProps;
-  densityNormalIcon: TablerIconsProps;
+  sortedAscendingIcon   : TablerIconsProps;
+  sortedDescendingIcon  : TablerIconsProps;
+  unsortedIcon          : TablerIconsProps;
+  sortAscendingIcon     : TablerIconsProps;
+  sortDescendingIcon    : TablerIconsProps;
+  clearSortingIcon      : TablerIconsProps;
+  hideColumnIcon        : TablerIconsProps;
+  showColumnIcon        : TablerIconsProps;
+  columnMenuIcon        : TablerIconsProps;
+  columnDragHandleIcon  : TablerIconsProps;
+  filterOnIcon          : TablerIconsProps;
+  filterOffIcon         : TablerIconsProps;
+  columnsVisibilityIcon : TablerIconsProps;
+  densityCompactIcon    : TablerIconsProps;
+  densityNormalIcon     : TablerIconsProps;
   densityComfortableIcon: TablerIconsProps;
-  fullscreenEnterIcon: TablerIconsProps;
-  fullscreenExitIcon: TablerIconsProps;
-  firstPageIcon: TablerIconsProps;
-  previousPageIcon: TablerIconsProps;
-  nextPageIcon: TablerIconsProps;
-  lastPageIcon: TablerIconsProps;
-  globalSearchIcon: TablerIconsProps;
-  expandIcon: TablerIconsProps;
-  collapseIcon: TablerIconsProps;
+  fullscreenEnterIcon   : TablerIconsProps;
+  fullscreenExitIcon    : TablerIconsProps;
+  firstPageIcon         : TablerIconsProps;
+  previousPageIcon      : TablerIconsProps;
+  nextPageIcon          : TablerIconsProps;
+  lastPageIcon          : TablerIconsProps;
+  globalSearchIcon      : TablerIconsProps;
+  expandIcon            : TablerIconsProps;
+  collapseIcon          : TablerIconsProps;
 }

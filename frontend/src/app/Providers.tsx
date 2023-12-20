@@ -45,6 +45,10 @@ export const Providers = ({
           }}
           cancelProps={{
             color: "red",
+            variant: "filled",
+          }}
+          confirmProps={{
+            variant: "filled",
           }}
           modalProps={{
             size: "md",

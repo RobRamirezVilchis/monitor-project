@@ -18,15 +18,14 @@ export const useDataGrid: typeof _useDataGrid = (options) => _useDataGrid({
   },
   classNames: {
     root: "h-full !border-none",
-    mainContainer: "rounded shadow-md",
+    mainContainer: "rounded-lg shadow-md",
     footerContainer: "!border-none",
     columnHeaders: {
-      root: styles.columnHeaders,
+      root: clsx(styles.columnHeaders, "!border-none"),
     },
     columnHeadersCell: {
       root: "text-white",
       label: "!font-normal !text-sm !font-semibold",
-      // actions: "bg-neutral-800 !text-white",
     },
     body: {
       root: styles.body,
@@ -35,6 +34,9 @@ export const useDataGrid: typeof _useDataGrid = (options) => _useDataGrid({
       root: clsx("border-b border-white", styles["row-root"]),
     },
     toolbarContainer: "justify-end",
+    toolbar: {
+      root: "!pt-2.5",
+    },
     footer: {
       root: "pt-1",
     },
@@ -43,18 +45,17 @@ export const useDataGrid: typeof _useDataGrid = (options) => _useDataGrid({
   columnResizeMode: "onChange",
   enableColumnActions: true,
   enableGlobalFilter: true,
-  globalFilterDebounceTime: 1000,
+  globalFilterDebounceTime: 500,
   pageSizeOptions: [25, 50, 100],
+  enableMultiSort: false,
+  isMultiSortEvent: e => (e as MouseEvent).ctrlKey,
   
   slotProps: {
     baseTextInput: {
       classNames: {
-        input: "rounded-none border-t-0 border-l-0 border-r-0 border-b border-b-2",
+        input: "rounded-none border-t-0 border-l-0 border-r-0 border-b border-b-2 !bg-transparent",
       },
     } as any,
-    // baseIconButton: {
-    //   c: "inherit",
-    // },
   },
   ...options,
 });

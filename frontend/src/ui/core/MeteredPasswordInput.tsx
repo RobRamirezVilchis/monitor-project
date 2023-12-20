@@ -76,7 +76,7 @@ const MeteredPasswordInput = <
         {checks.map((c, idx) => (
           <div key={idx}
             className={clsx(
-              "flex items-center gap-2 text-red-500", {
+              "flex items-center gap-2", {
               "text-green-500": c,
               "text-red-500": !c,
             })}

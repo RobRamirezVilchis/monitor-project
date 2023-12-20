@@ -34,6 +34,7 @@ const DateRangeFilter = <TData extends RowData, TValue>({
         value={columnFilterValue[0]}
         onChange={(valueOrEvent, ...args) => {
           const value = getInputValue<Date | null>(valueOrEvent);
+          value?.setHours(0, 0, 0, 0);
           header.column.setFilterValue([value, columnFilterValue[1]]);
           instance.options.slotProps?.baseDateInput?.onChange?.(valueOrEvent, ...args);
         }}
@@ -49,6 +50,7 @@ const DateRangeFilter = <TData extends RowData, TValue>({
         value={columnFilterValue[1]}
         onChange={(valueOrEvent, ...args) => {
           const value = getInputValue<Date | null>(valueOrEvent);
+          value?.setHours(23, 59, 59, 999);
           header.column.setFilterValue([columnFilterValue[0], value]);
           instance.options.slotProps?.baseDateInput?.onChange?.(valueOrEvent, ...args);
         }}

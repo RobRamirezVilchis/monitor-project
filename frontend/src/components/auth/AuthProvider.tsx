@@ -6,7 +6,7 @@ import { useImmerReducer } from "use-immer";
 import { useRouter } from "next/navigation";
 
 import { ApiError } from "@/api/types";
-import { AuthError, User, JWTLoginInfo, LoginUserData } from "@/api/auth.types";
+import { AuthError, User, JWTLoginInfo, LoginUserData } from "@/api/services/auth/types";
 import { AuthAction, AuthState, authReducer } from "./AuthReducer";
 import { ProviderErrors, ProviderKey, ProviderResponse, ProvidersOptions, startSocialLogin } from "@/utils/auth/oauth";
 import { useMyUserQuery } from "@/api/queries/auth";

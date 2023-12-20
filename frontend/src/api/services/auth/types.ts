@@ -1,20 +1,23 @@
+import { StringUnion } from "@/utils/types";
+
 export const userRoles = [
   "Admin",
   "User",
 ] as const;
 
-export type Role =  typeof userRoles[number];
+export type Role =  StringUnion<typeof userRoles[number]>;
 
 export interface User {
   id?: number;
   email: string;
   first_name: string;
   last_name: string;
-  roles: string[];
-  permissions: string[];
+  roles: Role[];
+  permissions?: string[];
   extra?: {
     picture?: string;
   };
+  verified?: boolean;
 }
 
 export enum AuthError {
@@ -41,9 +44,10 @@ export interface JWTLoginInfo {
 export type LoginInfo = BasicLoginInfo | JWTLoginInfo;
 
 export interface UpdateUserData {
-  username?: string,
   first_name?: string,
   last_name?: string,
+  password1?: string,
+  password2?: string,
 }
 
 export interface RegisterUserData {

@@ -3,6 +3,29 @@ from django_filters import rest_framework as rf_filters
 from common import filters
 
 
+class UsersFilter(rf_filters.FilterSet):
+    search = filters.SearchFilter(
+        search_fields=[
+            "email",
+            # "groups__name",
+            "first_name",
+            "last_name",
+            "username",
+        ],
+        distinct=True,
+    )
+    sort = rf_filters.OrderingFilter(
+        fields=(
+            ("email", "email"),
+            # ("groups__name", "roles"),
+            ("id", "id"),
+            ("first_name", "first_name"),
+            ("last_name", "last_name"),
+            ("username", "username"),
+        ),
+    )
+
+
 class UserAccessLogFilter(rf_filters.FilterSet):
     start_date = rf_filters.DateTimeFilter(field_name="created_at", lookup_expr="gte")
     end_date = rf_filters.DateTimeFilter(field_name="created_at", lookup_expr="lte")
@@ -10,6 +33,10 @@ class UserAccessLogFilter(rf_filters.FilterSet):
     sort = rf_filters.OrderingFilter(
         fields=(
             ("user__id", "user"),
+            ("user__first_name", "first_name"),
+            ("user__email", "email"),
+            ("last_access", "last_access"),
+            ("access", "access"),
         )
     )
 

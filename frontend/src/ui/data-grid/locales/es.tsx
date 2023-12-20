@@ -7,7 +7,7 @@ export const es: DataGridLocalization = {
   toolbarHideAllColumns: "Ocultar todo",
   toolbarToggleDensity: "Alternar densidad",
   toolbarToggleFullscreen: "Alternar pantalla completa",
-  toolbarQuickFilterPlaceholder: "Buscar...",
+  toolbarGlobalFilterPlaceholder: "Buscar...",
 
   columnPanelSortByLabel: ({ direction, nextDirection, column }) => direction 
   ? `Ordenado por ${column.columnDef.columnTitle || column.id} (${direction === "desc" ? "descendente" : "ascendente"})`

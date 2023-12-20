@@ -1,22 +1,65 @@
+from typing_extensions import Any, Optional, List
 from allauth.socialaccount.models import SocialAccount
 from datetime import datetime
 from django.db import transaction
 from django.db.models import Prefetch, Count, Max
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
+from django.shortcuts import get_object_or_404
 from django.utils import timezone
 from rest_framework import exceptions
 
 from authentication.services import user_soft_delete
 
-from .enums import user_roles
-from .filters import UserAccessLogFilter, UserWhitelistFilter
+from .enums import UserRoles
+from .filters import UserAccessLogFilter, UsersFilter, UserWhitelistFilter
 from .models import UserAccessLog, UserWhitelist
 
 
 User = get_user_model()
 
-class UserService:
+class UsersService:
+        
+    def __init__(self, user):
+        self.user = user
+        self.roles = None
+
+    def get_roles(self):
+        """
+        Returns a list of roles the user is in.
+        This is cached in the instance to avoid multiple queries.
+        """
+        if not self.roles:
+            self.roles = list(self.user.groups.filter(name__in=self.values).values_list("name", flat=True).all())
+        return self.roles
+    
+    def has_role(self, role: UserRoles):
+        return role.value in self.get_roles()
+
+    @transaction.atomic
+    def update(self, data):
+        first_name = data.get("first_name", self.user.first_name)
+        last_name = data.get("last_name", self.user.last_name)
+        roles_list = data.get("roles", None)
+
+        self.user.first_name = first_name
+        self.user.last_name = last_name
+        self.user.save()
+
+        if roles_list:
+            groups = Group.objects.filter(name__in=roles_list).all()
+            self.user.groups.set(groups)
+
+        return self.user
+
+    @transaction.atomic
+    def soft_delete(self):
+        whitelist_instance = UserWhitelistService.get_by_email(self.user.email)
+        if whitelist_instance:
+            # Remove user from the whitelist object associated, but do not delete the whitelist object
+            whitelist_instance.user = None
+            whitelist_instance.save()
+        return user_soft_delete(self.user)
     
     @classmethod
     def get_active(cls, *args, **kwargs):
@@ -25,16 +68,32 @@ class UserService:
     @classmethod
     def get_all_active(cls):
         return User.objects.filter(is_active=True).all()
-
+    
     @classmethod
-    @transaction.atomic
-    def soft_delete(cls, user):
-        whitelist_instance = UserWhitelistService.get_by_email(user.email)
-        if whitelist_instance:
-            # Remove user from the whitelist object associated, but do not delete the whitelist object
-            whitelist_instance.user = None
-            whitelist_instance.save()
-        return user_soft_delete(user)
+    def list(cls, *,
+             filters = None,
+             select_related: Optional[List[str]] = None,
+             prefetch_related: Optional[List[Any]] = None,
+             social_providers: Optional[List[str]] = None
+        ):
+        qs = User.objects
+        if select_related:
+            qs = qs.select_related(*select_related)
+        if prefetch_related:
+            qs = qs.prefetch_related(*prefetch_related)
+        if social_providers:
+            qs = qs.prefetch_related(
+                Prefetch(
+                    "socialaccount_set",
+                    queryset=SocialAccount.objects.filter(provider__in=social_providers),
+                )
+            )
+        qs = qs.filter(is_active=True).exclude(username="AnonymousUser").all()
+
+        if filters:
+            qs = UsersFilter(filters, qs).qs
+
+        return qs
     
     @classmethod
     def replace_user_ids(cls, objects_list, prefetch_social_accounts=False):
@@ -64,6 +123,20 @@ class UserService:
 
         return objects_list
 
+
+
+class UserRolesService:
+
+    values = [role.value for role in UserRoles]
+    
+    @classmethod
+    def list_as_groups(cls):
+        return Group.objects.filter(name__in=cls.values).all()
+    
+    @classmethod
+    def get_role_permissions(cls, role: UserRoles):
+        return Group.objects.get(name=role.value).permissions.all()
+    
 
 class UserWhitelistService:
 
@@ -115,7 +188,7 @@ class UserWhitelistService:
         group = Group.objects.get(name=group_str)
 
         if user:
-            to_delete_group_names = [group_name for group_name in user_roles if group_name != group_str]
+            to_delete_group_names = [group_name for group_name in UserRolesService.values if group_name != group_str]
             to_delete_groups = user.groups.filter(name__in=to_delete_group_names).all()
             # Remove the user from all existing groups
             for to_delete_group in to_delete_groups:
@@ -160,7 +233,7 @@ class UserWhitelistService:
         group = Group.objects.get(name=group_str)
 
         if user:
-            to_delete_group_names = [group_name for group_name in user_roles if group_name != group_str]
+            to_delete_group_names = [group_name for group_name in UserRolesService.values if group_name != group_str]
             to_delete_groups = user.groups.filter(name__in=to_delete_group_names).all()
             # Remove the user from all existing groups
             for to_delete_group in to_delete_groups:

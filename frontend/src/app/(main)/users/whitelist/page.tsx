@@ -1,54 +1,44 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Button, Modal } from "@mantine/core";
-import { PaginationState } from "@tanstack/react-table";
-import { useImmer } from "use-immer";
 
 import { DeleteUserAction } from "./Actions";
 import { NewUserForm } from "./NewUserForm";
-import { Role, User } from "@/api/auth.types"; 
+import { Role, User } from "@/api/services/auth/types"; 
 import { RoleSelector } from "./RoleSelector";
 import { showSuccessNotification, showErrorNotification } from "@/ui/notifications";
 import { useAddToWhitelistMutation } from "@/api/mutations/users";
-import { useQueryState } from "@/hooks/shared";
 import { UserAvatar } from "@/components/shared/UserAvatar";
 import { useWhitelistQuery } from "@/api/queries/users";
-import { WhitelistItem } from "@/api/users.types";
+import { WhitelistItem } from "@/api/services/users/types";
 import { ColumnDef } from "@/ui/data-grid/types";
 import DataGrid from "@/ui/data-grid/DataGrid";
 import { useDataGrid } from "@/hooks/useDataGrid";
+import { usePrefetchPaginatedAdjacentQuery, useSsrDataGrid } from "@/hooks/useSsrDataGrid";
 
 import { IconPlus } from "@tabler/icons-react";
 
 const UsersPage = () => {
-  const pagination = useQueryState({
-    page: {
-      defaultValue: 1,
-      parse: (value) => parseInt(value),
-      serialize: (value) => value.toString(),
+  const {
+    dataGridState, queryVariables, dataGridConfig
+  } = useSsrDataGrid({
+    enableColumnFilters: false,
+    defaultSorting: ["first_name"],
+    queryStateOptions: {
+      navigateOptions: {
+        scroll: false,
+      },
+      history: "replace",
     },
-    page_size: {
-      defaultValue: 25,
-      parse: (value) => parseInt(value),
-      serialize: (value) => value.toString(),
-    },
-  });
-  const [filters, setFilters] = useImmer<{  
-    search?: string;
-  }>({
-    search: "",
   });
   const usersWhitelistQuery = useWhitelistQuery({
-    variables: {
-      pagination: {
-        page: pagination.state.page,
-        page_size: pagination.state.page_size,
-      },
-      filters: {
-        ...filters,
-        // sort: "-user",
-      },
+    variables: queryVariables,
+  });
+  usePrefetchPaginatedAdjacentQuery({
+    query: usersWhitelistQuery,
+    prefetchOptions: {
+      staleTime: 5 * 60 * 1000,
     },
   });
   const addToWhitelistMutation = useAddToWhitelistMutation({
@@ -71,73 +61,16 @@ const UsersPage = () => {
     },
     state: {
       loading: usersWhitelistQuery.isLoading || usersWhitelistQuery.isFetching,
-      pagination: {
-        pageIndex: pagination.state.page - 1,
-        pageSize: pagination.state.page_size,
-      },
-      globalFilter: filters?.search,
+      ...dataGridState,
     },
     enableColumnResizing: true,
     hideColumnFooters: true,
     enableColumnActions: true,
-    enableSorting: false,
 
-    enableFilters: true,
-    manualFiltering: true,
-    onGlobalFilterChange: (value) => {
-      const newValue = typeof value === "function" ? value(filters?.search) : value;
-      setFilters(draft => {
-        draft.search = newValue;
-      });
-    },
-
-    enablePagination: true,
-    manualPagination: true,
+    ...dataGridConfig as any,
     pageCount: usersWhitelistQuery.data?.pagination?.pages ?? 0,
     rowCount: usersWhitelistQuery.data?.pagination?.count ?? 0,
-    onPaginationChange: (value) => {
-      const old: PaginationState = {
-        pageIndex :pagination.state.page - 1,
-        pageSize  :pagination.state.page_size,
-      };
-      const newValue = typeof value === "function" ? value(old) : value;
-      pagination.update({
-        page: newValue.pageIndex + 1,
-        page_size: newValue.pageSize,
-      });
-    },
   });
-
-  //* Prefetch adjacent pages
-  useEffect(() => {
-    if (usersWhitelistQuery.data && usersWhitelistQuery.data.pagination && !usersWhitelistQuery.isPreviousData) {
-      const paginationInfo = usersWhitelistQuery.data.pagination;
-      if (paginationInfo.page > 1) {
-        useWhitelistQuery.prefetch({
-          variables: {
-            filters: usersWhitelistQuery.variables.filters,
-            pagination: {
-              page: paginationInfo.page - 1,
-              page_size: usersWhitelistQuery.variables.pagination?.page_size,
-            }
-          },
-          staleTime: 5 * 60 * 1000,
-        });
-      }
-      if (paginationInfo.page < paginationInfo.pages) {
-        useWhitelistQuery.prefetch({
-          variables: {
-            filters: usersWhitelistQuery.variables.filters,
-            pagination: {
-              page: paginationInfo.page + 1,
-              page_size: usersWhitelistQuery.variables.pagination?.page_size,
-            }
-          },
-          staleTime: 5 * 60 * 1000,
-        });
-      }
-    }
-  }, [usersWhitelistQuery.data, usersWhitelistQuery.isPreviousData, usersWhitelistQuery.variables.filters, usersWhitelistQuery.variables.pagination?.page_size]);
 
   return (
     <section className="flex flex-col h-full lg:container mx-auto pb-2 md:pb-6 px-2 md:px-4 lg:px-0">
@@ -197,7 +130,7 @@ const cols: ColumnDef<WhitelistItem>[] = [
     enableResizing: false,
   },
   {
-    id: "user.name",
+    id: "first_name",
     accessorKey: "user",
     header: "Nombre",
     columnTitle: "Nombre",

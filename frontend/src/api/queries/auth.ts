@@ -1,5 +1,5 @@
 import { createQuery } from "../helpers/createQuery";
-import { getMyUser } from "../auth";
+import { getMyUser } from "../services/auth";
 import defaultQueryClient from "../clients/defaultQueryClient";
 
 export const useMyUserQuery = createQuery({

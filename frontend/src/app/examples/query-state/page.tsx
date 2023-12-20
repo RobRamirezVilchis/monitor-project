@@ -1,6 +1,7 @@
 "use client";
 
 import { useQueryState } from "@/hooks/shared";
+import { useRouter, useSearchParams } from "next/navigation";
 
 const AppUseQueryState = () => {
   const { state, update, reset } = useQueryState({
@@ -9,16 +10,19 @@ const AppUseQueryState = () => {
     },
     test1: {
       defaultValue: new Date(),
-      parse: (param) => new Date(param),
+      parse: (param) => new Date(param as string),
       serialize: (value) => value.toISOString(),
     },
     test2: {
       defaultValue: 0,
-      parse: (param) => parseInt(param),
+      parse: (param) => parseInt(param as string),
       serialize: (value) => value.toString(),
     },
+  }, {
+    navigateOptions: {
+      scroll: false,
+    },
   });
-
 
   return (
     <div className="p-4">
@@ -56,13 +60,10 @@ const AppUseQueryState = () => {
           className="bg-blue-500 text-white rounded-md p-2 w-10 h-10"
           onClick={() => {
             update(prev => ({ test2: prev.test2 + 1 }));
-            update(prev => ({ test2: prev.test2 + 1 }));
-            update(prev => ({ test2: prev.test2 + 1 }));
           }}
         >
           +3
         </button>
-
       </div>
     </div>
   );

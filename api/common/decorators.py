@@ -4,14 +4,38 @@ from typing import Union, List
 import inspect
 
 
-def action_map(action_mapping):
+def map_actions(actions_map = {}, crud = False, detail = False):
     """
     Map ApiView methods (get,post,...) to an action and set the view.action attribute
+    
+    If list = True, prepend crud action names:
+    - `get`   : list
+    - `post`  : create
+    - `put`   : update
+    - `patch` : partial-update
+    - `delete`: destroy
+    
+    if detail = True, override crud action name for the `get` method:
+    - `get`   : retrieve
     """
+    if crud:
+        actions_map = {
+            "get"   : "list",
+            "post"  : "create",
+            "put"   : "update",
+            "patch" : "partial-update",
+            "delete": "destroy",
+
+            **actions_map
+        }
+
+    if detail:
+        actions_map["get"] = "retrieve"
+
     def decorator(args):
         class DecoratedClass(args):
             def check_permissions(self, request):
-                action = action_mapping.get(request.method.lower(), None)
+                action = actions_map.get(request.method.lower(), None)
                 if action:
                     self.action = action
                 return super().check_permissions(request)

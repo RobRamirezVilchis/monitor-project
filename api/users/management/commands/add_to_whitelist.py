@@ -1,8 +1,7 @@
 from django.core.management.base import BaseCommand, CommandError
 from rest_framework import serializers
 
-from users.enums import user_roles
-from users.services import UserWhitelistService
+from users.services import UserRolesService, UserWhitelistService
 
 
 class CreateInputSerializer(serializers.Serializer):
@@ -10,7 +9,7 @@ class CreateInputSerializer(serializers.Serializer):
     group = serializers.CharField(max_length=254, required=True)
 
     def validate_group(self, value):
-        if value not in user_roles:
+        if value not in UserRolesService.values:
             raise serializers.ValidationError("Invalid group")
         return value
     
@@ -26,7 +25,7 @@ class Command(BaseCommand):
         serializer = CreateInputSerializer(data=options)
         if not serializer.is_valid():
             if "group" in serializer.errors:
-                serializer.errors["group"].append("Group must be one of %s." % user_roles)
+                serializer.errors["group"].append("Group must be one of %s." % UserRolesService.values)
             raise CommandError(serializer.errors)
         
         email = serializer.validated_data["email"]

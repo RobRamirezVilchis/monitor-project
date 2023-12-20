@@ -1,3 +1,5 @@
+import { Id } from "./types";
+
 const baseBackendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
 
 const api = {
@@ -28,11 +30,18 @@ const api = {
       passwordChange: "/api/v1/auth/password/change/",
     },
     users: {
+      list: "/api/v1/users/",
+      create: "/api/v1/users/",
+      update: (id: Id) => `/api/v1/users/${id}/`,
+      delete: (id: Id) => `/api/v1/users/${id}/`,
+      roles: {
+        list: "/api/v1/users/roles/",
+      },
       whitelist: {
         list: "/api/v1/users/whitelist/",
         create: "/api/v1/users/whitelist/",
-        update: (id: string | number) => `/api/v1/users/whitelist/${id}/`,
-        delete: (id: string | number) => `/api/v1/users/whitelist/${id}/`,
+        update: (id: Id) => `/api/v1/users/whitelist/${id}/`,
+        delete: (id: Id) => `/api/v1/users/whitelist/${id}/`,
       },
       access: {
         list: "/api/v1/users/access/",

@@ -3,6 +3,7 @@ export { default as Checkbox, type CheckboxProps } from "./Checkbox";
 export { default as Chip, type ChipProps } from "./Chip";
 export { default as ColorInput, type ColorInputProps } from "./ColorInput";
 export { default as ColorPicker, type ColorPickerProps } from "./ColorPicker";
+export { default as ExtendedMultiSelect, type ExtendedMultiSelectProps } from "./ExtendedMultiSelect";
 export { default as FileInput, type FileInputProps } from "./FileInput";
 export { default as IMaskInput, type IMaskInputProps } from "./IMaskInput";
 export { default as Input, type InputProps } from "./Input";

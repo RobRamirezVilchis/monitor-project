@@ -1,16 +1,35 @@
 import { createQuery } from "../helpers/createQuery";
-import { getUsersAccess, getWhitelist } from "../users";
-import { UserAccessParams, WhitelistParams } from "../users.types";
+import { getUserRoles, getUsers, getUsersAccess, getWhitelist } from "../services/users";
+import { UserAccessFilters, UsersFilters, WhitelistFilters } from "../services/users/types";
 import defaultQueryClient from "../clients/defaultQueryClient";
+
+// Users API ----------------------------------------------------------
+
+export const useUsersQuery = createQuery({
+  queryPrimaryKey: "users",
+  queryKeyVariables: (vars: UsersFilters) => vars ? [vars] : [],
+  queryFn: (ctx, vars) => getUsers(vars, { signal: ctx.signal }),
+  cacheTime: 1000 * 60 * 5,  // 5 minutes
+  staleTime: 1000 * 60 * 3,  // 3 minutes
+  keepPreviousData: true,
+  queryClient: defaultQueryClient,
+});
+
+// Roles API ----------------------------------------------------------
+
+export const useRolesQuery = createQuery({
+  queryPrimaryKey: "users-roles",
+  queryFn: (ctx) => getUserRoles({ signal: ctx.signal }),
+  cacheTime: 1000 * 60 * 5,  // 5 minutes
+  staleTime: 1000 * 60 * 3,  // 3 minutes
+  queryClient: defaultQueryClient,
+});
 
 // Whitelist API ------------------------------------------------------
 
 export const useWhitelistQuery = createQuery({
   queryPrimaryKey: "users-whitelist",
-  queryKeyVariables: (vars: WhitelistParams) => 
-    vars.pagination || vars.filters 
-    ? [vars.pagination, vars.filters] 
-    : [],
+  queryKeyVariables: (vars: WhitelistFilters) => vars ? [vars] : [],
   queryFn: (ctx, vars) => getWhitelist(vars, { signal: ctx.signal }),
   cacheTime: 1000 * 60 * 10, // 10 minutes
   staleTime: 1000 * 60 * 5,  // 5 minutes
@@ -22,10 +41,7 @@ export const useWhitelistQuery = createQuery({
 
 export const useUsersAccessQuery = createQuery({
   queryPrimaryKey: "users-access",
-  queryKeyVariables: (vars: UserAccessParams) =>
-    vars.pagination || vars.filters 
-    ? [vars.pagination, vars.filters] 
-    : [],
+  queryKeyVariables: (vars: UserAccessFilters) => vars ? [vars] : [],
   queryFn: (ctx, vars) => getUsersAccess(vars, { signal: ctx.signal }),
   cacheTime: 1000 * 60 * 5,  // 5 minutes
   staleTime: 1000 * 60 * 3,  // 3 minutes

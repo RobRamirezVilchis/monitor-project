@@ -56,3 +56,10 @@ def assert_settings(required_settings, error_message_prefix=""):
         raise ImproperlyConfigured(f"{error_message_prefix} Could not find: {stringified_not_present}")
 
     return values
+
+def value_to_enum(enum_cls, value):
+    for x in enum_cls:
+        if x.value == value:
+            return x
+
+    raise ImproperlyConfigured(f"Value {repr(value)} could not be found in {repr(enum_cls)}")

@@ -1,11 +1,12 @@
 import "@mantine/core/styles.css";
 import "@mantine/dates/styles.css";
-import '@mantine/notifications/styles.css';
+import "@mantine/notifications/styles.css";
 import "@/styles/globals.css";
 
 import { ColorSchemeScript, MantineColorScheme } from "@mantine/core";
 import { Metadata, Viewport } from "next";
 import { cookies } from "next/headers";
+import clsx from "clsx";
 import Script from "next/script";
 
 import { Providers } from "./Providers";
@@ -46,7 +47,7 @@ const RootLayout = ({
 
         <ColorSchemeScript defaultColorScheme={colorScheme} />
       </head>
-      <body className={fonts.roboto.className} suppressHydrationWarning>
+      <body className={clsx(fonts.roboto.className, "bg-[#f0f0f0] dark:bg-dark-800")} suppressHydrationWarning>
         <Providers>
           {children}
         </Providers>

@@ -2,19 +2,18 @@
 
 import { parseISO, parse, format as formatDate } from "date-fns";
 import { useQueryState } from "@/hooks/shared";
-import { useEffect, useState } from "react";
-import { useImmer } from "use-immer";
+import { useState } from "react";
 
 import { DatePickerInput, DateRangePresets } from "@/ui/dates";
-import { User } from "@/api/auth.types";
-import { UserAccess } from "@/api/users.types";
+import { User } from "@/api/services/auth/types";
+import { UserAccess } from "@/api/services/users/types";
 import { UserAvatar } from "@/components/shared/UserAvatar";
 import { useUsersAccessQuery } from "@/api/queries/users";
 import { ColumnDef } from "@/ui/data-grid/types";
 import { es } from "@/ui/data-grid/locales/es";
 import DataGrid from "@/ui/data-grid/DataGrid";
 import { useDataGrid } from "@/hooks";
-import { PaginationState } from "@tanstack/react-table";
+import { useSsrDataGrid, usePrefetchPaginatedAdjacentQuery } from "@/hooks/useSsrDataGrid";
 
 function localDatetimeToLocalDateStr(datetime: Date | null) {
   return datetime ? formatDate(datetime, "yyyy-MM-dd") : "";
@@ -57,25 +56,15 @@ const UsersAccessPage = () => {
   const today = new Date();
   today.setHours(23, 59, 59, 999);
 
-  const usersAccessQueryParams = useQueryState({
-    page: {
-      defaultValue: 1,
-      parse: (value) => parseInt(value),
-      serialize: (value) => value.toString(),
-    },
-    page_size: {
-      defaultValue: 25,
-      parse: (value) => parseInt(value),
-      serialize: (value) => value.toString(),
-    },
+  const usersAccessQueryParams = useQueryState<{ start_date: Date | null, end_date: Date | null }>({
     start_date: {
       defaultValue: aMonthAgo,
-      parse: (value) => dateStrToDatetime(value, "start"),
+      parse: (value) => dateStrToDatetime(value as string, "start"),
       serialize: (value) => localDatetimeToLocalDateStr(value),
     },
     end_date: {
       defaultValue: today,
-      parse: (value) => dateStrToDatetime(value, "end"),
+      parse: (value) => dateStrToDatetime(value as string, "end"),
       serialize: (value) => localDatetimeToLocalDateStr(value),
     },
   });
@@ -84,23 +73,29 @@ const UsersAccessPage = () => {
     startDate: usersAccessQueryParams.state.start_date,
     endDate: usersAccessQueryParams.state.end_date,
   });
-  const [filters, setFilters] = useImmer<{  
-    search?: string;
-  }>({
-    search: "",
+  const {
+    dataGridState, queryVariables, dataGridConfig
+  } = useSsrDataGrid({
+    enableColumnFilters: false,
+    defaultSorting: ["first_name"],
+    queryStateOptions: {
+      navigateOptions: {
+        scroll: false,
+      },
+      history: "replace",
+    },
   });
   const usersAccessQuery = useUsersAccessQuery({
     variables: {
-      pagination: {
-        page: usersAccessQueryParams.state.page,
-        page_size: usersAccessQueryParams.state.page_size,
-      },
-      filters: {
-        start_date: usersAccessQueryParams.state.start_date.toISOString(),
-        end_date: usersAccessQueryParams.state.end_date.toISOString(),
-        sort: "-user",
-        ...filters,
-      },
+      ...queryVariables,
+      start_date: usersAccessQueryParams.state.start_date?.toISOString(),
+      end_date: usersAccessQueryParams.state.end_date?.toISOString(),
+    },
+  });
+  usePrefetchPaginatedAdjacentQuery({
+    query: usersAccessQuery,
+    prefetchOptions: {
+      staleTime: 5 * 60 * 1000,
     },
   });
   const grid = useDataGrid<UserAccess>({
@@ -112,73 +107,16 @@ const UsersAccessPage = () => {
     },
     state: {
       loading: usersAccessQuery.isLoading || usersAccessQuery.isFetching,
-      pagination: {
-        pageIndex: usersAccessQueryParams.state.page - 1,
-        pageSize: usersAccessQueryParams.state.page_size,
-      },
-      globalFilter: filters?.search,
+      ...dataGridState,
     },
     enableColumnResizing: true,
     hideColumnFooters: true,
     enableColumnActions: true,
-    enableSorting: false,
 
-    enableFilters: true,
-    manualFiltering: true,
-    onGlobalFilterChange: (value) => {
-      const newValue = typeof value === "function" ? value(filters?.search) : value;
-      setFilters(draft => {
-        draft.search = newValue;
-      });
-    },
-
-    enablePagination: true,
-    manualPagination: true,
+    ...dataGridConfig as any,
     pageCount: usersAccessQuery.data?.pagination?.pages ?? 0,
     rowCount: usersAccessQuery.data?.pagination?.count ?? 0,
-    onPaginationChange: (value) => {
-      const old: PaginationState = {
-        pageIndex : usersAccessQueryParams.state.page - 1,
-        pageSize  : usersAccessQueryParams.state.page_size,
-      };
-      const newValue = typeof value === "function" ? value(old) : value;
-      usersAccessQueryParams.update({
-        page: newValue.pageIndex + 1,
-        page_size: newValue.pageSize,
-      });
-    },
   });
-
-  //* Prefetch adjacent pages
-  useEffect(() => {
-    if (usersAccessQuery.data && usersAccessQuery.data.pagination && !usersAccessQuery.isPreviousData) {
-      const paginationInfo = usersAccessQuery.data.pagination;
-      if (paginationInfo.page > 1) {
-        useUsersAccessQuery.prefetch({
-          variables: {
-            filters: usersAccessQuery.variables.filters,
-            pagination: {
-              page: paginationInfo.page - 1,
-              page_size: usersAccessQuery.variables.pagination?.page_size,
-            }
-          },
-          staleTime: 5 * 60 * 1000,
-        });
-      }
-      if (paginationInfo.page < paginationInfo.pages) {
-        useUsersAccessQuery.prefetch({
-          variables: {
-            filters: usersAccessQuery.variables.filters,
-            pagination: {
-              page: paginationInfo.page + 1,
-              page_size: usersAccessQuery.variables.pagination?.page_size,
-            }
-          },
-          staleTime: 5 * 60 * 1000,
-        });
-      }
-    }
-  }, [usersAccessQuery.data, usersAccessQuery.isPreviousData, usersAccessQuery.variables.filters, usersAccessQuery.variables.pagination?.page_size]);
 
   const setQueryDates = (startDate: Date | null, endDate: Date | null) => {
     usersAccessQueryParams.update({
@@ -259,7 +197,7 @@ const cols: ColumnDef<UserAccess>[] = [
     enableResizing: false,
   },
   {
-    id: "user.name",
+    id: "first_name",
     accessorKey: "user",
     header: "Nombre",
     columnTitle: "Nombre",
@@ -270,6 +208,7 @@ const cols: ColumnDef<UserAccess>[] = [
       : "No registrado",
   },
   {
+    id: "email",
     accessorKey: "user.email",
     header: "Email",
     columnTitle: "Email",
@@ -289,6 +228,6 @@ const cols: ColumnDef<UserAccess>[] = [
     accessorKey: "access",
     header: "Accesos",
     columnTitle: "Accesos",
-    size: 100,
+    size: 150,
   },
 ];

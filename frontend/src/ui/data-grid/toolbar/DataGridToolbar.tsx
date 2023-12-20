@@ -5,7 +5,7 @@ import styles from "./DataGridToolbar.module.css";
 
 import type { DataGridInstance } from "../types";
 import ToolbarColumnVisibilityToggle from "./ToolbarColumnVisibilityToggle";
-import ToolbarQuickFilter from "./ToolbarQuickFilter";
+import ToolbarGlobalFilter from "./ToolbarGlobalFilter";
 import ToolbarFullscreenToggle from "./ToolbarFullscreenToggle";
 import ToolbarDensityToggle from "./ToolbarDensityToggle";
 import ToolbarFilterToggle from "./ToolbarFIlterToggle";
@@ -35,7 +35,7 @@ const DataGridHeader = <TData extends RowData>({
               || !instance.options.enableFilters 
               || !instance.options.enableGlobalFilter
              ? null 
-             : <ToolbarQuickFilter instance={instance} />
+             : <ToolbarGlobalFilter instance={instance} />
             }
           </div>
 

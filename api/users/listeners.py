@@ -3,7 +3,7 @@ from django.dispatch import receiver
 import logging
 
 from .models import UserWhitelist
-from .services import UserService
+from .services import UsersService
 
 
 logger = logging.getLogger("core")
@@ -20,4 +20,5 @@ def on_user_signed_up(sender, request, user, **kwargs):
         user.save()
     except:
         logger.warn(f"User {user.email} signed up but they are not whitelisted!")
-        # UserService.soft_delete(user)
+        # service = UsersService(user)
+        # service.soft_delete()

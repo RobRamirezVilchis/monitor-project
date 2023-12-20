@@ -47,7 +47,7 @@ import {
 } from "@tanstack/react-table";
 import { Virtualizer, VirtualizerOptions } from "@tanstack/virtual-core";
 
-import type { DistributiveOmit, Prettify } from "@/utils/types";
+import type { DistributiveOmit, NoDecayStringUnion, Prettify } from "@/utils/types";
 import { type FilterFnOption } from "./filterFns";
 import { type SortingFnOption } from "./sortingFns";
 import { type UseScrollReturn } from "./scroll/useScroll";
@@ -65,6 +65,8 @@ export type FilterVariant =
   | "range-slider"
   | "date"
   | "date-range"
+  | "datetime"
+  | "datetime-range"
   | "checkbox";
 
 // Cell ------------------------------------------------------------------------
@@ -149,9 +151,9 @@ DistributiveOmit<
   headerStyles?: DataGridColumnHeadersCellStyles;
   footerClassNames?: DataGridColumnFootersCellClassNames | ((footer: Header<TData, TValue>) => DataGridColumnFootersCellClassNames);
   footerStyles?: DataGridColumnFootersCellStyles;
-  sortingFn?: _SortingFnOption<TData> | SortingFnOption | string & Record<never, never>;
+  sortingFn?: _SortingFnOption<TData> | SortingFnOption | NoDecayStringUnion;
   filterVariant?: FilterVariant;
-  filterFn?: _FilterFnOption<TData> | FilterFnOption | string & Record<never, never>;
+  filterFn?: _FilterFnOption<TData> | FilterFnOption | NoDecayStringUnion;
   filterProps?: {
     label?: string;
     placeholder?: string;
@@ -160,6 +162,17 @@ DistributiveOmit<
     max?: any;
     step?: number;
     debounceTime?: number;
+    /**
+     * Make the dates given by the `datetime` filters to be zeroed up to the given unit.
+     * @example
+     * // Given the date 2021-01-01 12:34:56.789
+     * zeroTimeUpTo: "hours"        // 2021-01-01 00:00:00.000
+     * zeroTimeUpTo: "minutes"      // 2021-01-01 12:00:00.000
+     * zeroTimeUpTo: "seconds"      // 2021-01-01 12:34:00.000
+     * zeroTimeUpTo: "milliseconds" // 2021-01-01 12:34:56.000
+     * zeroTimeUpTo: undefined      // 2021-01-01 12:34:56.789
+     */
+    zeroTimeUpTo?: "hours" | "minutes" | "seconds" | "milliseconds";
   };
   /**
    * Indicates that the width of the column should behave like a flex item.
@@ -230,7 +243,7 @@ export interface FiltersOptions<TData extends RowData> extends
 Omit<_FiltersOptions<TData>,
   "globalFilterFn"
 > {
-  globalFilterFn?: _FilterFnOption<TData> | FilterFnOption | string & Record<never, never>;
+  globalFilterFn?: _FilterFnOption<TData> | FilterFnOption | NoDecayStringUnion;
   /**
    * The debounce time in milliseconds for the global filter.
    * @default 300
@@ -324,6 +337,11 @@ PartialKeys<DataGridOptionsResolved<TData>, "getCoreRowModel" | "onStateChange" 
   slots?: Partial<DataGridSlots<TData, SlotPropsOverrides>>;
   slotProps?: Partial<DataGridSlotProps<TData, SlotPropsOverrides>>;
 
+  /** 
+   * If `true`, the selection on click on a cell is disabled 
+   * @default false
+   */
+  disableCellSelectionOnClick?: boolean;
   onCellClick?: (cell: Cell<TData>, instance: DataGridInstance<TData>, event: MouseEvent<HTMLDivElement, MouseEvent>) => void;
   onCellDoubleClick?: (cell: Cell<TData>, instance: DataGridInstance<TData>, event: MouseEvent<HTMLDivElement, MouseEvent>) => void;
   onRowClick?: (row: Row<TData>, instance: DataGridInstance<TData>, event: MouseEvent<HTMLDivElement, MouseEvent>) => void;
@@ -375,6 +393,8 @@ export interface SlotBaseProps<TData extends RowData> {
 
 export interface InputSlotCommonProps {
   value?: unknown;
+  defaultValue?: unknown;
+  defaultChecked?: unknown;
   onClick?: (...args: unknown[]) => void;
   /**
    * NOTE: The first argument is the one that is considered as the value
@@ -402,9 +422,11 @@ export interface ButtonSlotCommonProps {
 export interface DataGridSlotBaseProps<TData extends RowData> {
   baseIconButton        : ButtonSlotCommonProps;
   baseAutocomplete      : InputSlotCommonProps & { data: any[]; };
+  baseBadge             : { label?: ReactNode; children?: ReactNode; disabled?: boolean; };
   baseButton            : ButtonSlotCommonProps;
   baseCheckbox          : InputSlotCommonProps & { checked?: boolean; indeterminate?: boolean; };
   baseDateInput         : InputSlotCommonProps & { minDate?: Date; maxDate?: Date; };
+  baseDateTimeInput     : InputSlotCommonProps & { minDate?: Date; maxDate?: Date; };
   baseMultiSelect       : InputSlotCommonProps & { data: any[]; };
   baseNumberInput       : InputSlotCommonProps & { min?: number; max?: number; };
   baseRangeSlider       : InputSlotCommonProps & { min?: number; max?: number; step?: number; };
@@ -706,7 +728,7 @@ export interface DataGridLocalization {
   toolbarHideAllColumns: string;
   toolbarToggleDensity: string;
   toolbarToggleFullscreen: string;
-  toolbarQuickFilterPlaceholder: string;
+  toolbarGlobalFilterPlaceholder: string;
   
   columnPanelSortByLabel: (sortInfo: { 
     direction: SortDirection | false;
