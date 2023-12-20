@@ -21,11 +21,9 @@ import { useSsrDataGrid, usePrefetchPaginatedAdjacentQuery } from "@/hooks/useSs
 
 const UsersPage = () => {
   const {
-    queryVariables,
-    dataGridState,
-    dataGridConfig,
+    dataGridState, queryVariables, dataGridConfig
   } = useSsrDataGrid({
-    
+    defaultSorting: ["first_name"],
   });
   const usersQuery = useUsersQuery({
     variables: queryVariables,
