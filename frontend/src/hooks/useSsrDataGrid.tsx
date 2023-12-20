@@ -6,6 +6,7 @@ import { useImmer } from "use-immer";
 import { QueryParam, QueryParams, QueryStateOptions, useQueryState } from "./shared";
 import { Prettify } from "@/utils/types";
 import { UseCreatedQueryResult } from "@/api/helpers/createQuery";
+import { DataGridOptions } from "@/ui/data-grid/types";
 
 export interface UseDataGridSsrOptions<
   ColumnFilters extends Record<string, any>,
@@ -16,8 +17,31 @@ export interface UseDataGridSsrOptions<
   SortingName extends string = "sort",
 
   Pagination = { [Key in PageName | PageSizeName]: number },
-  State = Prettify<Pagination & { [Key in GlobalFilterName]: string } & ColumnFilters & { [Key in SortingName]: string }>,
+  GlobalFilter = { [Key in GlobalFilterName]: string },
+  Sorting = { [Key in SortingName]: string },
+  State = Prettify<Pagination & GlobalFilter & ColumnFilters & Sorting>,
 > {
+  /** 
+   * If true, pagination will be enabled. 
+   * @default true
+   */
+  enablePagination?: boolean;
+  /**
+   * If true, sorting will be enabled.
+   * @default true
+   */
+  enableSorting?: boolean;
+  /**
+   * If true, global filter will be enabled.
+   * @default true
+   */
+  enableGlobalFilter?: boolean;
+  /**
+   * If true, column filters will be enabled.
+   * @default true
+   */
+  enableColumnFilters?: boolean;
+
   /**
    * The name of the query parameter that will be used to store the page number.
    * @default "page"
@@ -79,7 +103,7 @@ export interface UseDataGridSsrOptions<
    * If true, the sorting will be stored in the url.
    * @default true
    */
-    sortingInUrl?: boolean;
+  sortingInUrl?: boolean;
   /**
    * If true, the global filter will be stored in the url.
    * @default true
@@ -109,10 +133,10 @@ export type ReducedQueryParams<T> = {
 };
 
 export type DataGridState = {
-  pagination: PaginationState;
-  sorting: SortingState;
-  globalFilter: string;
-  columnFilters: ColumnFiltersState;
+  pagination?: PaginationState;
+  sorting?: SortingState;
+  globalFilter?: string;
+  columnFilters?: ColumnFiltersState;
 };
 
 /**
@@ -130,10 +154,17 @@ export const useSsrDataGrid = <
   SortingName extends string = "sort",
 
   Pagination = { [Key in PageName | PageSizeName]: number },
-  State = Prettify<Pagination & { [Key in GlobalFilterName]: string } & ColumnFilters & { [Key in SortingName]: string }>,
+  GlobalFilter = { [Key in GlobalFilterName]: string },
+  Sorting = { [Key in SortingName]: string },
+  State = Prettify<Pagination & GlobalFilter & ColumnFilters & Sorting>,
   QueryVariables = { [Key in keyof State]?: any },
->(options?: UseDataGridSsrOptions<ColumnFilters, GlobalFilterName, PageName, PageSizeName, SortingName, Pagination, State>) => {
+>(options?: UseDataGridSsrOptions<ColumnFilters, GlobalFilterName, PageName, PageSizeName, SortingName, Pagination, GlobalFilter, Sorting, State>) => {
   const {
+    enablePagination = true,
+    enableSorting = true,
+    enableGlobalFilter = true,
+    enableColumnFilters = true,
+
     defaultPagination,
     defaultSorting = [] as SortingState,
     defaultGlobalFilter = "",
@@ -148,56 +179,62 @@ export const useSsrDataGrid = <
     paginationInUrl = true,
     sortingInUrl = true,
     globalFilterInUrl = true,
-    columnFiltersInUrl = {} as ReducedQueryParams<ColumnFilters>,
+    columnFiltersInUrl,
     
     queryStateOptions,
     transform: _transform,
   } = options || {};
 
   const transform = useMemo<Record<string, (value: any) => any>>(() => ({
-    [sortingParamName]: (value: string[]) => value.join(","),
+    [sortingParamName]: enableSorting ? (value: string[]) => value.join(",") : undefined,
     ..._transform,
-  }), [_transform, sortingParamName]);
+  }), [_transform, enableSorting, sortingParamName]);
 
   const [initialState] = useState(() => {
     const queryConfig: QueryParams<Record<string, any>> = {};
     const stateConfig: Record<string, any> = {};
 
-    if (paginationInUrl) {
-      queryConfig[pageParamName] = {
-        defaultValue: defaultPagination?.[pageParamName as unknown as keyof Pagination] ?? 1,
-        parse: (value) => parseInt(value as string),
-        serialize: (value: number) => value.toString(),
-      };
-      queryConfig[pageSizeParamName] = {
-        defaultValue: defaultPagination?.[pageSizeParamName as unknown as keyof Pagination] ?? 25,
-        parse: (value) => parseInt(value as string),
-        serialize: (value) => value.toString(),
-      };
-    }
-    else {
-      stateConfig[pageParamName] = defaultPagination?.[pageParamName as unknown as keyof Pagination] ?? 1;
-      stateConfig[pageSizeParamName] = defaultPagination?.[pageSizeParamName as unknown as keyof Pagination] ?? 25;
-    }
-
-    if (sortingInUrl) {
-      queryConfig[sortingParamName] = {
-        defaultValue: defaultSorting,
-        parse: (value) => (value as string).split(","),
-        serialize: (value: string[]) => value.join(","),
-      };
-    }
-    else {
-      stateConfig[sortingParamName] = defaultSorting;
+    if (enablePagination) {
+      if (paginationInUrl) {
+        queryConfig[pageParamName] = {
+          defaultValue: defaultPagination?.[pageParamName as unknown as keyof Pagination] ?? 1,
+          parse: (value) => parseInt(value as string),
+          serialize: (value: number) => value.toString(),
+        };
+        queryConfig[pageSizeParamName] = {
+          defaultValue: defaultPagination?.[pageSizeParamName as unknown as keyof Pagination] ?? 25,
+          parse: (value) => parseInt(value as string),
+          serialize: (value) => value.toString(),
+        };
+      }
+      else {
+        stateConfig[pageParamName] = defaultPagination?.[pageParamName as unknown as keyof Pagination] ?? 1;
+        stateConfig[pageSizeParamName] = defaultPagination?.[pageSizeParamName as unknown as keyof Pagination] ?? 25;
+      }
     }
 
-    if (globalFilterInUrl) {
-      queryConfig[globalFilterName] = {
-        defaultValue: defaultGlobalFilter,
-      };
+    if (enableSorting) {
+      if (sortingInUrl) {
+        queryConfig[sortingParamName] = {
+          defaultValue: defaultSorting,
+          parse: (value) => (value as string).split(","),
+          serialize: (value: string[]) => value.join(","),
+        };
+      }
+      else {
+        stateConfig[sortingParamName] = defaultSorting;
+      }
     }
-    else {
-      stateConfig[globalFilterName] = defaultGlobalFilter;
+
+    if (enableGlobalFilter) {
+      if (globalFilterInUrl) {
+        queryConfig[globalFilterName] = {
+          defaultValue: defaultGlobalFilter,
+        };
+      }
+      else {
+        stateConfig[globalFilterName] = defaultGlobalFilter;
+      }
     }
 
     return { queryConfig, stateConfig };
@@ -206,16 +243,20 @@ export const useSsrDataGrid = <
   const [columnFiltersConfig] = useState(() => {
     const queryConfig: QueryParams<Record<string, any>> = {};
     const stateConfig: Record<string, any> = {};
-    if (columnFiltersInUrl) {
-      Object.entries(columnFiltersInUrl).forEach(([key, value]) => {
-        queryConfig[key] = value;
-      });
+    
+    if (enableColumnFilters) {
+      if (columnFiltersInUrl) {
+        Object.entries(columnFiltersInUrl).forEach(([key, value]) => {
+          queryConfig[key] = value;
+        });
+      }
+      else {
+        Object.keys(defaultColumnFilters).forEach(key => {
+          stateConfig[key] = defaultColumnFilters[key];
+        });
+      }
     }
-    else {
-      Object.keys(defaultColumnFilters).forEach(key => {
-        stateConfig[key] = defaultColumnFilters[key];
-      });
-    }
+
     return { queryConfig, stateConfig };
   });
 
@@ -231,26 +272,41 @@ export const useSsrDataGrid = <
     ..._columnFiltersQueryState.state,
   } as any), [_state, _queryState.state, _columnFiltersState, _columnFiltersQueryState.state]);
 
-  const dataGridState = useMemo<DataGridState>(() => ({
-    pagination: {
-      pageIndex: (paginationInUrl ? _queryState.state[pageParamName] : _state[pageParamName]) - 1,
-      pageSize: paginationInUrl ? _queryState.state[pageSizeParamName] : _state[pageSizeParamName],
-    },
-    sorting: (sortingInUrl ? _queryState.state[sortingParamName] : _state[sortingParamName])
-      .map((x: string) => {
-        const desc = x.startsWith("-");
-        return {
-          id: desc ? x.slice(1) : x,
-          desc,
-        };
-      }),
-    globalFilter: globalFilterInUrl ? _queryState.state[globalFilterName] : _state[globalFilterName],
-    columnFilters: Object.entries(columnFiltersInUrl ? _columnFiltersQueryState.state : _columnFiltersState)
-      .map(([id, value]) => ({
-        id,
-        value,
-      })),
-  }), [paginationInUrl, _queryState.state, pageParamName, _state, pageSizeParamName, sortingInUrl, sortingParamName, globalFilterInUrl, globalFilterName, columnFiltersInUrl, _columnFiltersQueryState.state, _columnFiltersState]);
+  const dataGridState = useMemo<DataGridState>(() => {
+    const _dataGridState: DataGridState = {};
+
+    if (enablePagination) {
+      _dataGridState.pagination = {
+        pageIndex: (paginationInUrl ? _queryState.state[pageParamName] : _state[pageParamName]) - 1,
+        pageSize: paginationInUrl ? _queryState.state[pageSizeParamName] : _state[pageSizeParamName],
+      };
+    }
+
+    if (enableSorting) {
+      _dataGridState.sorting = (sortingInUrl ? _queryState.state[sortingParamName] : _state[sortingParamName])
+        .map((x: string) => {
+          const desc = x.startsWith("-");
+          return {
+            id: desc ? x.slice(1) : x,
+            desc,
+          };
+        });
+    }
+
+    if (enableGlobalFilter) {
+      _dataGridState.globalFilter = globalFilterInUrl ? _queryState.state[globalFilterName] : _state[globalFilterName];
+    }
+    
+    if (enableColumnFilters) {
+      _dataGridState.columnFilters = Object.entries(columnFiltersInUrl ? _columnFiltersQueryState.state : _columnFiltersState)
+        .map(([id, value]) => ({
+          id,
+          value,
+        }));
+    }
+
+    return _dataGridState;
+  }, [enablePagination, enableSorting, enableGlobalFilter, enableColumnFilters, paginationInUrl, _queryState.state, pageParamName, _state, pageSizeParamName, sortingInUrl, sortingParamName, globalFilterInUrl, globalFilterName, columnFiltersInUrl, _columnFiltersQueryState.state, _columnFiltersState]);
 
   const queryVariables = useMemo<QueryVariables>(() => {
     const vars = {
@@ -279,6 +335,83 @@ export const useSsrDataGrid = <
     return vars as any;
   }, [removeEmpty, state, transform]);
 
+  const dataGridConfig = useMemo<Omit<DataGridOptions<any, any>, "data" | "columns">>(() => {
+    const _dataGridConfig: Omit<DataGridOptions<any, any>, "data" | "columns"> = {
+      enablePagination,
+      manualPagination: enablePagination,
+      enableSorting,
+      manualSorting: enableSorting,
+      enableFilters: enableGlobalFilter || enableColumnFilters,
+      manualFiltering: enableGlobalFilter || enableColumnFilters,
+      enableGlobalFilter,
+      enableColumnFilters,
+    };
+
+    if (enablePagination) {
+      _dataGridConfig.onPaginationChange = (value) => {
+        const newValue = typeof value === "function" ? value(dataGridState.pagination!) : value;
+        paginationInUrl 
+        ? _queryState.update({
+            [pageParamName]: newValue.pageIndex + 1,
+            [pageSizeParamName]: newValue.pageSize,
+          })
+        : _setState((draft) => {
+          draft[pageParamName] = newValue.pageIndex + 1;
+          draft[pageSizeParamName] = newValue.pageSize;
+        });
+      };
+    }
+    
+    if (enableSorting) {
+      _dataGridConfig.onSortingChange = (value) => {
+        const newValue = (typeof value === "function" ? value(dataGridState.sorting!) : value)
+          .map(x => `${x.desc ? "-" : ""}${x.id}`);
+        sortingInUrl
+        ? _queryState.update({
+            [sortingParamName]: newValue,
+          })
+        : _setState((draft) => {
+          draft[sortingParamName] = newValue;
+        });
+      };
+    }
+
+    if (enableGlobalFilter) {
+      _dataGridConfig.onGlobalFilterChange = (value) => {
+        const oldGlobalFilter = globalFilterInUrl ? _queryState.state[globalFilterName] : _state[globalFilterName];
+        const newValue = typeof value === "function" ? value(oldGlobalFilter) : value;
+        globalFilterInUrl 
+        ? _queryState.update({ 
+            [globalFilterName]: newValue 
+          }) 
+        : _setState((draft) => {
+          draft[globalFilterName] = newValue;
+        });
+      };
+    }
+
+    if (enableColumnFilters) {
+      _dataGridConfig.onColumnFiltersChange = (value) => {
+        const newValue = (typeof value === "function" ? value(dataGridState.columnFilters!) : value)
+          .reduce((acc, curr) => {
+            acc[curr.id] = curr.value;
+            return acc;
+          }, {} as any);
+        columnFiltersInUrl 
+        ? _columnFiltersQueryState.set(newValue) 
+        : _setColumnFiltersState(newValue);
+      };
+    }
+
+    return _dataGridConfig;
+  }, [
+    _columnFiltersQueryState, _queryState, _setColumnFiltersState, _setState, 
+    _state, columnFiltersInUrl, dataGridState.columnFilters, dataGridState.pagination, 
+    dataGridState.sorting, enableColumnFilters, enableGlobalFilter, enablePagination, 
+    enableSorting, globalFilterInUrl, globalFilterName, pageParamName, pageSizeParamName, 
+    paginationInUrl, sortingInUrl, sortingParamName
+  ]);
+
   return {
     /** Internal state. */
     state,
@@ -290,62 +423,7 @@ export const useSsrDataGrid = <
      */
     queryVariables,
     /** Configuration to be used by the data-grid component. */
-    dataGridConfig: {
-      enableSorting: true,
-      manualSorting: true,
-      onSortingChange: (value: Updater<SortingState>) => {
-        const newValue = (typeof value === "function" ? value(dataGridState.sorting) : value)
-          .map(x => `${x.desc ? "-" : ""}${x.id}`);
-        sortingInUrl
-        ? _queryState.update({
-            [sortingParamName]: newValue,
-          })
-        : _setState((draft) => {
-          draft[sortingParamName] = newValue;
-        });
-      },
-   
-      enableFilters: true,
-      enableGlobalFilter: true,
-      manualFiltering: true,
-      onGlobalFilterChange: (value: Updater<string>) => {
-        const oldGlobalFilter = globalFilterInUrl ? _queryState.state[globalFilterName] : _state[globalFilterName];
-        const newValue = typeof value === "function" ? value(oldGlobalFilter) : value;
-        globalFilterInUrl 
-        ? _queryState.update({ 
-            [globalFilterName]: newValue 
-          }) 
-        : _setState((draft) => {
-          draft[globalFilterName] = newValue;
-        });
-      },
-      enableColumnFilters: true,
-      onColumnFiltersChange: (value: Updater<ColumnFiltersState>) => {
-        const newValue = (typeof value === "function" ? value(dataGridState.columnFilters) : value)
-          .reduce((acc, curr) => {
-            acc[curr.id] = curr.value;
-            return acc;
-          }, {} as any);
-        columnFiltersInUrl 
-        ? _columnFiltersQueryState.set(newValue) 
-        : _setColumnFiltersState(newValue);
-      },
-  
-      enablePagination: true,
-      manualPagination: true,
-      onPaginationChange: (value: Updater<PaginationState>) => {
-        const newValue = typeof value === "function" ? value(dataGridState.pagination) : value;
-        paginationInUrl 
-        ? _queryState.update({
-            [pageParamName]: newValue.pageIndex + 1,
-            [pageSizeParamName]: newValue.pageSize,
-          })
-        : _setState((draft) => {
-          draft[pageParamName] = newValue.pageIndex + 1;
-          draft[pageSizeParamName] = newValue.pageSize;
-        });
-      },
-    },
+    dataGridConfig,
   };
 }
 

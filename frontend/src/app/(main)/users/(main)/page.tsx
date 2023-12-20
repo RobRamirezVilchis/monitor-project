@@ -65,7 +65,7 @@ const UsersPage = () => {
     hideColumnFooters: true,
     enableColumnActions: true,
 
-    ...dataGridConfig,
+    ...dataGridConfig as any,
     pageCount: usersQuery.data?.pagination?.pages ?? 0,
     rowCount: usersQuery.data?.pagination?.count ?? 0,
   });

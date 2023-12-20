@@ -20,6 +20,8 @@ export interface DataGridProps<TData extends RowData, SlotPropsOverrides extends
   instance: DataGridInstance<TData, SlotPropsOverrides>;
 }
 
+// TODO: Fix infinite rerenders when pagination is disabled
+
 const DataGrid = <TData extends RowData, SlotPropsOverrides extends SlotOverridesSignature = {}>({
   instance,
 }: DataGridProps<TData, SlotPropsOverrides>) => {
