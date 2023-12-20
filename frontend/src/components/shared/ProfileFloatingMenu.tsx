@@ -37,10 +37,10 @@ export const ProfileFloatingMenu = () => {
     redirectIfNotAuthorized: false,
   });
   const [open, { toggle, close }] = useDisclosure(false);
-  // const fallbackAvatarColor = useMemo(
-  //   () => !user?.extra?.picture ? randomColor() : "#000",
-  //   [user?.extra?.picture]  
-  // );
+  const fallbackAvatarColor = useMemo(
+    () => !user?.extra?.picture ? randomColor() : "#000",
+    [user?.extra?.picture]  
+  );
   
   const [links, setLinks] = useImmer<NavMenuItem[]>([
     {
@@ -90,7 +90,7 @@ export const ProfileFloatingMenu = () => {
             radius="xl"
             variant="transparent"
           >
-            <UserAvatar user={user} fallbackColor={"#fff"/*fallbackAvatarColor*/} />
+            <UserAvatar user={user} fallbackColor={fallbackAvatarColor} solidColor />
           </ActionIcon>
         </Tooltip>
       </Popover.Target>
@@ -100,7 +100,7 @@ export const ProfileFloatingMenu = () => {
           {isAuthenticated && !loading ? (
             <>
               <div className="flex flex-col gap-3 justify-center items-center">
-                <UserAvatar user={user} fallbackColor={"#fff"/*fallbackAvatarColor*/} />
+                <UserAvatar user={user} fallbackColor={fallbackAvatarColor} solidColor />
                 <div className="flex flex-col gap-1 justify-center items-center">
                   <span className="text-base font-semibold">
                     {user?.first_name} {user?.last_name}

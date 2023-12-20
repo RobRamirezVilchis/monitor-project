@@ -1,26 +1,31 @@
+"use client";
+
 import { Avatar, AvatarProps } from "@mantine/core";
 import { FC, useMemo } from "react";
 
 import { User } from "@/api/services/auth/types";
-import { 
-  randomColor, 
-  // colorContrast,
-} from "@/utils/color";
+import { randomColor, colorContrast } from "@/utils/color";
 
 export interface UserAvatarProps extends AvatarProps {
   user: User | null;
   fallbackColor?: string;
+  solidColor?: boolean;
 }
 
-export const UserAvatar: FC<UserAvatarProps> = ({ user, fallbackColor, ...avatarProps }) => {
-  const color = useMemo(
+export const UserAvatar: FC<UserAvatarProps> = ({ 
+  user,
+  fallbackColor,
+  solidColor,
+  ...avatarProps
+}) => {
+  const mainColor = useMemo(
     () => !user?.extra?.picture ? (fallbackColor || randomColor()) : "#000", 
     [user?.extra?.picture, fallbackColor]
   );
-  // const color = useMemo(
-  //   () => !user?.extra?.picture ? colorContrast(backgroundColor) : "#000", 
-  //   [user?.extra?.picture, backgroundColor]
-  // );
+  const textColor = useMemo(
+    () => !user?.extra?.picture ? colorContrast(mainColor) : "#000", 
+    [user?.extra?.picture, mainColor]
+  );
 
   return (
     <Avatar
@@ -31,12 +36,16 @@ export const UserAvatar: FC<UserAvatarProps> = ({ user, fallbackColor, ...avatar
         referrerPolicy: "no-referrer",
         className: "w-full h-full object-cover",
       }}
-      color={color}
+      color={solidColor ? undefined : mainColor}
+      bg={solidColor ? mainColor : undefined}
     >
       {
         user 
-        ? `${user?.first_name ? user?.first_name[0]?.toUpperCase() : ""}${user?.last_name ? user?.last_name[0]?.toUpperCase() : ""}` || "NA"
-        : "NA"
+        ? (
+          <span style={{ color: solidColor ? textColor : undefined }}>
+            {`${user?.first_name ? user?.first_name[0]?.toUpperCase() : ""}${user?.last_name ? user?.last_name[0]?.toUpperCase() : ""}` || "NA"}
+          </span>
+        ) : <span style={{ color: solidColor ? textColor : undefined }}>NA</span>
       }
     </Avatar>
   );
