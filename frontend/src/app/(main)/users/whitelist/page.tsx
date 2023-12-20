@@ -18,33 +18,24 @@ import { WhitelistItem } from "@/api/services/users/types";
 import { ColumnDef } from "@/ui/data-grid/types";
 import DataGrid from "@/ui/data-grid/DataGrid";
 import { useDataGrid } from "@/hooks/useDataGrid";
+import { usePrefetchPaginatedAdjacentQuery, useSsrDataGrid } from "@/hooks/useSsrDataGrid";
 
 import { IconPlus } from "@tabler/icons-react";
 
 const UsersPage = () => {
-  const pagination = useQueryState({
-    page: {
-      defaultValue: 1,
-      parse: (value) => parseInt(value),
-      serialize: (value) => value.toString(),
-    },
-    page_size: {
-      defaultValue: 25,
-      parse: (value) => parseInt(value),
-      serialize: (value) => value.toString(),
-    },
-  });
-  const [filters, setFilters] = useImmer<{  
-    search?: string;
-  }>({
-    search: "",
+  const {
+    dataGridState, queryVariables, dataGridConfig
+  } = useSsrDataGrid({
+    enableColumnFilters: false,
+    defaultSorting: ["first_name"],
   });
   const usersWhitelistQuery = useWhitelistQuery({
-    variables: {
-      page: pagination.state.page,
-      page_size: pagination.state.page_size,
-      ...filters,
-      // sort: "-user",
+    variables: queryVariables,
+  });
+  usePrefetchPaginatedAdjacentQuery({
+    query: usersWhitelistQuery,
+    prefetchOptions: {
+      staleTime: 5 * 60 * 1000,
     },
   });
   const addToWhitelistMutation = useAddToWhitelistMutation({
@@ -67,69 +58,16 @@ const UsersPage = () => {
     },
     state: {
       loading: usersWhitelistQuery.isLoading || usersWhitelistQuery.isFetching,
-      pagination: {
-        pageIndex: pagination.state.page - 1,
-        pageSize: pagination.state.page_size,
-      },
-      globalFilter: filters?.search,
+      ...dataGridState,
     },
     enableColumnResizing: true,
     hideColumnFooters: true,
     enableColumnActions: true,
-    enableSorting: false,
 
-    enableFilters: true,
-    manualFiltering: true,
-    onGlobalFilterChange: (value) => {
-      const newValue = typeof value === "function" ? value(filters?.search) : value;
-      setFilters(draft => {
-        draft.search = newValue;
-      });
-    },
-
-    enablePagination: true,
-    manualPagination: true,
+    ...dataGridConfig as any,
     pageCount: usersWhitelistQuery.data?.pagination?.pages ?? 0,
     rowCount: usersWhitelistQuery.data?.pagination?.count ?? 0,
-    onPaginationChange: (value) => {
-      const old: PaginationState = {
-        pageIndex :pagination.state.page - 1,
-        pageSize  :pagination.state.page_size,
-      };
-      const newValue = typeof value === "function" ? value(old) : value;
-      pagination.update({
-        page: newValue.pageIndex + 1,
-        page_size: newValue.pageSize,
-      });
-    },
   });
-
-  //* Prefetch adjacent pages
-  useEffect(() => {
-    if (usersWhitelistQuery.data && usersWhitelistQuery.data.pagination && !usersWhitelistQuery.isPreviousData) {
-      const paginationInfo = usersWhitelistQuery.data.pagination;
-      if (paginationInfo.page > 1) {
-        useWhitelistQuery.prefetch({
-          variables: {
-            ...usersWhitelistQuery.variables,
-            page: paginationInfo.page - 1,
-            page_size: usersWhitelistQuery.variables.page_size,
-          },
-          staleTime: 5 * 60 * 1000,
-        });
-      }
-      if (paginationInfo.page < paginationInfo.pages) {
-        useWhitelistQuery.prefetch({
-          variables: {
-            ...usersWhitelistQuery.variables,
-            page: paginationInfo.page + 1,
-            page_size: usersWhitelistQuery.variables.page_size,
-          },
-          staleTime: 5 * 60 * 1000,
-        });
-      }
-    }
-  }, [usersWhitelistQuery.data, usersWhitelistQuery.isPreviousData, usersWhitelistQuery.variables]);
 
   return (
     <section className="flex flex-col h-full lg:container mx-auto pb-2 md:pb-6 px-2 md:px-4 lg:px-0">
@@ -189,7 +127,7 @@ const cols: ColumnDef<WhitelistItem>[] = [
     enableResizing: false,
   },
   {
-    id: "user.name",
+    id: "first_name",
     accessorKey: "user",
     header: "Nombre",
     columnTitle: "Nombre",

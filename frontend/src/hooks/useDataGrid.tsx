@@ -34,6 +34,9 @@ export const useDataGrid: typeof _useDataGrid = (options) => _useDataGrid({
       root: clsx("border-b border-white", styles["row-root"]),
     },
     toolbarContainer: "justify-end",
+    toolbar: {
+      root: "!pt-2.5",
+    },
     footer: {
       root: "pt-1",
     },

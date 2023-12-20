@@ -33,6 +33,10 @@ class UserAccessLogFilter(rf_filters.FilterSet):
     sort = rf_filters.OrderingFilter(
         fields=(
             ("user__id", "user"),
+            ("user__first_name", "first_name"),
+            ("user__email", "email"),
+            ("last_access", "last_access"),
+            ("access", "access"),
         )
     )
 

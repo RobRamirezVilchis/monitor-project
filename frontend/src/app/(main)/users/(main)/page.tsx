@@ -23,6 +23,7 @@ const UsersPage = () => {
   const {
     dataGridState, queryVariables, dataGridConfig
   } = useSsrDataGrid({
+    enableColumnFilters: false,
     defaultSorting: ["first_name"],
   });
   const usersQuery = useUsersQuery({
