@@ -1,6 +1,6 @@
 export { 
   ColorSchemeButtonToggle, type ColorSchemeToggleButtonProps, 
-  ColorSchemeSelectToggle as ColorSchemaSelectToggle, type ColorSchemeSelectToggleProps as ColorSchemaSelectToggleProps, 
+  ColorSchemeSelectToggle, type ColorSchemeSelectToggleProps, 
   ColorSchemeSwitchToggle, type ColorSchemeSwitchToggleProps,
 } from "./ColorSchemeToggle";
 export {

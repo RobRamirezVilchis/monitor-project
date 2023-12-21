@@ -22,23 +22,23 @@ export function cookieColorSchemeManager(): MantineColorSchemeManager {
   if (typeof window !== "undefined") {
     mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
     mediaQueryListener = (e: MediaQueryListEvent) => {
-      const colorSchema = e.matches ? "dark" : "light";
+      const colorScheme = e.matches ? "dark" : "light";
       document.documentElement.classList.remove(...colorSchemeOptions);
-      document.documentElement.classList.add(colorSchema);
+      document.documentElement.classList.add(colorScheme);
     };
   }
 
   return {
     get: (defaultValue) => {
-      const colorSchema = Cookies.get(colorSchemeCookieName) as MantineColorScheme || defaultValue;
-      if (colorSchema === "auto") {
+      const colorScheme = Cookies.get(colorSchemeCookieName) as MantineColorScheme || "auto";
+      if (colorScheme === "auto") {
         document.documentElement.classList.add(
           window.matchMedia("(prefers-color-scheme: dark)").matches 
             ? "dark" 
             : "light"
         );
       }
-      return colorSchema;
+      return colorScheme;
     },
     set: (value) => {
       Cookies.set(colorSchemeCookieName, value, {
