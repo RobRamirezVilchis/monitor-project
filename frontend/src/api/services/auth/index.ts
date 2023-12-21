@@ -1,6 +1,7 @@
+import { AuthError, LoginInfo, LoginUserData, RefreshTokenResponse, RegisterUserData, Role, UpdateUserData, User } from "./types";
+import { Id } from "@/api/types";
 import api from "../..";
 import http from "@/api/http";
-import { AuthError, LoginInfo, LoginUserData, RefreshTokenResponse, RegisterUserData, Role, UpdateUserData, User } from "./types";
 
 /**
  * @returns True if the user role is in the rolesWhitelist and NOT in the rolesBlacklist
@@ -196,7 +197,7 @@ export async function getConnectedSocialAccounts(
 };
 
 export async function disconnectSocialAccount(
-  socialAccountId: number, 
+  socialAccountId: Id, 
   config?: Parameters<typeof http.post>[2]
 ) {
   try {

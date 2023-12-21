@@ -4,12 +4,13 @@ import { DropzoneRef } from "react-dropzone";
 import { Button, Divider } from "@mantine/core";
 import { useRef } from "react";
 
-import { FileUploader } from "@/ui/base/files/FileUploader";
-import { ColorSchemeButtonToggle } from "@/components/shared";
-import http from "@/api/http";
-import { downloadFileFromApi } from "@/utils/utils";
-import { showErrorNotification } from "@/ui/notifications";
 import { AxiosError } from "axios";
+import { ColorSchemeButtonToggle } from "@/components/shared";
+import { downloadFileFromApi } from "@/utils/utils";
+import { FileUploader } from "@/ui/base/files/FileUploader";
+import { Id } from "@/api/types";
+import { showErrorNotification } from "@/ui/notifications";
+import http from "@/api/http";
 
 const FileUploadPage = () => {
   const dropzoneRef = useRef<DropzoneRef>(null);
@@ -21,7 +22,7 @@ const FileUploadPage = () => {
       <ColorSchemeButtonToggle />
 
       <div className="w-full max-w-xl">
-        <FileUploader<{ id: string | number }>
+        <FileUploader<{ id: Id }>
           dropzoneRef={dropzoneRef}
           noClick
           // autoUpload

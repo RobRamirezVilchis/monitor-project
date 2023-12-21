@@ -2,6 +2,7 @@
 
 import { createMutation } from "@/api/helpers/createMutation";
 import { createQuery } from "@/api/helpers/createQuery";
+import { Id } from "@/api/types";
 import { randomString } from "@/utils/random";
 
 const useMyQuery = createQuery({
@@ -15,7 +16,7 @@ const useMyQuery = createQuery({
 
 const useMyVarsQuery = createQuery({
   queryPrimaryKey: "vars",
-  queryKeyVariables: ({ id }: { id: number }) => [id],
+  queryKeyVariables: ({ id }: { id: Id }) => [id],
   queryFn: async (ctx, vars) => {
     const [primaryKey, id] = ctx.queryKey;
     return {
@@ -28,7 +29,7 @@ const useMyVarsQuery = createQuery({
 
 const useMyMutation = createMutation({
   mutationKey: ["test"],
-  mutationFn: async ({ id }: { id: number }) => {
+  mutationFn: async ({ id }: { id: Id }) => {
     return {
       id,
       data: "test mutation",

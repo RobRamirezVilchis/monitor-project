@@ -17,7 +17,7 @@ const api = {
         },
       },
       connectedSocialAccounts: "/api/v1/auth/socialaccounts/",
-      disconnectSocialAccount: (socialAccountId: number) => `/api/v1/auth/socialaccounts/${socialAccountId}/disconnect/`,
+      disconnectSocialAccount: (socialAccountId: Id) => `/api/v1/auth/socialaccounts/${socialAccountId}/disconnect/`,
       register: "/api/v1/auth/register/",
       registerTokenValidity: "/api/v1/auth/register/token-valid/",
       registerVerifyEmail: "/api/v1/auth/register/verify-email/",
