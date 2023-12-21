@@ -1,8 +1,8 @@
-import React from "react";
+import { ReactNode } from "react";
 import clsx from "clsx";
 
 export interface TabPanelProps {
-  children?: React.ReactNode;
+  children?: ReactNode;
   index: number;
   value: number;
   /**
@@ -16,9 +16,9 @@ export interface TabPanelProps {
   }
 }
 
-export const TabPanel: React.FC<TabPanelProps> = ({ 
+export const TabPanel = ({
   children, value, index, unmount, classes, ...other 
-}) => {
+}: TabPanelProps) => {
   return (
     <div
       role="tabpanel"

@@ -1,10 +1,10 @@
-import { ReactNode } from "react";
+import { HTMLAttributes, ReactNode } from "react";
 import clsx from "clsx";
 
 import styles from "./DataGridOverlay.module.css";
 
 
-export interface DataGridOverlayProps extends React.HTMLAttributes<HTMLDivElement> {
+export interface DataGridOverlayProps extends HTMLAttributes<HTMLDivElement> {
   children?: ReactNode;
 }
 

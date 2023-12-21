@@ -4,17 +4,18 @@ import "@mantine/notifications/styles.css";
 import "@/styles/globals.css";
 
 import { ColorSchemeScript, MantineColorScheme } from "@mantine/core";
-import { Metadata, Viewport } from "next";
 import { cookies } from "next/headers";
+import { Metadata, Viewport } from "next";
 import clsx from "clsx";
 import Script from "next/script";
+import type { ReactNode } from "react";
 
 import { Providers } from "./Providers";
 import { colorSchemeCookieName } from "@/ui/themes/cookieColorSchemeManager";
 import fonts from "@/ui/fonts";
 
 interface RootLayoutProps {
-  children: React.ReactNode
+  children: ReactNode;
 }
 
 export const metadata: Metadata = {

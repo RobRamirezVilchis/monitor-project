@@ -1,4 +1,3 @@
-import { FC, useMemo } from "react";
 import { ActionIcon, Modal, Tooltip, useMantineTheme } from "@mantine/core";
 
 import { showSuccessNotification, showErrorNotification } from "@/ui/notifications";
@@ -16,7 +15,8 @@ export interface ActionsProps {
   user: User;
 }
 
-export const UpdateUserAction: FC<ActionsProps> = ({ user }) => {
+export const UpdateUserAction = ({user,
+}: ActionsProps) => {
   const { user: currentUser } = useAuth({
     triggerAuthentication: false,
     skipAll: true,
@@ -82,7 +82,8 @@ export const UpdateUserAction: FC<ActionsProps> = ({ user }) => {
   </>);
 }
 
-export const DeleteUserAction: FC<ActionsProps> = ({ user }) => {
+export const DeleteUserAction = ({user,
+}: ActionsProps) => {
   const { user: currentUser } = useAuth({
     triggerAuthentication: false,
     skipAll: true,
@@ -132,7 +133,8 @@ export const DeleteUserAction: FC<ActionsProps> = ({ user }) => {
   );
 }
 
-export const SendPasswordChangeAction: FC<ActionsProps> = ({ user }) => {
+export const SendPasswordChangeAction = ({user,
+}: ActionsProps) => {
   const { user: currentUser } = useAuth({
     triggerAuthentication: false,
     skipAll: true,

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useCallback, useContext, useEffect, useRef } from "react";
+import React, { useCallback, useContext, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 
 import { AuthContext, RedirectToUrl, SocialAction, SocialLoginCallbacks, getRedirectUrl } from "@/components/auth/AuthProvider";
@@ -87,7 +87,7 @@ export const useAuth = (options?: {
     defaultSetCallbackUrlParam,
     defaultCallbackUrlParamName,
   } = useContext(AuthContext);
-  const [isAuthorized, setIsAuthorized] = React.useState<boolean>(false);
+  const [isAuthorized, setIsAuthorized] = useState<boolean>(false);
   const registered = useRef(false);
   const router = useRouter();
 

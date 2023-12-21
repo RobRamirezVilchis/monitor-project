@@ -1,4 +1,3 @@
-import { FC, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { Button, Loader } from "@mantine/core";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -37,16 +36,16 @@ const schema = z.object({
 
 type UserFormValues = z.infer<typeof schema>;
 
-export const UserForm: FC<UserFormProps> = ({ 
+export const UserForm = ({
   onSubmit,
   onCancel,
   loading, 
-  defaultValues, 
+  defaultValues,
   disabled, 
   submitLabel,
   cancelLabel,
   showSendMailField,
-}) => {
+}: UserFormProps) => {
   const form = useForm<UserFormValues>({
     defaultValues: {
       // username: defaultValues?.username ?? "",

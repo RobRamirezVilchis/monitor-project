@@ -1,7 +1,7 @@
 "use client";
 
 import { Avatar, AvatarProps } from "@mantine/core";
-import { FC, useMemo } from "react";
+import { useMemo } from "react";
 
 import { User } from "@/api/services/auth/types";
 import { randomColor, colorContrast } from "@/utils/color";
@@ -12,12 +12,12 @@ export interface UserAvatarProps extends AvatarProps {
   solidColor?: boolean;
 }
 
-export const UserAvatar: FC<UserAvatarProps> = ({ 
+export const UserAvatar = ({
   user,
   fallbackColor,
   solidColor,
   ...avatarProps
-}) => {
+}: UserAvatarProps) => {
   const mainColor = useMemo(
     () => !user?.extra?.picture ? (fallbackColor || randomColor()) : "#000", 
     [user?.extra?.picture, fallbackColor]

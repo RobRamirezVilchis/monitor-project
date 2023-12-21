@@ -1,3 +1,4 @@
+import { CSSProperties } from "react";
 import clsx from "clsx";
 
 import styles from "./DataGridColumnFooters.module.css";
@@ -8,7 +9,7 @@ import DataGridColumnFootersGroup from "./DataGridColumnFootersGroup";
 
 export interface DataGridColumnFootersProps<TData extends unknown> {
   instance: DataGridInstance<TData>;
-  style?: React.CSSProperties;
+  style?: CSSProperties;
 }
 
 const DataGridColumnFooters = <TData extends unknown>({

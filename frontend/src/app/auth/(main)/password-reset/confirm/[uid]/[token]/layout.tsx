@@ -1,12 +1,12 @@
-import React from "react";
+import { ReactNode } from "react";
 
 interface PasswordResetConfirmationLayoutProps {
-  children: React.ReactNode;
+  children: ReactNode;
 }
 
-const PasswordResetConfirmationLayout: React.FC<PasswordResetConfirmationLayoutProps> = ({ 
-  children 
-}) => {
+const PasswordResetConfirmationLayout = ({
+  children,
+}: PasswordResetConfirmationLayoutProps) => {
   return (
     <>
       <h1 className="text-blue-600 text-2xl capitalize mb-4 text-center">

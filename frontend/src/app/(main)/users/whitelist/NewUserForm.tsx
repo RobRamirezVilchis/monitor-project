@@ -1,4 +1,3 @@
-import { FC } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { Button } from "@mantine/core";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -19,7 +18,10 @@ const schema = z.object({
   group: z.string().nonempty({ message: "El grupo es requerido" }),
 });
 
-export const NewUserForm: FC<NewUserFormProps> = ({ onSubmit, loading }) => {
+export const NewUserForm = ({
+  onSubmit, 
+  loading
+}: NewUserFormProps) => {
   const formMethods = useForm<CreateWhitelistItemData>({
     defaultValues: {
       email: "",

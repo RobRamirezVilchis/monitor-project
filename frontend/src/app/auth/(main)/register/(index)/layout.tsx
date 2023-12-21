@@ -1,12 +1,12 @@
-import React from "react";
+import { ReactNode } from "react";
 
 interface RegisterLayoutProps {
-  children: React.ReactNode;
+  children: ReactNode;
 }
 
-const RegisterLayout: React.FC<RegisterLayoutProps> = ({ 
-  children 
-}) => {
+const RegisterLayout = ({
+  children,
+}: RegisterLayoutProps) => {
   return (
     <>
       <h1 className="text-center font-bold">Registro</h1>

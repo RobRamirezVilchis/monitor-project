@@ -1,4 +1,3 @@
-import { FC } from "react";
 import { ActionIcon, Tooltip, useMantineTheme } from "@mantine/core";
 
 import { showSuccessNotification, showErrorNotification } from "@/ui/notifications";
@@ -13,7 +12,9 @@ export interface ActionsProps {
   whitelistItem: WhitelistItem;
 }
 
-export const DeleteUserAction: FC<ActionsProps> = ({ whitelistItem }) => {
+export const DeleteUserAction = ({
+  whitelistItem
+}: ActionsProps) => {
   const { user } = useAuth({
     skipAll: true,
     triggerAuthentication: false,

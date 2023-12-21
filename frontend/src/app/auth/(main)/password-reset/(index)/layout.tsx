@@ -1,12 +1,12 @@
-import React from "react";
+import { ReactNode } from "react";
 
 interface PasswordResetLayoutProps {
-  children: React.ReactNode;
+  children: ReactNode;
 }
 
-const PasswordResetLayout: React.FC<PasswordResetLayoutProps> = ({ 
-  children 
-}) => {
+const PasswordResetLayout = ({
+  children,
+}: PasswordResetLayoutProps) => {
   return (
     <>
       <h1 className="text-blue-600 text-2xl capitalize mb-4 text-center">

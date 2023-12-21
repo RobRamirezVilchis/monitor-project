@@ -1,6 +1,6 @@
 "use client";
 
-import React, { createContext, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { Dispatch, ReactNode, createContext, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { isAxiosError } from "axios";
 import { useImmerReducer } from "use-immer";
 import { useRouter } from "next/navigation";
@@ -26,7 +26,7 @@ export interface AuthContextProps {
   loading: boolean;
   errors: AuthError[] | null;
   registeredHooks: number;
-  dispatchAuth: React.Dispatch<AuthAction>;
+  dispatchAuth: Dispatch<AuthAction>;
   emailLogin: (loginData: LoginUserData,
     options?: { redirect?: boolean, redirectTo?: RedirectToUrl }) => Promise<User | null>;
   socialLogin: (provider: ProviderKey,
@@ -79,7 +79,7 @@ export function getRedirectUrl(
 
 // Provider --------------------------------------------------------------------
 export interface AuthProviderProps {
-  children: React.ReactNode;
+  children: ReactNode;
   
   /**
    * Default value for the useAuth hook to redirect the user

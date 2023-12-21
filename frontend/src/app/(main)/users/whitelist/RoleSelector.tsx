@@ -1,4 +1,3 @@
-import { FC } from "react";
 import { Select } from "@/ui/core";
 
 import { showSuccessNotification, showErrorNotification } from "@/ui/notifications";
@@ -13,7 +12,10 @@ export interface RoleSelectorProps {
   value: string;
 }
 
-export const RoleSelector: FC<RoleSelectorProps> = ({ whitelistItem, value }) => {
+export const RoleSelector = ({
+  whitelistItem,
+  value
+}: RoleSelectorProps) => {
   const { user } = useAuth({
     skipAll: true,
     triggerAuthentication: false,

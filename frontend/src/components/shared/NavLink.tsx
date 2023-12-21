@@ -1,26 +1,30 @@
 "use client";
 
-import React from "react";
-import Link, { LinkProps } from "next/link";
+import { AnchorHTMLAttributes, ReactNode, RefAttributes } from "react";
 import clsx from "clsx";
+import Link, { LinkProps } from "next/link";
 
 import { useNavLink } from "@/hooks/shared";
 
 export interface NavLinkProps extends 
   Omit<LinkProps, "className">, 
-  React.RefAttributes<HTMLAnchorElement>,
-  Omit<React.AnchorHTMLAttributes<HTMLAnchorElement>, keyof LinkProps>, 
-  React.RefAttributes<HTMLAnchorElement>
+  RefAttributes<HTMLAnchorElement>,
+  Omit<AnchorHTMLAttributes<HTMLAnchorElement>, keyof LinkProps>, 
+  RefAttributes<HTMLAnchorElement>
 {
   classes?: {
     root?: string;
     inactive?: string;
     active?: string;
   };
-  children?: React.ReactNode;
+  children?: ReactNode;
 }
 
-export const NavLink: React.FC<NavLinkProps> = ({ classes, children, ...linkProps }) => {
+export const NavLink = ({
+  classes, 
+  children,
+  ...linkProps
+}: NavLinkProps) => {
   const active = useNavLink(linkProps.href);
 
   return (

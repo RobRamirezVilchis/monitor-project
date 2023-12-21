@@ -1,10 +1,12 @@
-import React from "react";
+import { ReactNode } from "react";
 
 interface RegisterActivationLayoutProps {
-  children: React.ReactNode;
+  children: ReactNode;
 }
 
-const RegisterActivationLayout: React.FC<RegisterActivationLayoutProps> = ({ children }) => {
+const RegisterActivationLayout = ({
+  children,
+}: RegisterActivationLayoutProps) => {
   return (
     <>
       <h1 className="text-blue-600 text-2xl capitalize mb-4 text-center">
