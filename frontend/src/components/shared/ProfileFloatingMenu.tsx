@@ -1,3 +1,5 @@
+"use client";
+
 import { Fragment, ReactNode, useMemo } from "react";
 import { 
   ActionIcon, 
