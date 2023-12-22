@@ -30,13 +30,22 @@ export function cookieColorSchemeManager(): MantineColorSchemeManager {
 
   return {
     get: (defaultValue) => {
-      const colorScheme = Cookies.get(colorSchemeCookieName) as MantineColorScheme || "auto";
-      if (colorScheme === "auto") {
-        document.documentElement.classList.add(
-          window.matchMedia("(prefers-color-scheme: dark)").matches 
-            ? "dark" 
-            : "light"
-        );
+      // On server side always return default value
+      if (typeof window === "undefined") return defaultValue;
+
+      const colorScheme = Cookies.get(colorSchemeCookieName) as MantineColorScheme;
+      // If the color scheme cookie is not set, set it to the system color scheme
+      if (!colorScheme || colorScheme === "auto") {
+        const systemColorScheme: MantineColorScheme  = window.matchMedia("(prefers-color-scheme: dark)").matches 
+        ? "dark" 
+        : "light";
+        document.documentElement.classList.add(systemColorScheme);
+        // and also set the cookie
+        Cookies.set(colorSchemeCookieName, systemColorScheme, {
+          path: "/",
+          sameSite: "Lax",
+        });
+        return systemColorScheme;
       }
       return colorScheme;
     },
