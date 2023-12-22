@@ -121,7 +121,7 @@ class UsersListApi(APIView):
 
             "email_template_name": "email_register_password_reset",
             "base_url": settings.FRONTEND_URL,
-            "url_path": "register/<uid>/<token>/",
+            "url_path":  settings.FRONTEND_REGISTER_PASSWORD_RESET_PATH,
 
             "send_email": send_mail,
         }
