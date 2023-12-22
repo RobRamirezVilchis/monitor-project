@@ -13,7 +13,7 @@ import jwt from "../jwt";
 
 export const useLoginMutation = createMutation({
   mutationKey: ["user-login"],
-  mutationFn: (data: LoginUserData) => login(data, { rejectRequest: false, onError: false, useJWT: false }),
+  mutationFn: (data: LoginUserData) => login(data, { rejectRequest: false, onError: false, useJWT: false, withCredentials: false }),
   onSuccess: (data) => {
     useMyUserQuery.invalidatePrimaryKey();
 
