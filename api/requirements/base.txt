@@ -15,5 +15,5 @@ djangorestframework==3.14.0
 drf-spectacular==0.26.4
 drf-standardized-errors==0.12.5
 pytz==2023.3
-typing-extensions=4.9.0
+typing-extensions==4.9.0
 requests==2.29.0
