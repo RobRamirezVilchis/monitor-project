@@ -34,6 +34,19 @@ Environment variables can be prefixed by setting the value of `env.prefix` to th
 - `remove_from_whitelist`: Removes a user from the whitelist and deletes the user if it exists.
     - args:
         - email: str
+- `create_user`: Create a new user without automatically sending a verification email
+    - args:
+        - email: str
+    - optional args:
+        - -u, --username: str
+        - -f, --first_name: str
+        - -l, --last_name: str
+        - -r, --roles: str list
+    - flags:
+        - --pw: prompt password creation
+        - --verified: marks the user as verified
+        - --super: sets is_superuser to True
+        - --staff: sets is_staff to True
 - `delete_user`: Deletes a user given an email.
 
 ### Shell autoreload
