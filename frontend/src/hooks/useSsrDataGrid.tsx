@@ -123,9 +123,15 @@ export interface UseDataGridSsrOptions<
   /** Options passed to all the properties stored in the url with useQueryState */
   queryStateOptions?: QueryStateOptions;
 
-  /** Transform functions to be applied to the `state` before creating the `queryVariables` */
+  /** 
+   * Transform functions to be applied to the `state` before creating the `queryVariables`.
+   * The return value of the transform function will be merged into the `queryVariables` object,
+   * removing the original key if it is not present in the returned object.
+   */
   transform?: {
-    [Key in keyof State]?: (value: State[Key]) => any;
+    [Key in keyof State]?: (key: Key, value: State[Key]) => { 
+      [K in keyof State]?: any;
+    };
   };
 }
 
@@ -186,8 +192,10 @@ export const useSsrDataGrid = <
     transform: _transform,
   } = options || {};
 
-  const transform = useMemo<Record<string, (value: any) => any>>(() => ({
-    [sortingParamName]: enableSorting ? (value: string[]) => value.join(",") : undefined,
+  const transform = useMemo<typeof _transform>(() => ({
+    [sortingParamName]: enableSorting 
+      ? (key: SortingName, value: string[]) => ({ [key]: value.join(",") })
+      : undefined,
     ..._transform,
   }), [_transform, enableSorting, sortingParamName]);
 
@@ -314,9 +322,12 @@ export const useSsrDataGrid = <
       ...state,
     };
     if (transform) {
-      Object.entries<(x: any) => any>(transform as any).forEach(([key, fn]) => {
+      Object.entries<(key: string, value: any) => any>(transform as any).forEach(([key, fn]) => {
         if (fn) {
-          vars[key as keyof typeof vars] = fn(vars[key as keyof typeof vars]);
+          const transformedValue = fn(key, vars[key as keyof typeof vars]);
+          if (!(key in transformedValue))
+            delete vars[key as keyof typeof vars];
+          Object.assign(vars, transformedValue);
         }
       });
     }
