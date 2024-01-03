@@ -90,4 +90,5 @@ export interface MantineSlotOverrides {
   globalSearchIcon      : TablerIconsProps;
   expandIcon            : TablerIconsProps;
   collapseIcon          : TablerIconsProps;
+  clearIcon             : TablerIconsProps;
 }

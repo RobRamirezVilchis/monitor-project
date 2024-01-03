@@ -3,7 +3,6 @@ import { useCallback, useRef } from "react";
 import { useDebounce } from "@/hooks/shared";
 import type { DataGridInstance } from "../types";
 
-import { IconX } from "@tabler/icons-react";
 import { getSlotOrNull } from "../utils/slots";
 import { getInputValue } from "../utils/getInputValue";
 
@@ -24,9 +23,9 @@ const ToolbarGlobalFilter = <TData extends unknown>({
   });
 
   const GlobalSearchIcon = getSlotOrNull(instance.options.slots?.globalSearchIcon);
+  const ClearIcon = getSlotOrNull(instance.options.slots?.clearIcon);
 
   const IconButton = getSlotOrNull(instance.options.slots?.baseIconButton);
-
   const TextInput = getSlotOrNull(instance.options.slots?.baseTextInput);
 
   return (
@@ -61,7 +60,7 @@ const ToolbarGlobalFilter = <TData extends unknown>({
             ref.current.dispatchEvent(new Event("change", { bubbles: true }));
           }}
         >
-          <IconX size="1rem" />
+          <ClearIcon {...instance.options.slotProps?.clearIcon} />
         </IconButton>
       }
     />

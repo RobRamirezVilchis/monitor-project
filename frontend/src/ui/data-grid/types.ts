@@ -481,6 +481,7 @@ export interface DataGridSlotBaseProps<TData extends RowData> {
   globalSearchIcon      : {};
   expandIcon            : {};
   collapseIcon          : {};
+  clearIcon             : {};
 }
 
 export type OverridableSlotKeys = keyof DataGridSlotBaseProps<any>;

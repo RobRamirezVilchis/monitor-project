@@ -40,6 +40,7 @@ import {
   IconMaximize,
   IconMinimize,
   IconSearch,
+  IconX,
 } from "@tabler/icons-react";
 import { RowData } from "@tanstack/react-table";
 
@@ -113,6 +114,7 @@ export const useDataGrid = <TData extends RowData, SlotPropsOverrides extends Sl
       globalSearchIcon      : IconSearch,
       expandIcon            : IconChevronDown,
       collapseIcon          : IconChevronUp,
+      clearIcon             : IconX,
 
       ...slots,
     },
@@ -164,6 +166,10 @@ export const useDataGrid = <TData extends RowData, SlotPropsOverrides extends Sl
         clearable: true,
         withSeconds: true,
         ...slotProps?.baseDateTimeInput,
+      },
+      clearIcon: {
+        size: "1rem",
+        ...slotProps?.clearIcon,
       },
     },
   });
