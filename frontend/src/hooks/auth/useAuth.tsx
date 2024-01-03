@@ -1,11 +1,11 @@
 "use client";
 
-import React, { useCallback, useContext, useEffect, useRef, useState } from "react";
+import { useCallback, useContext, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 
 import { AuthContext, RedirectToUrl, SocialAction, SocialLoginCallbacks, getRedirectUrl } from "@/components/auth/AuthProvider";
 import { isUserInAuthorizedRoles } from "@/api/services/auth";
-import { LoginUserData, User } from "@/api/services/auth/types";
+import { LoginUserData } from "@/api/services/auth/types";
 import { ProviderKey, ProvidersOptions } from "@/utils/auth/oauth";
 
 export const useAuth = (options?: {
