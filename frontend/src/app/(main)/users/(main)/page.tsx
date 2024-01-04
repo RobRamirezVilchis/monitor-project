@@ -11,6 +11,7 @@ import { useUsersQuery } from "@/api/queries/users";
 import { getUserRoleLocalized } from "@/api/services/users";
 import { ColumnDef } from "@/ui/data-grid/types";
 import { useDataGrid } from "@/hooks/useDataGrid";
+import { UserCreateData } from "@/api/services/users/types";
 import { useCreateUserMutation } from "@/api/mutations/users";
 import DataGrid from "@/ui/data-grid/DataGrid";
 
@@ -22,14 +23,18 @@ import { useSsrDataGrid, usePrefetchPaginatedAdjacentQuery } from "@/hooks/useSs
 const UsersPage = () => {
   const {
     dataGridState, queryVariables, dataGridConfig
-  } = useSsrDataGrid({
-    enableColumnFilters: false,
-    defaultSorting: ["first_name"],
+  } = useSsrDataGrid<{ full_name: string; email: string; company: string; roles: string[]; }>({
+    defaultSorting: ["full_name"],
     queryStateOptions: {
       navigateOptions: {
         scroll: false,
       },
       history: "replace",
+    },
+    transform: {
+      roles: (key, value) => ({
+        [key]: value?.sort().join(",") ?? "",
+      })
     },
   });
   const usersQuery = useUsersQuery({
@@ -109,7 +114,7 @@ const UsersPage = () => {
         <div className="p-4">
           <UserForm 
             onSubmit={values => {
-              const payload = {
+              const payload: UserCreateData = {
                 ...values,
                 username: values.email,
               };
@@ -133,7 +138,7 @@ export default withAuth(UsersPage, {
   
 const cols: ColumnDef<User>[] = [
   {
-    id: "first_name",
+    id: "full_name",
     accessorFn: (row) => `${row.first_name} ${row.last_name}`,
     header: "Nombre",
     columnTitle: "Nombre",
@@ -159,7 +164,7 @@ const cols: ColumnDef<User>[] = [
       options: [
         { value: "Admin", label: "Administrador" },
         { value: "User",  label: "Usuario" },
-      ]
+      ],
     },
   },
   {

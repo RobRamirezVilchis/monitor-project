@@ -1,8 +1,9 @@
-from typing_extensions import Any, Optional, List
+from typing_extensions import Any, Optional, List, Union
 from allauth.socialaccount.models import SocialAccount
 from datetime import datetime
 from django.db import transaction
-from django.db.models import Prefetch, Count, Max
+from django.db.models import Prefetch, Count, Max, Value
+from django.db.models.functions import Concat
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
 from django.shortcuts import get_object_or_404
@@ -70,12 +71,14 @@ class UsersService:
         return User.objects.filter(is_active=True).all()
     
     @classmethod
-    def list(cls, *,
-             filters = None,
-             select_related: Optional[List[str]] = None,
-             prefetch_related: Optional[List[Any]] = None,
-             social_providers: Optional[List[str]] = None
-        ):
+    def list(
+        cls, *,
+        filters = None,
+        select_related: Optional[List[str]] = None,
+        prefetch_related: Optional[List[Any]] = None,
+        social_providers: Optional[List[str]] = None,
+        annotate_full_name: Union[str, bool] = False
+    ):
         qs = User.objects
         if select_related:
             qs = qs.select_related(*select_related)
@@ -87,6 +90,14 @@ class UsersService:
                     "socialaccount_set",
                     queryset=SocialAccount.objects.filter(provider__in=social_providers),
                 )
+            )
+        if annotate_full_name:
+            if isinstance(annotate_full_name, str):
+                full_name_alias = annotate_full_name
+            else:
+                full_name_alias = "full_name"
+            qs = qs.annotate(
+                **{full_name_alias: Concat("first_name", Value(" "), "last_name")}
             )
         qs = qs.filter(is_active=True).exclude(username="AnonymousUser").all()
 

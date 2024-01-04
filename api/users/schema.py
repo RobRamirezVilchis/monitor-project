@@ -18,7 +18,7 @@ class Fix_UsersWhitelistListApi(OpenApiViewExtension):
             
             @extend_schema(
                 parameters=[
-                    self.target.FilterSerializer,
+                    self.target.FiltersSerializer,
                     *get_openapi_pagination_parameters(),
                 ],
                 responses = get_polymorphic_proxy_pagination_serializer(
@@ -65,7 +65,7 @@ class Fix_UserAccessListApi(OpenApiViewExtension):
             
             @extend_schema(
                 parameters=[
-                    self.target.FilterSerializer,
+                    self.target.FiltersSerializer,
                     *get_openapi_pagination_parameters(),
                 ],
                 responses = get_polymorphic_proxy_pagination_serializer(

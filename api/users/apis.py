@@ -28,8 +28,11 @@ class UsersListApi(APIView):
     permission_classes = [IsAuthenticated, UsersPermissions]
 
     class FiltersSerializer(serializers.Serializer):
-        search = serializers.CharField(max_length=254, required=False)
-        sort = serializers.CharField(max_length=254, required=False)
+        search = serializers.CharField(required=False, allow_blank=True)
+        sort = serializers.CharField(required=False)
+        full_name = serializers.CharField(required=False, allow_blank=True)
+        email = serializers.CharField(required=False, allow_blank=True)
+        roles = serializers.CharField(required=False)
 
     class OutputSerializer(serializers.Serializer):
         id = serializers.IntegerField()
@@ -59,7 +62,8 @@ class UsersListApi(APIView):
                     "emailaddress_set",
                     queryset=EmailAddress.objects.filter(primary=True),
                 )
-            ]
+            ],
+            annotate_full_name=True,
         )
         return get_paginated_response(
             queryset         = qs,
@@ -196,21 +200,21 @@ class UserRolesListApi(APIView):
 class UsersWhitelistListApi(APIView):
     permission_classes = [IsAuthenticated, UsersWhitelistPermissions]
 
-    class FilterSerializer(serializers.Serializer):
-        search = serializers.CharField(max_length=254, required=False)
-        sort = serializers.CharField(max_length=254, required=False)
+    class FiltersSerializer(serializers.Serializer):
+        search = serializers.CharField(required=False, allow_blank=True)
+        sort = serializers.CharField(required=False)
 
     class OutputSerializer(serializers.Serializer):
         id = serializers.IntegerField(required=True)
-        email = serializers.EmailField(max_length=254, required=True)
-        group = serializers.CharField(max_length=254, required=True)
+        email = serializers.EmailField(required=True)
+        group = serializers.CharField(required=True)
         user = CommonUserSerializer(required=False, read_only=True)
 
     def get(self, request, *args, **kwargs):
         """
         Returns a list of whitelisted users.
         """
-        filters_serializer = self.FilterSerializer(data=request.query_params)
+        filters_serializer = self.FiltersSerializer(data=request.query_params)
         filters_serializer.is_valid(raise_exception=True)
         qs = UserWhitelistService.list(filters=filters_serializer.validated_data)
         return get_paginated_response(
@@ -275,11 +279,11 @@ class UsersWhitelistDetailApi(APIView):
 class UserAccessListApi(APIView):
     permission_classes = [IsAuthenticated, UserAccessPermissions]
 
-    class FilterSerializer(serializers.Serializer):
+    class FiltersSerializer(serializers.Serializer):
         start_date = serializers.DateTimeField(required=False)
         end_date = serializers.DateTimeField(required=False)
-        search = serializers.CharField(max_length=254, required=False)
-        sort = serializers.CharField(max_length=254, required=False)
+        search = serializers.CharField(required=False, allow_blank=True)
+        sort = serializers.CharField(required=False)
 
     class OutputSerializer(serializers.Serializer):
         id = serializers.IntegerField(source="user.id")
@@ -288,7 +292,7 @@ class UserAccessListApi(APIView):
         access = serializers.IntegerField()
 
     def get(self, request, *args, **kwargs):
-        filters_serializer = self.FilterSerializer(data=request.query_params)
+        filters_serializer = self.FiltersSerializer(data=request.query_params)
         filters_serializer.is_valid(raise_exception=True)
         qs = UserAccessService.list_grouped(filters=filters_serializer.validated_data)
         qs = UsersService.replace_user_ids(qs, prefetch_social_accounts=True)

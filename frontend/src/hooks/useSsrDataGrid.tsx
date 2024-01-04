@@ -133,6 +133,12 @@ export interface UseDataGridSsrOptions<
       [K in keyof State]?: any;
     };
   };
+
+  /** 
+   * If true, all the string values will be trimmed before creating the `queryVariables`.
+   * @default true
+   */
+  trimStrings?: boolean;
 }
 
 export type ReducedQueryParams<T> = {
@@ -190,6 +196,7 @@ export const useSsrDataGrid = <
     
     queryStateOptions,
     transform: _transform,
+    trimStrings = true,
   } = options || {};
 
   const transform = useMemo<typeof _transform>(() => ({
@@ -334,10 +341,13 @@ export const useSsrDataGrid = <
 
     if (removeEmpty) {
       for (const key in vars) {
-        if (vars[key] === undefined 
-            || vars[key] === null 
-            || (vars[key] as any) === "" 
-            || (Array.isArray(vars[key]) && (vars[key] as any[]).length === 0)
+        let current: any = vars[key];
+        if (trimStrings && typeof current === "string")
+          current = current.trim();
+        if (current === undefined
+            || current === null
+            || current === ""
+            || (Array.isArray(current) && current.length === 0)
         ) {
           delete vars[key];
         }
@@ -345,7 +355,7 @@ export const useSsrDataGrid = <
     }
 
     return vars as any;
-  }, [removeEmpty, state, transform]);
+  }, [removeEmpty, state, transform, trimStrings]);
 
   const dataGridConfig = useMemo<Omit<DataGridOptions<any, any>, "data" | "columns">>(() => {
     const _dataGridConfig: Omit<DataGridOptions<any, any>, "data" | "columns"> = {

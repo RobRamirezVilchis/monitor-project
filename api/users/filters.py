@@ -2,6 +2,9 @@ from django_filters import rest_framework as rf_filters
 
 from common import filters
 
+class CharInFilter(rf_filters.BaseInFilter, rf_filters.CharFilter):
+    lookup_expr="in"
+
 
 class UsersFilter(rf_filters.FilterSet):
     search = filters.SearchFilter(
@@ -10,6 +13,7 @@ class UsersFilter(rf_filters.FilterSet):
             # "groups__name",
             "first_name",
             "last_name",
+            "full_name",
             "username",
         ],
         distinct=True,
@@ -21,9 +25,13 @@ class UsersFilter(rf_filters.FilterSet):
             ("id", "id"),
             ("first_name", "first_name"),
             ("last_name", "last_name"),
+            ("full_name", "full_name"),
             ("username", "username"),
         ),
     )
+    full_name = rf_filters.CharFilter(lookup_expr="icontains")
+    email = rf_filters.CharFilter(lookup_expr="icontains")
+    roles = CharInFilter(field_name="groups__name", distinct=True)
 
 
 class UserAccessLogFilter(rf_filters.FilterSet):
