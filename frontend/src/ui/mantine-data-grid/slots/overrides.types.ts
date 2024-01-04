@@ -15,7 +15,7 @@ import type {
   RangeSliderProps,
   LoadingOverlayProps,
 } from "@mantine/core";
-import type { DateInputProps, DateTimePickerProps } from "@mantine/dates";
+import type { DateInputProps } from "@mantine/dates";
 import type { TablerIconsProps } from "@tabler/icons-react";
 
 import type { 
