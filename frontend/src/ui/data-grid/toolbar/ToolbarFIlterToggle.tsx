@@ -18,7 +18,17 @@ const ToolbarFilterToggle = <TData extends RowData>({
   const IconButton = getSlotOrNull(instance.options.slots?.baseIconButton);
   const Tooltip =  getSlotOrNull(instance.options.slots?.baseTooltip);
 
-  const activeFilters = instance.getState().columnFilters.length;
+  // const activeFilters = instance.getState().columnFilters.length;
+  const activeFilters = instance.getState().columnFilters.reduce((acc, curr) => {
+    // Ignore empty filters
+    if (curr.value === undefined
+      || curr.value === null
+      || curr.value === ""
+      || (Array.isArray(curr.value) && curr.value.length === 0)
+    )
+      return acc;
+    return ++acc;
+  }, 0);
 
   return (
     <Badge 
