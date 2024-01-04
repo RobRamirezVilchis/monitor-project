@@ -27,7 +27,7 @@ export interface UserFormProps {
 
 const schema = z.object({
   // username: z.string().max(150),
-  email: z.string().email({ message: "Ingrese un email válido" }),
+  email: z.string().email("Ingrese un email válido"),
   first_name: z.string().max(150),
   last_name: z.string().max(150),
   roles: z.array(z.custom<Role>()),

@@ -75,22 +75,12 @@ const DataGridExamplePage = () => {
     },
     onRowSelectionChange: setSelectedRows,
     classNames: {
-      root: "h-full !border-none bg-white overflow-hidden",
+      root: "h-full !border-none overflow-hidden",
       columnHeaders: {
-        root: "bg-neutral-800 text-white rounded-t-md",
+        root: "rounded-t-md",
       },
       columnHeadersCell: {
         label: "text-sm !font-normal",
-        actions: "bg-neutral-800",
-        dragIsOver: {
-          label: "bg-red-100",
-        },
-        dragOverlay: {
-          label: "!bg-blue-200",
-        }
-      },
-      columnFooters: {
-        root: "bg-neutral-800 text-white",
       },
       columnFootersCell: {
         content: "text-sm !font-normal",
@@ -99,31 +89,13 @@ const DataGridExamplePage = () => {
       //   focused: "bg-red-100",
       //   content: "text-sm",
       // },
-      cell: cell => ({
-        focused: "!bg-red-100",
-        content: "text-sm",
-        root: cell?.row.original.id === 2 && cell.column.id === "id" ? "bg-green-200" : undefined,
-      }),
       // row: {
       //   selected: "!bg-red-200",
       // },
-      row: row => ({
-        root: clsx("!border-none", {
-          "bg-neutral-50": row.original.id % 2 === 0,
-          "bg-neutral-200": row.original.id % 2 !== 0,
-        }),
-        selected: "!bg-red-200",
-      })
     },
     // slots: {
     //   loadingOverlay: LoadingOverlay,
     // },
-    slotProps: {
-      columnMenuIconButton: {
-        color: "white",
-        radius: "sm",
-      },
-    },
     filterFns: {
       "test": () => false,
     },
@@ -370,7 +342,7 @@ const cols2: ColumnDef<ExampleData2>[] = [
     header: () => "Color",
     size: 150,
     // filterVariant: "multi-select",
-    filterVariant: "multi-autocomplete",
+    filterVariant: "multi-select",
     filterFn: "arrIncludesSome",
     filterProps: {
       options: [

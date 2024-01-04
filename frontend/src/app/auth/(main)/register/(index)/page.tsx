@@ -15,8 +15,8 @@ import { TextInput, PasswordInput, MeteredPasswordInput } from "@/ui/core";
 import { showSuccessNotification, showErrorNotification } from "@/ui/notifications";
 
 const schema = z.object({
-  first_name: z.string().nonempty("El nombre es requerido"),
-  last_name: z.string().nonempty("El apellido es requerido"),
+  first_name: z.string().min(1, "El nombre es requerido"),
+  last_name: z.string().min(1, "El apellido es requerido"),
   email: z.string().email("Ingrese un email válido"),
   password1: z.string({ required_error: "La contraseña es requerida" }).regex(
     /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d@$!%*?&]{8,}$/, 

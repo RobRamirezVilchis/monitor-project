@@ -14,8 +14,8 @@ export interface NewUserFormProps {
 }
 
 const schema = z.object({
-  email: z.string().email({ message: "Ingrese un email válido" }),
-  group: z.string().nonempty({ message: "El grupo es requerido" }),
+  email: z.string().email("Ingrese un email válido"),
+  group: z.string().min(1, "El grupo es requerido"),
 });
 
 export const NewUserForm = ({
