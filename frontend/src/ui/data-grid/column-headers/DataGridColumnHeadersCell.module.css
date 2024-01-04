@@ -40,16 +40,17 @@
 }
 
 .actions {
-    position: absolute;
-    right: 0;
     align-items: center;
     gap: 0.25rem;
     display: flex;
-    visibility: hidden;
 }
 
-.root:hover .actions {
-    visibility: visible;
+.actions--autoHide {
+    display: none;
+}
+
+.root--autoHideActions:hover .actions {
+    display: flex;
 }
 
 .filter {

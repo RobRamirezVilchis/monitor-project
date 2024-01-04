@@ -310,6 +310,12 @@ PartialKeys<DataGridOptionsResolved<TData>, "getCoreRowModel" | "onStateChange" 
    * @default false
    */
   enableColumnActions?: boolean;
+  /**
+   * If true, the column actions menu will be automatically
+   * hidden when the user pointer leaves the column header.
+   * @default false
+   */
+  autoHideColumnActions?: boolean;
   enableRowNumbering?: boolean;
   rowNumberingMode?: "original" | "static";
 

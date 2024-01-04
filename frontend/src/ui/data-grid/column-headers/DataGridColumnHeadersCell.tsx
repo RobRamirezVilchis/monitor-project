@@ -37,6 +37,7 @@ const DataGridColumnHeadersCell = <TData extends RowData, TValue>({
         "DataGridColumnHeadersCell-root", 
         styles.root,
         {
+          [styles["root--autoHideActions"]]: instance.options.autoHideColumnActions,
           [`${styles.overlay} ${instance.options.classNames?.columnHeadersCell?.dragOverlay?.root}`]: isOverlay,
           [`${styles.draggableOver} ${instance.options.classNames?.columnHeadersCell?.dragIsOver?.root}`]: droppableCtx?.isOver,
           [`${styles.verticalPadding}`]: instance.getState().columnFiltersOpen,
@@ -92,7 +93,9 @@ const DataGridColumnHeadersCell = <TData extends RowData, TValue>({
 
             {header.subHeaders.length === 0 && !isOverlay ? (
               <div
-                className={clsx("DataGridColumnHeadersCell-actions", styles.actions, instance.options.classNames?.columnHeadersCell?.actions, colDefClassNames?.actions)}
+                className={clsx("DataGridColumnHeadersCell-actions", styles.actions, instance.options.classNames?.columnHeadersCell?.actions, colDefClassNames?.actions, {
+                  [styles["actions--autoHide"]]: instance.options.autoHideColumnActions,
+                })}
                 style={{
                   ...instance.options.styles?.columnHeadersCell?.actions,
                   ...columnDef.headerStyles?.actions,
