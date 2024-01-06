@@ -177,11 +177,12 @@ class CustomUserDetailsSerializer(UserDetailsSerializer):
     permissions = PermissionSerializer(many=True, read_only=True, source="user_permissions")
     # permissions = serializers.SerializerMethodField()
     extra = serializers.SerializerMethodField()
+    superuser = serializers.BooleanField(read_only=True, source="is_superuser")
 
     class Meta:
         model = UserModel
-        fields = ["id", "email", "first_name", "last_name", "roles", "permissions", "extra"]
-        read_only_fields = ["id", "email"]
+        fields = ["id", "email", "first_name", "last_name", "roles", "permissions", "extra", "superuser"]
+        read_only_fields = ["id", "email", "extra", "roles", "superuser"]
 
     def get_permissions(self, obj):
         return obj.get_all_permissions()
