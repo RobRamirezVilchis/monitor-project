@@ -48,7 +48,10 @@ const MainLayout = ({
     },
   ]);
   const visibleLinks = useMemo(
-    () => links.filter(link => isUserInAuthorizedRoles(user, link.rolesWhitelist, link.rolesBlacklist)), 
+    () => links.filter(link => isUserInAuthorizedRoles(user, {
+      rolesWhitelist: link.rolesWhitelist,
+      rolesBlacklist: link.rolesBlacklist,
+    })), 
     [links, user]
   );
 

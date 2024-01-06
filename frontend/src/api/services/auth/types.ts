@@ -21,6 +21,12 @@ export interface User {
   superuser?: boolean;
 }
 
+export interface UserAuthorizationPolicies {
+  rolesWhitelist?: Role[];
+  rolesBlacklist?: Role[];
+  permissions?: string[];
+}
+
 export enum AuthError {
   IncorrectCredentials,
   EmailNotVerified,
