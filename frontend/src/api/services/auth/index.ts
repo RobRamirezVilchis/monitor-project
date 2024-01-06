@@ -1,4 +1,4 @@
-import { AuthError, LoginInfo, LoginUserData, RefreshTokenResponse, RegisterUserData, Role, UpdateUserData, User, UserAuthorizationPolicies } from "./types";
+import { AuthError, LoginInfo, LoginUserData, RefreshTokenResponse, RegisterUserData, UpdateUserData, User, UserAuthorizationPolicies } from "./types";
 import { Id } from "@/api/types";
 import api from "../..";
 import http from "@/api/http";
