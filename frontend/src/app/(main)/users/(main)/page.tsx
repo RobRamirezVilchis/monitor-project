@@ -10,15 +10,13 @@ import { showSuccessNotification, showErrorNotification } from "@/ui/notificatio
 import { useUsersQuery } from "@/api/queries/users";
 import { getUserRoleLocalized } from "@/api/services/users";
 import { ColumnDef } from "@/ui/data-grid/types";
-import { useDataGrid } from "@/hooks/useDataGrid";
+import { useDataGrid, useSsrDataGrid, usePrefetchPaginatedAdjacentQuery } from "@/hooks/data-grid";
 import { UserCreateData } from "@/api/services/users/types";
 import { useCreateUserMutation } from "@/api/mutations/users";
 import DataGrid from "@/ui/data-grid/DataGrid";
 
 import { IconPlus } from "@tabler/icons-react";
 import { withAuth } from "@/components/auth/withAuth";
-
-import { useSsrDataGrid, usePrefetchPaginatedAdjacentQuery } from "@/hooks/useSsrDataGrid";
 
 const UsersPage = () => {
   const {

@@ -3,7 +3,7 @@ import { FetchQueryOptions } from "@tanstack/react-query";
 import { useEffect, useMemo, useState } from "react";
 import { useImmer } from "use-immer";
 
-import { QueryParam, QueryParams, QueryStateOptions, useQueryState } from "./shared";
+import { QueryParam, QueryParams, QueryStateOptions, useQueryState } from "../shared";
 import { Prettify } from "@/utils/types";
 import { UseCreatedQueryResult } from "@/api/helpers/createQuery";
 import { DataGridOptions } from "@/ui/data-grid/types";

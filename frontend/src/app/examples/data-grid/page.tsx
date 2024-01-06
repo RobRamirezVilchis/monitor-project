@@ -5,12 +5,12 @@ import clsx from "clsx";
 
 import dataGridExampleStyles from "./DataGridExample.module.css";
 
-import { exampleData, exampleData2, ExampleData, ExampleData2 } from "./Data";
 import { ColumnDef, SlotOverridesSignature } from "@/ui/data-grid/types";
-import DataGrid from "@/ui/data-grid/DataGrid";
-import { useDataGrid } from "@/ui/mantine-data-grid/useDataGrid";
-import { LoadingOverlay as MLoadingOverlay } from "@mantine/core";
 import { es } from "@/ui/data-grid/locales/es";
+import { exampleData, exampleData2, ExampleData, ExampleData2 } from "./Data";
+import { LoadingOverlay as MLoadingOverlay } from "@mantine/core";
+import { useDataGrid } from "@/ui/mantine-data-grid/useDataGrid";
+import DataGrid from "@/ui/data-grid/DataGrid";
 
 import { Icon3dRotate } from "@tabler/icons-react";
 import { useEffect, useRef, useState } from "react";

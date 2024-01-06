@@ -3,19 +3,18 @@
 import { useState } from "react";
 import { Button, Modal } from "@mantine/core";
 
+import { ColumnDef } from "@/ui/data-grid/types";
 import { DeleteUserAction } from "./Actions";
 import { NewUserForm } from "./NewUserForm";
 import { Role, User } from "@/api/services/auth/types"; 
 import { RoleSelector } from "./RoleSelector";
 import { showSuccessNotification, showErrorNotification } from "@/ui/notifications";
 import { useAddToWhitelistMutation } from "@/api/mutations/users";
+import { useDataGrid, usePrefetchPaginatedAdjacentQuery, useSsrDataGrid  } from "@/hooks/data-grid";
 import { UserAvatar } from "@/components/shared/UserAvatar";
 import { useWhitelistQuery } from "@/api/queries/users";
 import { WhitelistItem } from "@/api/services/users/types";
-import { ColumnDef } from "@/ui/data-grid/types";
 import DataGrid from "@/ui/data-grid/DataGrid";
-import { useDataGrid } from "@/hooks/useDataGrid";
-import { usePrefetchPaginatedAdjacentQuery, useSsrDataGrid } from "@/hooks/useSsrDataGrid";
 
 import { IconPlus } from "@tabler/icons-react";
 

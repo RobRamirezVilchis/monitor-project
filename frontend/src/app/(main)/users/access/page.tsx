@@ -12,8 +12,7 @@ import { useUsersAccessQuery } from "@/api/queries/users";
 import { ColumnDef } from "@/ui/data-grid/types";
 import { es } from "@/ui/data-grid/locales/es";
 import DataGrid from "@/ui/data-grid/DataGrid";
-import { useDataGrid } from "@/hooks";
-import { useSsrDataGrid, usePrefetchPaginatedAdjacentQuery } from "@/hooks/useSsrDataGrid";
+import { useDataGrid, useSsrDataGrid, usePrefetchPaginatedAdjacentQuery } from "@/hooks/data-grid";
 
 function localDatetimeToLocalDateStr(datetime: Date | null) {
   return datetime ? formatDate(datetime, "yyyy-MM-dd") : "";
