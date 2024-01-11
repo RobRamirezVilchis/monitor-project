@@ -1,22 +1,30 @@
-import { AuthError, LoginInfo, LoginUserData, RefreshTokenResponse, RegisterUserData, Role, UpdateUserData, User } from "./types";
+import { AuthError, LoginInfo, LoginUserData, RefreshTokenResponse, RegisterUserData, UpdateUserData, User, UserAuthorizationPolicies } from "./types";
 import { Id } from "@/api/types";
 import api from "../..";
 import http from "@/api/http";
 
 /**
- * @returns True if the user role is in the rolesWhitelist and NOT in the rolesBlacklist
- * or if both lists are undefined. False otherwise or if the user is null or undefined.
+ * @returns `true` if any of the following conditions is met:
+ * - The user is a `superuser`
+ * - Any of the user roles in in the `rolesWhitelist` and NOT in the `rolesBlacklist`
+ * - If both the `rolesWhitelist` and the `rolesBlacklist` are undefined. 
+ * 
+ * Always returns `false` if the user is null or undefined.
  */
-export function isUserInAuthorizedRoles(
-  user?: User | null, rolesWhitelist?: Role[], rolesBlacklist?: Role[], permissionsRequired?: string[]
-) {
+export function isUserInAuthorizedRoles(user?: User | null, {
+  rolesWhitelist,
+  rolesBlacklist,
+  permissions,
+}: UserAuthorizationPolicies = {}) {
   if (!user) 
     return false;
 
+  if (user.superuser) return true;
+
   const whitelisted = !rolesWhitelist || rolesWhitelist.some(x => user.roles.includes(x));
   const blacklisted = rolesBlacklist && rolesBlacklist.some(x => user.roles.includes(x));
-  const permissions = !permissionsRequired || (!!user?.permissions && permissionsRequired.every(x => user.permissions!.includes(x)));
-  const authorized = whitelisted && !blacklisted && permissions;
+  const hasPermissions = !permissions || (!!user?.permissions && permissions.every(x => user.permissions!.includes(x)));
+  const authorized = whitelisted && !blacklisted && hasPermissions;
   return authorized;
 }
 

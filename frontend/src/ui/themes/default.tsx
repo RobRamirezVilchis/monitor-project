@@ -57,7 +57,20 @@ const defaultTheme = createTheme({
       "#0F0F0F", // "#141517", // segmented control bg
       "#000000", // "#101113",
     ],
+    lush: [
+      "#f6fbe9",
+      "#ebf3da",
+      "#d7e5b5",
+      "#c1d78d",
+      "#afcb6d",
+      "#a3c357",
+      "#9cbf4a",
+      "#87a83b", // Introid green
+      "#779531",
+      "#658224"
+    ],
   },
+  primaryColor: "gray",
   components: {
     // Core
     Autocomplete: {

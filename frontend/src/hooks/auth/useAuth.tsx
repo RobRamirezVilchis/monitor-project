@@ -142,7 +142,11 @@ export const useAuth = (options?: {
         }
       }
       else if (!opts.skipAuthorization) {
-        const authorized = isUserInAuthorizedRoles(user, opts.rolesWhitelist, opts.rolesBlacklist, opts.permissionsRequired);
+        const authorized = isUserInAuthorizedRoles(user, {
+          rolesWhitelist: opts.rolesWhitelist,
+          rolesBlacklist: opts.rolesBlacklist,
+          permissions: opts.permissionsRequired,
+        });
         setIsAuthorized(authorized);
         if (!authorized && opts.redirectIfNotAuthorized && opts.redirectTo) {
           if (opts.setCallbackUrlParam) {

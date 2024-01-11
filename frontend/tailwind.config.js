@@ -35,6 +35,18 @@ module.exports = {
           800: "#0F0F0F", // "#141517",
           900: "#000000", // "#101113",
         },
+        lush: {
+          50:  "var(--mantine-color-lush-0)",
+          100: "var(--mantine-color-lush-1)",
+          200: "var(--mantine-color-lush-2)",
+          300: "var(--mantine-color-lush-3)",
+          400: "var(--mantine-color-lush-4)",
+          500: "var(--mantine-color-lush-5)",
+          600: "var(--mantine-color-lush-6)",
+          700: "var(--mantine-color-lush-7)",
+          800: "var(--mantine-color-lush-8)",
+          900: "var(--mantine-color-lush-9)",
+        },
         // forem: {
         //   green: {
         //     50 : "var(--forem-green-50)",

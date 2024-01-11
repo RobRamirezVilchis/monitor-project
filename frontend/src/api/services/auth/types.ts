@@ -18,6 +18,13 @@ export interface User {
     picture?: string;
   };
   verified?: boolean;
+  superuser?: boolean;
+}
+
+export interface UserAuthorizationPolicies {
+  rolesWhitelist?: Role[];
+  rolesBlacklist?: Role[];
+  permissions?: string[];
 }
 
 export enum AuthError {
