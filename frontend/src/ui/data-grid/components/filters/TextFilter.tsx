@@ -26,9 +26,7 @@ const TextFilter = <TData extends RowData, TValue>({
   });
   const [internalValue, setInternalValue] = useState<string>(columnFilterValue);
   
-  const ClearIcon = getSlotOrNull(instance.options.slots?.clearIcon);
-
-  const IconButton = getSlotOrNull(instance.options.slots?.baseIconButton);
+  const CloseButton = getSlotOrNull(instance.options.slots?.closeButton);
   const TextInput = getSlotOrNull(instance.options.slots?.baseTextInput);
 
   return (
@@ -51,9 +49,11 @@ const TextFilter = <TData extends RowData, TValue>({
         }
         instance.options.slotProps?.baseTextInput?.onChange?.(valueOrEvent, ...args);
       }}
-      rightSection={
-        <IconButton
-          {...instance.options.slotProps?.baseIconButton}
+      rightSection={internalValue ? (
+        <CloseButton
+          {...instance.options.slotProps?.closeButton}
+          onMouseDown={(e: any) => e.preventDefault()}
+          tabIndex={-1}
           onClick={() => {
             if (!ref.current) return;
             ref.current.focus();
@@ -64,10 +64,8 @@ const TextFilter = <TData extends RowData, TValue>({
             nativeInputValueSetter?.call(ref.current, "");
             ref.current.dispatchEvent(new Event("change", { bubbles: true }));
           }}
-        >
-          <ClearIcon {...instance.options.slotProps?.clearIcon} />
-        </IconButton>
-      }
+        />
+      ) : null}
     />
   );
 }

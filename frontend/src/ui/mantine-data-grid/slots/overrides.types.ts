@@ -3,6 +3,7 @@ import type {
   ActionIconProps,
   ButtonProps,
   CheckboxProps,
+  CloseButtonProps,
   IndicatorProps,
   SelectProps,
   SwitchProps,
@@ -15,7 +16,7 @@ import type {
   RangeSliderProps,
   LoadingOverlayProps,
 } from "@mantine/core";
-import type { DateInputProps } from "@mantine/dates";
+import type { DateInputProps, DateTimePickerProps } from "@mantine/dates";
 import type { TablerIconsProps } from "@tabler/icons-react";
 
 import type { 
@@ -65,6 +66,8 @@ export interface MantineSlotOverrides {
   noResultsOverlay: NoResultsOverlayProps;
   noRowsOverlay   : NoRowsOverlayProps;
 
+  closeButton: CloseButtonProps;
+
   sortedAscendingIcon   : TablerIconsProps;
   sortedDescendingIcon  : TablerIconsProps;
   unsortedIcon          : TablerIconsProps;
@@ -90,5 +93,4 @@ export interface MantineSlotOverrides {
   globalSearchIcon      : TablerIconsProps;
   expandIcon            : TablerIconsProps;
   collapseIcon          : TablerIconsProps;
-  clearIcon             : TablerIconsProps;
 }

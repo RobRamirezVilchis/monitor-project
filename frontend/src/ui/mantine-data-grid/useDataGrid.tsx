@@ -2,6 +2,7 @@ import {
   ActionIcon,
   Button,
   Checkbox,
+  CloseButton,
   Indicator,
   Select,
   Switch,
@@ -40,7 +41,6 @@ import {
   IconMaximize,
   IconMinimize,
   IconSearch,
-  IconX,
 } from "@tabler/icons-react";
 import { RowData } from "@tanstack/react-table";
 
@@ -89,6 +89,8 @@ export const useDataGrid = <TData extends RowData, SlotPropsOverrides extends Sl
       noResultsOverlay      : NoResultsOverlay,
       noRowsOverlay         : NoRowsOverlay,
 
+      closeButton           : CloseButton,
+
       sortedAscendingIcon   : IconArrowUp,
       sortedDescendingIcon  : IconArrowDown,
       unsortedIcon          : IconArrowsSort,
@@ -114,7 +116,6 @@ export const useDataGrid = <TData extends RowData, SlotPropsOverrides extends Sl
       globalSearchIcon      : IconSearch,
       expandIcon            : IconChevronDown,
       collapseIcon          : IconChevronUp,
-      clearIcon             : IconX,
 
       ...slots,
     },
@@ -167,9 +168,8 @@ export const useDataGrid = <TData extends RowData, SlotPropsOverrides extends Sl
         withSeconds: true,
         ...slotProps?.baseDateTimeInput,
       },
-      clearIcon: {
-        size: "1rem",
-        ...slotProps?.clearIcon,
+      closeButton: {
+        variant: "transparent",
       },
     },
   });

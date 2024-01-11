@@ -462,6 +462,8 @@ export interface DataGridSlotBaseProps<TData extends RowData> {
   footer                : { instance: DataGridInstance<TData> };
   selectedRowCount      : { instance: DataGridInstance<TData>; selectedRowCount: number; };
 
+  closeButton           : { onClick?: (...args: unknown[]) => void; tabIndex?: number; onMouseDown?: (...args: unknown[]) => void; };
+
   sortedAscendingIcon   : {};
   sortedDescendingIcon  : {};
   unsortedIcon          : {};
@@ -487,7 +489,6 @@ export interface DataGridSlotBaseProps<TData extends RowData> {
   globalSearchIcon      : {};
   expandIcon            : {};
   collapseIcon          : {};
-  clearIcon             : {};
 }
 
 export type OverridableSlotKeys = keyof DataGridSlotBaseProps<any>;

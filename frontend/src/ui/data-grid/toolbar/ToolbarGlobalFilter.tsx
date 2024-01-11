@@ -23,9 +23,8 @@ const ToolbarGlobalFilter = <TData extends unknown>({
   });
 
   const GlobalSearchIcon = getSlotOrNull(instance.options.slots?.globalSearchIcon);
-  const ClearIcon = getSlotOrNull(instance.options.slots?.clearIcon);
 
-  const IconButton = getSlotOrNull(instance.options.slots?.baseIconButton);
+  const CloseButton = getSlotOrNull(instance.options.slots?.closeButton);
   const TextInput = getSlotOrNull(instance.options.slots?.baseTextInput);
 
   return (
@@ -46,9 +45,11 @@ const ToolbarGlobalFilter = <TData extends unknown>({
         instance.options.slotProps?.baseTextInput?.onChange?.(valueOrEvent, ...args);
       }}
       leftSection={<GlobalSearchIcon {...instance.options.slotProps?.globalSearchIcon} />}
-      rightSection={
-        <IconButton
-          {...instance.options.slotProps?.baseIconButton}
+      rightSection={instance.getState().globalFilter ? (
+        <CloseButton
+          {...instance.options.slotProps?.closeButton}
+          onMouseDown={(e: any) => e.preventDefault()}
+          tabIndex={-1}
           onClick={() => {
             if (!ref.current) return;
             ref.current.focus();
@@ -59,10 +60,8 @@ const ToolbarGlobalFilter = <TData extends unknown>({
             nativeInputValueSetter?.call(ref.current, "");
             ref.current.dispatchEvent(new Event("change", { bubbles: true }));
           }}
-        >
-          <ClearIcon {...instance.options.slotProps?.clearIcon} />
-        </IconButton>
-      }
+        />
+      ) : null}
     />
   );
 }
