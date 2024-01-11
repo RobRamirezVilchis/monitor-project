@@ -21,6 +21,20 @@
     justify-content: flex-end;
 }
 
+@media (max-width: $mantine-breakpoint-xs) {
+    .root {
+        flex-direction: column;
+    }
+
+    .left {
+        display: inline-block;
+    }
+
+    .left, .right {
+        width: 100%;
+    }
+}
+
 .columnsMenu-root {
     display: flex;
     flex-direction: column;
