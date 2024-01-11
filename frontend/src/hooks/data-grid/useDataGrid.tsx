@@ -53,7 +53,37 @@ export const useDataGrid: typeof _useDataGrid = (options) => _useDataGrid({
   slotProps: {
     baseTextInput: {
       classNames: {
-        input: "rounded-none border-t-0 border-l-0 border-r-0 border-b border-b-2 !bg-transparent",
+        input: "rounded-none border-t-0 border-l-0 border-r-0 border-b border-b-2 !bg-transparent !text-inherit",
+      },
+    } as any,
+    baseDateInput: {
+      classNames: {
+        input: "rounded-none border-t-0 border-l-0 border-r-0 border-b border-b-2 !bg-transparent !text-inherit",
+      },
+    } as any,
+    baseDateTimeInput: {
+      classNames: {
+        input: "rounded-none border-t-0 border-l-0 border-r-0 border-b border-b-2 !bg-transparent !text-inherit",
+      },
+    } as any,
+    baseAutocomplete: {
+      classNames: {
+        input: "rounded-none border-t-0 border-l-0 border-r-0 border-b border-b-2 !bg-transparent !text-inherit",
+      },
+    } as any,
+    baseMultiAutocomplete: {
+      classNames: {
+        input: "rounded-none border-t-0 border-l-0 border-r-0 border-b border-b-2 !bg-transparent !text-inherit",
+      },
+    } as any,
+    baseSelect: {
+      classNames: {
+        input: "rounded-none border-t-0 border-l-0 border-r-0 border-b border-b-2 !bg-transparent !text-inherit",
+      },
+    } as any,
+    baseMultiSelect: {
+      classNames: {
+        input: "rounded-none border-t-0 border-l-0 border-r-0 border-b border-b-2 !bg-transparent !text-inherit",
       },
     } as any,
   },

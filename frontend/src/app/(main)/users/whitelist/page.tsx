@@ -14,8 +14,7 @@ import { useWhitelistQuery } from "@/api/queries/users";
 import { WhitelistItem } from "@/api/services/users/types";
 import { ColumnDef } from "@/ui/data-grid/types";
 import DataGrid from "@/ui/data-grid/DataGrid";
-import { useDataGrid } from "@/hooks/useDataGrid";
-import { usePrefetchPaginatedAdjacentQuery, useSsrDataGrid } from "@/hooks/useSsrDataGrid";
+import { useDataGrid, usePrefetchPaginatedAdjacentQuery, useSsrDataGrid } from "@/hooks/data-grid";
 
 import { IconPlus } from "@tabler/icons-react";
 
