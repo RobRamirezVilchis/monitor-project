@@ -7,6 +7,7 @@ from django.core.mail.message import BadHeaderError
 from django.template.loader import render_to_string
 from django.template.exceptions import TemplateDoesNotExist
 
+
 AttachmentTuple = Tuple[str, str, str] # (filename, content, mimetype)
 
 def render_mail(
