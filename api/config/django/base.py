@@ -277,3 +277,4 @@ from config.settings.guardian import * # noqa
 from config.settings.openapi import * # noqa
 from config.settings.rest_auth import * # noqa
 from config.settings.session import * # noqa
+from config.settings.soft_delete import * # noqa
