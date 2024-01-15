@@ -31,7 +31,7 @@ const schema = z.object({
   first_name: z.string().max(150),
   last_name: z.string().max(150),
   roles: z.array(z.custom<Role>()),
-  send_email: z.boolean().optional(),
+  send_mail: z.boolean().optional(),
 });
 
 type UserFormValues = z.infer<typeof schema>;
@@ -53,7 +53,7 @@ export const UserForm = ({
       first_name: defaultValues?.first_name ?? "",
       last_name: defaultValues?.last_name ?? "",
       roles: defaultValues?.roles ??  [],
-      send_email: defaultValues?.send_email ?? (showSendMailField ? true : undefined),
+      send_mail: defaultValues?.send_mail ?? (showSendMailField ? true : undefined),
     },
     resolver: zodResolver(schema),
   });
@@ -122,7 +122,7 @@ export const UserForm = ({
           />
           {showSendMailField ? (
             <Checkbox
-              name="send_email"
+              name="send_mail"
               control={form.control}
               label="Enviar correo de activación"
               disabled={loading}

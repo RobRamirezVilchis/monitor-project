@@ -72,7 +72,7 @@ class UsersListApi(APIView):
         )
     
     class CreatePartialInputSerializer(serializers.Serializer):
-        send_email = serializers.BooleanField(default=True)
+        send_mail = serializers.BooleanField(default=True)
         roles = serializers.ListField(
             child=serializers.CharField(max_length=150),
             required=False,
@@ -127,7 +127,7 @@ class UsersListApi(APIView):
             "base_url": settings.FRONTEND_URL,
             "url_path":  settings.FRONTEND_REGISTER_PASSWORD_RESET_PATH,
 
-            "send_email": send_mail,
+            "send_mail": send_mail,
         }
 
         if send_mail:
