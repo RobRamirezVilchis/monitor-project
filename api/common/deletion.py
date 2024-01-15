@@ -14,6 +14,8 @@ from .signals import pre_soft_delete, post_soft_delete
 class SoftDeletableCollector(Collector):
 
     def delete(self, force: bool = False) -> Tuple[int, Dict[str, int]]:
+        from .models import SoftDeletableModel
+
         deletion_time = timezone.now()
 
         # sort instance collections
@@ -38,6 +40,7 @@ class SoftDeletableCollector(Collector):
                         )
                         setattr(instance, model._meta.pk.attname, None)
                     else:
+                        setattr(instance, settings.SOFT_DELETABLE_FIELD, deletion_time)
                         sql.UpdateQuery(model).update_batch(
                             [instance.pk], {settings.SOFT_DELETABLE_FIELD: deletion_time}, self.using
                         )
@@ -66,10 +69,10 @@ class SoftDeletableCollector(Collector):
 
             # fast deletes
             for qs in self.fast_deletes:
-                if force:
-                    count = qs._raw_delete(using=self.using)
-                else:
+                if issubclass(qs.model, SoftDeletableModel) and not force:
                     count = qs.update(**{settings.SOFT_DELETABLE_FIELD: deletion_time})
+                else:
+                    count = qs._raw_delete(using=self.using)
                 if count:
                     deleted_counter[qs.model._meta.label] += count
 
@@ -102,17 +105,17 @@ class SoftDeletableCollector(Collector):
             # delete instances
             for model, instances in self.data.items():
                 pk_list = [obj.pk for obj in instances]
-                if force:
-                    query = sql.DeleteQuery(model)
-                    count = query.delete_batch(pk_list, self.using)
-                    if count:
-                        deleted_counter[model._meta.label] += count
-                else:
+                if issubclass(model, SoftDeletableModel) and not force:
                     query = sql.UpdateQuery(model)
                     query.update_batch(
                         pk_list, {settings.SOFT_DELETABLE_FIELD: deletion_time}, self.using
                     )
                     deleted_counter[model._meta.label] += len(pk_list)
+                else:
+                    query = sql.DeleteQuery(model)
+                    count = query.delete_batch(pk_list, self.using)
+                    if count:
+                        deleted_counter[model._meta.label] += count
 
                 if not model._meta.auto_created:
                     for obj in instances:
@@ -131,8 +134,10 @@ class SoftDeletableCollector(Collector):
                                 origin=self.origin,
                             )
 
-        if force:
-            for model, instances in self.data.items():
-                for instance in instances:
+        for model, instances in self.data.items():
+            for instance in instances:
+                if issubclass(model, SoftDeletableModel) and not force:
+                    setattr(instance, settings.SOFT_DELETABLE_FIELD, deletion_time)
+                else:
                     setattr(instance, model._meta.pk.attname, None)
         return sum(deleted_counter.values()), dict(deleted_counter)

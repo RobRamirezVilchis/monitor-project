@@ -16,3 +16,11 @@ class SoftDeletableManager(models.Manager):
     def get_or_restore_or_create(self, defaults = None, **kwargs) -> Tuple[Any, bool]:
         """Restore the records in the current QuerySet or create them."""
         return self.get_queryset().restore_or_create(defaults=defaults, **kwargs)
+    
+    def unpatched(self):
+        """Return an unpatched version of the current QuerySet."""
+        return self.get_queryset().unpatched()
+
+    def deleted(self):
+        """Return a QuerySet of all deleted records."""
+        return self.get_queryset().unpatched().filter(**{f"{settings.SOFT_DELETABLE_FIELD}__isnull": False})
