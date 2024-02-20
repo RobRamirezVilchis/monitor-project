@@ -36,7 +36,7 @@ const MainLayout = ({
 }: MainLayoutProps) => { 
   const [isOpen, { toggle, close }] = useDisclosure(false);
   const { user } = useAuth();
-
+  
   const [links, setLinks] = useState<NavMenuItem[]>([
     {
       label: "Home",
@@ -45,6 +45,10 @@ const MainLayout = ({
     {
       label: "Users",
       href: "/users",
+    },
+    {
+      label: "Monitor",
+      href: "/test",
     },
   ]);
   const visibleLinks = useMemo(
@@ -170,6 +174,7 @@ const DesktopNavLink = ({
 
   );
 }
+
 
 interface MobileNavLinkProps {
   item: NavMenuItem;

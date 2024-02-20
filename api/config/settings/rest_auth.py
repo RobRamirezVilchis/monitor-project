@@ -9,7 +9,7 @@ from config.env import env
 
 ACCOUNT_ADAPTER = "authentication.adapter.AccountAdapter"
 ACCOUNT_EMAIL_REQUIRED = True
-ACCOUNT_EMAIL_VERIFICATION = "mandatory"
+ACCOUNT_EMAIL_VERIFICATION = "none"
 ACCOUNT_AUTHENTICATION_METHOD = "email"
 ACCOUNT_CHANGE_EMAIL = True
 
