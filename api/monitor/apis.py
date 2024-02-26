@@ -31,6 +31,10 @@ class UnitStatusList(APIView):
         on_trip = serializers.BooleanField()
         status = serializers.CharField()
         description = serializers.CharField(source='status.description')
+        last_connection = serializers.DateTimeField()
+        pending_events = serializers.IntegerField()
+        pending_status = serializers.IntegerField()
+
 
     def get(self, request, *args, **kwargs):
         devices = unitstatus_list()

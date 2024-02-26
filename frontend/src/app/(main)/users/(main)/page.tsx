@@ -39,6 +39,7 @@ const UsersPage = () => {
     variables: queryVariables,
     refetchOnWindowFocus: false,
   });
+  console.log(usersQuery);
   usePrefetchPaginatedAdjacentQuery({
     query: usersQuery,
     prefetchOptions: {

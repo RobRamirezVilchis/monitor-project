@@ -447,7 +447,7 @@ def get_industry_data(client):
 
 def update_driving_status():
     clients = {"tp": "Transpais",
-               "cemex": "CEMEX Concreto"}
+               "cemex": "CEMEX Concretos"}
     
     for client_alias, client_name in clients.items():
         output = get_driving_data(client_alias)
@@ -667,6 +667,7 @@ def update_industry_status():
         }
 
         # Obtener última conexión del registro del dispositivo
+        db_delay_time = timedelta(0)
         try:
             device_status = DeviceStatus.objects.get(device_id=device.id)
             db_last_connection = device_status.last_connection
@@ -682,7 +683,7 @@ def update_industry_status():
 
 
         # Si existe ese dato, ver si tiene más de 10 minutos. En ese caso, ponerlo como atrasado
-        if last_connection:
+        if last_connection and db_last_connection:
             difference = date_now - last_connection
 
             # Si hubo retraso entre el log nuevo y la última conexión según la DB
@@ -699,10 +700,14 @@ def update_industry_status():
                 update_values['delayed'] = False
                 update_values['delay_time'] = timedelta(0)
 
+        elif db_last_connection == None:  # En caso de que haya un nuevo dispositivo
+            update_values['delayed'] = False
+            update_values['delay_time'] = timedelta(0)
+
         # Si no han llegado logs en la última hora, sumar 10 minutos a retraso
         else: 
             update_values['delayed'] = True
-            update_values['delay_time'] = db_delay_time + timedelta(minutes=10)
+            update_values['delay_time'] = db_delay_time + timedelta(minutes=10) 
 
         conditions = [
             (update_values['delay_time'] > timedelta(minutes=60), 5, "5_1"),

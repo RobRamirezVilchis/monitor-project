@@ -47,6 +47,10 @@ const api = {
         list: "/api/v1/users/access/",
       }
     },
+    monitor: {
+      drivingStatus: "api/v1/monitor/driving-status/",
+      industryStatus: "api/v1/monitor/industry-status/"
+    }
   },
 };
 

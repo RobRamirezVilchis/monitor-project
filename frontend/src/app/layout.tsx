@@ -47,6 +47,7 @@ const RootLayout = ({
         <Script src="https://accounts.google.com/gsi/client" />
 
         <ColorSchemeScript defaultColorScheme={colorScheme} />
+        <title>Monitor</title>
       </head>
       <body className={clsx(fonts.roboto.className, "bg-[#f0f0f0] dark:bg-dark-800")} suppressHydrationWarning>
         <Providers>

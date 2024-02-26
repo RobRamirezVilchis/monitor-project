@@ -20,12 +20,12 @@ import GxCard from "../components/GxCard";
 import { IconPlus } from "@tabler/icons-react";
 import { withAuth } from "@/components/auth/withAuth";
 
-const SafeDrivingPage = () => {
+const IndustryPage = () => {
 
   const unitsQuery = useUnitsQuery({
     refetchOnWindowFocus: false,
   })
-
+  console.log(unitsQuery)
   const unitData = unitsQuery.data;
   
  
@@ -37,7 +37,7 @@ const SafeDrivingPage = () => {
     <section className="flex flex-col h-full lg:container mx-auto pb-2 md:pb-6">
       <div className="flex items-center">
         <h1 className="ml-10 text-5xl font-bold py-2 flex-1 my-6">
-          Safe Driving
+          Industry
         </h1>
       </div>
 
@@ -54,7 +54,7 @@ const SafeDrivingPage = () => {
   );
 };
 
-export default withAuth(SafeDrivingPage, {
+export default withAuth(IndustryPage, {
   rolesWhitelist: ["Admin"],
 });
   

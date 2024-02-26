@@ -47,8 +47,12 @@ const MainLayout = ({
       href: "/users",
     },
     {
-      label: "Monitor",
-      href: "/test",
+      label: "Driving",
+      href: "/monitor/safedriving",
+    },
+    {
+      label: "Industry",
+      href: "/monitor/industry",
     },
   ]);
   const visibleLinks = useMemo(
