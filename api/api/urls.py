@@ -9,4 +9,5 @@ urlpatterns = [
     path("auth/", include(("authentication.urls", "authentication"))),
     path("users/", include(("users.urls", "users"))),
     path("files/", include(("files.urls", "files"))),
+    path("monitor/", include(("monitor.urls", "monitor"))),
 ]

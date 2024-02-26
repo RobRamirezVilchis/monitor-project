@@ -40,6 +40,7 @@ LOCAL_APPS = [
     "files",
     "integrations",
     "users",
+    "monitor"
 ]
 
 THIRD_PARTY_APPS = [
@@ -56,6 +57,12 @@ THIRD_PARTY_APPS = [
     "guardian",
     "drf_standardized_errors",
     "drf_spectacular",
+    "django_crontab"
+]
+
+CRONJOBS = [
+    ('*/10 * * * *', 'monitor.cron.update_driving_status', '>> ' + os.path.join(BASE_DIR,'monitor/log/debug_sd.log' + ' 2>&1 ')),
+    ('*/10 * * * *', 'monitor.cron.update_industry_status', '>> ' + os.path.join(BASE_DIR,'monitor/log/debug_ind.log' + ' 2>&1 '))
 ]
 
 INSTALLED_APPS = [
