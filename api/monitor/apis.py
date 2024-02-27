@@ -51,6 +51,8 @@ class DeviceStatusList(APIView):
         last_connection = serializers.DateTimeField()
         status = serializers.CharField()
         description = serializers.CharField(source='status.description')
+        delayed = serializers.BooleanField()
+        delay_time = serializers.DurationField()
     
 
     def get(self, request, *args, **kwargs):

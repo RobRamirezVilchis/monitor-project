@@ -1,5 +1,6 @@
 import { 
-    Unit, 
+    Unit,
+    Device,
 } from "./types";
 import { Id, Paginated } from "@/api/types";
 import { Role, User } from "../auth/types";
@@ -14,6 +15,25 @@ export async function getUnits(
 try {
     const resp = await http.get<Unit[]>(
         api.endpoints.monitor.drivingStatus, 
+        {
+            ...config,
+        }
+    );
+    return resp.data;
+} catch (error) {
+    throw error;
+}
+}
+
+
+// Industry API ----------------------------------------------------------
+
+export async function getDevices(
+    config?: Parameters<typeof http.get>[1]
+) {
+try {
+    const resp = await http.get<Device[]>(
+        api.endpoints.monitor.industryStatus, 
         {
             ...config,
         }

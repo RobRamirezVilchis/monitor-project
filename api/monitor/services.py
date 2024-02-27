@@ -1,4 +1,6 @@
 from .models import *
+from django.db import OperationalError, transaction
+import time
 
 # Devices
 def device_create_or_update(*args, **kwargs):
@@ -19,12 +21,23 @@ def device_create_or_update(*args, **kwargs):
     )
     return created
 
-def update_or_create_devicestatus(args):
-    obj, created = DeviceStatus.objects.update_or_create(
-        device_id=args['device'].id,
-        defaults=args['defaults']
-    )
-    return obj
+
+
+def update_or_create_devicestatus(args, retries=3, delay=1):
+    try:
+        with transaction.atomic():
+            obj, created = DeviceStatus.objects.update_or_create(
+                device_id=args['device'].id,
+                defaults=args['defaults']
+            )
+        return obj
+    except OperationalError as e:
+        if retries > 0:
+            time.sleep(delay)  # Wait for a moment before retrying
+            return update_or_create_devicestatus(args, retries - 1, delay)
+        else:
+            raise e
+
 
 def create_device_history(args):
     DeviceHistory.objects.create(
@@ -90,13 +103,22 @@ def bulk_create_camerahistory(history_list):
         batch_size=1000
     )
 
-def update_or_create_camerastatus(args):
-    camera_status, created = CameraStatus.objects.update_or_create(
-        camera_id = args['camera_id'],
-        defaults = args['defaults']
+def update_or_create_camerastatus(args, retries=3, delay=1):
+    try:
+        with transaction.atomic():
+            camera_status, created = CameraStatus.objects.update_or_create(
+                camera_id = args['camera_id'],
+                defaults = args['defaults']
 
-    )
-    return camera_status
+            )
+           
+        return camera_status
+    except OperationalError as e:
+        if retries > 0:
+            time.sleep(delay)  # Wait for a moment before retrying
+            return update_or_create_camerastatus(args, retries - 1, delay)
+        else:
+            raise e
 
 def create_camerahistory(args):
     camera_history = CameraHistory.objects.create(

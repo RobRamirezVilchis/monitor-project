@@ -1,37 +1,22 @@
 "use client";
 
 import { useState } from "react";
-import { Button, Modal } from "@mantine/core";
+import { useDevicesQuery } from "@/api/queries/monitor"; 
+import DeviceCard from "../components/DeviceCard";
 
-
-import { User } from "@/api/services/auth/types"; 
-import { showSuccessNotification, showErrorNotification } from "@/ui/notifications";
-import { useUsersQuery } from "@/api/queries/users";
-import { useUnitsQuery } from "@/api/queries/driving"; 
-import { getUserRoleLocalized } from "@/api/services/users";
-import { ColumnDef } from "@/ui/data-grid/types";
-import { useDataGrid, useSsrDataGrid, usePrefetchPaginatedAdjacentQuery } from "@/hooks/data-grid";
-import { UserCreateData } from "@/api/services/users/types";
-import { useCreateUserMutation } from "@/api/mutations/users";
-import DataGrid from "@/ui/data-grid/DataGrid";
-
-import GxCard from "../components/GxCard";
-
-import { IconPlus } from "@tabler/icons-react";
 import { withAuth } from "@/components/auth/withAuth";
 
 const IndustryPage = () => {
 
-  const unitsQuery = useUnitsQuery({
+  const devicesQuery = useDevicesQuery({
     refetchOnWindowFocus: false,
   })
-  console.log(unitsQuery)
-  const unitData = unitsQuery.data;
+ 
+  const deviceData = devicesQuery.data;
+  console.log(deviceData);
   
  
   const [newUserFormOpen, setNewUserFormOpen] = useState(false);
-
-  
 
   return (
     <section className="flex flex-col h-full lg:container mx-auto pb-2 md:pb-6">
@@ -41,11 +26,9 @@ const IndustryPage = () => {
         </h1>
       </div>
 
-
       <div className="flex flex-row w-full gap-4 flex-wrap place-content-evenly">
-        {unitData?.map(unit => (
-          <GxCard name={unit.unit} status={unit.status} description={unit.description} 
-          onTrip={unit.on_trip} lastConnection={unit.last_connection}/>
+        {deviceData?.map((device) => (
+          <DeviceCard device={device} />
         ))}
       </div>
 

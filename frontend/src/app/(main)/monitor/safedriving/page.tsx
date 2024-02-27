@@ -9,7 +9,7 @@ import {
   showErrorNotification,
 } from "@/ui/notifications";
 import { useUsersQuery } from "@/api/queries/users";
-import { useUnitsQuery } from "@/api/queries/driving";
+import { useUnitsQuery } from "@/api/queries/monitor";
 import { getUserRoleLocalized } from "@/api/services/users";
 import { ColumnDef } from "@/ui/data-grid/types";
 import {
@@ -21,7 +21,7 @@ import { UserCreateData } from "@/api/services/users/types";
 import { useCreateUserMutation } from "@/api/mutations/users";
 import DataGrid from "@/ui/data-grid/DataGrid";
 
-import GxCard from "../components/GxCard";
+import UnitCard from "../components/UnitCard";
 
 import { IconPlus } from "@tabler/icons-react";
 import { withAuth } from "@/components/auth/withAuth";
@@ -32,31 +32,7 @@ const SafeDrivingPage = () => {
     refetchOnWindowFocus: false,
   });
 
-  //const unitData = unitsQuery.data;
-
-  const unitData: Unit[] = [
-    {
-      name: "1234",
-      description: "Problema",
-      last_connection: "2024-12-32T12:12:00",
-      on_trip: true,
-      status: "5_1",
-    },
-    {
-      name: "2455",
-      description: "Problema2",
-      last_connection: "2024-12-32T12:12:00",
-      on_trip: true,
-      status: "5_1",
-    },
-    {
-      name: "1234",
-      description: "Problema4",
-      last_connection: "2024-12-32T12:12:00",
-      on_trip: true,
-      status: "5_1",
-    },
-  ];
+  const unitData = unitsQuery.data;
 
   const [newUserFormOpen, setNewUserFormOpen] = useState(false);
 
@@ -70,7 +46,7 @@ const SafeDrivingPage = () => {
 
       <div className="flex flex-row w-full gap-4 flex-wrap place-content-evenly">
         {unitData?.map((unit) => (
-          <GxCard unit={unit} />
+          <UnitCard unit={unit} />
         ))}
       </div>
     </section>

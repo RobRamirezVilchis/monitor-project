@@ -466,9 +466,10 @@ def update_driving_status():
         hour_data = data["hour"]
         recent_data = data["ten_minutes"]
 
+        tz_utc = pytz.utc
+        date_now = tz_utc.localize(datetime.utcnow())
+        #date_now = date_now.astimezone(pytz.timezone("America/Mexico_City")).replace(tzinfo=pytz.utc)
 
-        date_now = datetime.utcnow().astimezone(pytz.timezone('America/Mexico_City')).replace(tzinfo=pytz.utc)
-        
         deployment = get_deployment('Safe Driving')
 
         client_args = {
@@ -540,8 +541,13 @@ def update_driving_status():
             bulk_create_camerahistory(camerahistory_list)
 
            
-            last_connection = datetime.fromisoformat(unit_logs['Ultima_actualizacion']).replace(
-                tzinfo=pytz.utc) if unit_logs['Ultima_actualizacion'] != 'null' else None
+            #last_connection = datetime.fromisoformat(unit_logs['Ultima_actualizacion']).replace(
+            #    tzinfo=pytz.timezone("America/Monterrey")) if unit_logs['Ultima_actualizacion'] != 'null' else None
+            last_connection = datetime.fromisoformat(unit_logs['Ultima_actualizacion']) + timedelta(hours=6) \
+                  if unit_logs['Ultima_actualizacion'] != 'null' else None
+            #last_connection = last_connection.astimezone(pytz.timezone('UTC')) if last_connection else None
+            print("Last connection", unit, unit_logs['Ultima_actualizacion'], last_connection)
+           
 
             unit_status_args = {
                 'unit_id': unit_obj.id,
@@ -583,7 +589,8 @@ def update_driving_status():
                 print(recent_unit_logs)
 
             last_connection = datetime.fromisoformat(recent_unit_logs['Ultima_actualizacion']).replace(
-                tzinfo=pytz.utc) if recent_unit_logs['Ultima_actualizacion'] != 'null' else None
+                tzinfo=pytz.timezone("America/Mexico_City")) if recent_unit_logs['Ultima_actualizacion'] != 'null' else None
+            last_connection = last_connection.astimezone(pytz.timezone('UTC')) if last_connection else None
             
             history_logs.append({
                 'unit': unit_obj,
@@ -634,7 +641,9 @@ def update_industry_status():
         hour_data = gx_data["hour"]
         recent_data = gx_data["ten_minutes"]
 
-        date_now = datetime.utcnow().astimezone(pytz.timezone('America/Mexico_City')).replace(tzinfo=pytz.utc)
+        tz_utc = pytz.utc
+        date_now = tz_utc.localize(datetime.utcnow())
+        #date_now = datetime.utcnow().astimezone(pytz.timezone('America/Mexico_City')).replace(tzinfo=pytz.utc)
         
         deployment = get_deployment('Industry')
 
@@ -678,8 +687,8 @@ def update_industry_status():
         last_connection = None
         if gx_data["last_connection"]:
             # Agregar nueva última conexión a los campos a actualizar
-            update_values['last_connection'] = gx_data["last_connection"]
-            last_connection = gx_data["last_connection"]
+            update_values['last_connection'] = gx_data["last_connection"] + timedelta(hours=6)
+            last_connection = gx_data["last_connection"] + timedelta(hours=6)
 
 
         # Si existe ese dato, ver si tiene más de 10 minutos. En ese caso, ponerlo como atrasado
@@ -700,7 +709,7 @@ def update_industry_status():
                 update_values['delayed'] = False
                 update_values['delay_time'] = timedelta(0)
 
-        elif db_last_connection == None:  # En caso de que haya un nuevo dispositivo
+        elif db_last_connection == None and last_connection:  # En caso de que haya un nuevo dispositivo
             update_values['delayed'] = False
             update_values['delay_time'] = timedelta(0)
 
