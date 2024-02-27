@@ -12,7 +12,7 @@ export async function getUnits(
     config?: Parameters<typeof http.get>[1]
 ) {
 try {
-    const resp = await http.get<number>(
+    const resp = await http.get<Unit[]>(
         api.endpoints.monitor.drivingStatus, 
         {
             ...config,

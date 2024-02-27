@@ -20,8 +20,10 @@ const useMyVarsQuery = createQuery({
   queryFn: async (ctx, vars) => {
     const [primaryKey, id] = ctx.queryKey;
     return {
-      primaryKey, id, data: randomString(6)
-    }
+      primaryKey,
+      id,
+      data: randomString(6),
+    };
   },
   staleTime: 1000 * 60 * 5,
   cacheTime: 1000 * 60 * 10,
@@ -33,7 +35,7 @@ const useMyMutation = createMutation({
     return {
       id,
       data: "test mutation",
-    }
+    };
   },
 });
 
@@ -42,18 +44,22 @@ const Test = () => {
   const query2 = useMyVarsQuery({
     variables: {
       id: 4,
-    }
+    },
   });
   const mutation = useMyMutation();
-  
+
   return (
     <div className="p-4">
       <div className="flex gap-4 p-2">
         <button
           className="bg-blue-500 text-white rounded-md p-2"
           onClick={() => {
-            query.setData(prev => prev ? (`new test data: ${randomString(6)}`) : undefined);
-            query2.setData(prev => prev ? { ...prev, data: randomString(6) } : undefined);
+            query.setData((prev) =>
+              prev ? `new test data: ${randomString(6)}` : undefined
+            );
+            query2.setData((prev) =>
+              prev ? { ...prev, data: randomString(6) } : undefined
+            );
           }}
         >
           Set Query Data
@@ -63,7 +69,7 @@ const Test = () => {
           className="bg-blue-500 text-white rounded-md p-2"
           onClick={async () => {
             const result = await mutation.mutateAsync({ id: 5 });
-            console.log("mutation result", result)
+            console.log("mutation result", result);
           }}
         >
           Call Mutation
@@ -73,9 +79,7 @@ const Test = () => {
       <div className="flex gap-12">
         <div>
           <span>Query 1:</span>
-          <p>
-            {query.data}
-          </p>
+          <p>{query.data}</p>
         </div>
         <div>
           <span>Query 2:</span>
@@ -85,7 +89,7 @@ const Test = () => {
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
 export default Test;

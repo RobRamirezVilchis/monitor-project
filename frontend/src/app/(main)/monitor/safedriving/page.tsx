@@ -3,14 +3,20 @@
 import { useState } from "react";
 import { Button, Modal } from "@mantine/core";
 
-
-import { User } from "@/api/services/auth/types"; 
-import { showSuccessNotification, showErrorNotification } from "@/ui/notifications";
+import { User } from "@/api/services/auth/types";
+import {
+  showSuccessNotification,
+  showErrorNotification,
+} from "@/ui/notifications";
 import { useUsersQuery } from "@/api/queries/users";
-import { useUnitsQuery } from "@/api/queries/driving"; 
+import { useUnitsQuery } from "@/api/queries/driving";
 import { getUserRoleLocalized } from "@/api/services/users";
 import { ColumnDef } from "@/ui/data-grid/types";
-import { useDataGrid, useSsrDataGrid, usePrefetchPaginatedAdjacentQuery } from "@/hooks/data-grid";
+import {
+  useDataGrid,
+  useSsrDataGrid,
+  usePrefetchPaginatedAdjacentQuery,
+} from "@/hooks/data-grid";
 import { UserCreateData } from "@/api/services/users/types";
 import { useCreateUserMutation } from "@/api/mutations/users";
 import DataGrid from "@/ui/data-grid/DataGrid";
@@ -19,19 +25,40 @@ import GxCard from "../components/GxCard";
 
 import { IconPlus } from "@tabler/icons-react";
 import { withAuth } from "@/components/auth/withAuth";
+import { Unit } from "@/api/services/monitor/types";
 
 const SafeDrivingPage = () => {
-
   const unitsQuery = useUnitsQuery({
     refetchOnWindowFocus: false,
-  })
+  });
 
-  const unitData = unitsQuery.data;
-  
- 
+  //const unitData = unitsQuery.data;
+
+  const unitData: Unit[] = [
+    {
+      name: "1234",
+      description: "Problema",
+      last_connection: "2024-12-32T12:12:00",
+      on_trip: true,
+      status: "5_1",
+    },
+    {
+      name: "2455",
+      description: "Problema2",
+      last_connection: "2024-12-32T12:12:00",
+      on_trip: true,
+      status: "5_1",
+    },
+    {
+      name: "1234",
+      description: "Problema4",
+      last_connection: "2024-12-32T12:12:00",
+      on_trip: true,
+      status: "5_1",
+    },
+  ];
+
   const [newUserFormOpen, setNewUserFormOpen] = useState(false);
-
-  
 
   return (
     <section className="flex flex-col h-full lg:container mx-auto pb-2 md:pb-6">
@@ -41,15 +68,11 @@ const SafeDrivingPage = () => {
         </h1>
       </div>
 
-
       <div className="flex flex-row w-full gap-4 flex-wrap place-content-evenly">
-        {unitData?.map(unit => (
-          <GxCard name={unit.unit} status={unit.status} description={unit.description} 
-          onTrip={unit.on_trip} lastConnection={unit.last_connection}/>
+        {unitData?.map((unit) => (
+          <GxCard unit={unit} />
         ))}
       </div>
-
-      
     </section>
   );
 };
@@ -57,4 +80,3 @@ const SafeDrivingPage = () => {
 export default withAuth(SafeDrivingPage, {
   rolesWhitelist: ["Admin"],
 });
-  
