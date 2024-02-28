@@ -1,7 +1,10 @@
+'use client'
+
 import { ReactNode, useState } from "react";
 import { formatDistanceToNow, parseISO } from "date-fns";
 import { es } from "date-fns/locale";
 import { Unit } from "@/api/services/monitor/types";
+import { useRouter } from 'next/navigation'
 
 
 
@@ -29,6 +32,7 @@ const statusNames: { [key in StatusKey]: string } = {
 
 const UnitCard = ({ unit: unit_obj }: GxCardProps) => {
   const [isHovering, setIsHovering] = useState(false);
+  const router = useRouter()
 
   const { unit, description, on_trip, last_connection, status, pending_events, pending_status } = unit_obj;
   const { setDefaultOptions } = require("date-fns");
@@ -47,32 +51,35 @@ const UnitCard = ({ unit: unit_obj }: GxCardProps) => {
   }
 
   return (
+    
     <div
-      onMouseEnter={() => setIsHovering(true)}
-      onMouseLeave={() => setIsHovering(false)}
-      className={`relative pb-6 w-64 rounded-lg p-6 border border-gray-300 shadow-md`}
-    >
-      <div className={`inline-flex mb-2 px-2.5 pt-1 pb-0.5 text-s font-semibold 
-      bg-${color}-100 border-2 border-${color}-500 rounded-full`}>
-        {statusNames[severity as StatusKey]}
-      </div>
       
+      className='group relative pb-6 w-64 rounded-lg p-6 border-2 border-${color}-400
+      transition duration-300 shadow-md hover:shadow-lg'
+      onClick={() => router.push(`/monitor/safedriving/${unit}`)}
+    >
+      <div className="flex gap-2 items-center mb-3">
+        <div className={`inline-flex px-2.5 pt-1 pb-0.5 text-s font-semibold 
+        bg-${color}-100 border-2 border-${color}-400 rounded-full`}>
+          {statusNames[severity as StatusKey]}
+        </div>
 
-      <div className="flex gap-3 mb-2 items-center">
-        <h3 className="ml-1 text-2xl font-bold">{unit}</h3>
         {on_trip && (
-          <div className="w-fit pt-1 px-2 text-center border-2 border-yellow-500 rounded-full">
-            En viaje
-          </div>
+            <div className="inline-flex px-2.5 pt-1 pb-0.5 text-s font-semibold text-center border-2 border-yellow-500 rounded-full">
+              En viaje
+            </div>
         )}
       </div>
 
-      {isHovering && (
-        <div className="absolute bottom-full mb-2 px-4 py-2 bg-gray-600 text-white rounded shadow-lg transition-transform duration-300">
-          <p>{pending_events} eventos pendientes</p>
-          <p>{pending_status} status pendientes</p>
-        </div>
-      )}
+      <div className="flex gap-3 mb-2 items-center">
+        <h3 className="ml-1 text-2xl font-bold">Unidad {unit}</h3>
+      </div>
+
+      <div className="absolute bottom-full mb-2 px-4 py-2 bg-gray-600 text-white rounded shadow-lg 
+      opacity-0 transition-opacity delay-200 duration-300 ease-in-out group-hover:opacity-100">
+        <p>{pending_events} eventos pendientes</p>
+        <p>{pending_status} status pendientes</p>
+      </div>
       
 
       <div className="flex items-center my-2">
@@ -80,8 +87,8 @@ const UnitCard = ({ unit: unit_obj }: GxCardProps) => {
           <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
         </svg>
         <p className="text-md ml-2 mt-1">{timeAgo}</p>
-        
       </div>
+
       <p className="text-lg px-2 py-1 bg-gray-200 border border-gray-200 rounded-md">{description}</p>
 
       
@@ -90,3 +97,22 @@ const UnitCard = ({ unit: unit_obj }: GxCardProps) => {
 };
 
 export default UnitCard;
+import React from 'react';
+
+const HoverableComponent = () => {
+  return (
+    <div className="relative flex justify-center items-center">
+      <div className="group p-4 bg-blue-500 text-white rounded cursor-pointer">
+        Hover over me!
+        <div
+          className="absolute z-10 bottom-full mb-2 px-4 py-2 bg-black 
+          text-white rounded shadow-lg opacity-0 transition-opacity duration-300 ease-in-out group-hover:opacity-100"
+          style={{ left: '50%', transform: 'translateX(-50%)' }} // Center the dialog
+        >
+          This is the dialog
+        </div>
+      </div>
+    </div>
+  );
+};
+

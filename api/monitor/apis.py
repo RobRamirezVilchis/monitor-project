@@ -43,6 +43,62 @@ class UnitStatusList(APIView):
         data = self.OutputSerializer(sorted_devices, many =True).data
 
         return Response(data)
+    
+
+class UnitHistoryList(APIView):
+    class OutputSerializer(serializers.Serializer):
+        unit = serializers.CharField()
+        register_datetime = serializers.DateTimeField() 
+        total = serializers.IntegerField()
+        restart = serializers.IntegerField()
+        reboot = serializers.IntegerField()
+        start = serializers.IntegerField()
+        data_validation = serializers.IntegerField()
+        source_missing = serializers.IntegerField()
+        camera_connection = serializers.IntegerField()
+        storage_devices = serializers.IntegerField()
+        forced_reboot = serializers.IntegerField()
+        read_only_ssd = serializers.IntegerField()
+        ignition = serializers.IntegerField()
+        aux = serializers.IntegerField()
+        others = serializers.IntegerField()
+        last_connection = serializers.DateTimeField()
+        pending_events = serializers.IntegerField()
+        pending_status = serializers.IntegerField()
+        restarting_loop = serializers.BooleanField()
+        on_trip = serializers.BooleanField()
+        status = serializers.CharField()
+
+
+    def get(self, request, unit, *args, **kwargs):
+        print(unit)
+        data = {'unit': unit}
+        logs = get_unithistory(data)
+
+        #sorted_devices = sorted(devices, key= lambda x: x.status.severity, reverse=True)
+        output = self.OutputSerializer(logs, many =True).data
+
+        return Response(output)
+
+
+class UnitStatusDetail(APIView):
+    class OutputSerializer(serializers.Serializer):
+        unit = serializers.CharField()
+        on_trip = serializers.BooleanField()
+        status = serializers.CharField()
+        description = serializers.CharField(source='status.description')
+        last_connection = serializers.DateTimeField()
+        pending_events = serializers.IntegerField()
+        pending_status = serializers.IntegerField()
+
+
+    def get(self, request, *args, **kwargs):
+        devices = unitstatus_list()
+
+        sorted_devices = sorted(devices, key= lambda x: x.status.severity, reverse=True)
+        data = self.OutputSerializer(sorted_devices, many =True).data
+
+        return Response(data)
 
 
 class DeviceStatusList(APIView):

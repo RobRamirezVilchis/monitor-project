@@ -456,12 +456,14 @@ def update_driving_status():
         else:
             print(f"No data for {client_name}")
 
-        if output == None:
+        if not output:
             output = get_driving_data(client_alias)
 
-        if output == None:
-            print(f"No data for {client_name}")
-            continue
+            if output:
+                data, camera_data, units_status = output
+            else:
+                print(f"No data for {client_name}")
+                continue
 
         hour_data = data["hour"]
         recent_data = data["ten_minutes"]
@@ -483,6 +485,7 @@ def update_driving_status():
             if client_alias == "cemex":
                 unit_logs["En_viaje"] = None
                 unit_logs["Estatus"] = None
+
 
             # Si una unidad entró en más de un nivel, tomar el más grave
             # Si cumple con dos reglas en un nivel, se toma la última (arreglar)
@@ -546,7 +549,7 @@ def update_driving_status():
             last_connection = datetime.fromisoformat(unit_logs['Ultima_actualizacion']) + timedelta(hours=6) \
                   if unit_logs['Ultima_actualizacion'] != 'null' else None
             #last_connection = last_connection.astimezone(pytz.timezone('UTC')) if last_connection else None
-            print("Last connection", unit, unit_logs['Ultima_actualizacion'], last_connection)
+          
            
 
             unit_status_args = {
@@ -588,9 +591,12 @@ def update_driving_status():
             if 'Ultima_actualizacion' not in recent_unit_logs:
                 print(recent_unit_logs)
 
-            last_connection = datetime.fromisoformat(recent_unit_logs['Ultima_actualizacion']).replace(
-                tzinfo=pytz.timezone("America/Mexico_City")) if recent_unit_logs['Ultima_actualizacion'] != 'null' else None
-            last_connection = last_connection.astimezone(pytz.timezone('UTC')) if last_connection else None
+            #last_connection = datetime.fromisoformat(recent_unit_logs['Ultima_actualizacion']).replace(
+            #    tzinfo=pytz.timezone("America/Mexico_City")) if recent_unit_logs['Ultima_actualizacion'] != 'null' else None
+            #last_connection = last_connection.astimezone(pytz.timezone('UTC')) if last_connection else None
+            last_connection = datetime.fromisoformat(unit_logs['Ultima_actualizacion']) + timedelta(hours=6) \
+                  if unit_logs['Ultima_actualizacion'] != 'null' else None
+                      
             
             history_logs.append({
                 'unit': unit_obj,

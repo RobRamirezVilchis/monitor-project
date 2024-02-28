@@ -52,3 +52,21 @@ def get_or_create_device(args):
         name = args["name"]
     )
     return device
+
+
+
+def get_unithistory(args):
+    import datetime
+    import pytz
+
+    date_now = datetime.datetime.now()
+    end_date = date_now.astimezone(pytz.timezone("America/Mexico_City")).replace(tzinfo=pytz.utc)
+    start_date = end_date - timedelta(hours=24)
+ 
+    #print(start_date, end_date)
+    logs = UnitHistory.objects.filter(
+        unit__name=args['unit'],
+        register_datetime__range = (start_date + timedelta(hours=6), end_date + timedelta(hours=6))
+    )
+
+    return logs

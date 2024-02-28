@@ -13,7 +13,7 @@ const IndustryPage = () => {
   })
  
   const deviceData = devicesQuery.data;
-  console.log(deviceData);
+
   
  
   const [newUserFormOpen, setNewUserFormOpen] = useState(false);

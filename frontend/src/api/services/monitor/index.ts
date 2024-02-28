@@ -1,6 +1,7 @@
 import { 
-    Unit,
-    Device,
+    UnitStatus,
+    UnitHistory,
+    DeviceStatus,
 } from "./types";
 import { Id, Paginated } from "@/api/types";
 import { Role, User } from "../auth/types";
@@ -12,17 +13,34 @@ import http from "@/api/http";
 export async function getUnits(
     config?: Parameters<typeof http.get>[1]
 ) {
-try {
-    const resp = await http.get<Unit[]>(
-        api.endpoints.monitor.drivingStatus, 
-        {
-            ...config,
-        }
-    );
-    return resp.data;
-} catch (error) {
-    throw error;
+    try {
+        const resp = await http.get<UnitStatus[]>(
+            api.endpoints.monitor.drivingStatus, 
+            {
+                ...config,
+            }
+        );
+        return resp.data;
+    } catch (error) {
+        throw error;
 }
+}
+
+export async function getUnitHistory(
+    unitName: string,
+    config?: Parameters<typeof http.get>[1]
+) {
+    try {
+        const resp = await http.get<UnitHistory>(
+            api.endpoints.monitor.drivingUnitHistory(unitName),
+            {
+                ...config
+            }
+        );
+        return resp.data;
+    } catch (error) {
+        throw error;
+    }
 }
 
 
@@ -31,15 +49,15 @@ try {
 export async function getDevices(
     config?: Parameters<typeof http.get>[1]
 ) {
-try {
-    const resp = await http.get<Device[]>(
-        api.endpoints.monitor.industryStatus, 
-        {
-            ...config,
-        }
-    );
-    return resp.data;
-} catch (error) {
-    throw error;
-}
+    try {
+        const resp = await http.get<DeviceStatus[]>(
+            api.endpoints.monitor.industryStatus, 
+            {
+                ...config,
+            }
+        );
+        return resp.data;
+    } catch (error) {
+        throw error;
+    }
 }

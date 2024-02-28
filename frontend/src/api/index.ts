@@ -1,4 +1,4 @@
-import { Id } from "./types";
+import { Id, UnitName } from "./types";
 
 const baseBackendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
 
@@ -49,7 +49,8 @@ const api = {
     },
     monitor: {
       drivingStatus: "api/v1/monitor/driving-status/",
-      industryStatus: "api/v1/monitor/industry-status/"
+      drivingUnitHistory: (unit: UnitName) => `api/v1/monitor/driving-status/${unit}/`,
+      industryStatus: "api/v1/monitor/industry-status/",
     }
   },
 };

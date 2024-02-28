@@ -42,7 +42,8 @@ class UnitStatusAdmin(admin.ModelAdmin):
 class UnitHistoryAdmin(admin.ModelAdmin):
     list_display = (
         'unit',
-        'register_date',
+        'register_datetime',
+        'last_connection',
         #'get_client',
         'total',
         'restart',
@@ -57,7 +58,7 @@ class UnitHistoryAdmin(admin.ModelAdmin):
         'others',
         'status',
         'restarting_loop',
-        'last_connection'
+        
     )
 
     search_fields = ('unit__name',)

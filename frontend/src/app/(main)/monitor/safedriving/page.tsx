@@ -1,31 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import { Button, Modal } from "@mantine/core";
 
-import { User } from "@/api/services/auth/types";
-import {
-  showSuccessNotification,
-  showErrorNotification,
-} from "@/ui/notifications";
-import { useUsersQuery } from "@/api/queries/users";
 import { useUnitsQuery } from "@/api/queries/monitor";
-import { getUserRoleLocalized } from "@/api/services/users";
-import { ColumnDef } from "@/ui/data-grid/types";
-import {
-  useDataGrid,
-  useSsrDataGrid,
-  usePrefetchPaginatedAdjacentQuery,
-} from "@/hooks/data-grid";
-import { UserCreateData } from "@/api/services/users/types";
-import { useCreateUserMutation } from "@/api/mutations/users";
-import DataGrid from "@/ui/data-grid/DataGrid";
 
 import UnitCard from "../components/UnitCard";
 
-import { IconPlus } from "@tabler/icons-react";
 import { withAuth } from "@/components/auth/withAuth";
-import { Unit } from "@/api/services/monitor/types";
+
 
 const SafeDrivingPage = () => {
   const unitsQuery = useUnitsQuery({
