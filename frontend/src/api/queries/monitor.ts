@@ -1,6 +1,6 @@
 import { createQuery } from "../helpers/createQuery";
 import { getUnits, getDevices, getUnitHistory } from "../services/monitor";
-import { Unit } from "../services/monitor/types";
+import { UnitFilters } from "../services/monitor/types";
 import defaultQueryClient from "../clients/defaultQueryClient";
 
 // Safe Driving API ----------------------------------------------------------
@@ -17,7 +17,7 @@ export const useUnitsQuery = createQuery({
 
 export const useUnitHistoryQuery = createQuery({
   queryPrimaryKey: "unit_history",
-  queryKeyVariables: (vars: Unit) => vars ? [vars] : [],
+  queryKeyVariables: (vars: UnitFilters) => vars ? [vars] : [],
   queryFn: (ctx, vars) => getUnitHistory(vars, { signal: ctx.signal }),
   cacheTime: 1000 * 60 * 5,  // 5 minutes
   staleTime: 1000 * 60 * 3,  // 3 minutes

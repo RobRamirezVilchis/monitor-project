@@ -42,6 +42,10 @@ export interface DeviceStatus {
   description: string | null;
 }
 
+export interface Unit{
+  name: string;
+}
+
 export interface UnitFilters extends Partial<PageNumberPaginationParams>{
   name: string;
 }

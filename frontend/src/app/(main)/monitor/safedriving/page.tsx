@@ -21,7 +21,7 @@ const SafeDrivingPage = () => {
   return (
     <section className="flex flex-col h-full lg:container mx-auto pb-2 md:pb-6">
       <div className="flex items-center">
-        <h1 className="ml-10 text-5xl font-bold py-2 flex-1 my-6">
+        <h1 className="text-5xl font-bold py-2 flex-1 my-6">
           Safe Driving
         </h1>
       </div>
