@@ -18,6 +18,7 @@ import { useNavLink } from "@/hooks/shared";
 import { isUserInAuthorizedRoles } from "@/api/services/auth";
 import { useAuth } from "@/hooks/auth";
 import { withAuth } from "@/components/auth/withAuth";
+import BrandForem from "@/ui/icons/BrandForem";
 
 interface NavMenuItem {
   label: string,
@@ -90,7 +91,8 @@ const MainLayout = ({
         {/* Desktop */}
         <div className="flex-1 hidden md:flex justify-between items-center gap-1">
           <Link href="/">
-            <span className="h-7">Logo</span>
+            <span className="h-7">Monitor</span>
+          
           </Link>
           <div className="flex gap-2 items-center mx-4">
             {visibleLinks.map((item) => <DesktopNavLink key={item.href} item={item} />)}
@@ -100,7 +102,7 @@ const MainLayout = ({
         {/* Mobile */}
         <div className="flex-1 flex md:hidden justify-center">
           <Link href="/">
-            <span className="h-6">Logo</span>
+            <span className="h-6">Monitor</span>
           </Link>
         </div>
 

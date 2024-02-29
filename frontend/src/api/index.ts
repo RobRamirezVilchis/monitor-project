@@ -49,7 +49,7 @@ const api = {
     },
     monitor: {
       drivingStatus: "api/v1/monitor/driving-status/",
-      drivingUnitHistory: (unit: UnitName) => `api/v1/monitor/driving-status/${unit}/`,
+      drivingUnitHistory: (unit: UnitName) => `api/v1/monitor/driving-status/history/${unit}/`,
       industryStatus: "api/v1/monitor/industry-status/",
     }
   },

@@ -4,7 +4,7 @@ import { useState } from "react";
 
 import { useUnitsQuery } from "@/api/queries/monitor";
 
-import UnitCard from "../components/UnitCard";
+import UnitCard from "../(components)/UnitCard";
 
 import { withAuth } from "@/components/auth/withAuth";
 
@@ -26,7 +26,7 @@ const SafeDrivingPage = () => {
         </h1>
       </div>
 
-      <div className="flex flex-row w-full gap-4 flex-wrap place-content-evenly">
+      <div className="flex flex-row w-full gap-4 flex-wrap ">
         {unitData?.map((unit) => (
           <UnitCard unit={unit} />
         ))}

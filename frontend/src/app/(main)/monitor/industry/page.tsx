@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useDevicesQuery } from "@/api/queries/monitor"; 
-import DeviceCard from "../components/DeviceCard";
+import DeviceCard from "../(components)/DeviceCard";
 
 import { withAuth } from "@/components/auth/withAuth";
 

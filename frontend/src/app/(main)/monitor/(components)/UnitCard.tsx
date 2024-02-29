@@ -3,13 +3,13 @@
 import { ReactNode, useState } from "react";
 import { formatDistanceToNow, parseISO } from "date-fns";
 import { es } from "date-fns/locale";
-import { Unit } from "@/api/services/monitor/types";
+import { Unit, UnitStatus } from "@/api/services/monitor/types";
 import { useRouter } from 'next/navigation'
 
 
 
 export interface GxCardProps {
-  unit: Unit;
+  unit: UnitStatus;
 }
 type StatusKey = 0 | 1 | 2 | 3 | 4 | 5;
 const statusColors: { [key in StatusKey]: string } = {
@@ -54,7 +54,7 @@ const UnitCard = ({ unit: unit_obj }: GxCardProps) => {
     
     <div
       
-      className='group relative pb-6 w-64 rounded-lg p-6 border-2 border-${color}-400
+      className='group relative pb-6 w-[18rem] rounded-lg p-6 border-2 border-${color}-400
       transition duration-300 shadow-md hover:shadow-lg'
       onClick={() => router.push(`/monitor/safedriving/${unit}`)}
     >
@@ -75,22 +75,20 @@ const UnitCard = ({ unit: unit_obj }: GxCardProps) => {
         <h3 className="ml-1 text-2xl font-bold">Unidad {unit}</h3>
       </div>
 
-      <div className="absolute bottom-full mb-2 px-4 py-2 bg-gray-600 text-white rounded shadow-lg 
-      opacity-0 transition-opacity delay-200 duration-300 ease-in-out group-hover:opacity-100">
-        <p>{pending_events} eventos pendientes</p>
-        <p>{pending_status} status pendientes</p>
-      </div>
-      
 
       <div className="flex items-center my-2">
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
           <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
         </svg>
-        <p className="text-md ml-2 mt-1">{timeAgo}</p>
+        <p className="text-sm ml-1">{timeAgo}</p>
       </div>
 
       <p className="text-lg px-2 py-1 bg-gray-200 border border-gray-200 rounded-md">{description}</p>
-
+      <div className="absolute bottom-full mb-2 px-4 py-2 bg-gray-600 text-white rounded shadow-lg 
+      opacity-0 transition-opacity delay-200 duration-300 ease-in-out group-hover:opacity-100">
+        <p>{pending_events} eventos pendientes</p>
+        <p>{pending_status} status pendientes</p>
+      </div>
       
     </div>
   );

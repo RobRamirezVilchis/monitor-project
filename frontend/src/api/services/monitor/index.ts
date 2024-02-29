@@ -2,6 +2,7 @@ import {
     UnitStatus,
     UnitHistory,
     DeviceStatus,
+    UnitFilters,
 } from "./types";
 import { Id, Paginated } from "@/api/types";
 import { Role, User } from "../auth/types";
@@ -27,13 +28,14 @@ export async function getUnits(
 }
 
 export async function getUnitHistory(
-    unitName: string,
+    filters?: UnitFilters,
     config?: Parameters<typeof http.get>[1]
 ) {
     try {
-        const resp = await http.get<UnitHistory>(
-            api.endpoints.monitor.drivingUnitHistory(unitName),
+        const resp = await http.get<Paginated<UnitHistory>>(
+            api.endpoints.monitor.drivingUnitHistory(filters.name),
             {
+                params: filters,
                 ...config
             }
         );

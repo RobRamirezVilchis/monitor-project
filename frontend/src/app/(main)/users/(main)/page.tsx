@@ -39,7 +39,7 @@ const UsersPage = () => {
     variables: queryVariables,
     refetchOnWindowFocus: false,
   });
-  console.log(usersQuery);
+
   usePrefetchPaginatedAdjacentQuery({
     query: usersQuery,
     prefetchOptions: {
@@ -59,6 +59,7 @@ const UsersPage = () => {
   });
   const [newUserFormOpen, setNewUserFormOpen] = useState(false);
 
+  console.log(usersQuery.data)
   const grid = useDataGrid<User>({
     data: usersQuery.data?.data || [],
     columns: cols,

@@ -1,3 +1,5 @@
+import { Id, PageNumberPaginationParams } from "../../types";
+
 export interface UnitStatus {
     unit: string;
     on_trip: boolean;
@@ -30,6 +32,7 @@ export interface UnitHistory {
     restarting_loop: Boolean,
     on_trip: boolean,
     status: string,
+    description: string,
   }
 
 export interface DeviceStatus {
@@ -39,6 +42,6 @@ export interface DeviceStatus {
   description: string | null;
 }
 
-export interface Unit {
+export interface UnitFilters extends Partial<PageNumberPaginationParams>{
   name: string;
 }

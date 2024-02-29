@@ -9,6 +9,7 @@ from rest_framework import status, filters
 
 from .selectors import *
 from .services import device_create_or_update
+from api.pagination import get_paginated_response, LimitOffsetPagination
 
 # Create your views here.
 class UnitList(APIView):
@@ -46,6 +47,9 @@ class UnitStatusList(APIView):
     
 
 class UnitHistoryList(APIView):
+    class Pagination(LimitOffsetPagination):
+        default_limit = 10
+
     class OutputSerializer(serializers.Serializer):
         unit = serializers.CharField()
         register_datetime = serializers.DateTimeField() 
@@ -68,17 +72,25 @@ class UnitHistoryList(APIView):
         restarting_loop = serializers.BooleanField()
         on_trip = serializers.BooleanField()
         status = serializers.CharField()
+        description = serializers.CharField(source='status.description')
 
 
     def get(self, request, unit, *args, **kwargs):
-        print(unit)
+  
         data = {'unit': unit}
-        logs = get_unithistory(data)
+        logs = get_unithistory(data)[::-1]
 
         #sorted_devices = sorted(devices, key= lambda x: x.status.severity, reverse=True)
         output = self.OutputSerializer(logs, many =True).data
 
-        return Response(output)
+        # return Response(output)
+        return get_paginated_response(
+            #pagination_class=self.Pagination,
+            serializer_class=self.OutputSerializer,
+            queryset=logs,
+            request=request,
+
+        )
 
 
 class UnitStatusDetail(APIView):
