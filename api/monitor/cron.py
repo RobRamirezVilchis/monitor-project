@@ -731,15 +731,15 @@ def update_industry_status():
             (update_values['batch_dropping'] > 0, 3, "3_2")
         ]
 
-        status = 1
+        severity = 1
         rule = "1_1"
         for condition, status, r in conditions:
             if condition:
-                status = status
+                severity = status
                 rule = r
 
         gxstatus_args = {
-            'severity': status,
+            'severity': severity,
             'name': rule,
             'deployment': deployment
         }

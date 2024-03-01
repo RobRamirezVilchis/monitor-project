@@ -70,3 +70,20 @@ def get_unithistory(args):
     )
 
     return logs
+
+
+def get_devicehistory(args):
+    import datetime
+    import pytz
+
+    date_now = datetime.datetime.now()
+    end_date = date_now.astimezone(pytz.timezone("America/Mexico_City")).replace(tzinfo=pytz.utc)
+    start_date = end_date - timedelta(hours=24)
+ 
+    #print(start_date, end_date)
+    logs = DeviceHistory.objects.filter(
+        device__name=args['device'],
+        register_datetime__range = (start_date + timedelta(hours=6), end_date + timedelta(hours=6))
+    )
+
+    return logs

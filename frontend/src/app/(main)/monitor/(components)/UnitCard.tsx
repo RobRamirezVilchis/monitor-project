@@ -1,6 +1,4 @@
-"use client";
-
-import { ReactNode, useState } from "react";
+import { useState } from "react";
 import { formatDistanceToNow, parseISO } from "date-fns";
 import { es } from "date-fns/locale";
 import { Unit, UnitStatus } from "@/api/services/monitor/types";
@@ -10,13 +8,13 @@ export interface GxCardProps {
   unit: UnitStatus;
 }
 type StatusKey = 0 | 1 | 2 | 3 | 4 | 5;
-const statusColors: { [key in StatusKey]: string } = {
-  0: "gray",
-  1: "blue",
-  2: "green",
-  3: "yellow",
-  4: "orange",
-  5: "red",
+const statusStyles: { [key in StatusKey]: string } = {
+  0: "bg-gray-100 border-gray-400",
+  1: "bg-blue-100 border-blue-400",
+  2: "bg-green-100 border-green-400",
+  3: "bg-yellow-100 border-yellow-400",
+  4: "bg-orange-100 border-orange-400",
+  5: "bg-red-100 border-red-400",
 };
 
 const statusNames: { [key in StatusKey]: string } = {
@@ -28,7 +26,7 @@ const statusNames: { [key in StatusKey]: string } = {
   5: "Crítico",
 };
 
-const UnitCard = ({ unit: unit_obj }: GxCardProps) => {
+const UnitCard = ({ unit: unit_status }: GxCardProps) => {
   const [isHovering, setIsHovering] = useState(false);
   const router = useRouter();
 
@@ -37,14 +35,13 @@ const UnitCard = ({ unit: unit_obj }: GxCardProps) => {
     description,
     on_trip,
     last_connection,
-    status,
+    severity,
     pending_events,
     pending_status,
-  } = unit_obj;
+  } = unit_status;
   const { setDefaultOptions } = require("date-fns");
 
-  let severity = Number(status.charAt(0));
-  const color = statusColors[severity as StatusKey];
+  const color = statusStyles[severity as StatusKey];
 
   let timeAgo: string;
   if (last_connection != null) {
@@ -65,20 +62,23 @@ const UnitCard = ({ unit: unit_obj }: GxCardProps) => {
       <div className="flex gap-2 items-center mb-3">
         <div
           className={`inline-flex px-2.5 pt-1 pb-0.5 text-s font-semibold 
-        bg-${color}-100 border-2 border-${color}-400 rounded-full`}
+         border-2 ${color} rounded-full`}
         >
           {statusNames[severity as StatusKey]}
         </div>
 
-        {on_trip && (
+        {/*on_trip && (
           <div className="inline-flex px-2.5 pt-1 pb-0.5 text-s font-semibold text-center border-2 border-yellow-500 rounded-full">
             En viaje
           </div>
-        )}
+        )*/}
       </div>
 
       <div className="flex gap-3 mb-2 items-center">
         <h3 className="ml-1 text-2xl font-bold">Unidad {unit}</h3>
+        {on_trip && (
+          <span className="animate-ping inline-flex h-2 w-2 rounded-full bg-blue-400 opacity-100"></span>
+        )}
       </div>
 
       <div className="flex items-center my-2">

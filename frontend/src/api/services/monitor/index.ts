@@ -1,4 +1,4 @@
-import { UnitStatus, UnitHistory, DeviceStatus, UnitFilters } from "./types";
+import { UnitStatus, SeverityCount, UnitHistory, DeviceStatus, UnitFilters } from "./types";
 import { Id, Paginated } from "@/api/types";
 import { Role, User } from "../auth/types";
 import api from "../..";
@@ -9,7 +9,21 @@ import http from "@/api/http";
 export async function getUnits(config?: Parameters<typeof http.get>[1]) {
   try {
     const resp = await http.get<UnitStatus[]>(
-      api.endpoints.monitor.drivingStatus,
+      api.endpoints.monitor.driving.status,
+      {
+        ...config,
+      }
+    );
+    return resp.data;
+  } catch (error) {
+    throw error;
+  }
+}
+
+export async function getSeverityCount(config?: Parameters<typeof http.get>[1]) {
+  try {
+    const resp = await http.get<SeverityCount[]>(
+      api.endpoints.monitor.driving.severityCount,
       {
         ...config,
       }
@@ -21,12 +35,12 @@ export async function getUnits(config?: Parameters<typeof http.get>[1]) {
 }
 
 export async function getUnitHistory(
-  filters?: UnitFilters,
+  filters: UnitFilters,
   config?: Parameters<typeof http.get>[1]
 ) {
   try {
     const resp = await http.get<Paginated<UnitHistory>>(
-      api.endpoints.monitor.drivingUnitHistory(filters.name),
+      api.endpoints.monitor.driving.unitHistory(filters.name),
       {
         params: filters,
         ...config,
@@ -43,7 +57,7 @@ export async function getUnitHistory(
 export async function getDevices(config?: Parameters<typeof http.get>[1]) {
   try {
     const resp = await http.get<DeviceStatus[]>(
-      api.endpoints.monitor.industryStatus,
+      api.endpoints.monitor.industry.status,
       {
         ...config,
       }

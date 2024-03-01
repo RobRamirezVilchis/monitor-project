@@ -85,7 +85,7 @@ const UnitPage = ({ params }: { params: { unit: string } }) => {
     <section className="flex flex-col h-full lg:container mx-auto pb-2 md:pb-6">
       <div className="flex mt-10 mb-4 justify-between items-center">
         <div className="flex  justify-start gap-4">
-          <h1 className="text-5xl font-bold">Unidad {params.unit}</h1>
+          <h1 className="text-5xl font-bold">{params.unit}</h1>
           <div
             className={`inline-flex px-4 pt-1 pb-0.5 text-3xl font-semibold 
                     border-2 ${color} rounded-full items-center`}
@@ -93,12 +93,6 @@ const UnitPage = ({ params }: { params: { unit: string } }) => {
             {statusNames[severity as StatusKey]}
           </div>
         </div>
-        {last_log?.on_trip && (
-          <div className="flex items-center">
-            <span className="animate-ping inline-flex h-4 w-4 rounded-full bg-blue-400 opacity-100"></span>
-            <div className="text-3xl font-semibold ml-4">En viaje</div>
-          </div>
-        )}
       </div>
 
       <div>

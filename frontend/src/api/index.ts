@@ -48,9 +48,14 @@ const api = {
       }
     },
     monitor: {
-      drivingStatus: "api/v1/monitor/driving-status/",
-      drivingUnitHistory: (unit: UnitName) => `api/v1/monitor/driving-status/history/${unit}/`,
-      industryStatus: "api/v1/monitor/industry-status/",
+      driving: {
+        status: "api/v1/monitor/driving-status/",
+        unitHistory: (unit: UnitName) => `api/v1/monitor/driving-status/history/${unit}/`,
+        severityCount: "api/v1/monitor/driving-status-count/"
+      },
+      industry: {
+        status: "api/v1/monitor/industry-status/",
+      }
     }
   },
 };

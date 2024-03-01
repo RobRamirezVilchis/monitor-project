@@ -1,14 +1,20 @@
 import { Id, PageNumberPaginationParams } from "../../types";
 
 export interface UnitStatus {
-    unit: string;
-    on_trip: boolean;
-    status: string;
-    description: string | null;
-    last_connection: string | null; 
-    pending_events: number | null;
-    pending_status: number | null;
-  }
+  unit: string;
+  on_trip: boolean;
+  status: string;
+  severity: number;
+  description: string | null;
+  last_connection: string | null; 
+  pending_events: number | null;
+  pending_status: number | null;
+}
+
+export interface SeverityCount {
+  severity: number;
+  count: number;
+}
 
 export interface UnitHistory {
     unit: string,
@@ -32,6 +38,7 @@ export interface UnitHistory {
     restarting_loop: Boolean,
     on_trip: boolean,
     status: string,
+    severity: number,
     description: string,
   }
 
@@ -39,6 +46,7 @@ export interface DeviceStatus {
   device: string;
   last_connection: string | null;
   status: string;
+  severity: number;
   description: string | null;
 }
 

@@ -99,7 +99,7 @@ class DeviceStatusAdmin(admin.ModelAdmin):
 class DevicesHistoryAdmin(admin.ModelAdmin):
     list_display = (
         'device',
-        'register_date',
+        'register_datetime',
         'last_connection',
         'delayed',
         'delay_time',

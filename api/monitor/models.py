@@ -19,7 +19,6 @@ class Client(models.Model):
 
 
 class GxStatus(models.Model):
-    name = models.CharField(max_length=15)
     description = models.CharField(max_length=100, null=True, blank=True)
     severity = models.IntegerField("Severidad", null=True)
     deployment = models.ForeignKey(Deployment, on_delete=models.CASCADE, null=True)
@@ -28,7 +27,7 @@ class GxStatus(models.Model):
         verbose_name_plural = "Gx Status"
 
     def __str__(self):
-        return self.name
+        return self.description
 
 
 class Gx(models.Model):
