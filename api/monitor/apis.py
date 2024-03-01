@@ -12,6 +12,8 @@ from .services import device_create_or_update
 from api.pagination import get_paginated_response, LimitOffsetPagination
 
 # Create your views here.
+
+
 class UnitList(APIView):
     class OutputSerializer(serializers.Serializer):
         id = serializers.IntegerField()
@@ -21,10 +23,10 @@ class UnitList(APIView):
     def get(self, request):
         devices = unitstatus_list()
 
-        data = self.OutputSerializer(devices, many =True).data
+        data = self.OutputSerializer(devices, many=True).data
 
         return Response(data)
-    
+
 
 class UnitStatusList(APIView):
     class OutputSerializer(serializers.Serializer):
@@ -36,15 +38,15 @@ class UnitStatusList(APIView):
         pending_events = serializers.IntegerField()
         pending_status = serializers.IntegerField()
 
-
     def get(self, request, *args, **kwargs):
         devices = unitstatus_list()
 
-        sorted_devices = sorted(devices, key= lambda x: x.status.severity, reverse=True)
-        data = self.OutputSerializer(sorted_devices, many =True).data
+        sorted_devices = sorted(
+            devices, key=lambda x: x.status.severity, reverse=True)
+        data = self.OutputSerializer(sorted_devices, many=True).data
 
         return Response(data)
-    
+
 
 class UnitHistoryList(APIView):
     class Pagination(LimitOffsetPagination):
@@ -52,7 +54,7 @@ class UnitHistoryList(APIView):
 
     class OutputSerializer(serializers.Serializer):
         unit = serializers.CharField()
-        register_datetime = serializers.DateTimeField() 
+        register_datetime = serializers.DateTimeField()
         total = serializers.IntegerField()
         restart = serializers.IntegerField()
         reboot = serializers.IntegerField()
@@ -74,18 +76,17 @@ class UnitHistoryList(APIView):
         status = serializers.CharField()
         description = serializers.CharField(source='status.description')
 
-
     def get(self, request, unit, *args, **kwargs):
-  
+
         data = {'unit': unit}
         logs = get_unithistory(data)[::-1]
 
-        #sorted_devices = sorted(devices, key= lambda x: x.status.severity, reverse=True)
-        output = self.OutputSerializer(logs, many =True).data
+        # sorted_devices = sorted(devices, key= lambda x: x.status.severity, reverse=True)
+        output = self.OutputSerializer(logs, many=True).data
 
         # return Response(output)
         return get_paginated_response(
-            #pagination_class=self.Pagination,
+            # pagination_class=self.Pagination,
             serializer_class=self.OutputSerializer,
             queryset=logs,
             request=request,
@@ -103,12 +104,12 @@ class UnitStatusDetail(APIView):
         pending_events = serializers.IntegerField()
         pending_status = serializers.IntegerField()
 
-
     def get(self, request, *args, **kwargs):
         devices = unitstatus_list()
 
-        sorted_devices = sorted(devices, key= lambda x: x.status.severity, reverse=True)
-        data = self.OutputSerializer(sorted_devices, many =True).data
+        sorted_devices = sorted(
+            devices, key=lambda x: x.status.severity, reverse=True)
+        data = self.OutputSerializer(sorted_devices, many=True).data
 
         return Response(data)
 
@@ -121,12 +122,11 @@ class DeviceStatusList(APIView):
         description = serializers.CharField(source='status.description')
         delayed = serializers.BooleanField()
         delay_time = serializers.DurationField()
-    
 
     def get(self, request, *args, **kwargs):
         devices = devicestatus_list()
 
-        data = self.OutputSerializer(devices, many =True).data
+        data = self.OutputSerializer(devices, many=True).data
 
         return Response(data)
 
@@ -156,14 +156,13 @@ class UnitStatus(APIView):
         status = serializers.CharField()
 
     def get(self, request, unit):
-       
-        #unit = self.kwargs['unit']
+
+        # unit = self.kwargs['unit']
         device = unitstatus(unit=unit)
-       
+
         data = self.OutputSerializer(device).data
 
         return Response(data)
-    
 
 
 class CameraStatusList(APIView):
@@ -172,16 +171,13 @@ class CameraStatusList(APIView):
         last_update = serializers.DateTimeField()
         connected = serializers.BooleanField()
         disconnection_time = serializers.DurationField()
-    
 
     def get(self, request):
         devices = camerastatus_list()
 
-        data = self.OutputSerializer(devices, many =True).data
+        data = self.OutputSerializer(devices, many=True).data
 
         return Response(data)
-
-
 
 
 class CreateDevice(APIView):
@@ -205,7 +201,3 @@ class CreateDevice(APIView):
         device_create_or_update(**serializer.validated_data)
 
         return Response(status=status.HTTP_201_CREATED)
-    
-
-
-
