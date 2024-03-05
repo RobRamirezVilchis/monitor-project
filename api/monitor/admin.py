@@ -3,6 +3,7 @@ from .models import *
 
 class UnitAdmin(admin.ModelAdmin):
     list_display = (
+        'id',
         'name',
         'client',
     )
@@ -72,6 +73,7 @@ class UnitHistoryAdmin(admin.ModelAdmin):
 
 class DeviceAdmin(admin.ModelAdmin):
     list_display = (
+        'id',
         'name',
         'client',
         'license_days'
@@ -101,6 +103,7 @@ class DevicesHistoryAdmin(admin.ModelAdmin):
         'device',
         'register_datetime',
         'last_connection',
+        'status',
         'delayed',
         'delay_time',
         'batch_dropping',
@@ -168,6 +171,14 @@ class CameraHistoryAdmin(admin.ModelAdmin):
     get_camera.admin_order_field = 'camera__name'
 
 
+class GxStatusAdmin(admin.ModelAdmin):
+    list_display = (
+        'severity',
+        'reason',
+        'description',
+        'deployment'
+    )
+
 admin.site.register(UnitStatus, UnitStatusAdmin)
 admin.site.register(UnitHistory, UnitHistoryAdmin)
 admin.site.register(Unit, UnitAdmin)
@@ -180,4 +191,4 @@ admin.site.register(Device, DeviceAdmin)
 admin.site.register(Camera)
 admin.site.register(CameraStatus, CameraStatusAdmin)
 admin.site.register(CameraHistory, CameraHistoryAdmin)
-admin.site.register(GxStatus)
+admin.site.register(GxStatus, GxStatusAdmin)

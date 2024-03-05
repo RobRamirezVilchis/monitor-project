@@ -185,41 +185,9 @@ def get_driving_data(client):
 
     
 
-    severities = {
-        1: {
-            "1_1": set(),
-        },
-        2: {
-            "2_1": set(),
-            "2_2": set()
-        },
-        3: {
-            "3_1": set(),
-            "3_2": set(),
-            "3_3": set()
-        },
-        4: {
-            "4_1": set(),
-            "4_2": set(),
-            "4_3": set(),
-            "4_4": set()
-        },
-        5: {
-            "5_1": set(),
-            "5_2": set(),
-            "5_3": set(),
-            "5_4": set(),
-            "5_5": set(),
-            "5_6": set(),
-            "5_7": set(),
-        },
-        0: {
-            "0_1": set()
-        }
-    }
+    severities = {}
 
     for device, datos in device_dict.items():
-        state = {n: [] for n in range(1,6)}
         status = 0
         disc_cameras = sum([mins>0 for cam, mins in output_cameras["ten_minutes"][device].items()])
         if datos["Ultima_actualizacion"] != 'null':
@@ -229,45 +197,48 @@ def get_driving_data(client):
 
         conditions = [
             # (Condition, Status, Severity Key)
-            (datos.get("Estatus") == "red", 5, "5_1"),
-            (output_gx["ten_minutes"][device]["restarting_loop"] and datos.get("En_viaje"), 5, "5_3"),
-            (output_gx["hour"][device]["read_only_ssd"] > 0, 5, "5_4"),
-            (output_gx["hour"][device]["forced_reboot"] > 5, 5, "5_5"),
-            (datos.get("Jsons_eventos_pendientes") > 100 or datos.get("Jsons_status_pendientes") > 1000, 5, "5_6"),
-            (datos.get("En_viaje") and disc_cameras == 3, 5, "5_7"),
-            (datos.get("En_viaje") and disc_cameras in {1, 2}, 4, "4_1"),
-            (output_gx["ten_minutes"][device]["restarting_loop"] and not datos.get("En_viaje"), 4, "4_2"),
-            (1 <= output_gx["hour"][device]["forced_reboot"] <= 5, 4, "4_3"),
-            (datos.get("Estatus") == "orange", 4, "4_4"),
-            (output_gx["hour"][device]["storage_devices"] > 0, 3, "3_1"),
-            (100 > datos.get("Jsons_eventos_pendientes") > 20 or datos.get("Jsons_status_pendientes") > 100, 3, "3_2"),
-            (output_gx["hour"][device]["total"] > 10, 3, "3_3"),
-            (datos.get("Estatus") == "green" and (output_gx["hour"][device]["Aux"] == 0 or output_gx["hour"][device]["Ignición"] == 0), 2, "2_1"),
-            (last_connection and not datos.get("En_viaje") and last_connection > now - timedelta(hours=2), 2, "2_2"),
-            (datos.get("Estatus") == "green" and 10 > output_gx["hour"][device]["total"] > 5, 1, "1_1"),
-            (datos.get("Estatus") == "green" and output_gx["hour"][device]["total"] < 5, 1, "1_1"),
+            (datos.get("Estatus") == "red", 5, 1),
+            (output_gx["ten_minutes"][device]["restarting_loop"] and datos.get("En_viaje"), 5, 3),
+            (output_gx["hour"][device]["read_only_ssd"] > 0, 5, 4),
+            (output_gx["hour"][device]["forced_reboot"] > 5, 5, 5),
+            (datos.get("Jsons_eventos_pendientes") > 100 or datos.get("Jsons_status_pendientes") > 1000, 5, 6),
+            (datos.get("En_viaje") and disc_cameras == 3, 5, 7),
+            (datos.get("En_viaje") and disc_cameras in {1, 2}, 4, 1),
+            (output_gx["ten_minutes"][device]["restarting_loop"] and not datos.get("En_viaje"), 4, 2),
+            (1 <= output_gx["hour"][device]["forced_reboot"] <= 5, 4, 3),
+            (datos.get("Estatus") == "orange", 4, 4),
+            (output_gx["hour"][device]["storage_devices"] > 0, 3, 1),
+            (100 > datos.get("Jsons_eventos_pendientes") > 20 or datos.get("Jsons_status_pendientes") > 100, 3, 2),
+            (output_gx["hour"][device]["total"] > 10, 3, 3),
+            (datos.get("Estatus") == "green" and (output_gx["hour"][device]["Aux"] == 0 or output_gx["hour"][device]["Ignición"] == 0), 2, 1),
+            (last_connection and not datos.get("En_viaje") and last_connection > now - timedelta(hours=2), 2, 2),
+            (datos.get("En_viaje") and last_connection > now - timedelta(hours=1) and 10 > output_gx["hour"][device]["total"] > 5, 2, 3),
+            (datos.get("En_viaje") and last_connection > now - timedelta(hours=1) and output_gx["hour"][device]["total"] < 5, 1, 1),
         ]
 
-        for condition, status, rule in conditions:
+        for condition, level, rule in conditions:
             if condition:
-                severities[status][rule].add(device)
+                if level in severities:
+                    if rule in severities[level]:
+                        severities[level][rule].add(device)
+                    else:
+                        severities[level][rule] = set([device])
+                else:
+                    severities[level] = {rule: set([device])}
 
 
     units_left = set(device_dict.keys())
-    all_units = set(device_dict.keys())
     
-    categorized = set()
     for level, rules in severities.items():
         for rule, devices in rules.items():
             units_left -= devices
-
-            for dev in devices:
-                categorized.add(dev)
     
 
     for unit in units_left:
-        categorized.add(unit)
-        severities[0]["0_1"].add(unit)
+        if 0 not in severities:
+            severities[0] = {1: set([unit])}
+        else:
+            severities[0][1].add(unit)
 
 
     return output_gx, output_cameras, severities
@@ -426,8 +397,8 @@ def get_industry_data(client):
                 if log["log"].startswith("Desconectada"):
                     for interval in intervals:
                         
-                        output_cameras[device][interval]["disconnection_time"] += timedelta(minutes=3)
-                        output_gx[interval]["camera_connection"] += timedelta(minutes=3) 
+                        output_cameras[device][interval]["disconnection_time"] += timedelta(minutes=2)
+                        output_gx[interval]["camera_connection"] += timedelta(minutes=2) 
                         
 
 
@@ -448,6 +419,8 @@ def get_industry_data(client):
 def update_driving_status():
     clients = {"tp": "Transpais",
                "cemex": "CEMEX Concretos"}
+    
+    deployment = get_deployment('Safe Driving')
     
     for client_alias, client_name in clients.items():
         output = get_driving_data(client_alias)
@@ -472,8 +445,6 @@ def update_driving_status():
         date_now = tz_utc.localize(datetime.utcnow())
         #date_now = date_now.astimezone(pytz.timezone("America/Mexico_City")).replace(tzinfo=pytz.utc)
 
-        deployment = get_deployment('Safe Driving')
-
         client_args = {
             'name': client_name,
             'deployment': deployment
@@ -497,8 +468,9 @@ def update_driving_status():
 
             # Obtener objeto GxStatus
             status_args = {
-                'name': rule,
-                'severity': status
+                'severity': status,
+                'reason': rule,
+                'deployment': deployment
             }
             status_obj = get_or_create_gxstatus(status_args)
 
@@ -634,6 +606,8 @@ def update_industry_status():
         "cmxrgn": "CEMEX Regenera"
     }
 
+    deployment = get_deployment('Industry')
+
     for client_alias, client_name in clients.items():
         output = get_industry_data(client_alias)
 
@@ -651,7 +625,7 @@ def update_industry_status():
         date_now = tz_utc.localize(datetime.utcnow())
         #date_now = datetime.utcnow().astimezone(pytz.timezone('America/Mexico_City')).replace(tzinfo=pytz.utc)
         
-        deployment = get_deployment('Industry')
+        
 
         client_args = {
             'name': client_name,
@@ -725,14 +699,14 @@ def update_industry_status():
             update_values['delay_time'] = db_delay_time + timedelta(minutes=10) 
 
         conditions = [
-            (update_values['delay_time'] > timedelta(minutes=60), 5, "5_1"),
-            (update_values['restart'] > 0, 5, "5_2"),
-            (update_values['delayed'] and update_values['delay_time'] < timedelta(minutes=60), 3, "3_1"),
-            (update_values['batch_dropping'] > 0, 3, "3_2")
+            (update_values['delay_time'] >= timedelta(minutes=60), 5, 1),
+            (update_values['restart'] > 0, 5, 2),
+            (update_values['delayed'] and update_values['delay_time'] < timedelta(minutes=60), 3, 1),
+            (update_values['batch_dropping'] > 0, 3, 2)
         ]
 
         severity = 1
-        rule = "1_1"
+        rule = 1
         for condition, status, r in conditions:
             if condition:
                 severity = status
@@ -740,7 +714,7 @@ def update_industry_status():
 
         gxstatus_args = {
             'severity': severity,
-            'name': rule,
+            'reason': rule,
             'deployment': deployment
         }
         status = get_or_create_gxstatus(gxstatus_args)

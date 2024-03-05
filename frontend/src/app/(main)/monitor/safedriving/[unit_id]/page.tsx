@@ -1,12 +1,17 @@
 "use client";
 
-import { useUnitHistoryQuery } from "@/api/queries/monitor";
+import {
+  useUnitHistoryQuery,
+  useUnitLastStatusChange,
+  useUnitStatusQuery,
+} from "@/api/queries/monitor";
 import { Unit, UnitHistory } from "@/api/services/monitor/types";
 import { withAuth } from "@/components/auth/withAuth";
 import { useDataGrid, useSsrDataGrid } from "@/hooks/data-grid";
 import DataGrid from "@/ui/data-grid/DataGrid";
 import { ColumnDef } from "@/ui/data-grid/types";
-import { format, lightFormat, parseISO } from "date-fns";
+import { format, formatDistanceToNow, lightFormat, parseISO } from "date-fns";
+import { es } from "date-fns/locale";
 
 type StatusKey = 0 | 1 | 2 | 3 | 4 | 5;
 const statusColors: { [key in StatusKey]: string } = {
@@ -27,9 +32,9 @@ const statusNames: { [key in StatusKey]: string } = {
   5: "Crítico",
 };
 
-const UnitPage = ({ params }: { params: { unit: string } }) => {
+const UnitPage = ({ params }: { params: { unit_id: string } }) => {
   const unit: Unit = {
-    name: params.unit,
+    name: params.unit_id,
   };
 
   const { dataGridState, queryVariables, dataGridConfig } = useSsrDataGrid<{
@@ -44,23 +49,46 @@ const UnitPage = ({ params }: { params: { unit: string } }) => {
     },
   });
 
-  queryVariables.name = params.unit;
-  const history_query = useUnitHistoryQuery({
+  const unitStatusQuery = useUnitStatusQuery({
     variables: {
-      name: params.unit,
+      unit_id: params.unit_id,
+    },
+  });
+
+  const unitStatus = unitStatusQuery.data;
+
+  const historyQuery = useUnitHistoryQuery({
+    variables: {
+      unit_id: params.unit_id,
       page: queryVariables.page,
       page_size: queryVariables.page_size,
     },
   });
 
-  const last_log: UnitHistory | undefined = history_query.data?.data[0];
-  //console.log(history_query.data?.data)
+  const unitLastStatusChange = useUnitLastStatusChange({
+    variables: {
+      unit_id: params.unit_id,
+    },
+  });
 
-  const severity = last_log?.severity;
+  let timeAgo: string;
+  if (unitLastStatusChange.data != null) {
+    timeAgo = formatDistanceToNow(
+      unitLastStatusChange.data?.register_datetime,
+      {
+        addSuffix: true,
+        locale: es,
+      }
+    );
+  } else {
+    timeAgo = "-";
+  }
+
+  const severity = unitStatus?.severity;
   const color = statusColors[severity as StatusKey];
 
   const grid = useDataGrid<UnitHistory>({
-    data: history_query.data?.data || [],
+    data: historyQuery.data?.data || [],
     columns: cols,
     rowNumberingMode: "static",
     enableRowNumbering: true,
@@ -69,7 +97,7 @@ const UnitPage = ({ params }: { params: { unit: string } }) => {
       density: "compact",
     },
     state: {
-      loading: history_query.isLoading || history_query.isFetching,
+      loading: historyQuery.isLoading || historyQuery.isFetching,
       ...dataGridState,
     },
     enableColumnResizing: true,
@@ -77,23 +105,28 @@ const UnitPage = ({ params }: { params: { unit: string } }) => {
     enableColumnActions: true,
 
     ...(dataGridConfig as any),
-    pageCount: history_query.data?.pagination?.pages ?? 0,
-    rowCount: history_query.data?.pagination?.count ?? 0,
+    pageCount: historyQuery.data?.pagination?.pages ?? 0,
+    rowCount: historyQuery.data?.pagination?.count ?? 0,
   });
 
   return (
     <section className="flex flex-col h-full lg:container mx-auto pb-2 md:pb-6">
       <div className="flex mt-10 mb-4 justify-between items-center">
         <div className="flex  justify-start gap-4">
-          <h1 className="text-5xl font-bold">Unidad {params.unit}</h1>
+          <h1 className="text-5xl font-bold">Unidad {unitStatus?.unit}</h1>
           <div
             className={`inline-flex px-4 pt-1 pb-0.5 text-3xl font-semibold 
                     border-2 ${color} rounded-full items-center`}
           >
             {statusNames[severity as StatusKey]}
           </div>
+          <div className="flex gap-3 text-xl pt-2 text-gray-500 items-center">
+            <div>{unitStatus?.description}</div>
+            <div>|</div>
+            <div>Desde {timeAgo}</div>
+          </div>
         </div>
-        {last_log?.on_trip && (
+        {unitStatus?.on_trip && (
           <div className="flex items-center">
             <span className="animate-ping inline-flex h-4 w-4 rounded-full bg-blue-400 opacity-100"></span>
             <div className="text-3xl font-semibold ml-4">En viaje</div>
@@ -102,27 +135,27 @@ const UnitPage = ({ params }: { params: { unit: string } }) => {
       </div>
 
       <div>
-        {last_log && (
-          <div>
-            {last_log.last_connection && (
+        {unitStatus && (
+          <div className="text-gray-500">
+            {unitStatus.last_connection && (
               <div>
                 <p className="text-2xl">
                   Última conexión:{" "}
-                  {format(parseISO(last_log.last_connection), "Pp")}
+                  {format(parseISO(unitStatus.last_connection), "Pp")}
                 </p>
               </div>
             )}
-            {last_log.last_connection && (
+            {unitStatus.last_connection && (
               <div>
                 <p className="text-2xl">
-                  Eventos pendientes - {last_log.pending_events}
+                  Eventos pendientes - {unitStatus.pending_events}
                 </p>
               </div>
             )}
-            {last_log.last_connection && (
+            {unitStatus.last_connection && (
               <div>
                 <p className="text-2xl">
-                  Status pendientes - {last_log.pending_status}
+                  Status pendientes - {unitStatus.pending_status}
                 </p>
               </div>
             )}
@@ -149,6 +182,10 @@ const cols: ColumnDef<UnitHistory>[] = [
     columnTitle: "Fecha",
     minSize: 150,
     enableSorting: true,
+    filterVariant: "date-range",
+    filterProps: {
+      zeroTimeUpTo: "hours",
+    },
   },
   {
     accessorKey: "register_time",

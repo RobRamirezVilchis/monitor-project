@@ -53,6 +53,7 @@ def create_device_history(args):
         shift_change = args['shift_change'],
         others = args['others'],
         last_connection = args['last_connection'],
+        status = args['status']
     )
 
 # Cameras
@@ -61,7 +62,6 @@ def bulk_update_camerastatus(status_list):
     current_cameras = CameraStatus.objects.all()
     current_camera_ids = {c_status.camera_id: c_status for c_status in current_cameras}
 
-    cameras = []
     to_create = []
     to_update = []
     for status in status_list:

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 
-import { useUnitsQuery, useSeverityCount } from "@/api/queries/monitor";
+import { useUnitsQuery, useDrivingSeverityCount } from "@/api/queries/monitor";
 
 import UnitCard from "../(components)/UnitCard";
 
@@ -30,22 +30,20 @@ const SafeDrivingPage = () => {
   const unitsQuery = useUnitsQuery({
     refetchOnWindowFocus: false,
   });
-  const countQuery = useSeverityCount({
+  const countQuery = useDrivingSeverityCount({
     refetchOnWindowFocus: false,
   });
 
   const unitData = unitsQuery.data;
 
-  const [newUserFormOpen, setNewUserFormOpen] = useState(false);
-
   return (
-    <section className="flex flex-col h-full mx-2 md:mx-32 pb-2 md:pb-6">
+    <section className="flex flex-col h-full mx-8 md:mx-32 pb-2 md:pb-6">
       <div className="flex items-center">
         <h1 className="text-5xl font-bold py-2 flex-1 my-6">Safe Driving</h1>
       </div>
 
       {countQuery.data && (
-        <div className="flex w-fit px-4 py-2 mb-4 gap-6">
+        <div className="flex w-fit py-2 mb-4 gap-6 flex-wrap">
           {countQuery.data.map((severity_count) => (
             <div className="flex gap-2 items-center">
               <p>{severity_count.count}</p>

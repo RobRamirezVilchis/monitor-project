@@ -9,15 +9,21 @@ def devicestatus_list():
 def camerastatus_list():
     return CameraStatus.objects.all()
 
-def unitstatus(unit):
+def get_unitstatus(unit_id):
     return UnitStatus.objects.get(
-        unit__name = unit
+        unit_id = unit_id
+    )
+
+def get_devicestatus(device_id):
+    return DeviceStatus.objects.get(
+        device_id = device_id
     )
 
 def get_deployment(name):
     deployment = Deployment.objects.get(
         name=name,
     )
+    return deployment
 
 def get_client(args):
     client = Client.objects.get(
@@ -27,8 +33,9 @@ def get_client(args):
 
 def get_or_create_gxstatus(args):
     status_obj, created = GxStatus.objects.get_or_create(
-        name = args['name'],
-        severity = args['severity']
+        reason = args['reason'],
+        severity = args['severity'],
+        deployment = args['deployment']
     )
     return status_obj
 
@@ -65,7 +72,7 @@ def get_unithistory(args):
  
     #print(start_date, end_date)
     logs = UnitHistory.objects.filter(
-        unit__name=args['unit'],
+        unit_id=args['unit_id'],
         register_datetime__range = (start_date + timedelta(hours=6), end_date + timedelta(hours=6))
     )
 
@@ -81,8 +88,9 @@ def get_devicehistory(args):
     start_date = end_date - timedelta(hours=24)
  
     #print(start_date, end_date)
+
     logs = DeviceHistory.objects.filter(
-        device__name=args['device'],
+        device__id=args['device_id'],
         register_datetime__range = (start_date + timedelta(hours=6), end_date + timedelta(hours=6))
     )
 

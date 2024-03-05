@@ -32,4 +32,6 @@ export interface PageNumberPaginationParams {
   page_size: number;
 }
 
-export type UnitName = string;
+export type UnitId = string;
+
+export type DeviceId = string;

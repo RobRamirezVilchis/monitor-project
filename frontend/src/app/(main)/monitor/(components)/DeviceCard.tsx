@@ -20,8 +20,14 @@ const statusNames: { [key in StatusKey]: string } = {
   5: "Crítico",
 };
 
-const UnitCard = ({ device: device_obj }: GxCardProps) => {
-  const { device, last_connection, severity, description } = device_obj;
+const DeviceCard = ({ device: device_obj }: GxCardProps) => {
+  const {
+    device_id,
+    device: device_name,
+    last_connection,
+    severity,
+    description,
+  } = device_obj;
 
   const color = statusStyles[severity as StatusKey];
   const router = useRouter();
@@ -39,7 +45,7 @@ const UnitCard = ({ device: device_obj }: GxCardProps) => {
   return (
     <div
       className={`pb-6 w-64 rounded-lg p-6 border border-gray-300 shadow-md`}
-      onClick={() => router.push(`/monitor/industry/${device}`)}
+      onClick={() => router.push(`/monitor/industry/${device_id}`)}
     >
       <div
         className={`inline-flex mb-2 px-2.5 pt-1 pb-0.5 text-s font-semibold 
@@ -49,14 +55,10 @@ const UnitCard = ({ device: device_obj }: GxCardProps) => {
       </div>
 
       <div className="flex gap-3 mb-2 items-center">
-        <h3 className="ml-1 text-2xl font-bold">{device}</h3>
+        <h3 className="ml-1 text-2xl font-bold">{device_name}</h3>
       </div>
 
-      <p className="text-lg mb-2 px-2 py-1 bg-gray-200 border border-gray-200 rounded-md">
-        {description}
-      </p>
-
-      <div className="flex items-center mt-4">
+      <div className="flex items-center my-2">
         <svg
           xmlns="http://www.w3.org/2000/svg"
           fill="none"
@@ -73,8 +75,11 @@ const UnitCard = ({ device: device_obj }: GxCardProps) => {
         </svg>
         <p className="text-sm ml-2">{timeAgo}</p>
       </div>
+      <p className="text-lg px-2 py-1 bg-gray-200 border border-gray-200 rounded-md">
+        {description}
+      </p>
     </div>
   );
 };
 
-export default UnitCard;
+export default DeviceCard;

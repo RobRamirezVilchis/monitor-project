@@ -1,4 +1,4 @@
-import { Id, UnitName } from "./types";
+import { DeviceId, Id, UnitId } from "./types";
 
 const baseBackendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
 
@@ -50,11 +50,16 @@ const api = {
     monitor: {
       driving: {
         status: "api/v1/monitor/driving-status/",
-        unitHistory: (unit: UnitName) => `api/v1/monitor/driving-status/history/${unit}/`,
+        lastStatusChange: (unit_id: UnitId) => `api/v1/monitor/driving-status/last-status-change/${unit_id}/`,
+        unitStatus: (unit_id: UnitId) => `api/v1/monitor/driving-status/${unit_id}/`,
+        unitHistory: (unit_id: UnitId) => `api/v1/monitor/driving-status/history/${unit_id}/`,
         severityCount: "api/v1/monitor/driving-status-count/"
       },
       industry: {
         status: "api/v1/monitor/industry-status/",
+        deviceStatus: (device_id: DeviceId) => `api/v1/monitor/industry-status/${device_id}/`,
+        deviceHistory: (device_id: DeviceId) => `api/v1/monitor/industry-status/history/${device_id}/`,
+        severityCount: "api/v1/monitor/industry-status-count/"
       }
     }
   },

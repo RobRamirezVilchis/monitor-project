@@ -31,6 +31,7 @@ const UnitCard = ({ unit: unit_status }: GxCardProps) => {
   const router = useRouter();
 
   const {
+    unit_id,
     unit,
     description,
     on_trip,
@@ -57,7 +58,7 @@ const UnitCard = ({ unit: unit_status }: GxCardProps) => {
     <div
       className="group relative pb-6 w-[18rem] rounded-lg p-6 border-2 border-${color}-400
       transition duration-300 shadow-md hover:shadow-lg"
-      onClick={() => router.push(`/monitor/safedriving/${unit}`)}
+      onClick={() => router.push(`/monitor/safedriving/${unit_id}`)}
     >
       <div className="flex gap-2 items-center mb-3">
         <div

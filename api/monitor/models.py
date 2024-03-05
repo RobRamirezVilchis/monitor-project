@@ -21,13 +21,14 @@ class Client(models.Model):
 class GxStatus(models.Model):
     description = models.CharField(max_length=100, null=True, blank=True)
     severity = models.IntegerField("Severidad", null=True)
+    reason = models.IntegerField("Razón", null=True)
     deployment = models.ForeignKey(Deployment, on_delete=models.CASCADE, null=True)
 
     class Meta:
         verbose_name_plural = "Gx Status"
 
     def __str__(self):
-        return self.description
+        return f'{str(self.severity)} - {self.description}' if self.description else '-'
 
 
 class Gx(models.Model):
