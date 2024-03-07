@@ -139,10 +139,6 @@ def get_driving_data(client):
         unit = log["Unidad"]
         log_type = log["Tipo"]
 
-        if log_type == "read_only_ssd":
-            unit_status[unit] = 5
-
-
         for interval in intervals:
             if unit not in output_gx[interval]:
                 for key in intervals:
@@ -159,7 +155,7 @@ def get_driving_data(client):
                     for camera in cameras_num:
                         output_cameras[interval][unit][int(camera)] += 5
 
-            # No considerer Ignición o Aux en la cuenta total de logs
+            # No considerar Ignición o Aux en la cuenta total de logs
             if log_type not in {"Ignición", "Aux"}:
                 output_gx[interval][unit]["total"] += 1
 
@@ -574,24 +570,24 @@ def update_driving_status():
                 'unit': unit_obj,
                 'register_date': date_now.date(),
                 'register_datetime': date_now,
-                'total': unit_logs["total"],
-                'restart': unit_logs["restart"],
-                'reboot': unit_logs["reboot"],
-                'start': unit_logs["start"],
-                'data_validation': unit_logs["data_validation"],
-                'source_missing': unit_logs["source_missing"],
-                'camera_connection': unit_logs["camera_missing"],
-                'storage_devices': unit_logs["storage_devices"],
-                'forced_reboot': unit_logs["forced_reboot"],
-                'read_only_ssd': unit_logs["read_only_ssd"],
-                'ignition': unit_logs["Ignición"],
-                'aux': unit_logs["Aux"],
-                'others': unit_logs["others"],
+                'total': recent_unit_logs["total"],
+                'restart': recent_unit_logs["restart"],
+                'reboot': recent_unit_logs["reboot"],
+                'start': recent_unit_logs["start"],
+                'data_validation': recent_unit_logs["data_validation"],
+                'source_missing': recent_unit_logs["source_missing"],
+                'camera_connection': recent_unit_logs["camera_missing"],
+                'storage_devices': recent_unit_logs["storage_devices"],
+                'forced_reboot': recent_unit_logs["forced_reboot"],
+                'read_only_ssd': recent_unit_logs["read_only_ssd"],
+                'ignition': recent_unit_logs["Ignición"],
+                'aux': recent_unit_logs["Aux"],
+                'others': recent_unit_logs["others"],
                 'last_connection': last_connection,
-                'pending_events': unit_logs['Jsons_eventos_pendientes'],
-                'pending_status': unit_logs['Jsons_status_pendientes'],
-                'restarting_loop': unit_logs["restarting_loop"],
-                'on_trip': unit_logs["En_viaje"],
+                'pending_events': recent_unit_logs['Jsons_eventos_pendientes'],
+                'pending_status': recent_unit_logs['Jsons_status_pendientes'],
+                'restarting_loop': recent_unit_logs["restarting_loop"],
+                'on_trip': recent_unit_logs["En_viaje"],
                 'status': status_obj
             })
 
@@ -659,6 +655,7 @@ def update_industry_status():
         db_delay_time = timedelta(0)
         try:
             device_status = DeviceStatus.objects.get(device_id=device.id)
+            db_register_time = device_status.last_update
             db_last_connection = device_status.last_connection
             db_delay_time = device_status.delay_time
         except:
@@ -676,8 +673,11 @@ def update_industry_status():
             difference = date_now - last_connection
 
             # Si hubo retraso entre el log nuevo y la última conexión según la DB
+            # Se verifica que hayan registros recientes (con db_register_time) para no tomar un falla en el ćodigo
+            # como retraso
+            
             # Arreglar caso en el que se missea el log reciente por poquito, produciendo un retraso falso
-            if last_connection - db_last_connection > timedelta(minutes=11):
+            if last_connection - db_last_connection > timedelta(minutes=11) and not last_connection - db_register_time > timedelta(minutes=11):
                 update_values['delayed'] = True
                 update_values['delay_time'] = last_connection - db_last_connection - timedelta(minutes=10)
 
@@ -699,10 +699,10 @@ def update_industry_status():
             update_values['delay_time'] = db_delay_time + timedelta(minutes=10) 
 
         conditions = [
+            (update_values['batch_dropping'] > 0, 3, 2),
+            (update_values['delayed'] and update_values['delay_time'] < timedelta(minutes=60), 3, 1),
             (update_values['delay_time'] >= timedelta(minutes=60), 5, 1),
             (update_values['restart'] > 0, 5, 2),
-            (update_values['delayed'] and update_values['delay_time'] < timedelta(minutes=60), 3, 1),
-            (update_values['batch_dropping'] > 0, 3, 2)
         ]
 
         severity = 1

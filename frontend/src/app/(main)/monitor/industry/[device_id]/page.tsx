@@ -18,13 +18,13 @@ import { ColumnDef } from "@/ui/data-grid/types";
 import { format, lightFormat, parseISO } from "date-fns";
 
 type StatusKey = 0 | 1 | 2 | 3 | 4 | 5;
-const statusColors: { [key in StatusKey]: string } = {
-  0: "bg-gray-100 border-gray-400",
-  1: "bg-blue-100 border-blue-400",
-  2: "bg-green-100 border-green-400",
-  3: "bg-yellow-100 border-yellow-400",
-  4: "bg-orange-100 border-orange-400",
-  5: "bg-red-100 border-red-400",
+const statusStyles: { [key in StatusKey]: string } = {
+  0: "bg-gray-100 border-gray-400 text-gray-900",
+  1: "bg-blue-100 border-blue-400 text-blue-900",
+  2: "bg-green-100 border-green-400 text-green-900",
+  3: "bg-yellow-100 border-yellow-400 text-yellow-900",
+  4: "bg-orange-100 border-orange-400 text-orange-900",
+  5: "bg-red-100 border-red-400 text-red-900",
 };
 
 const statusNames: { [key in StatusKey]: string } = {
@@ -39,13 +39,27 @@ const statusNames: { [key in StatusKey]: string } = {
 const DevicePage = ({ params }: { params: { device_id: string } }) => {
   const { dataGridState, queryVariables, dataGridConfig } = useSsrDataGrid<{
     name: string;
+    register_datetime: [Date | null, Date | null];
   }>({
-    defaultSorting: ["register_date"],
+    defaultSorting: ["register_datetime"],
     queryStateOptions: {
       navigateOptions: {
         scroll: false,
       },
       history: "replace",
+    },
+    transform: {
+      register_datetime: (key, value) => {
+        if (!value) return {};
+        const result: any = {};
+        if (value[0]) {
+          result[`${key}_after`] = value[0];
+        }
+        if (value[1]) {
+          result[`${key}_before`] = value[1];
+        }
+        return result;
+      },
     },
   });
 
@@ -62,13 +76,15 @@ const DevicePage = ({ params }: { params: { device_id: string } }) => {
       device_id: params.device_id,
       page: queryVariables.page,
       page_size: queryVariables.page_size,
+      register_datetime_after: queryVariables.register_datetime_after,
+      register_datetime_before: queryVariables.register_datetime_before,
     },
   });
 
   const last_log: DeviceHistory | undefined = history_query.data?.data[0];
 
   const severity = last_log?.severity;
-  const color = statusColors[severity as StatusKey];
+  const color = statusStyles[severity as StatusKey];
 
   const grid = useDataGrid<DeviceHistory>({
     data: history_query.data?.data || [],
@@ -93,7 +109,7 @@ const DevicePage = ({ params }: { params: { device_id: string } }) => {
   });
 
   return (
-    <section className="flex flex-col h-full lg:container mx-auto pb-2 md:pb-6">
+    <section>
       <div className="flex mt-10 mb-4 justify-between items-center">
         <div className="flex  justify-start gap-4">
           <h1 className="text-5xl font-bold">{deviceStatus?.device}</h1>
@@ -166,7 +182,9 @@ const DevicePage = ({ params }: { params: { device_id: string } }) => {
         </div>
       )}
 
-      <DataGrid instance={grid} />
+      <div className="h-[80vh]">
+        <DataGrid instance={grid} />
+      </div>
     </section>
   );
 };
@@ -178,33 +196,20 @@ export default withAuth(DevicePage, {
 
 const cols: ColumnDef<DeviceHistory>[] = [
   {
-    accessorKey: "register_date",
-    accessorFn: (row) =>
-      lightFormat(parseISO(row.register_datetime), "yyyy-MM-dd"),
+    accessorKey: "register_datetime",
+    accessorFn: (row) => format(parseISO(row.register_datetime), "Pp"),
     header: "Fecha",
     columnTitle: "Fecha",
-    minSize: 150,
+    minSize: 250,
     enableSorting: true,
-    filterVariant: "date-range",
-    filterProps: {
-      zeroTimeUpTo: "hours",
-    },
-  },
-  {
-    accessorKey: "register_time",
-    accessorFn: (row) =>
-      lightFormat(parseISO(row.register_datetime), "HH:mm:SS"),
-    header: "Hora",
-    columnTitle: "Hora",
-    minSize: 150,
-    enableSorting: true,
+    filterVariant: "datetime-range",
   },
   {
     accessorKey: "status",
     accessorFn: (row) => row.severity,
     header: "Estátus",
     columnTitle: "Estátus",
-    size: 100,
+    size: 120,
     enableSorting: true,
   },
   {
@@ -220,35 +225,35 @@ const cols: ColumnDef<DeviceHistory>[] = [
     accessorFn: (row) => row.delayed,
     header: "Retraso",
     columnTitle: "Retraso",
-    size: 100,
+    size: 120,
   },
   {
     accessorKey: "delay_time",
     accessorFn: (row) => row.delay_time,
     header: "Tiempo retraso",
     columnTitle: "Tiempo retraso",
-    size: 100,
+    size: 170,
   },
   {
     accessorKey: "restart",
     accessorFn: (row) => row.restart,
     header: "Restart",
     columnTitle: "Restart",
-    size: 100,
+    size: 120,
   },
   {
     accessorKey: "camera_connection",
     accessorFn: (row) => row.camera_connection,
     header: "Cámaras",
     columnTitle: "Cámaras",
-    size: 100,
+    size: 150,
   },
   {
     accessorKey: "license",
     accessorFn: (row) => row.license,
     header: "License",
     columnTitle: "License",
-    size: 100,
+    size: 110,
   },
   {
     accessorKey: "shift_change",

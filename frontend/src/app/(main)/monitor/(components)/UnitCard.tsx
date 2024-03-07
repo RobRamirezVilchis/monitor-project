@@ -3,18 +3,19 @@ import { formatDistanceToNow, parseISO } from "date-fns";
 import { es } from "date-fns/locale";
 import { Unit, UnitStatus } from "@/api/services/monitor/types";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 export interface GxCardProps {
   unit: UnitStatus;
 }
 type StatusKey = 0 | 1 | 2 | 3 | 4 | 5;
 const statusStyles: { [key in StatusKey]: string } = {
-  0: "bg-gray-100 border-gray-400",
-  1: "bg-blue-100 border-blue-400",
-  2: "bg-green-100 border-green-400",
-  3: "bg-yellow-100 border-yellow-400",
-  4: "bg-orange-100 border-orange-400",
-  5: "bg-red-100 border-red-400",
+  0: "bg-gray-100 border-gray-400 text-gray-900",
+  1: "bg-blue-100 border-blue-400 text-blue-900",
+  2: "bg-green-100 border-green-400 text-green-900",
+  3: "bg-yellow-100 border-yellow-400 text-yellow-900",
+  4: "bg-orange-100 border-orange-400 text-orange-900",
+  5: "bg-red-100 border-red-400 text-red-900",
 };
 
 const statusNames: { [key in StatusKey]: string } = {
@@ -56,56 +57,53 @@ const UnitCard = ({ unit: unit_status }: GxCardProps) => {
 
   return (
     <div
-      className="group relative pb-6 w-[18rem] rounded-lg p-6 border-2 border-${color}-400
+      className="relative pb-6 w-52 lg:w-[18rem] rounded-lg p-6 border-2 border-${color}-400
       transition duration-300 shadow-md hover:shadow-lg"
-      onClick={() => router.push(`/monitor/safedriving/${unit_id}`)}
     >
-      <div className="flex gap-2 items-center mb-3">
-        <div
-          className={`inline-flex px-2.5 pt-1 pb-0.5 text-s font-semibold 
+      <Link className="peer" href={`/monitor/safedriving/${unit_id}`}>
+        {on_trip && (
+          <span className="absolute right-4 animate-ping inline-flex h-2 w-2 rounded-full bg-blue-400 opacity-100"></span>
+        )}
+
+        <div className="flex gap-2 items-center mb-3">
+          <div
+            className={`inline-flex px-2.5 pt-1 pb-0.5 text-s font-semibold 
          border-2 ${color} rounded-full`}
-        >
-          {statusNames[severity as StatusKey]}
+          >
+            {statusNames[severity as StatusKey]}
+          </div>
         </div>
 
-        {/*on_trip && (
-          <div className="inline-flex px-2.5 pt-1 pb-0.5 text-s font-semibold text-center border-2 border-yellow-500 rounded-full">
-            En viaje
-          </div>
-        )*/}
-      </div>
+        <div className="flex gap-3 mb-2 items-center">
+          <h3 className="ml-1 text-2xl font-bold">Unidad {unit}</h3>
+        </div>
 
-      <div className="flex gap-3 mb-2 items-center">
-        <h3 className="ml-1 text-2xl font-bold">Unidad {unit}</h3>
-        {on_trip && (
-          <span className="animate-ping inline-flex h-2 w-2 rounded-full bg-blue-400 opacity-100"></span>
-        )}
-      </div>
+        <div className="flex items-center my-2">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            strokeWidth={1.5}
+            stroke="currentColor"
+            className="w-6 h-6"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
+            />
+          </svg>
+          <p className="text-sm ml-1">{timeAgo}</p>
+        </div>
 
-      <div className="flex items-center my-2">
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-          strokeWidth={1.5}
-          stroke="currentColor"
-          className="w-6 h-6"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
-          />
-        </svg>
-        <p className="text-sm ml-1">{timeAgo}</p>
-      </div>
+        <p className="text-lg px-2 py-1 bg-gray-200 border border-gray-200 rounded-md">
+          {description}
+        </p>
+      </Link>
 
-      <p className="text-lg px-2 py-1 bg-gray-200 border border-gray-200 rounded-md">
-        {description}
-      </p>
       <div
         className="absolute bottom-full mb-2 px-4 py-2 bg-gray-600 text-white rounded shadow-lg 
-      opacity-0 transition-opacity delay-200 duration-300 ease-in-out group-hover:opacity-100"
+      opacity-0 transition-opacity delay-200 duration-300 ease-in-out peer-hover:opacity-100"
       >
         <p>{pending_events} eventos pendientes</p>
         <p>{pending_status} status pendientes</p>
@@ -116,20 +114,3 @@ const UnitCard = ({ unit: unit_status }: GxCardProps) => {
 
 export default UnitCard;
 import React from "react";
-
-const HoverableComponent = () => {
-  return (
-    <div className="relative flex justify-center items-center">
-      <div className="group p-4 bg-blue-500 text-white rounded cursor-pointer">
-        Hover over me!
-        <div
-          className="absolute z-10 bottom-full mb-2 px-4 py-2 bg-black 
-          text-white rounded shadow-lg opacity-0 transition-opacity duration-300 ease-in-out group-hover:opacity-100"
-          style={{ left: "50%", transform: "translateX(-50%)" }} // Center the dialog
-        >
-          This is the dialog
-        </div>
-      </div>
-    </div>
-  );
-};

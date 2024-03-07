@@ -118,6 +118,7 @@ class UnitHistoryList(APIView):
     class FiltersSerializer(serializers.Serializer):
         register_datetime_after = serializers.DateTimeField(required=False)
         register_datetime_before = serializers.DateTimeField(required=False)
+        sort = serializers.CharField(required=False)
 
     class OutputSerializer(serializers.Serializer):
         unit = serializers.CharField()
@@ -144,12 +145,27 @@ class UnitHistoryList(APIView):
         description = serializers.CharField(source='status.description')
 
     def get(self, request, unit_id, *args, **kwargs):
+
         filters_serializer = self.FiltersSerializer(data=request.query_params)
         filters_serializer.is_valid(raise_exception=True)
+        
+
+        # Si no se especificó rango de fechas, regresar registros del último día
+        if not filters_serializer.validated_data.get('register_datetime_before') and not filters_serializer.validated_data.get('register_datetime_after'):
+            import datetime
+            import pytz
+
+            date_now = datetime.datetime.now()
+            end_date = date_now.astimezone(pytz.timezone("America/Mexico_City")).replace(
+                tzinfo=pytz.utc) + datetime.timedelta(hours=6)
+            start_date = end_date - timedelta(hours=24) + datetime.timedelta(hours=6)
+
+            filters_serializer.validated_data["register_datetime_before"] = end_date 
+            filters_serializer.validated_data["register_datetime_after"] = start_date 
 
         data = {'unit_id': unit_id}
-        logs = get_unithistory(data)[::-1]
-  
+        logs = get_unithistory(data, filters=filters_serializer.validated_data)[::-1]
+        
         # return Response(output)
         return get_paginated_response(
             serializer_class=self.OutputSerializer,
@@ -184,12 +200,25 @@ class DeviceHistoryList(APIView):
 
         filters_serializer = self.FiltersSerializer(data=request.query_params)
         filters_serializer.is_valid(raise_exception=True)
-    
-        print(filters_serializer.validated_data)
+       
+        # Si no se especificó rango de fechas, regresar registros del último día
+        if filters_serializer.validated_data == {}:
+            import datetime
+            import pytz
+
+            date_now = datetime.datetime.now()
+            end_date = date_now.astimezone(pytz.timezone("America/Mexico_City")).replace(
+                tzinfo=pytz.utc) + datetime.timedelta(hours=6)
+            start_date = end_date - timedelta(hours=24)
+            print("start date")
+            print(start_date, end_date)
+
+            filters_serializer.validated_data["register_datetime_before"] = end_date 
+            filters_serializer.validated_data["register_datetime_after"] = start_date 
 
         data = {'device_id': device_id}
-        logs = get_devicehistory(data)[::-1]
-
+        logs = get_devicehistory(data, filters=filters_serializer.validated_data)[::-1]
+        
         return get_paginated_response(
             serializer_class=self.OutputSerializer,
             queryset=logs,

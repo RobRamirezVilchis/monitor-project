@@ -3,14 +3,25 @@
 import { useState } from "react";
 import { Button, Modal } from "@mantine/core";
 
-import { DeleteUserAction, SendPasswordChangeAction, UpdateUserAction } from "./Actions";
+import {
+  DeleteUserAction,
+  SendPasswordChangeAction,
+  UpdateUserAction,
+} from "./Actions";
 import { UserForm } from "./UserForm";
-import { User } from "@/api/services/auth/types"; 
-import { showSuccessNotification, showErrorNotification } from "@/ui/notifications";
+import { User } from "@/api/services/auth/types";
+import {
+  showSuccessNotification,
+  showErrorNotification,
+} from "@/ui/notifications";
 import { useUsersQuery } from "@/api/queries/users";
 import { getUserRoleLocalized } from "@/api/services/users";
 import { ColumnDef } from "@/ui/data-grid/types";
-import { useDataGrid, useSsrDataGrid, usePrefetchPaginatedAdjacentQuery } from "@/hooks/data-grid";
+import {
+  useDataGrid,
+  useSsrDataGrid,
+  usePrefetchPaginatedAdjacentQuery,
+} from "@/hooks/data-grid";
 import { UserCreateData } from "@/api/services/users/types";
 import { useCreateUserMutation } from "@/api/mutations/users";
 import DataGrid from "@/ui/data-grid/DataGrid";
@@ -19,9 +30,12 @@ import { IconPlus } from "@tabler/icons-react";
 import { withAuth } from "@/components/auth/withAuth";
 
 const UsersPage = () => {
-  const {
-    dataGridState, queryVariables, dataGridConfig
-  } = useSsrDataGrid<{ full_name: string; email: string; company: string; roles: string[]; }>({
+  const { dataGridState, queryVariables, dataGridConfig } = useSsrDataGrid<{
+    full_name: string;
+    email: string;
+    company: string;
+    roles: string[];
+  }>({
     defaultSorting: ["full_name"],
     queryStateOptions: {
       navigateOptions: {
@@ -32,7 +46,7 @@ const UsersPage = () => {
     transform: {
       roles: (key, value) => ({
         [key]: value?.sort().join(",") ?? "",
-      })
+      }),
     },
   });
   const usersQuery = useUsersQuery({
@@ -53,13 +67,13 @@ const UsersPage = () => {
       });
       setNewUserFormOpen(false);
     },
-    onError: () => showErrorNotification({
-      message: "Error al agregar el usuario.",
-    }),
+    onError: () =>
+      showErrorNotification({
+        message: "Error al agregar el usuario.",
+      }),
   });
   const [newUserFormOpen, setNewUserFormOpen] = useState(false);
 
-  console.log(usersQuery.data)
   const grid = useDataGrid<User>({
     data: usersQuery.data?.data || [],
     columns: cols,
@@ -77,7 +91,7 @@ const UsersPage = () => {
     hideColumnFooters: true,
     enableColumnActions: true,
 
-    ...dataGridConfig as any,
+    ...(dataGridConfig as any),
     pageCount: usersQuery.data?.pagination?.pages ?? 0,
     rowCount: usersQuery.data?.pagination?.count ?? 0,
   });
@@ -85,9 +99,7 @@ const UsersPage = () => {
   return (
     <section className="flex flex-col h-full lg:container mx-auto pb-2 md:pb-6">
       <div className="flex items-center">
-        <h1 className="text-3xl font-bold py-2 flex-1">
-          Usuarios
-        </h1>
+        <h1 className="text-3xl font-bold py-2 flex-1">Usuarios</h1>
 
         <div className="text-neutral-800">
           <Button
@@ -112,14 +124,14 @@ const UsersPage = () => {
         title={<p className="text-xl font-semibold">Agregar usuario</p>}
       >
         <div className="p-4">
-          <UserForm 
-            onSubmit={values => {
+          <UserForm
+            onSubmit={(values) => {
               const payload: UserCreateData = {
                 ...values,
                 username: values.email,
               };
               createUserMutation.mutate(payload);
-            }} 
+            }}
             onCancel={() => setNewUserFormOpen(false)}
             loading={createUserMutation.isLoading}
             submitLabel="Registrar"
@@ -135,7 +147,7 @@ const UsersPage = () => {
 export default withAuth(UsersPage, {
   rolesWhitelist: ["Admin"],
 });
-  
+
 const cols: ColumnDef<User>[] = [
   {
     id: "full_name",
@@ -154,7 +166,8 @@ const cols: ColumnDef<User>[] = [
   },
   {
     accessorKey: "roles",
-    accessorFn: (row) => row.roles.map(role => getUserRoleLocalized(role)).join(", "),
+    accessorFn: (row) =>
+      row.roles.map((role) => getUserRoleLocalized(role)).join(", "),
     header: "Roles",
     columnTitle: "Roles",
     minSize: 350,
@@ -163,7 +176,7 @@ const cols: ColumnDef<User>[] = [
     filterProps: {
       options: [
         { value: "Admin", label: "Administrador" },
-        { value: "User",  label: "Usuario" },
+        { value: "User", label: "Usuario" },
       ],
     },
   },
@@ -179,7 +192,9 @@ const cols: ColumnDef<User>[] = [
       <div className="flex items-center gap-4 h-full w-full px-1">
         <UpdateUserAction user={row.original} />
         <DeleteUserAction user={row.original} />
-        { !row.original.verified ? <SendPasswordChangeAction user={row.original} /> : null }
+        {!row.original.verified ? (
+          <SendPasswordChangeAction user={row.original} />
+        ) : null}
       </div>
     ),
     enableResizing: false,

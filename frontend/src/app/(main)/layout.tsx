@@ -1,11 +1,12 @@
 "use client";
 
 import { ReactNode, useMemo, useState } from "react";
-import { 
-  AppShell, 
-  Burger, 
-  Indicator, 
-  NavLink, type NavLinkProps, 
+import {
+  AppShell,
+  Burger,
+  Indicator,
+  NavLink,
+  type NavLinkProps,
   useMantineTheme,
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
@@ -21,8 +22,8 @@ import { withAuth } from "@/components/auth/withAuth";
 import BrandForem from "@/ui/icons/BrandForem";
 
 interface NavMenuItem {
-  label: string,
-  href?: string,
+  label: string;
+  href?: string;
   rolesWhitelist?: Role[];
   rolesBlacklist?: Role[];
   badgeCount?: number;
@@ -32,12 +33,10 @@ interface MainLayoutProps {
   children?: ReactNode;
 }
 
-const MainLayout = ({ 
-  children 
-}: MainLayoutProps) => { 
+const MainLayout = ({ children }: MainLayoutProps) => {
   const [isOpen, { toggle, close }] = useDisclosure(false);
   const { user } = useAuth();
-  
+
   const [links, setLinks] = useState<NavMenuItem[]>([
     {
       label: "Home",
@@ -57,30 +56,33 @@ const MainLayout = ({
     },
   ]);
   const visibleLinks = useMemo(
-    () => links.filter(link => isUserInAuthorizedRoles(user, {
-      rolesWhitelist: link.rolesWhitelist,
-      rolesBlacklist: link.rolesBlacklist,
-    })), 
+    () =>
+      links.filter((link) =>
+        isUserInAuthorizedRoles(user, {
+          rolesWhitelist: link.rolesWhitelist,
+          rolesBlacklist: link.rolesBlacklist,
+        })
+      ),
     [links, user]
   );
 
-
   return (
     <AppShell
-      header={{ 
+      header={{
         height: { base: 50, sm: 60 },
       }}
-      navbar={{ 
-        width: 300, 
-        breakpoint: "sm", 
-        collapsed: { 
-          desktop: true, 
-          mobile: !isOpen 
+      navbar={{
+        width: 300,
+        breakpoint: "sm",
+        collapsed: {
+          desktop: true,
+          mobile: !isOpen,
         },
       }}
       classNames={{
         root: "h-full",
-        header: "flex items-center gap-1 px-3 py-2 bg-dark-900 text-neutral-300 border-none",
+        header:
+          "flex items-center gap-1 px-3 py-2 bg-dark-900 text-neutral-300 border-none",
         main: "h-full min-h-full",
         navbar: "border-none",
       }}
@@ -92,10 +94,11 @@ const MainLayout = ({
         <div className="flex-1 hidden md:flex justify-between items-center gap-1">
           <Link href="/">
             <span className="h-7">Monitor</span>
-          
           </Link>
           <div className="flex gap-2 items-center mx-4">
-            {visibleLinks.map((item) => <DesktopNavLink key={item.href} item={item} />)}
+            {visibleLinks.map((item) => (
+              <DesktopNavLink key={item.href} item={item} />
+            ))}
           </div>
         </div>
 
@@ -109,18 +112,16 @@ const MainLayout = ({
         <ProfileFloatingMenu />
       </AppShell.Header>
 
-      <AppShell.Navbar 
-        classNames={{ navbar: "px-2.5 py-2.5" }}
-      >
-        {visibleLinks.map((item) => <MobileNavLink key={item.href} item={item} onClick={close} />)}
+      <AppShell.Navbar classNames={{ navbar: "px-2.5 py-2.5" }}>
+        {visibleLinks.map((item) => (
+          <MobileNavLink key={item.href} item={item} onClick={close} />
+        ))}
       </AppShell.Navbar>
 
-      <AppShell.Main>
-        {children}
-      </AppShell.Main>
+      <AppShell.Main>{children}</AppShell.Main>
     </AppShell>
   );
-}
+};
 
 export default withAuth(MainLayout);
 
@@ -129,16 +130,13 @@ interface DesktopNavLinkProps {
   onClick?: NavLinkProps["onClick"];
 }
 
-const DesktopNavLink = ({
-  item,
-  onClick,
-}: DesktopNavLinkProps) => {
+const DesktopNavLink = ({ item, onClick }: DesktopNavLinkProps) => {
   const theme = useMantineTheme();
   const active = useNavLink(item.href || "#");
   const primaryColor = theme.variantColorResolver({
     color: theme.primaryColor,
     theme: theme,
-    variant: "filled"
+    variant: "filled",
   });
 
   return (
@@ -148,25 +146,24 @@ const DesktopNavLink = ({
       onClick={onClick}
       className="text-center"
       classNames={{
-        root: clsx("px-2 py-2.5 min-w-24", {
-        }),
+        root: clsx("px-2 py-2.5 min-w-24", {}),
         body: "overflow-visible",
       }}
       styles={{
         root: {
-          boxShadow: active 
-            ? `inset 0 -3px ${primaryColor.background}` 
+          boxShadow: active
+            ? `inset 0 -3px ${primaryColor.background}`
             : undefined,
-          color:  active ? primaryColor.background : undefined,
-        }
+          color: active ? primaryColor.background : undefined,
+        },
       }}
       label={
         <Indicator
           disabled={!item.badgeCount}
           label={
             typeof item.badgeCount === "number" && item.badgeCount > 99
-            ? "99+" 
-            : item.badgeCount
+              ? "99+"
+              : item.badgeCount
           }
           color="red"
           classNames={{
@@ -177,20 +174,15 @@ const DesktopNavLink = ({
         </Indicator>
       }
     />
-
   );
-}
-
+};
 
 interface MobileNavLinkProps {
   item: NavMenuItem;
   onClick?: NavLinkProps["onClick"];
 }
 
-const MobileNavLink = ({
-  item,
-  onClick,
-}: MobileNavLinkProps) => {
+const MobileNavLink = ({ item, onClick }: MobileNavLinkProps) => {
   const active = useNavLink(item.href || "#");
 
   return (
@@ -209,9 +201,9 @@ const MobileNavLink = ({
         <Indicator
           disabled={!item.badgeCount}
           label={
-            typeof item.badgeCount === "number" && item.badgeCount > 99 
-            ? "99+" 
-            : item.badgeCount
+            typeof item.badgeCount === "number" && item.badgeCount > 99
+              ? "99+"
+              : item.badgeCount
           }
           color="red"
           classNames={{
@@ -223,4 +215,4 @@ const MobileNavLink = ({
       }
     />
   );
-}
+};

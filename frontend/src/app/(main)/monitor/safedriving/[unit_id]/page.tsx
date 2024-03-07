@@ -14,13 +14,13 @@ import { format, formatDistanceToNow, lightFormat, parseISO } from "date-fns";
 import { es } from "date-fns/locale";
 
 type StatusKey = 0 | 1 | 2 | 3 | 4 | 5;
-const statusColors: { [key in StatusKey]: string } = {
-  0: "bg-gray-100 border-gray-400",
-  1: "bg-blue-100 border-blue-400",
-  2: "bg-green-100 border-green-400",
-  3: "bg-yellow-100 border-yellow-400",
-  4: "bg-orange-100 border-orange-400",
-  5: "bg-red-100 border-red-400",
+const statusStyles: { [key in StatusKey]: string } = {
+  0: "bg-gray-100 border-gray-400 text-gray-900",
+  1: "bg-blue-100 border-blue-400 text-blue-900",
+  2: "bg-green-100 border-green-400 text-green-900",
+  3: "bg-yellow-100 border-yellow-400 text-yellow-900",
+  4: "bg-orange-100 border-orange-400 text-orange-900",
+  5: "bg-red-100 border-red-400 text-red-900",
 };
 
 const statusNames: { [key in StatusKey]: string } = {
@@ -39,13 +39,27 @@ const UnitPage = ({ params }: { params: { unit_id: string } }) => {
 
   const { dataGridState, queryVariables, dataGridConfig } = useSsrDataGrid<{
     name: string;
+    register_datetime: [Date | null, Date | null];
   }>({
-    defaultSorting: ["register_date"],
+    defaultSorting: ["register_datetime"],
     queryStateOptions: {
       navigateOptions: {
         scroll: false,
       },
       history: "replace",
+    },
+    transform: {
+      register_datetime: (key, value) => {
+        if (!value) return {};
+        const result: any = {};
+        if (value[0]) {
+          result[`${key}_after`] = value[0];
+        }
+        if (value[1]) {
+          result[`${key}_before`] = value[1];
+        }
+        return result;
+      },
     },
   });
 
@@ -60,8 +74,7 @@ const UnitPage = ({ params }: { params: { unit_id: string } }) => {
   const historyQuery = useUnitHistoryQuery({
     variables: {
       unit_id: params.unit_id,
-      page: queryVariables.page,
-      page_size: queryVariables.page_size,
+      ...queryVariables,
     },
   });
 
@@ -85,7 +98,7 @@ const UnitPage = ({ params }: { params: { unit_id: string } }) => {
   }
 
   const severity = unitStatus?.severity;
-  const color = statusColors[severity as StatusKey];
+  const color = statusStyles[severity as StatusKey];
 
   const grid = useDataGrid<UnitHistory>({
     data: historyQuery.data?.data || [],
@@ -93,6 +106,7 @@ const UnitPage = ({ params }: { params: { unit_id: string } }) => {
     rowNumberingMode: "static",
     enableRowNumbering: true,
     disableCellSelectionOnClick: true,
+
     initialState: {
       density: "compact",
     },
@@ -105,29 +119,32 @@ const UnitPage = ({ params }: { params: { unit_id: string } }) => {
     enableColumnActions: true,
 
     ...(dataGridConfig as any),
+    enableMultiSort: true,
     pageCount: historyQuery.data?.pagination?.pages ?? 0,
     rowCount: historyQuery.data?.pagination?.count ?? 0,
   });
 
   return (
-    <section className="flex flex-col h-full lg:container mx-auto pb-2 md:pb-6">
+    <section>
       <div className="flex mt-10 mb-4 justify-between items-center">
-        <div className="flex  justify-start gap-4">
+        <div className="xl:flex xl:gap-6">
           <h1 className="text-5xl font-bold">Unidad {unitStatus?.unit}</h1>
-          <div
-            className={`inline-flex px-4 pt-1 pb-0.5 text-3xl font-semibold 
+          <div className="flex justify-start items-center gap-4 mt-4 xl:mt-0">
+            <div
+              className={`inline-flex h-fit px-4 pt-1 pb-0.5 text-3xl font-semibold 
                     border-2 ${color} rounded-full items-center`}
-          >
-            {statusNames[severity as StatusKey]}
-          </div>
-          <div className="flex gap-3 text-xl pt-2 text-gray-500 items-center">
-            <div>{unitStatus?.description}</div>
-            <div>|</div>
-            <div>Desde {timeAgo}</div>
+            >
+              {statusNames[severity as StatusKey]}
+            </div>
+            <div className="flex gap-3 text-xl text-gray-500 items-center">
+              <div className="shrink">{unitStatus?.description}</div>
+              <div>|</div>
+              <div>Desde {timeAgo}</div>
+            </div>
           </div>
         </div>
         {unitStatus?.on_trip && (
-          <div className="flex items-center">
+          <div className="flex items-center  top-0">
             <span className="animate-ping inline-flex h-4 w-4 rounded-full bg-blue-400 opacity-100"></span>
             <div className="text-3xl font-semibold ml-4">En viaje</div>
           </div>
@@ -136,34 +153,25 @@ const UnitPage = ({ params }: { params: { unit_id: string } }) => {
 
       <div>
         {unitStatus && (
-          <div className="text-gray-500">
+          <div className="text-xl text-gray-500">
             {unitStatus.last_connection && (
-              <div>
-                <p className="text-2xl">
-                  Última conexión:{" "}
-                  {format(parseISO(unitStatus.last_connection), "Pp")}
-                </p>
-              </div>
+              <p>
+                Última conexión:{" "}
+                {format(parseISO(unitStatus.last_connection), "Pp")}
+              </p>
             )}
             {unitStatus.last_connection && (
-              <div>
-                <p className="text-2xl">
-                  Eventos pendientes - {unitStatus.pending_events}
-                </p>
-              </div>
+              <p>Eventos pendientes - {unitStatus.pending_events}</p>
             )}
             {unitStatus.last_connection && (
-              <div>
-                <p className="text-2xl">
-                  Status pendientes - {unitStatus.pending_status}
-                </p>
-              </div>
+              <p>Status pendientes - {unitStatus.pending_status}</p>
             )}
           </div>
         )}
       </div>
-
-      <DataGrid instance={grid} />
+      <div className="h-[80vh]">
+        <DataGrid instance={grid} />
+      </div>
     </section>
   );
 };
@@ -175,26 +183,13 @@ export default withAuth(UnitPage, {
 
 const cols: ColumnDef<UnitHistory>[] = [
   {
-    accessorKey: "register_date",
-    accessorFn: (row) =>
-      lightFormat(parseISO(row.register_datetime), "yyyy-MM-dd"),
+    accessorKey: "register_datetime",
+    accessorFn: (row) => format(parseISO(row.register_datetime), "Pp"),
     header: "Fecha",
     columnTitle: "Fecha",
-    minSize: 150,
+    minSize: 250,
     enableSorting: true,
-    filterVariant: "date-range",
-    filterProps: {
-      zeroTimeUpTo: "hours",
-    },
-  },
-  {
-    accessorKey: "register_time",
-    accessorFn: (row) =>
-      lightFormat(parseISO(row.register_datetime), "HH:mm:SS"),
-    header: "Hora",
-    columnTitle: "Hora",
-    minSize: 150,
-    enableSorting: true,
+    filterVariant: "datetime-range",
   },
   {
     accessorKey: "status",

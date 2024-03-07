@@ -8,6 +8,7 @@ import {
 import DeviceCard from "../(components)/DeviceCard";
 
 import { withAuth } from "@/components/auth/withAuth";
+import { TextInput } from "@mantine/core";
 
 type StatusKey = 0 | 1 | 2 | 3 | 4 | 5;
 const statusStyles: { [key in StatusKey]: string } = {
@@ -28,6 +29,8 @@ const statusNames: { [key in StatusKey]: string } = {
 };
 
 const IndustryPage = () => {
+  const [value, setValue] = useState("");
+
   const devicesQuery = useDevicesQuery({
     refetchOnWindowFocus: false,
   });
@@ -39,10 +42,21 @@ const IndustryPage = () => {
   const deviceData = devicesQuery.data;
 
   return (
-    <section className="flex flex-col h-full lg:container mx-auto pb-2 md:pb-6">
+    <section>
       <div className="flex items-center">
         <h1 className="text-5xl font-bold py-2 flex-1 my-6">Industry</h1>
       </div>
+
+      <TextInput
+        className="flex gap-3 items-center w-100 mb-4"
+        styles={{
+          label: { fontSize: 20 },
+        }}
+        label="Buscar dispositivo:"
+        value={value}
+        onChange={(event) => setValue(event.currentTarget.value)}
+      />
+
       {countQuery.data && (
         <div className="flex w-fit py-2 mb-4 gap-6 flex-wrap">
           {countQuery.data.map((severity_count) => (
@@ -62,10 +76,12 @@ const IndustryPage = () => {
         </div>
       )}
 
-      <div className="flex flex-row w-full gap-4 flex-wrap place-content-evenly">
-        {deviceData?.map((device) => (
-          <DeviceCard key={device.device} device={device} />
-        ))}
+      <div className="flex flex-row gap-4 flex-wrap">
+        {deviceData?.map((device) =>
+          device.device.includes(value) ? (
+            <DeviceCard key={device.device} device={device} />
+          ) : null
+        )}
       </div>
     </section>
   );

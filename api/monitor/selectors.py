@@ -1,4 +1,5 @@
 from .models import *
+from django_filters import rest_framework as rf_filters
 
 def unitstatus_list():
     return UnitStatus.objects.all()
@@ -61,37 +62,44 @@ def get_or_create_device(args):
     return device
 
 
+class UnitHistoryFilter(rf_filters.FilterSet):
+    register_datetime = rf_filters.DateTimeFromToRangeFilter()
+    sort = rf_filters.OrderingFilter(
+        fields=(
+            "total", 
+            'restart', 
+            'register_datetime',
+            'status__severity'
+            )
+    )
 
-def get_unithistory(args):
-    import datetime
-    import pytz
+    class Meta:
+        model = UnitHistory
+        fields = ['register_datetime', 'total', 'restart', 'status']
 
-    date_now = datetime.datetime.now()
-    end_date = date_now.astimezone(pytz.timezone("America/Mexico_City")).replace(tzinfo=pytz.utc)
-    start_date = end_date - timedelta(hours=24)
- 
+
+def get_unithistory(args, filters=None):
+
     #print(start_date, end_date)
     logs = UnitHistory.objects.filter(
         unit_id=args['unit_id'],
-        register_datetime__range = (start_date + timedelta(hours=6), end_date + timedelta(hours=6))
     )
 
-    return logs
+    return UnitHistoryFilter(filters, logs).qs
 
 
-def get_devicehistory(args):
-    import datetime
-    import pytz
+class DeviceHistoryFilter(rf_filters.FilterSet):
+    register_datetime = rf_filters.DateTimeFromToRangeFilter()
 
-    date_now = datetime.datetime.now()
-    end_date = date_now.astimezone(pytz.timezone("America/Mexico_City")).replace(tzinfo=pytz.utc)
-    start_date = end_date - timedelta(hours=24)
- 
-    #print(start_date, end_date)
+    class Meta:
+        model = DeviceHistory
+        fields = ['register_datetime']
+
+
+def get_devicehistory(args, filters=None):
 
     logs = DeviceHistory.objects.filter(
         device__id=args['device_id'],
-        register_datetime__range = (start_date + timedelta(hours=6), end_date + timedelta(hours=6))
     )
 
-    return logs
+    return DeviceHistoryFilter(filters, logs).qs
