@@ -1,24 +1,30 @@
 from .models import *
 from django_filters import rest_framework as rf_filters
 
+
 def unitstatus_list():
     return UnitStatus.objects.all()
+
 
 def devicestatus_list():
     return DeviceStatus.objects.all()
 
+
 def camerastatus_list():
     return CameraStatus.objects.all()
 
+
 def get_unitstatus(unit_id):
     return UnitStatus.objects.get(
-        unit_id = unit_id
+        unit_id=unit_id
     )
+
 
 def get_devicestatus(device_id):
     return DeviceStatus.objects.get(
-        device_id = device_id
+        device_id=device_id
     )
+
 
 def get_deployment(name):
     deployment = Deployment.objects.get(
@@ -26,19 +32,22 @@ def get_deployment(name):
     )
     return deployment
 
+
 def get_client(args):
     client = Client.objects.get(
         name=args['name'],
     )
     return client
 
+
 def get_or_create_gxstatus(args):
     status_obj, created = GxStatus.objects.get_or_create(
-        reason = args['reason'],
-        severity = args['severity'],
-        deployment = args['deployment']
+        reason=args['reason'],
+        severity=args['severity'],
+        deployment=args['deployment']
     )
     return status_obj
+
 
 def get_or_create_unit(args):
     unit_obj, created = Unit.objects.get_or_create(
@@ -47,17 +56,19 @@ def get_or_create_unit(args):
     )
     return unit_obj
 
+
 def get_or_create_camera(args):
     camera_obj, created = Camera.objects.get_or_create(
-        name = args['name'],
-        gx = args['gx']
+        name=args['name'],
+        gx=args['gx']
     )
     return camera_obj
 
+
 def get_or_create_device(args):
     device, created = Device.objects.get_or_create(
-        client_id = args["client"].id,
-        name = args["name"]
+        client_id=args["client"].id,
+        name=args["name"]
     )
     return device
 
@@ -66,21 +77,57 @@ class UnitHistoryFilter(rf_filters.FilterSet):
     register_datetime = rf_filters.DateTimeFromToRangeFilter()
     sort = rf_filters.OrderingFilter(
         fields=(
-            "total", 
-            'restart', 
             'register_datetime',
-            'status__severity'
-            )
+            'total',
+            'restart',
+            'reboot',
+            'start',
+            'data_validation',
+            'source_missing',
+            'camera_connection',
+            'storage_devices',
+            'forced_reboot',
+            'read_only_ssd',
+            'ignition',
+            'aux',
+            'others',
+            'last_connection',
+            'pending_events',
+            'pending_status',
+            'restarting_loop',
+            'on_trip',
+            'status',
+        )
     )
 
     class Meta:
         model = UnitHistory
-        fields = ['register_datetime', 'total', 'restart', 'status']
+        fields = ['register_datetime',
+                  'status',
+                  'total',
+                  'restart',
+                  'reboot',
+                  'start',
+                  'data_validation',
+                  'source_missing',
+                  'camera_connection',
+                  'storage_devices',
+                  'forced_reboot',
+                  'read_only_ssd',
+                  'ignition',
+                  'aux',
+                  'others',
+                  'last_connection',
+                  'pending_events',
+                  'pending_status',
+                  'restarting_loop',
+                  'on_trip',
+                  'status']
 
 
 def get_unithistory(args, filters=None):
 
-    #print(start_date, end_date)
+    # print(start_date, end_date)
     logs = UnitHistory.objects.filter(
         unit_id=args['unit_id'],
     )

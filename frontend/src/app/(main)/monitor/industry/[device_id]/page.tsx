@@ -74,10 +74,7 @@ const DevicePage = ({ params }: { params: { device_id: string } }) => {
   const history_query = useDeviceHistoryQuery({
     variables: {
       device_id: params.device_id,
-      page: queryVariables.page,
-      page_size: queryVariables.page_size,
-      register_datetime_after: queryVariables.register_datetime_after,
-      register_datetime_before: queryVariables.register_datetime_before,
+      ...queryVariables,
     },
   });
 
@@ -132,7 +129,7 @@ const DevicePage = ({ params }: { params: { device_id: string } }) => {
                 viewBox="0 0 24 24"
                 stroke-width="1.5"
                 stroke="currentColor"
-                class="w-6 h-6"
+                className="w-6 h-6"
               >
                 <path
                   stroke-linecap="round"
@@ -154,7 +151,7 @@ const DevicePage = ({ params }: { params: { device_id: string } }) => {
                 viewBox="0 0 24 24"
                 stroke-width="2.5"
                 stroke="currentColor"
-                class="w-6 h-6"
+                className="w-6 h-6"
               >
                 <path
                   stroke-linecap="round"

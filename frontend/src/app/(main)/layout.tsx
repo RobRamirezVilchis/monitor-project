@@ -12,6 +12,7 @@ import {
 import { useDisclosure } from "@mantine/hooks";
 import clsx from "clsx";
 import Link from "next/link";
+import Image from "next/image";
 
 import { ProfileFloatingMenu } from "@/components/shared";
 import { Role } from "@/api/services/auth/types";
@@ -20,6 +21,7 @@ import { isUserInAuthorizedRoles } from "@/api/services/auth";
 import { useAuth } from "@/hooks/auth";
 import { withAuth } from "@/components/auth/withAuth";
 import BrandForem from "@/ui/icons/BrandForem";
+import Introid from "../../media/introid_bw.png";
 
 interface NavMenuItem {
   label: string;
@@ -41,10 +43,6 @@ const MainLayout = ({ children }: MainLayoutProps) => {
     {
       label: "Home",
       href: "/",
-    },
-    {
-      label: "Users",
-      href: "/users",
     },
     {
       label: "Driving",
@@ -92,8 +90,14 @@ const MainLayout = ({ children }: MainLayoutProps) => {
 
         {/* Desktop */}
         <div className="flex-1 hidden md:flex justify-between items-center gap-1">
-          <Link href="/">
-            <span className="h-7">Monitor</span>
+          <Link className="flex items-center" href="/monitor/safedriving">
+            <Image
+              src={Introid}
+              width={120}
+              height={32}
+              alt="Picture of the author"
+            ></Image>
+            <span className=" mt-1"> | Monitor</span>
           </Link>
           <div className="flex gap-2 items-center mx-4">
             {visibleLinks.map((item) => (

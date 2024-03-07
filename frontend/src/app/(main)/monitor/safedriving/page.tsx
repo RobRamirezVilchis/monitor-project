@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useCallback, useState } from "react";
 
 import { TextInput } from "@mantine/core";
 
@@ -9,6 +9,8 @@ import { useUnitsQuery, useDrivingSeverityCount } from "@/api/queries/monitor";
 import UnitCard from "../(components)/UnitCard";
 
 import { withAuth } from "@/components/auth/withAuth";
+import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 
 type StatusKey = 0 | 1 | 2 | 3 | 4 | 5;
 const statusStyles: { [key in StatusKey]: string } = {
@@ -30,6 +32,20 @@ const statusNames: { [key in StatusKey]: string } = {
 
 const SafeDrivingPage = () => {
   const [value, setValue] = useState("");
+  const searchParams = useSearchParams();
+  const filter = searchParams.get("filter");
+
+  // Get a new searchParams string by merging the current
+  // searchParams with a provided key/value pair
+  const createQueryString = useCallback(
+    (name: string, value: string) => {
+      const params = new URLSearchParams(searchParams.toString());
+      params.set(name, value);
+
+      return params.toString();
+    },
+    [searchParams]
+  );
 
   const unitsQuery = useUnitsQuery({
     refetchOnWindowFocus: false,
@@ -59,17 +75,33 @@ const SafeDrivingPage = () => {
       {countQuery.data && (
         <div className="flex w-fit py-2 mb-4 gap-6 flex-wrap">
           {countQuery.data.map((severity_count) => (
-            <div className="flex gap-2 items-center">
+            <div
+              key={severity_count.severity}
+              className="flex gap-2 items-center"
+            >
               <p>{severity_count.count}</p>
               <p>-</p>
-              <div
-                className={`inline-flex px-2.5 pt-1 pb-0.5 text-s font-semibold 
-                border-2 ${
+
+              <Link
+                href={
+                  filter == null || Number(filter) != severity_count.severity
+                    ? "/monitor/safedriving/?" +
+                      createQueryString(
+                        "filter",
+                        String(severity_count.severity)
+                      )
+                    : "/monitor/safedriving/"
+                }
+                className={`${
+                  severity_count.severity == Number(filter) || filter == null
+                    ? "opacity-100"
+                    : "opacity-30"
+                } inline-flex px-2.5 pt-1 pb-0.5 text-s font-semibold border-2 ${
                   statusStyles[severity_count.severity as StatusKey]
                 } rounded-full`}
               >
                 {statusNames[severity_count.severity as StatusKey]}
-              </div>
+              </Link>
             </div>
           ))}
         </div>
@@ -77,7 +109,8 @@ const SafeDrivingPage = () => {
 
       <div className="flex flex-row gap-4 flex-wrap">
         {unitData?.map((unit) =>
-          unit.unit.startsWith(value) ? (
+          unit.unit.startsWith(value) &&
+          (filter == null || unit.severity == Number(filter)) ? (
             <UnitCard key={unit.unit} unit={unit} />
           ) : null
         )}

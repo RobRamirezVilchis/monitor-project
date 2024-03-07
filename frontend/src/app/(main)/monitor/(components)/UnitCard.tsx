@@ -102,8 +102,8 @@ const UnitCard = ({ unit: unit_status }: GxCardProps) => {
       </Link>
 
       <div
-        className="absolute bottom-full mb-2 px-4 py-2 bg-gray-600 text-white rounded shadow-lg 
-      opacity-0 transition-opacity delay-200 duration-300 ease-in-out peer-hover:opacity-100"
+        className="absolute invisible opacity-0 bottom-full mb-2 px-4 py-2 bg-gray-600 text-white rounded shadow-lg 
+      transition-opacity ease-in-out duration-300 delay-200 ease-in-out peer-hover:visible peer-hover:opacity-100"
       >
         <p>{pending_events} eventos pendientes</p>
         <p>{pending_status} status pendientes</p>
