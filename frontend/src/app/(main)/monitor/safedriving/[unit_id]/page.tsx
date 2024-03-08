@@ -282,6 +282,13 @@ const cols: ColumnDef<UnitHistory>[] = [
     size: 120,
   },
   {
+    accessorKey: "data_validation",
+    accessorFn: (row) => row.reboot,
+    header: "Data Val",
+    columnTitle: "Data Val",
+    size: 120,
+  },
+  {
     accessorKey: "source_missing",
     accessorFn: (row) => row.source_missing,
     header: "SourceID",
@@ -293,6 +300,13 @@ const cols: ColumnDef<UnitHistory>[] = [
     accessorFn: (row) => row.storage_devices,
     header: "Memory",
     columnTitle: "Memory",
+    size: 120,
+  },
+  {
+    accessorKey: "others",
+    accessorFn: (row) => row.others,
+    header: "Others",
+    columnTitle: "Others",
     size: 120,
   },
 ];

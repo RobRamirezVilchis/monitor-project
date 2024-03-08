@@ -61,8 +61,10 @@ THIRD_PARTY_APPS = [
 ]
 
 CRONJOBS = [
-    ('*/10 * * * *', 'monitor.cron.update_driving_status', '>> ' + os.path.join(BASE_DIR,'monitor/log/debug_sd.log' + ' 2>&1 ')),
-    ('*/10 * * * *', 'monitor.cron.update_industry_status', '>> ' + os.path.join(BASE_DIR,'monitor/log/debug_ind.log' + ' 2>&1 '))
+    ('*/10 * * * *', 'monitor.cron.update_driving_status', '>> ' +
+     os.path.join(BASE_DIR, 'monitor/log/debug_sd.log' + ' 2>&1 ')),
+    ('*/10 * * * *', 'monitor.cron.update_industry_status', '>> ' +
+     os.path.join(BASE_DIR, 'monitor/log/debug_ind.log' + ' 2>&1 '))
 ]
 
 INSTALLED_APPS = [
@@ -94,7 +96,7 @@ TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
         "DIRS": [
-            os.path.join(BASE_DIR, "authentication/templates"), 
+            os.path.join(BASE_DIR, "authentication/templates"),
         ],
         "APP_DIRS": True,
         "OPTIONS": {
@@ -179,7 +181,7 @@ AUTHENTICATION_BACKENDS = [
 
 APP_DOMAIN = env.str("APP_DOMAIN", default="http://localhost:8000")
 
-SITE_ID = 1 
+SITE_ID = 1
 
 
 # CSRF
@@ -197,7 +199,7 @@ REST_FRAMEWORK = {
         "rest_framework.authentication.SessionAuthentication",
         "rest_framework.authentication.TokenAuthentication",
         "dj_rest_auth.jwt_auth.JWTCookieAuthentication"
-    ], 
+    ],
     "DEFAULT_PERMISSION_CLASSES": [
         "rest_framework.permissions.IsAuthenticated",
     ],
@@ -276,12 +278,12 @@ LOGGING = {
     },
 }
 
-from config.settings.cors import * # noqa
-from config.settings.email import * # noqa
-from config.settings.errors import * # noqa
-from config.settings.files_and_storages import * # noqa
-from config.settings.guardian import * # noqa
-from config.settings.openapi import * # noqa
-from config.settings.rest_auth import * # noqa
-from config.settings.session import * # noqa
-from config.settings.soft_delete import * # noqa
+from config.settings.cors import *  # noqa
+from config.settings.email import *  # noqa
+from config.settings.errors import *  # noqa
+from config.settings.files_and_storages import *  # noqa
+from config.settings.guardian import *  # noqa
+from config.settings.openapi import *  # noqa
+from config.settings.rest_auth import *  # noqa
+from config.settings.session import *  # noqa
+from config.settings.soft_delete import *  # noqa

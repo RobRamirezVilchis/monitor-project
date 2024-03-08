@@ -92,12 +92,13 @@ const MainLayout = ({ children }: MainLayoutProps) => {
         <div className="flex-1 hidden md:flex justify-between items-center gap-1">
           <Link className="flex items-center" href="/monitor/safedriving">
             <Image
+              className="pr-1 border-r border-neutral-600"
               src={Introid}
               width={120}
               height={32}
               alt="Picture of the author"
             ></Image>
-            <span className=" mt-1"> | Monitor</span>
+            <span className="ml-2 mt-1">Monitor</span>
           </Link>
           <div className="flex gap-2 items-center mx-4">
             {visibleLinks.map((item) => (

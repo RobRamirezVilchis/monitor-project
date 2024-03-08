@@ -113,4 +113,3 @@ const UnitCard = ({ unit: unit_status }: GxCardProps) => {
 };
 
 export default UnitCard;
-import React from "react";

@@ -3,6 +3,7 @@ import { formatDistanceToNow, parseISO } from "date-fns";
 import { es } from "date-fns/locale";
 import { DeviceStatus } from "@/api/services/monitor/types";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 export interface GxCardProps {
   device: DeviceStatus;
@@ -43,9 +44,9 @@ const DeviceCard = ({ device: device_obj }: GxCardProps) => {
   }
 
   return (
-    <div
+    <Link
+      href={`/monitor/industry/${device_id}`}
       className={`pb-6 w-64 rounded-lg p-6 border border-gray-300 shadow-md`}
-      onClick={() => router.push(`/monitor/industry/${device_id}`)}
     >
       <div
         className={`inline-flex mb-2 px-2.5 pt-1 pb-0.5 text-s font-semibold 
@@ -78,7 +79,7 @@ const DeviceCard = ({ device: device_obj }: GxCardProps) => {
       <p className="text-lg px-2 py-1 bg-gray-200 border border-gray-200 rounded-md">
         {description}
       </p>
-    </div>
+    </Link>
   );
 };
 
