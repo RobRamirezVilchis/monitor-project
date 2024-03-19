@@ -13,6 +13,7 @@ export const useUnitsQuery = createQuery({
   staleTime: 1000 * 60 * 3,  // 3 minutes
   keepPreviousData: true,
   queryClient: defaultQueryClient,
+  refetchInterval: 60000,
 });
 
 export const useUnitStatusQuery = createQuery({
@@ -23,6 +24,7 @@ export const useUnitStatusQuery = createQuery({
   staleTime: 1000 * 60 * 3,  // 3 minutes
   keepPreviousData: true,
   queryClient: defaultQueryClient,
+  refetchInterval: 60000,
 });
 
 export const useUnitHistoryQuery = createQuery({
@@ -43,6 +45,7 @@ export const useDrivingSeverityCount = createQuery({
   staleTime: 1000 * 60 * 3,  // 3 minutes
   keepPreviousData: true,
   queryClient: defaultQueryClient,
+  refetchInterval: 60000,
 });
 
 export const useUnitLastStatusChange = createQuery({
@@ -66,6 +69,7 @@ export const useDevicesQuery = createQuery({
   staleTime: 1000 * 60 * 3,  // 3 minutes
   keepPreviousData: true,
   queryClient: defaultQueryClient,
+  refetchInterval: 60000,
 });
 
 export const useDeviceStatusQuery = createQuery({
@@ -76,6 +80,7 @@ export const useDeviceStatusQuery = createQuery({
   staleTime: 1000 * 60 * 3,  // 3 minutes
   keepPreviousData: true,
   queryClient: defaultQueryClient,
+  refetchInterval: 60000,
 });
 
 export const useDeviceHistoryQuery = createQuery({
@@ -96,4 +101,5 @@ export const useIndustrySeverityCount = createQuery({
   staleTime: 1000 * 60 * 3,  // 3 minutes
   keepPreviousData: true,
   queryClient: defaultQueryClient,
+  refetchInterval: 60000,
 });

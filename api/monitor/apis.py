@@ -31,7 +31,8 @@ class UnitList(APIView):
         return Response(data)
 
 # All devices status list
-    
+
+
 class UnitStatusList(APIView):
     class OutputSerializer(serializers.Serializer):
         unit_id = serializers.IntegerField()
@@ -72,48 +73,47 @@ class DeviceStatusList(APIView):
 
 
 # Severity count
-    
+
 class UnitSeverityCount(APIView):
-    
+
     class SeverityCountSerializer(serializers.Serializer):
         severity = serializers.IntegerField()
         count = serializers.IntegerField()
 
-
     def get(self, request, *args, **kwargs):
 
         counts = UnitStatus.objects.values('status__severity') \
-                                    .annotate(severity=F('status__severity')) \
-                                    .values('severity') \
-                                    .annotate(count=Count('id')) \
-                                    .order_by('-severity')
-        
+            .annotate(severity=F('status__severity')) \
+            .values('severity') \
+            .annotate(count=Count('id')) \
+            .order_by('-severity')
+
         # Serialize the result
         serializer = self.SeverityCountSerializer(counts, many=True)
         return Response(serializer.data)
 
 
 class DeviceSeverityCount(APIView):
-    
+
     class SeverityCountSerializer(serializers.Serializer):
         severity = serializers.IntegerField()
         count = serializers.IntegerField()
 
-
     def get(self, request, *args, **kwargs):
 
         counts = DeviceStatus.objects.values('status__severity') \
-                                    .annotate(severity=F('status__severity')) \
-                                    .values('severity') \
-                                    .annotate(count=Count('id')) \
-                                    .order_by('-severity')
-        
+            .annotate(severity=F('status__severity')) \
+            .values('severity') \
+            .annotate(count=Count('id')) \
+            .order_by('-severity')
+
         # Serialize the result
         serializer = self.SeverityCountSerializer(counts, many=True)
         return Response(serializer.data)
 
 # Device history
-    
+
+
 class UnitHistoryList(APIView):
     class FiltersSerializer(serializers.Serializer):
         register_datetime_after = serializers.DateTimeField(required=False)
@@ -148,7 +148,8 @@ class UnitHistoryList(APIView):
 
         filters_serializer = self.FiltersSerializer(data=request.query_params)
         filters_serializer.is_valid(raise_exception=True)
-        
+        print("valdata")
+        print(filters_serializer.validated_data)
 
         # Si no se especificó rango de fechas, regresar registros del último día
         if not filters_serializer.validated_data.get('register_datetime_before') and not filters_serializer.validated_data.get('register_datetime_after'):
@@ -158,26 +159,29 @@ class UnitHistoryList(APIView):
             date_now = datetime.datetime.now()
             end_date = date_now.astimezone(pytz.timezone("America/Mexico_City")).replace(
                 tzinfo=pytz.utc) + datetime.timedelta(hours=6)
-            start_date = end_date - timedelta(hours=24) + datetime.timedelta(hours=6)
+            start_date = end_date - \
+                timedelta(hours=24) + datetime.timedelta(hours=6)
 
-            filters_serializer.validated_data["register_datetime_before"] = end_date 
-            filters_serializer.validated_data["register_datetime_after"] = start_date 
+            filters_serializer.validated_data["register_datetime_before"] = end_date
+            filters_serializer.validated_data["register_datetime_after"] = start_date
 
         data = {'unit_id': unit_id}
-        logs = get_unithistory(data, filters=filters_serializer.validated_data)[::-1]
-        
+        logs = get_unithistory(
+            data, filters=filters_serializer.validated_data)[::-1]
+
         # return Response(output)
         return get_paginated_response(
             serializer_class=self.OutputSerializer,
             queryset=logs,
             request=request,
         )
-    
+
 
 class DeviceHistoryList(APIView):
     class FiltersSerializer(serializers.Serializer):
         register_datetime_after = serializers.DateTimeField(required=False)
         register_datetime_before = serializers.DateTimeField(required=False)
+        sort = serializers.CharField(required=False)
 
     class OutputSerializer(serializers.Serializer):
         device_id = serializers.IntegerField()
@@ -195,12 +199,14 @@ class DeviceHistoryList(APIView):
         others = serializers.IntegerField()
         severity = serializers.IntegerField(source='status.severity')
         description = serializers.CharField(source='status.description')
-    
+
     def get(self, request, device_id, *args, **kwargs):
 
         filters_serializer = self.FiltersSerializer(data=request.query_params)
         filters_serializer.is_valid(raise_exception=True)
-       
+        print("valdata")
+        print(filters_serializer.validated_data)
+
         # Si no se especificó rango de fechas, regresar registros del último día
         if filters_serializer.validated_data == {}:
             import datetime
@@ -210,21 +216,19 @@ class DeviceHistoryList(APIView):
             end_date = date_now.astimezone(pytz.timezone("America/Mexico_City")).replace(
                 tzinfo=pytz.utc) + datetime.timedelta(hours=6)
             start_date = end_date - timedelta(hours=24)
-            print("start date")
-            print(start_date, end_date)
 
-            filters_serializer.validated_data["register_datetime_before"] = end_date 
-            filters_serializer.validated_data["register_datetime_after"] = start_date 
+            filters_serializer.validated_data["register_datetime_before"] = end_date
+            filters_serializer.validated_data["register_datetime_after"] = start_date
 
         data = {'device_id': device_id}
-        logs = get_devicehistory(data, filters=filters_serializer.validated_data)[::-1]
-        
+        logs = get_devicehistory(
+            data, filters=filters_serializer.validated_data)[::-1]
+
         return get_paginated_response(
             serializer_class=self.OutputSerializer,
             queryset=logs,
             request=request,
         )
-
 
 
 class UnitStatusTime(APIView):
@@ -233,7 +237,7 @@ class UnitStatusTime(APIView):
 
     def get(self, request, unit_id, *args, **kwargs):
         unit_histories_with_next_severity = UnitHistory.objects.filter(
-            unit_id = unit_id,
+            unit_id=unit_id,
         ).annotate(
             next_severity=Window(
                 expression=Lead('status__severity'),
@@ -241,16 +245,19 @@ class UnitStatusTime(APIView):
                 order_by=F('register_datetime').desc()
             )
         )
-        
+
         severity_changes = unit_histories_with_next_severity.filter(
-            next_severity__isnull=False,  # Excludes the last record for each unit, as it has no "next" record
-            status__severity__isnull=False  # Optional: Exclude records with no severity to avoid comparing None values
+            # Excludes the last record for each unit, as it has no "next" record
+            next_severity__isnull=False,
+            # Optional: Exclude records with no severity to avoid comparing None values
+            status__severity__isnull=False
         ).exclude(
             status__severity=F('next_severity')
         )
 
         if not severity_changes:
-            first_register = unit_histories_with_next_severity[len(unit_histories_with_next_severity)-1]
+            first_register = unit_histories_with_next_severity[len(
+                unit_histories_with_next_severity)-1]
             output = self.OutputSerializer(first_register).data
             return Response(output)
         else:
@@ -276,7 +283,7 @@ class UnitStatusAPI(APIView):
         data = self.OutputSerializer(unit_status).data
 
         return Response(data)
-    
+
 
 class DeviceStatusAPI(APIView):
     class OutputSerializer(serializers.Serializer):
@@ -309,5 +316,3 @@ class CameraStatusList(APIView):
         data = self.OutputSerializer(devices, many=True).data
 
         return Response(data)
-
-

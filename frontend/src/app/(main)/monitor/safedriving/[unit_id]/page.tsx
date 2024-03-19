@@ -129,9 +129,9 @@ const UnitPage = ({ params }: { params: { unit_id: string } }) => {
       <div className="flex mt-10 mb-4 justify-between items-center">
         <div className="xl:flex xl:gap-6">
           <h1 className="text-5xl font-bold">Unidad {unitStatus?.unit}</h1>
-          <div className="flex justify-start items-center gap-4 mt-4 xl:mt-0">
+          <div className="md:flex justify-start items-center gap-4 mt-4 xl:mt-0">
             <div
-              className={`inline-flex h-fit px-4 pt-1 pb-0.5 text-3xl font-semibold 
+              className={`inline-flex h-fit px-4 pt-1 pb-0.5 text-3xl font-semibold mb-2 md:mb-0
                     border-2 ${color} rounded-full items-center`}
             >
               {statusNames[severity as StatusKey]}
@@ -144,7 +144,7 @@ const UnitPage = ({ params }: { params: { unit_id: string } }) => {
           </div>
         </div>
         {unitStatus?.on_trip && (
-          <div className="flex items-center  top-0">
+          <div className="flex items-center top-0">
             <span className="animate-ping inline-flex h-4 w-4 rounded-full bg-blue-400 opacity-100"></span>
             <div className="text-3xl font-semibold ml-4">En viaje</div>
           </div>
@@ -192,7 +192,7 @@ const cols: ColumnDef<UnitHistory>[] = [
     filterVariant: "datetime-range",
   },
   {
-    accessorKey: "status",
+    accessorKey: "severity",
     accessorFn: (row) => row.severity,
     header: "Estátus",
     columnTitle: "Estátus",

@@ -6,6 +6,7 @@ from .models import *
 
 class MonitorTest(TestCase):
     def setUp(self) -> None:
+
         return super().setUp()
 
     def test_unitstatus_recent(self):

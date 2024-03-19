@@ -12,7 +12,8 @@ class Deployment(models.Model):
 
 class Client(models.Model):
     name = models.CharField("Nombre", max_length=50)
-    deployment = models.ForeignKey(Deployment, on_delete=models.CASCADE, null=True)
+    deployment = models.ForeignKey(
+        Deployment, on_delete=models.CASCADE, null=True)
 
     def __str__(self):
         return self.name
@@ -22,7 +23,8 @@ class GxStatus(models.Model):
     description = models.CharField(max_length=100, null=True, blank=True)
     severity = models.IntegerField("Severidad", null=True)
     reason = models.IntegerField("Razón", null=True)
-    deployment = models.ForeignKey(Deployment, on_delete=models.CASCADE, null=True)
+    deployment = models.ForeignKey(
+        Deployment, on_delete=models.CASCADE, null=True)
 
     class Meta:
         verbose_name_plural = "Gx Status"
@@ -49,8 +51,8 @@ class Device(Gx):
     license_days = models.IntegerField(null=True)
 
     def __str__(self):
-        return self.client.name + ' - ' + self.name
-    
+        return self.client.name
+
 
 class Camera(models.Model):
     name = models.CharField("Nombre", max_length=50)
@@ -190,6 +192,3 @@ class DeviceHistory(models.Model):
 
     def __str__(self):
         return self.register_date.strftime("%Y-%m-%d %H:%M:%S") + ' - ' + str(self.device.name)
-
-
-

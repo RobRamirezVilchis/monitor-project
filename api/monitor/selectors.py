@@ -7,7 +7,7 @@ def unitstatus_list():
 
 
 def devicestatus_list():
-    return DeviceStatus.objects.all()
+    return DeviceStatus.objects.all().order_by("-status__severity")
 
 
 def camerastatus_list():
@@ -33,9 +33,10 @@ def get_deployment(name):
     return deployment
 
 
-def get_client(args):
-    client = Client.objects.get(
+def get_or_create_client(args):
+    client, created = Client.objects.get_or_create(
         name=args['name'],
+        deployment=args['deployment']
     )
     return client
 
@@ -96,7 +97,7 @@ class UnitHistoryFilter(rf_filters.FilterSet):
             'pending_status',
             'restarting_loop',
             'on_trip',
-            'status',
+            ('status__severity', 'severity')
         )
     )
 
@@ -131,16 +132,23 @@ def get_unithistory(args, filters=None):
     logs = UnitHistory.objects.filter(
         unit_id=args['unit_id'],
     )
-
+    print("Filters2")
+    print(filters)
     return UnitHistoryFilter(filters, logs).qs
 
 
 class DeviceHistoryFilter(rf_filters.FilterSet):
     register_datetime = rf_filters.DateTimeFromToRangeFilter()
+    sort = rf_filters.OrderingFilter(
+        fields=(
+            'register_datetime',
+            ('status__severity', 'severity'),
+        )
+    )
 
     class Meta:
         model = DeviceHistory
-        fields = ['register_datetime']
+        fields = ['register_datetime', 'status']
 
 
 def get_devicehistory(args, filters=None):
@@ -148,5 +156,6 @@ def get_devicehistory(args, filters=None):
     logs = DeviceHistory.objects.filter(
         device__id=args['device_id'],
     )
-
+    print("Filters2")
+    print(filters)
     return DeviceHistoryFilter(filters, logs).qs

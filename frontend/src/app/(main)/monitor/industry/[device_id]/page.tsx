@@ -80,7 +80,7 @@ const DevicePage = ({ params }: { params: { device_id: string } }) => {
 
   const last_log: DeviceHistory | undefined = history_query.data?.data[0];
 
-  const severity = last_log?.severity;
+  const severity = deviceStatus?.severity;
   const color = statusStyles[severity as StatusKey];
 
   const grid = useDataGrid<DeviceHistory>({
@@ -108,7 +108,7 @@ const DevicePage = ({ params }: { params: { device_id: string } }) => {
   return (
     <section>
       <div className="flex mt-10 mb-4 justify-between items-center">
-        <div className="flex  justify-start gap-4">
+        <div className="flex justify-start gap-4">
           <h1 className="text-5xl font-bold">{deviceStatus?.device}</h1>
           <div
             className={`inline-flex px-4 pt-1 pb-0.5 text-3xl font-semibold 
@@ -202,7 +202,7 @@ const cols: ColumnDef<DeviceHistory>[] = [
     filterVariant: "datetime-range",
   },
   {
-    accessorKey: "status",
+    accessorKey: "severity",
     accessorFn: (row) => row.severity,
     header: "Estátus",
     columnTitle: "Estátus",
