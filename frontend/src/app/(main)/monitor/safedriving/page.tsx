@@ -2,9 +2,22 @@
 
 import { useCallback, useState } from "react";
 
-import { TextInput } from "@mantine/core";
+import {
+  TextInput,
+  MultiSelect,
+  Input,
+  InputBase,
+  Combobox,
+  useCombobox,
+  Select,
+  ComboboxItem,
+} from "@mantine/core";
 
-import { useUnitsQuery, useDrivingSeverityCount } from "@/api/queries/monitor";
+import {
+  useUnitsQuery,
+  useDrivingSeverityCount,
+  useSafeDrivingClientsQuery,
+} from "@/api/queries/monitor";
 
 import UnitCard from "../(components)/UnitCard";
 
@@ -31,6 +44,10 @@ const statusNames: { [key in StatusKey]: string } = {
 };
 
 const SafeDrivingPage = () => {
+  const combobox = useCombobox({
+    onDropdownClose: () => combobox.resetSelectedOption(),
+  });
+  const [clientValue, setClientValue] = useState<string | null>(null);
   const [value, setValue] = useState("");
   const searchParams = useSearchParams();
   const filter = searchParams.get("filter");
@@ -47,30 +64,51 @@ const SafeDrivingPage = () => {
     [searchParams]
   );
 
-  const unitsQuery = useUnitsQuery({
+  const unitsStatusQuery = useUnitsQuery({
     refetchOnWindowFocus: false,
   });
   const countQuery = useDrivingSeverityCount({
     refetchOnWindowFocus: false,
   });
+  const clientsQuery = useSafeDrivingClientsQuery({
+    refetchOnWindowFocus: false,
+  });
 
-  const unitData = unitsQuery.data;
+  const clients = clientsQuery.data?.map((data) => data.name);
+
+  const unitData = unitsStatusQuery.data;
 
   return (
-    <section className="">
+    <section>
       <div className="flex items-center">
         <h1 className="text-5xl font-bold py-2 flex-1 my-6">Safe Driving</h1>
       </div>
 
-      <TextInput
-        className="flex gap-3 items-center w-100 mb-4"
-        styles={{
-          label: { fontSize: 20 },
-        }}
-        label="Buscar unidad:"
-        value={value}
-        onChange={(event) => setValue(event.currentTarget.value)}
-      />
+      <div className="md:flex mb-4 gap-10">
+        <TextInput
+          className="flex gap-3 items-center w-100 "
+          styles={{
+            label: { fontSize: 18 },
+          }}
+          label="Buscar unidad:"
+          value={value}
+          onChange={(event) => setValue(event.currentTarget.value)}
+        />
+        <div className="flex mt-2 md:mt-0 items-center w-96 gap-4">
+          <div className="w-96">
+            <Select
+              className="flex gap-3 items-center w-100 "
+              styles={{
+                label: { fontSize: 18 },
+              }}
+              label="Filtrar por cliente:"
+              placeholder="Todos"
+              data={clients}
+              onChange={(value: string | null) => setClientValue(value)}
+            ></Select>
+          </div>
+        </div>
+      </div>
 
       {countQuery.data && (
         <div className="flex w-fit py-2 mb-4 gap-6 flex-wrap">
@@ -110,6 +148,7 @@ const SafeDrivingPage = () => {
       <div className="flex flex-row gap-4 flex-wrap">
         {unitData?.map((unit) =>
           unit.unit.startsWith(value) &&
+          (unit.client == clientValue || clientValue == null) &&
           (filter == null || unit.severity == Number(filter)) ? (
             <UnitCard key={unit.unit} unit={unit} />
           ) : null

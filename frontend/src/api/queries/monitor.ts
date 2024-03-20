@@ -1,5 +1,5 @@
 import { createQuery } from "../helpers/createQuery";
-import { getUnits, getDevices, getUnitHistory, getDrivingSeverityCount, getLastUnitStatusChange, getDeviceHistory, getIndustrySeverityCount, getUnitStatus, getDeviceStatus } from "../services/monitor";
+import { getUnits, getDevices, getUnitHistory, getDrivingSeverityCount, getLastUnitStatusChange, getDeviceHistory, getIndustrySeverityCount, getUnitStatus, getDeviceStatus, getSafeDrivingClients, getIndustryClients } from "../services/monitor";
 import { DeviceFilters, UnitFilters } from "../services/monitor/types";
 import defaultQueryClient from "../clients/defaultQueryClient";
 
@@ -58,6 +58,17 @@ export const useUnitLastStatusChange = createQuery({
   queryClient: defaultQueryClient,
 });
 
+export const useSafeDrivingClientsQuery = createQuery({
+  queryPrimaryKey: "safe_driving_clients",
+  //queryKeyVariables: (vars: UsersFilters) => vars ? [vars] : [],
+  queryFn: (ctx, vars) => getSafeDrivingClients({ signal: ctx.signal }),
+  cacheTime: 1000 * 60 * 5,  // 5 minutes
+  staleTime: 1000 * 60 * 3,  // 3 minutes
+  keepPreviousData: true,
+  queryClient: defaultQueryClient,
+  refetchInterval: 60000,
+});
+
 
 // Industry API ----------------------------------------------------------
 
@@ -97,6 +108,17 @@ export const useIndustrySeverityCount = createQuery({
   queryPrimaryKey: "industry_severity_count",
   //queryKeyVariables: (vars: UsersFilters) => vars ? [vars] : [],
   queryFn: (ctx, vars) => getIndustrySeverityCount({ signal: ctx.signal }),
+  cacheTime: 1000 * 60 * 5,  // 5 minutes
+  staleTime: 1000 * 60 * 3,  // 3 minutes
+  keepPreviousData: true,
+  queryClient: defaultQueryClient,
+  refetchInterval: 60000,
+});
+
+export const useIndustryClientsQuery = createQuery({
+  queryPrimaryKey: "industry_clients",
+  //queryKeyVariables: (vars: UsersFilters) => vars ? [vars] : [],
+  queryFn: (ctx, vars) => getIndustryClients({ signal: ctx.signal }),
   cacheTime: 1000 * 60 * 5,  // 5 minutes
   staleTime: 1000 * 60 * 3,  // 3 minutes
   keepPreviousData: true,

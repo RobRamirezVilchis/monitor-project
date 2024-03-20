@@ -1,4 +1,4 @@
-import { UnitStatus, SeverityCount, UnitHistory, DeviceStatus, UnitFilters, LastStatusChange, DeviceFilters, DeviceHistory } from "./types";
+import { UnitStatus, SeverityCount, UnitHistory, DeviceStatus, UnitFilters, LastStatusChange, DeviceFilters, DeviceHistory, Client } from "./types";
 import { Id, Paginated } from "@/api/types";
 import { Role, User } from "../auth/types";
 import api from "../..";
@@ -20,6 +20,19 @@ export async function getUnits(config?: Parameters<typeof http.get>[1]) {
   }
 }
 
+export async function getSafeDrivingClients(config?: Parameters<typeof http.get>[1]) {
+  try {
+    const resp = await http.get<Client[]>(
+      api.endpoints.monitor.driving.clients,
+      {
+        ...config,
+      }
+    );
+    return resp.data;
+  } catch (error) {
+    throw error;
+  }
+}
 
 export async function getDrivingSeverityCount(config?: Parameters<typeof http.get>[1]) {
   try {
@@ -108,6 +121,19 @@ export async function getDevices(config?: Parameters<typeof http.get>[1]) {
   }
 }
 
+export async function getIndustryClients(config?: Parameters<typeof http.get>[1]) {
+  try {
+    const resp = await http.get<Client[]>(
+      api.endpoints.monitor.industry.clients,
+      {
+        ...config,
+      }
+    );
+    return resp.data;
+  } catch (error) {
+    throw error;
+  }
+}
 
 export async function getDeviceStatus(
   filters: DeviceFilters,

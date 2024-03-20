@@ -14,23 +14,8 @@ from .services import device_create_or_update
 from api.pagination import get_paginated_response, LimitOffsetPagination
 from .models import UnitStatus
 
-# Create your views here.
 
-
-class UnitList(APIView):
-    class OutputSerializer(serializers.Serializer):
-        id = serializers.IntegerField()
-        name = serializers.IntegerField()
-        client = serializers.IntegerField()
-
-    def get(self, request):
-        devices = unitstatus_list()
-
-        data = self.OutputSerializer(devices, many=True).data
-
-        return Response(data)
-
-# All devices status list
+# All gx status list
 
 
 class UnitStatusList(APIView):
@@ -43,6 +28,7 @@ class UnitStatusList(APIView):
         last_connection = serializers.DateTimeField()
         pending_events = serializers.IntegerField()
         pending_status = serializers.IntegerField()
+        client = serializers.CharField(source='unit.client.name')
 
     def get(self, request, *args, **kwargs):
         devices = unitstatus_list()
@@ -315,4 +301,26 @@ class CameraStatusList(APIView):
 
         data = self.OutputSerializer(devices, many=True).data
 
+        return Response(data)
+
+
+class SafeDrivingClientList(APIView):
+    class OutputSerializer(serializers.Serializer):
+        name = serializers.CharField()
+
+    def get(self, request, *args, **kwargs):
+        clients = get_sd_clients()
+
+        data = self.OutputSerializer(clients, many=True).data
+        return Response(data)
+
+
+class IndustryClientList(APIView):
+    class OutputSerializer(serializers.Serializer):
+        name = serializers.CharField()
+
+    def get(self, request, *args, **kwargs):
+        clients = get_industry_clients()
+
+        data = self.OutputSerializer(clients, many=True).data
         return Response(data)

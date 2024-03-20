@@ -18,6 +18,7 @@ export interface UnitStatus {
   last_connection: string | null; 
   pending_events: number | null;
   pending_status: number | null;
+  client: string;
 }
 
 export interface DeviceStatus {
@@ -77,6 +78,10 @@ export interface DeviceHistory {
 export interface SeverityCount {
   severity: number;
   count: number;
+}
+
+export interface Client {
+  name: string;
 }
 
 export interface LastStatusChange {

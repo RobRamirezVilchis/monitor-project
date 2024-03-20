@@ -181,8 +181,7 @@ def get_driving_data(client):
                         output_gx["hour"][unit]["restarting_loop"] = True
                         output_gx["ten_minutes"][unit]["restarting_loop"] = True
 
-    severities = {}
-
+    severities = {n: {} for n in range(1, 6)}
     for device, datos in device_dict.items():
         status = 0
         disc_cameras = sum(
@@ -462,7 +461,8 @@ def update_driving_status():
 
             # Si una unidad entró en más de un nivel, tomar el más grave
             # Si cumple con dos reglas en un nivel, se toma la última (arreglar)
-            for level, rules in units_status.items():
+            for level in range(6):
+                rules = units_status[level]
                 for condition, units in rules.items():
                     if unit in units:
                         status = level

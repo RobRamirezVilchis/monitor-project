@@ -49,6 +49,7 @@ const api = {
     },
     monitor: {
       driving: {
+        clients: "api/v1/monitor/driving/clients/",
         status: "api/v1/monitor/driving-status/",
         lastStatusChange: (unit_id: UnitId) => `api/v1/monitor/driving-status/last-status-change/${unit_id}/`,
         unitStatus: (unit_id: UnitId) => `api/v1/monitor/driving-status/${unit_id}/`,
@@ -56,6 +57,7 @@ const api = {
         severityCount: "api/v1/monitor/driving-status-count/"
       },
       industry: {
+        clients: "api/v1/monitor/industry/clients/",
         status: "api/v1/monitor/industry-status/",
         deviceStatus: (device_id: DeviceId) => `api/v1/monitor/industry-status/${device_id}/`,
         deviceHistory: (device_id: DeviceId) => `api/v1/monitor/industry-status/history/${device_id}/`,

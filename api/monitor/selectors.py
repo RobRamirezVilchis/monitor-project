@@ -159,3 +159,17 @@ def get_devicehistory(args, filters=None):
     print("Filters2")
     print(filters)
     return DeviceHistoryFilter(filters, logs).qs
+
+
+def get_sd_clients():
+    clients = Client.objects.filter(
+        deployment=Deployment.objects.get(name="Safe Driving"))
+
+    return clients
+
+
+def get_industry_clients():
+    clients = Client.objects.filter(
+        deployment=Deployment.objects.get(name="Industry"))
+
+    return clients
