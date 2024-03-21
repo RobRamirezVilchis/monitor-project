@@ -122,7 +122,7 @@ AUTH_USER_MODEL = "authentication.User"
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
 DATABASES = {
-    "default": env.db("DEFAULT_DB"),
+    "default": env.db("DEFAULT_DB", engine="django.db.backends.postgresql_psycopg2"),
 }
 
 

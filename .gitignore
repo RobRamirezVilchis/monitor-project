@@ -2,3 +2,5 @@
 !.vscode/launch.json
 
 **/*/git-ignore/
+
+api/whole.json

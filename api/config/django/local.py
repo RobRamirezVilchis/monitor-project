@@ -10,9 +10,10 @@ AUTH_PASSWORD_VALIDATORS = []
 
 
 DATABASES["default"] = {
-    "ENGINE": "django.db.backends.sqlite3",
-    "NAME": os.path.join(BASE_DIR, "db.sqlite3"),
-    "OPTIONS": {
-        "timeout": 20,
-    },
+    "ENGINE": "django.db.backends.postgresql_psycopg2",
+    "NAME": "dbmonitor",
+    "USER": "rob",
+    "PASSWORD": "150325",
+    "HOST": "localhost",
+    "PORT": "5452",
 }

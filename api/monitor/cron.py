@@ -734,6 +734,7 @@ def update_industry_status():
             0)
         delayed = update_values['delayed'] if 'delayed' in update_values else False
 
+        # Arreglar: Y si no hubo last connection de gx_data?
         devicehistory_args = {
             'device': device,
             'register_date': date_now.date(),
