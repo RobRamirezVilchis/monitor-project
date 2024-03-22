@@ -15,5 +15,5 @@ DATABASES["default"] = {
     "USER": "rob",
     "PASSWORD": "150325",
     "HOST": "localhost",
-    "PORT": "5452",
+    "PORT": "5432",
 }
