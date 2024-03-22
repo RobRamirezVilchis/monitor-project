@@ -158,6 +158,4 @@ const SafeDrivingPage = () => {
   );
 };
 
-export default withAuth(SafeDrivingPage, {
-  rolesWhitelist: ["Admin"],
-});
+export default SafeDrivingPage;

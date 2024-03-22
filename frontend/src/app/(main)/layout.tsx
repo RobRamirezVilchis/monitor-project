@@ -128,7 +128,7 @@ const MainLayout = ({ children }: MainLayoutProps) => {
   );
 };
 
-export default withAuth(MainLayout);
+export default MainLayout;
 
 interface DesktopNavLinkProps {
   item: NavMenuItem;
