@@ -187,9 +187,7 @@ const DevicePage = ({ params }: { params: { device_id: string } }) => {
 };
 
 //export default UnitPage;
-export default withAuth(DevicePage, {
-  rolesWhitelist: ["Admin"],
-});
+export default DevicePage;
 
 const cols: ColumnDef<DeviceHistory>[] = [
   {

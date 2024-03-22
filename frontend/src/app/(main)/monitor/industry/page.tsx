@@ -119,6 +119,4 @@ const IndustryPage = () => {
   );
 };
 
-export default withAuth(IndustryPage, {
-  rolesWhitelist: ["Admin"],
-});
+export default IndustryPage;

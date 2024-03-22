@@ -144,9 +144,7 @@ const UsersPage = () => {
   );
 };
 
-export default withAuth(UsersPage, {
-  rolesWhitelist: ["Admin"],
-});
+export default UsersPage;
 
 const cols: ColumnDef<User>[] = [
   {

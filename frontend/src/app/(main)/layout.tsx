@@ -37,7 +37,6 @@ interface MainLayoutProps {
 
 const MainLayout = ({ children }: MainLayoutProps) => {
   const [isOpen, { toggle, close }] = useDisclosure(false);
-  const { user } = useAuth();
 
   const [links, setLinks] = useState<NavMenuItem[]>([
     {
@@ -53,16 +52,6 @@ const MainLayout = ({ children }: MainLayoutProps) => {
       href: "/monitor/industry",
     },
   ]);
-  const visibleLinks = useMemo(
-    () =>
-      links.filter((link) =>
-        isUserInAuthorizedRoles(user, {
-          rolesWhitelist: link.rolesWhitelist,
-          rolesBlacklist: link.rolesBlacklist,
-        })
-      ),
-    [links, user]
-  );
 
   return (
     <AppShell
@@ -100,11 +89,6 @@ const MainLayout = ({ children }: MainLayoutProps) => {
             ></Image>
             <span className="ml-2 mt-1">Monitor</span>
           </Link>
-          <div className="flex gap-2 items-center mx-4">
-            {visibleLinks.map((item) => (
-              <DesktopNavLink key={item.href} item={item} />
-            ))}
-          </div>
         </div>
 
         {/* Mobile */}
@@ -117,11 +101,9 @@ const MainLayout = ({ children }: MainLayoutProps) => {
         <ProfileFloatingMenu />
       </AppShell.Header>
 
-      <AppShell.Navbar classNames={{ navbar: "px-2.5 py-2.5" }}>
-        {visibleLinks.map((item) => (
-          <MobileNavLink key={item.href} item={item} onClick={close} />
-        ))}
-      </AppShell.Navbar>
+      <AppShell.Navbar
+        classNames={{ navbar: "px-2.5 py-2.5" }}
+      ></AppShell.Navbar>
 
       <AppShell.Main>{children}</AppShell.Main>
     </AppShell>

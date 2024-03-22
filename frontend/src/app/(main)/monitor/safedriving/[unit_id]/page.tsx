@@ -177,9 +177,7 @@ const UnitPage = ({ params }: { params: { unit_id: string } }) => {
 };
 
 //export default UnitPage;
-export default withAuth(UnitPage, {
-  rolesWhitelist: ["Admin"],
-});
+export default UnitPage;
 
 const cols: ColumnDef<UnitHistory>[] = [
   {
