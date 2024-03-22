@@ -4,7 +4,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = ["localhost", "0.0.0.0", "127.0.0.1", "192.168.1.173"]  # ["*"]
 
-CSRF_TRUSTED_ORIGINS = ["http://localhost:3000", "192.168.1.173"]
+CSRF_TRUSTED_ORIGINS = ["http://localhost:3000", "http://192.168.1.173"]
 
 AUTH_PASSWORD_VALIDATORS = []
 
