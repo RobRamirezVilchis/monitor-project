@@ -26,7 +26,7 @@ const statusStyles: { [key in StatusKey]: string } = {
 const statusNames: { [key in StatusKey]: string } = {
   0: "Inactivo",
   1: "Funcionando",
-  2: "Funcionando",
+  2: "Normal",
   3: "Alerta",
   4: "Fallando",
   5: "Crítico",
