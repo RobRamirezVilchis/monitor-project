@@ -20,8 +20,14 @@ def get_credentials(client):
     return credentials
 
 
-def login(credentials):
-    global token
+def login(client, credentials):
+
+    if client == "tp":
+        login_url = 'https://tp.introid.com/login/'
+    elif client == "cemex":
+        login_url = 'https://cmx.safe-d.aivat.io/login/'
+    else:
+        login_url = f'https://{client}.industry.aivat.io/login/'
 
     r = requests.post(login_url, data=credentials)
 
@@ -31,8 +37,10 @@ def login(credentials):
         token = None
         print(f"Login error: {r.status_code}")
 
+    return token
 
-def make_request(interval):
+
+def make_request(interval, token):
     headers = {"Authorization": f"Token {token}"}
     r = requests.get(request_url, data=interval, headers=headers)
     # print(r.status_code)
@@ -43,7 +51,7 @@ def make_request(interval):
 def get_driving_data(client):
     global login_url
     global request_url
-    now = datetime.utcnow().astimezone(pytz.timezone(
+    now = datetime.now(datetime.UTC).astimezone(pytz.timezone(
         'America/Mexico_City')).replace(tzinfo=pytz.utc)
 
     credentials = get_credentials(client)
@@ -57,15 +65,15 @@ def get_driving_data(client):
         request_url = 'https://cmx.safe-d.aivat.io/cemex/logs/'
 
     try:
-        login(credentials)
+        token = login(client, credentials)
     except requests.exceptions.ConnectionError:
         print("Connection error")
         return
 
-    response, status = make_request({"minutes": 60})
+    response, status = make_request({"minutes": 60}, token=token)
     if status == 401:
-        login(credentials)
-        response, status = make_request({"minutes": 60})
+        token = login(client, credentials)
+        response, status = make_request({"minutes": 60}, token=token)
 
     if status == 200 or status == 201:
         response = response.json()
