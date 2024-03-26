@@ -81,7 +81,9 @@ const SafeDrivingPage = () => {
   return (
     <section>
       <div className="flex items-center">
-        <h1 className="text-5xl font-bold py-2 flex-1 my-3 md:my-6 pr-2">Safe Driving</h1>
+        <h1 className="text-5xl font-bold pb-2 flex-1 mb-3 md:mb-6 pr-2">
+          Safe Driving
+        </h1>
         <ColorSchemeSwitchToggle />
       </div>
 
@@ -106,7 +108,6 @@ const SafeDrivingPage = () => {
           data={clients}
           onChange={(value: string | null) => setClientValue(value)}
         ></Select>
-
       </div>
 
       {countQuery.data && (
@@ -123,17 +124,19 @@ const SafeDrivingPage = () => {
                 href={
                   filter == null || Number(filter) != severity_count.severity
                     ? "/monitor/safedriving/?" +
-                    createQueryString(
-                      "filter",
-                      String(severity_count.severity)
-                    )
+                      createQueryString(
+                        "filter",
+                        String(severity_count.severity)
+                      )
                     : "/monitor/safedriving/"
                 }
-                className={`${severity_count.severity == Number(filter) || filter == null
-                  ? "opacity-100"
-                  : "opacity-30"
-                  } inline-flex px-2.5 pt-1 pb-0.5 text-s font-semibold border-2 ${statusStyles[severity_count.severity as StatusKey]
-                  } rounded-full`}
+                className={`${
+                  severity_count.severity == Number(filter) || filter == null
+                    ? "opacity-100"
+                    : "opacity-30"
+                } inline-flex px-2.5 pt-1 pb-0.5 text-s font-semibold border-2 ${
+                  statusStyles[severity_count.severity as StatusKey]
+                } rounded-full`}
               >
                 {statusNames[severity_count.severity as StatusKey]}
               </Link>
@@ -145,8 +148,8 @@ const SafeDrivingPage = () => {
       <div className="flex flex-row gap-4 flex-wrap">
         {unitData?.map((unit) =>
           unit.unit.startsWith(value) &&
-            (unit.client == clientValue || clientValue == null) &&
-            (filter == null || unit.severity == Number(filter)) ? (
+          (unit.client == clientValue || clientValue == null) &&
+          (filter == null || unit.severity == Number(filter)) ? (
             <UnitCard key={unit.unit} unit={unit} />
           ) : null
         )}

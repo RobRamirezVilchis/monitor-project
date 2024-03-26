@@ -126,7 +126,7 @@ const UnitPage = ({ params }: { params: { unit_id: string } }) => {
 
   return (
     <section>
-      <div className="flex mt-10 mb-4 justify-between items-center">
+      <div className="flex mb-4 justify-between items-center">
         <div className="xl:flex xl:gap-6">
           <h1 className="text-5xl font-bold">Unidad {unitStatus?.unit}</h1>
           <div className="md:flex justify-start items-center gap-4 mt-4 xl:mt-0">

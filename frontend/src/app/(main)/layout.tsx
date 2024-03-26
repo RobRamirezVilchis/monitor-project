@@ -48,11 +48,7 @@ const MainLayout = ({ children }: MainLayoutProps) => {
     },
   ]);
 
-  const visibleLinks = useMemo(
-    () =>
-      links,
-    [links]
-  );
+  const visibleLinks = useMemo(() => links, [links]);
 
   return (
     <AppShell
@@ -98,8 +94,6 @@ const MainLayout = ({ children }: MainLayoutProps) => {
           </div>
         </div>
 
-
-
         {/* Mobile */}
         <div className="flex-1 flex md:hidden justify-center">
           <Link href="/">
@@ -144,7 +138,7 @@ const DesktopNavLink = ({ item, onClick }: DesktopNavLinkProps) => {
       onClick={onClick}
       className="text-center"
       classNames={{
-        root: clsx("px-2 py-2.5 min-w-24", {}),
+        root: clsx("px-2 py-2.5 w-24", {}),
         body: "overflow-visible",
       }}
       styles={{

@@ -106,7 +106,7 @@ const DevicePage = ({ params }: { params: { device_id: string } }) => {
 
   return (
     <section>
-      <div className="flex mt-10 mb-4 justify-between items-center">
+      <div className="flex mb-4 justify-between items-center">
         <div className="flex justify-start gap-4">
           <h1 className="text-5xl font-bold">{deviceStatus?.device}</h1>
           <div

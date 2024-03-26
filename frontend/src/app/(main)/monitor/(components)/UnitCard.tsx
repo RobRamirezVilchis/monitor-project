@@ -57,7 +57,7 @@ const UnitCard = ({ unit: unit_status }: GxCardProps) => {
 
   return (
     <div
-      className="relative pb-6 w-52 lg:w-[18rem] rounded-lg p-6 border-2
+      className="relative pb-6 w-[18rem] md:w-52 lg:w-[18rem] rounded-lg p-6 border-2
       transition duration-300 shadow-md dark:border-gray-700 hover:shadow-lg"
     >
       <Link className="peer" href={`/monitor/safedriving/${unit_id}`}>
@@ -65,14 +65,12 @@ const UnitCard = ({ unit: unit_status }: GxCardProps) => {
           <span className="absolute right-4 animate-ping inline-flex h-2 w-2 rounded-full bg-blue-400 opacity-100"></span>
         )}
 
-
         <div
           className={`inline-flex mb-3 px-2.5 pt-1 pb-0.5 text-s font-semibold 
          border-2 ${color} rounded-full`}
         >
           {statusNames[severity as StatusKey]}
         </div>
-
 
         <div className="flex gap-3 mb-2 items-center">
           <h3 className="ml-1 text-2xl font-bold">Unidad {unit}</h3>

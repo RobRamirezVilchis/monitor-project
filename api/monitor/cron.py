@@ -296,7 +296,7 @@ def get_industry_data(client):
 
     response, status = make_request(time_interval, token)
     if status == 401:
-        token = login(client,credentials)
+        token = login(client, credentials)
         response, status = make_request(time_interval, token)
 
     if status == 200 or status == 201:
@@ -317,6 +317,7 @@ def get_industry_data(client):
     output_gx = {
         "hour": fields.copy(),
         "ten_minutes": fields.copy(),
+        "first_log_time": None,
         "last_connection": None,
         "status": 1,
     }
@@ -344,6 +345,9 @@ def get_industry_data(client):
 
                 if register_time > now - timedelta(minutes=10):
                     intervals = ["hour", "ten_minutes"]
+                    first_log_time = datetime.fromisoformat(log["register_time"][:-1]).astimezone(
+                        pytz.timezone('America/Mexico_City')).replace(tzinfo=pytz.utc)
+                    output_gx["first_log_time"] = first_log_time
                 else:
                     intervals = ["hour"]
 
@@ -677,17 +681,18 @@ def update_industry_status():
             update_values['last_connection'] = gx_data["last_connection"] + \
                 timedelta(hours=6)
             last_connection = gx_data["last_connection"] + timedelta(hours=6)
+            first_log_time = gx_data["first_log_time"] + timedelta(hours=6)
 
         # Si existe ese dato, ver si tiene más de 10 minutos. En ese caso, ponerlo como atrasado
         if last_connection and db_last_connection:
             difference = date_now - last_connection
 
-            # Si hubo retraso entre el log nuevo y la última conexión según la DB
+            # Revisar si hubo retraso entre el primer log en los últimos 10 minutos, y la última conexión según la DB
             # Se verifica que hayan registros recientes (con db_register_time) para no tomar un falla en el ćodigo
             # como retraso
 
             # Arreglar caso en el que se missea el log reciente por poquito, produciendo un retraso falso
-            if last_connection - db_last_connection > timedelta(minutes=11) and not last_connection - db_register_time > timedelta(minutes=11):
+            if first_log_time - db_last_connection > timedelta(minutes=11) and not last_connection - db_register_time > timedelta(minutes=11):
                 update_values['delayed'] = True
                 update_values['delay_time'] = last_connection - \
                     db_last_connection - timedelta(minutes=10)

@@ -60,7 +60,9 @@ const IndustryPage = () => {
   return (
     <section>
       <div className="flex items-center">
-        <h1 className="text-5xl font-bold py-2 flex-1 my-3 md:my-6 pr-2">Industry</h1>
+        <h1 className="text-5xl font-bold pb-2 flex-1 mb-3 md:mb-6 pr-2">
+          Industry
+        </h1>
         <ColorSchemeSwitchToggle />
       </div>
 
@@ -87,17 +89,19 @@ const IndustryPage = () => {
                 href={
                   filter == null
                     ? "/monitor/industry/?" +
-                    createQueryString(
-                      "filter",
-                      String(severity_count.severity)
-                    )
+                      createQueryString(
+                        "filter",
+                        String(severity_count.severity)
+                      )
                     : "/monitor/industry/"
                 }
-                className={`${severity_count.severity == Number(filter) || filter == null
-                  ? "opacity-100"
-                  : "opacity-50"
-                  } inline-flex px-2.5 pt-1 pb-0.5 text-s font-semibold border-2 ${statusStyles[severity_count.severity as StatusKey]
-                  } rounded-full`}
+                className={`${
+                  severity_count.severity == Number(filter) || filter == null
+                    ? "opacity-100"
+                    : "opacity-50"
+                } inline-flex px-2.5 pt-1 pb-0.5 text-s font-semibold border-2 ${
+                  statusStyles[severity_count.severity as StatusKey]
+                } rounded-full`}
               >
                 {statusNames[severity_count.severity as StatusKey]}
               </Link>
@@ -109,7 +113,7 @@ const IndustryPage = () => {
       <div className="flex flex-row gap-4 flex-wrap">
         {deviceData?.map((device) =>
           device.device.includes(value) &&
-            (filter == null || device.severity == Number(filter)) ? (
+          (filter == null || device.severity == Number(filter)) ? (
             <DeviceCard key={device.device} device={device} />
           ) : null
         )}
