@@ -60,7 +60,7 @@ const IndustryPage = () => {
   return (
     <section>
       <div className="flex items-center">
-        <h1 className="text-5xl font-bold py-2 flex-1 my-6 pr-2">Industry</h1>
+        <h1 className="text-5xl font-bold py-2 flex-1 my-3 md:my-6 pr-2">Industry</h1>
         <ColorSchemeSwitchToggle />
       </div>
 

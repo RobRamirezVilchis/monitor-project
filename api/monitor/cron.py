@@ -5,7 +5,9 @@ from .services import *
 from dotenv import load_dotenv
 import requests
 import pandas as pd
-from datetime import datetime, timedelta
+
+from datetime import datetime, timedelta, UTC
+
 import pytz
 import os
 
@@ -51,7 +53,7 @@ def make_request(interval, token):
 def get_driving_data(client):
     global login_url
     global request_url
-    now = datetime.now(datetime.UTC).astimezone(pytz.timezone(
+    now = datetime.now(tz=pytz.timezone('UTC')).astimezone(pytz.timezone(
         'America/Mexico_City')).replace(tzinfo=pytz.utc)
 
     credentials = get_credentials(client)
@@ -281,7 +283,7 @@ def get_industry_data(client):
     credentials = get_credentials(client)
 
     try:
-        login(credentials)
+        login(client, credentials)
     except requests.exceptions.ConnectionError:
         print("Connection error")
         return
@@ -294,7 +296,7 @@ def get_industry_data(client):
 
     response, status = make_request(time_interval)
     if status == 401:
-        login(credentials)
+        login(client,credentials)
         response, status = make_request(time_interval)
 
     if status == 200 or status == 201:
