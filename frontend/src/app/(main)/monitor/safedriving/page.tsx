@@ -81,13 +81,13 @@ const SafeDrivingPage = () => {
   return (
     <section>
       <div className="flex items-center">
-        <h1 className="text-5xl font-bold py-2 flex-1 my-6">Safe Driving</h1>
+        <h1 className="text-5xl font-bold py-2 flex-1 my-6 pr-2">Safe Driving</h1>
         <ColorSchemeSwitchToggle />
       </div>
 
-      <div className="md:flex mb-4 gap-10">
+      <div className="flex flex-col md:flex-row mb-4 gap-10">
         <TextInput
-          className="flex gap-3 items-center w-100 "
+          className="md:flex gap-3 items-center "
           styles={{
             label: { fontSize: 18 },
           }}
@@ -95,20 +95,18 @@ const SafeDrivingPage = () => {
           value={value}
           onChange={(event) => setValue(event.currentTarget.value)}
         />
-        <div className="flex mt-2 md:mt-0 items-center w-96 gap-4">
-          <div className="w-96">
-            <Select
-              className="flex gap-3 items-center w-100 "
-              styles={{
-                label: { fontSize: 18 },
-              }}
-              label="Filtrar por cliente:"
-              placeholder="Todos"
-              data={clients}
-              onChange={(value: string | null) => setClientValue(value)}
-            ></Select>
-          </div>
-        </div>
+
+        <Select
+          className="md:flex gap-3 items-center"
+          styles={{
+            label: { fontSize: 18 },
+          }}
+          label="Filtrar por cliente:"
+          placeholder="Todos"
+          data={clients}
+          onChange={(value: string | null) => setClientValue(value)}
+        ></Select>
+
       </div>
 
       {countQuery.data && (
@@ -125,19 +123,17 @@ const SafeDrivingPage = () => {
                 href={
                   filter == null || Number(filter) != severity_count.severity
                     ? "/monitor/safedriving/?" +
-                      createQueryString(
-                        "filter",
-                        String(severity_count.severity)
-                      )
+                    createQueryString(
+                      "filter",
+                      String(severity_count.severity)
+                    )
                     : "/monitor/safedriving/"
                 }
-                className={`${
-                  severity_count.severity == Number(filter) || filter == null
-                    ? "opacity-100"
-                    : "opacity-30"
-                } inline-flex px-2.5 pt-1 pb-0.5 text-s font-semibold border-2 ${
-                  statusStyles[severity_count.severity as StatusKey]
-                } rounded-full`}
+                className={`${severity_count.severity == Number(filter) || filter == null
+                  ? "opacity-100"
+                  : "opacity-30"
+                  } inline-flex px-2.5 pt-1 pb-0.5 text-s font-semibold border-2 ${statusStyles[severity_count.severity as StatusKey]
+                  } rounded-full`}
               >
                 {statusNames[severity_count.severity as StatusKey]}
               </Link>
@@ -149,8 +145,8 @@ const SafeDrivingPage = () => {
       <div className="flex flex-row gap-4 flex-wrap">
         {unitData?.map((unit) =>
           unit.unit.startsWith(value) &&
-          (unit.client == clientValue || clientValue == null) &&
-          (filter == null || unit.severity == Number(filter)) ? (
+            (unit.client == clientValue || clientValue == null) &&
+            (filter == null || unit.severity == Number(filter)) ? (
             <UnitCard key={unit.unit} unit={unit} />
           ) : null
         )}

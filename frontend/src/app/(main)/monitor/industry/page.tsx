@@ -60,14 +60,14 @@ const IndustryPage = () => {
   return (
     <section>
       <div className="flex items-center">
-        <h1 className="text-5xl font-bold py-2 flex-1 my-6">Industry</h1>
+        <h1 className="text-5xl font-bold py-2 flex-1 my-6 pr-2">Industry</h1>
         <ColorSchemeSwitchToggle />
       </div>
 
       <TextInput
         className="flex gap-3 items-center w-100 mb-4"
         styles={{
-          label: { fontSize: 20 },
+          label: { fontSize: 18 },
         }}
         label="Buscar dispositivo:"
         value={value}

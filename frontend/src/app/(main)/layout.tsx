@@ -39,11 +39,7 @@ const MainLayout = ({ children }: MainLayoutProps) => {
 
   const [links, setLinks] = useState<NavMenuItem[]>([
     {
-      label: "Home",
-      href: "/",
-    },
-    {
-      label: "Driving",
+      label: "Safe Driving",
       href: "/monitor/safedriving",
     },
     {
