@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 import requests
 import pandas as pd
 
-from datetime import datetime, timedelta, UTC
+from datetime import datetime, timedelta
 
 import pytz
 import os
@@ -283,7 +283,7 @@ def get_industry_data(client):
     credentials = get_credentials(client)
 
     try:
-        login(client, credentials)
+        token = login(client, credentials)
     except requests.exceptions.ConnectionError:
         print("Connection error")
         return
@@ -294,10 +294,10 @@ def get_industry_data(client):
         "initial_datetime": (now - timedelta(hours=1, minutes=10)).isoformat(timespec="seconds")
     }
 
-    response, status = make_request(time_interval)
+    response, status = make_request(time_interval, token)
     if status == 401:
-        login(client,credentials)
-        response, status = make_request(time_interval)
+        token = login(client,credentials)
+        response, status = make_request(time_interval, token)
 
     if status == 200 or status == 201:
         response = response.json()
