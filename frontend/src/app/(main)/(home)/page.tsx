@@ -77,7 +77,7 @@ const Home = () => {
             className="p-2 bg-blue-500 text-white rounded-md"
             onClick={async () => {
               login({
-                socialLogin: { 
+                socialLogin: {
                   provider: "google",
                   providersOptions: {
                     google: {
@@ -94,8 +94,8 @@ const Home = () => {
           <button
             className="p-2 bg-blue-500 text-white rounded-md"
             onClick={async () => {
-              login({ 
-                socialLogin: { 
+              login({
+                socialLogin: {
                   provider: "google",
                   providersOptions: {
                     google: {

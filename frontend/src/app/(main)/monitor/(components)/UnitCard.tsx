@@ -57,22 +57,22 @@ const UnitCard = ({ unit: unit_status }: GxCardProps) => {
 
   return (
     <div
-      className="relative pb-6 w-52 lg:w-[18rem] rounded-lg p-6 border-2 border-${color}-400
-      transition duration-300 shadow-md hover:shadow-lg"
+      className="relative pb-6 w-52 lg:w-[18rem] rounded-lg p-6 border-2
+      transition duration-300 shadow-md dark:border-gray-700 hover:shadow-lg"
     >
       <Link className="peer" href={`/monitor/safedriving/${unit_id}`}>
         {on_trip && (
           <span className="absolute right-4 animate-ping inline-flex h-2 w-2 rounded-full bg-blue-400 opacity-100"></span>
         )}
 
-        <div className="flex gap-2 items-center mb-3">
-          <div
-            className={`inline-flex px-2.5 pt-1 pb-0.5 text-s font-semibold 
+
+        <div
+          className={`inline-flex mb-3 px-2.5 pt-1 pb-0.5 text-s font-semibold 
          border-2 ${color} rounded-full`}
-          >
-            {statusNames[severity as StatusKey]}
-          </div>
+        >
+          {statusNames[severity as StatusKey]}
         </div>
+
 
         <div className="flex gap-3 mb-2 items-center">
           <h3 className="ml-1 text-2xl font-bold">Unidad {unit}</h3>
@@ -96,7 +96,7 @@ const UnitCard = ({ unit: unit_status }: GxCardProps) => {
           <p className="text-sm ml-1">{timeAgo}</p>
         </div>
 
-        <p className="text-lg px-2 py-1 bg-gray-200 border border-gray-200 rounded-md">
+        <p className="text-lg px-2 dark:bg-gray-700 py-1 bg-gray-200 border border-gray-200 dark:border-gray-700 rounded-md">
           {description}
         </p>
       </Link>

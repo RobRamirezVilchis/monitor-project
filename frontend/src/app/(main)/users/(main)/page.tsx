@@ -27,7 +27,7 @@ import { useCreateUserMutation } from "@/api/mutations/users";
 import DataGrid from "@/ui/data-grid/DataGrid";
 
 import { IconPlus } from "@tabler/icons-react";
-import { withAuth } from "@/components/auth/withAuth";
+
 
 const UsersPage = () => {
   const { dataGridState, queryVariables, dataGridConfig } = useSsrDataGrid<{

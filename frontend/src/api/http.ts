@@ -39,30 +39,30 @@ export const defaultConfig: HttpClientConfig = {
   withCredentials: true,
   useCSRF: true,
   useJWT: true,
-  rejectRequest: (config) => {
-    if (!hasCSRFToken(config)) {
-      return {
-        response: {
-          status: 401,
-          message: "Missing CSRF token.",
-        },
-        config,
-      };
-    }
+  // rejectRequest: (config) => {
+  //   if (!hasCSRFToken(config)) {
+  //     return {
+  //       response: {
+  //         status: 401,
+  //         message: "Missing CSRF token.",
+  //       },
+  //       config,
+  //     };
+  //   }
 
-    return false;
-  },
+  //   return false;
+  // },
   onError: (error) => {
-    if (error?.response?.status === 401 || error?.response?.status === 403) {
-      const url = new URL("/auth/login", window.location.origin);
-      // const query = new URLSearchParams({
-      //   callbackUrl: window.location.href,
-      // });
-      // url.search = query.toString();
-      window.location.assign(url.toString());
-    }
-
-    throw error;
+  //   if (error?.response?.status === 401 || error?.response?.status === 403) {
+  //     const url = new URL("/auth/login", window.location.origin);
+  //     // const query = new URLSearchParams({
+  //     //   callbackUrl: window.location.href,
+  //     // });
+  //     // url.search = query.toString();
+  //     window.location.assign(url.toString());
+  //   }
+    console.log(error);
+  //   throw error;
   },
   retry: 0,
 };

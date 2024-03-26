@@ -7,19 +7,19 @@ import {
 } from "@/api/queries/monitor";
 import DeviceCard from "../(components)/DeviceCard";
 
-import { withAuth } from "@/components/auth/withAuth";
 import { TextInput } from "@mantine/core";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
+import { ColorSchemeSwitchToggle } from "@/components/shared";
 
 type StatusKey = 0 | 1 | 2 | 3 | 4 | 5;
 const statusStyles: { [key in StatusKey]: string } = {
-  0: "bg-gray-100 border-gray-400",
-  1: "bg-blue-100 border-blue-400",
-  2: "bg-green-100 border-green-400",
-  3: "bg-yellow-100 border-yellow-400",
-  4: "bg-orange-100 border-orange-400",
-  5: "bg-red-100 border-red-400",
+  0: "bg-gray-100 border-gray-400 text-gray-900",
+  1: "bg-blue-100 border-blue-400 text-blue-900",
+  2: "bg-green-100 border-green-400 text-green-900",
+  3: "bg-yellow-100 border-yellow-400 text-yellow-900",
+  4: "bg-orange-100 border-orange-400 text-orange-900",
+  5: "bg-red-100 border-red-400 text-red-900",
 };
 const statusNames: { [key in StatusKey]: string } = {
   0: "Inactivo",
@@ -61,6 +61,7 @@ const IndustryPage = () => {
     <section>
       <div className="flex items-center">
         <h1 className="text-5xl font-bold py-2 flex-1 my-6">Industry</h1>
+        <ColorSchemeSwitchToggle />
       </div>
 
       <TextInput
@@ -86,19 +87,17 @@ const IndustryPage = () => {
                 href={
                   filter == null
                     ? "/monitor/industry/?" +
-                      createQueryString(
-                        "filter",
-                        String(severity_count.severity)
-                      )
+                    createQueryString(
+                      "filter",
+                      String(severity_count.severity)
+                    )
                     : "/monitor/industry/"
                 }
-                className={`${
-                  severity_count.severity == Number(filter) || filter == null
-                    ? "opacity-100"
-                    : "opacity-50"
-                } inline-flex px-2.5 pt-1 pb-0.5 text-s font-semibold border-2 ${
-                  statusStyles[severity_count.severity as StatusKey]
-                } rounded-full`}
+                className={`${severity_count.severity == Number(filter) || filter == null
+                  ? "opacity-100"
+                  : "opacity-50"
+                  } inline-flex px-2.5 pt-1 pb-0.5 text-s font-semibold border-2 ${statusStyles[severity_count.severity as StatusKey]
+                  } rounded-full`}
               >
                 {statusNames[severity_count.severity as StatusKey]}
               </Link>
@@ -110,7 +109,7 @@ const IndustryPage = () => {
       <div className="flex flex-row gap-4 flex-wrap">
         {deviceData?.map((device) =>
           device.device.includes(value) &&
-          (filter == null || device.severity == Number(filter)) ? (
+            (filter == null || device.severity == Number(filter)) ? (
             <DeviceCard key={device.device} device={device} />
           ) : null
         )}

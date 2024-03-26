@@ -21,9 +21,9 @@ import {
 
 import UnitCard from "../(components)/UnitCard";
 
-import { withAuth } from "@/components/auth/withAuth";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
+import { ColorSchemeSwitchToggle } from "@/components/shared";
 
 type StatusKey = 0 | 1 | 2 | 3 | 4 | 5;
 const statusStyles: { [key in StatusKey]: string } = {
@@ -82,6 +82,7 @@ const SafeDrivingPage = () => {
     <section>
       <div className="flex items-center">
         <h1 className="text-5xl font-bold py-2 flex-1 my-6">Safe Driving</h1>
+        <ColorSchemeSwitchToggle />
       </div>
 
       <div className="md:flex mb-4 gap-10">

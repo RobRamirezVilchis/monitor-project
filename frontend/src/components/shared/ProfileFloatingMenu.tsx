@@ -35,6 +35,8 @@ interface NavMenuItem {
 
 export const ProfileFloatingMenu = () => {
   const { user, isAuthenticated, loading, logout } = useAuth({
+    triggerAuthentication: false,
+    skipAll: true,
     redirectIfNotAuthenticated: false,
     redirectIfNotAuthorized: false,
   });

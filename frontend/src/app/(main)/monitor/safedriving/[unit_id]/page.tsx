@@ -6,7 +6,7 @@ import {
   useUnitStatusQuery,
 } from "@/api/queries/monitor";
 import { Unit, UnitHistory } from "@/api/services/monitor/types";
-import { withAuth } from "@/components/auth/withAuth";
+
 import { useDataGrid, useSsrDataGrid } from "@/hooks/data-grid";
 import DataGrid from "@/ui/data-grid/DataGrid";
 import { ColumnDef } from "@/ui/data-grid/types";

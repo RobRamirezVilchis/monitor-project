@@ -19,7 +19,6 @@ import { Role } from "@/api/services/auth/types";
 import { useNavLink } from "@/hooks/shared";
 import { isUserInAuthorizedRoles } from "@/api/services/auth";
 import { useAuth } from "@/hooks/auth";
-import { withAuth } from "@/components/auth/withAuth";
 import BrandForem from "@/ui/icons/BrandForem";
 import Introid from "../../media/introid_bw.png";
 
@@ -52,6 +51,12 @@ const MainLayout = ({ children }: MainLayoutProps) => {
       href: "/monitor/industry",
     },
   ]);
+
+  const visibleLinks = useMemo(
+    () =>
+      links,
+    [links]
+  );
 
   return (
     <AppShell
@@ -89,7 +94,15 @@ const MainLayout = ({ children }: MainLayoutProps) => {
             ></Image>
             <span className="ml-2 mt-1">Monitor</span>
           </Link>
+
+          <div className="flex gap-2 items-center mx-4">
+            {visibleLinks.map((item) => (
+              <DesktopNavLink key={item.href} item={item} />
+            ))}
+          </div>
         </div>
+
+
 
         {/* Mobile */}
         <div className="flex-1 flex md:hidden justify-center">
@@ -98,12 +111,14 @@ const MainLayout = ({ children }: MainLayoutProps) => {
           </Link>
         </div>
 
-        <ProfileFloatingMenu />
+        {/* <ProfileFloatingMenu /> */}
       </AppShell.Header>
 
-      <AppShell.Navbar
-        classNames={{ navbar: "px-2.5 py-2.5" }}
-      ></AppShell.Navbar>
+      <div className="flex gap-2 items-center mx-4">
+        {visibleLinks.map((item) => (
+          <DesktopNavLink key={item.href} item={item} />
+        ))}
+      </div>
 
       <AppShell.Main>{children}</AppShell.Main>
     </AppShell>
