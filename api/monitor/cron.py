@@ -343,6 +343,8 @@ def get_industry_data(client):
             for log in logs:
                 register_time = datetime.fromisoformat(log["register_time"][:-1]).astimezone(
                     pytz.timezone('America/Mexico_City')).replace(tzinfo=pytz.utc)
+                log_time = datetime.fromisoformat(f'{log["log_date"]}T{log["log_time"]}').replace(
+                    tzinfo=pytz.utc) + timedelta(hours=6)
 
                 if register_time > now - timedelta(minutes=10):
                     intervals = ["hour", "ten_minutes"]
@@ -353,7 +355,7 @@ def get_industry_data(client):
                     intervals = ["hour"]
 
                 alert_conditions = (
-                    (log["register_time"] - log["log_time"] >
+                    (register_time - log_time >
                      timedelta(minutes=10), "Problemas de Wi-Fi")
                 )
                 for cond in alert_conditions:
