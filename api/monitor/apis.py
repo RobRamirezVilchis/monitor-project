@@ -14,6 +14,8 @@ from .services import device_create_or_update
 from api.pagination import get_paginated_response, LimitOffsetPagination
 from .models import UnitStatus
 
+import operator
+
 
 # All gx status list
 
@@ -30,11 +32,21 @@ class UnitStatusList(APIView):
         pending_status = serializers.IntegerField()
         client = serializers.CharField(source='unit.client.name')
 
+    class reversor:
+        def __init__(self, obj):
+            self.obj = obj
+
+        def __eq__(self, other):
+            return other.obj == self.obj
+
+        def __lt__(self, other):
+            return other.obj < self.obj
+
     def get(self, request, *args, **kwargs):
         devices = unitstatus_list()
 
         sorted_devices = sorted(
-            devices, key=lambda x: x.status.severity, reverse=True)
+            devices, key=lambda x: (x.status.severity, self.reversor(x.unit.name)), reverse=True)
         data = self.OutputSerializer(sorted_devices, many=True).data
 
         return Response(data)
