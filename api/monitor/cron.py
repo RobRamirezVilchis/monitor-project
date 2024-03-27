@@ -329,6 +329,7 @@ def get_industry_data(client):
                  "shift_change": "SRC"}
 
     days_remaining = None
+    alerts = []
     for device, logs in response.items():
         output_camera = {k: {"connected": True, "disconnection_time": timedelta(0)}
                          for k in ["hour", "ten_minutes"]}
@@ -350,6 +351,14 @@ def get_industry_data(client):
                     output_gx["first_log_time"] = first_log_time
                 else:
                     intervals = ["hour"]
+
+                alert_conditions = (
+                    (log["register_time"] - log["log_time"] >
+                     timedelta(minutes=10), "Problemas de Wi-Fi")
+                )
+                for cond in alert_conditions:
+                    if cond:
+                        alerts.append((device, cond[1]))
 
                 if log["log"] != "":
                     found_category = False
@@ -610,9 +619,7 @@ def update_driving_status():
 
 def update_industry_status():
     clients = {
-        "trm": "Ternium",
         "rgs": "Ragasa",
-        "bkrt": "Bekaert",
         "cmxrgn": "Cemex Regenera",
         "mxlt": "Mexalit",
         "cmxsoc": "Cemex Soc"
@@ -687,7 +694,7 @@ def update_industry_status():
         if last_connection and db_last_connection:
             difference = date_now - last_connection
 
-            # Revisar si hubo retraso entre el primer log en los últimos 10 minutos, y la última conexión según la DB
+            # Revisar si hubo retraso entre el primer log en los últimos 10 minutos y la última conexión según la DB
             # Se verifica que hayan registros recientes (con db_register_time) para no tomar un falla en el ćodigo
             # como retraso
 

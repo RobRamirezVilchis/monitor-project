@@ -54,6 +54,23 @@ class Device(Gx):
         return self.client.name
 
 
+class AlertType(models.Model):
+    description = models.CharField(max_length=50)
+
+    def __str__(self):
+        return self.description
+
+
+class Alert(models.Model):
+    alert_type = models.ForeignKey(AlertType, on_delete=models.CASCADE)
+    gx = models.ForeignKey(Gx, on_delete=models.CASCADE, null=True)
+    register_date = models.DateField("Dia registro", db_index=True)
+    register_datetime = models.DateTimeField("Fecha registro")
+
+    def __str__(self):
+        return self.name
+
+
 class Camera(models.Model):
     name = models.CharField("Nombre", max_length=50)
     gx = models.ForeignKey(Gx, on_delete=models.CASCADE, null=True)
