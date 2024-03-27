@@ -57,10 +57,12 @@ const UnitCard = ({ unit: unit_status }: GxCardProps) => {
 
   return (
     <div
-      className={`relative pb-6 w-[18rem] md:w-52 lg:w-[18rem] rounded-lg p-6 border-2 ${
-        description == "Read only SSD" ? "border-red-300" : ""
-      }
-      transition duration-300 shadow-md dark:border-gray-700 hover:shadow-lg`}
+      className={`relative pb-6 w-[18rem] md:w-52 lg:w-[18rem] rounded-lg p-6 border-2 
+      transition duration-300 shadow-md dark:border-gray-700 hover:shadow-lg ${
+        description == "Read only SSD" || description == "Tres cámaras fallando"
+          ? "border-red-300 dark:border-red-300"
+          : ""
+      }`}
     >
       <Link className="peer" href={`/monitor/safedriving/${unit_id}`}>
         {on_trip && (
