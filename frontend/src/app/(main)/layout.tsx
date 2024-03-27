@@ -14,7 +14,10 @@ import clsx from "clsx";
 import Link from "next/link";
 import Image from "next/image";
 
-import { ProfileFloatingMenu } from "@/components/shared";
+import {
+  ColorSchemeSwitchToggle,
+  ProfileFloatingMenu,
+} from "@/components/shared";
 import { Role } from "@/api/services/auth/types";
 import { useNavLink } from "@/hooks/shared";
 import { isUserInAuthorizedRoles } from "@/api/services/auth";
@@ -86,11 +89,13 @@ const MainLayout = ({ children }: MainLayoutProps) => {
             ></Image>
             <span className="ml-2 mt-1">Monitor</span>
           </Link>
-
-          <div className="flex gap-2 items-center mx-4">
-            {visibleLinks.map((item) => (
-              <DesktopNavLink key={item.href} item={item} />
-            ))}
+          <div className="flex items-center">
+            <ColorSchemeSwitchToggle />
+            <div className="flex gap-2 items-center pl-10 mx-4">
+              {visibleLinks.map((item) => (
+                <DesktopNavLink key={item.href} item={item} />
+              ))}
+            </div>
           </div>
         </div>
 

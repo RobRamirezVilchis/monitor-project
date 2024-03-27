@@ -169,7 +169,7 @@ const UnitPage = ({ params }: { params: { unit_id: string } }) => {
           </div>
         )}
       </div>
-      <div className="h-[80vh]">
+      <div className="h-[70vh]">
         <DataGrid instance={grid} />
       </div>
     </section>
@@ -186,6 +186,18 @@ const cols: ColumnDef<UnitHistory>[] = [
     header: "Fecha",
     columnTitle: "Fecha",
     minSize: 250,
+    enableSorting: true,
+    filterVariant: "datetime-range",
+  },
+  {
+    accessorKey: "last_connection",
+    accessorFn: (row) =>
+      row.last_connection
+        ? format(parseISO(row.last_connection), "Pp")
+        : "Desconocida",
+    header: "Última conexión",
+    columnTitle: "Última conexión",
+    minSize: 200,
     enableSorting: true,
     filterVariant: "datetime-range",
   },

@@ -63,7 +63,6 @@ const IndustryPage = () => {
         <h1 className="text-5xl font-bold pb-2 flex-1 mb-3 md:mb-6 pr-2">
           Industry
         </h1>
-        <ColorSchemeSwitchToggle />
       </div>
 
       <TextInput

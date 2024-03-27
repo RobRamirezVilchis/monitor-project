@@ -1,11 +1,15 @@
 "use client";
 
 import { ReactNode } from "react";
-import { 
-  ActionIcon, type ActionIconProps,
-  Combobox, useCombobox, 
-  type ComboboxDropdownProps, type ComboboxOptionProps,
-  InputBase, type InputBaseProps,
+import {
+  ActionIcon,
+  type ActionIconProps,
+  Combobox,
+  useCombobox,
+  type ComboboxDropdownProps,
+  type ComboboxOptionProps,
+  InputBase,
+  type InputBaseProps,
   Switch,
   useMantineColorScheme,
   useComputedColorScheme,
@@ -16,26 +20,31 @@ import clsx from "clsx";
 import toggleStyles from "./ColorSchemeSwitchToggle.module.css";
 
 import { IconDeviceDesktop } from "@tabler/icons-react";
-import LightModeOutlinedIcon from '@mui/icons-material/LightModeOutlined';
-import NightlightOutlinedIcon from '@mui/icons-material/NightlightOutlined';
+import LightModeOutlinedIcon from "@mui/icons-material/LightModeOutlined";
+import NightlightOutlinedIcon from "@mui/icons-material/NightlightOutlined";
 
-export interface ColorSchemeToggleButtonProps extends Omit<ActionIconProps, "children"> {}
+export interface ColorSchemeToggleButtonProps
+  extends Omit<ActionIconProps, "children"> {}
 
-export const ColorSchemeButtonToggle = (props: ColorSchemeToggleButtonProps) => {
+export const ColorSchemeButtonToggle = (
+  props: ColorSchemeToggleButtonProps
+) => {
   const { setColorScheme } = useMantineColorScheme();
-  const colorScheme = useComputedColorScheme("light", { getInitialValueInEffect: true });
+  const colorScheme = useComputedColorScheme("light", {
+    getInitialValueInEffect: true,
+  });
 
   return (
-    <ActionIcon 
+    <ActionIcon
       className={toggleStyles.track}
       {...props}
-      onClick={() => setColorScheme(colorScheme === 'light' ? 'dark' : 'light')}
+      onClick={() => setColorScheme(colorScheme === "light" ? "dark" : "light")}
     >
-      <LightModeOutlinedIcon  className={toggleStyles["icon-light"]} />
+      <LightModeOutlinedIcon className={toggleStyles["icon-light"]} />
       <NightlightOutlinedIcon className={toggleStyles["icon-dark"]} />
     </ActionIcon>
-  )
-}
+  );
+};
 
 export interface ColorSchemeSelectToggleProps {
   classNames?: {
@@ -46,7 +55,7 @@ export interface ColorSchemeSelectToggleProps {
       root?: string;
       icon?: string;
       label?: string;
-    }
+    };
   };
 }
 
@@ -54,16 +63,14 @@ export const ColorSchemeSelectToggle = ({
   classNames,
 }: ColorSchemeSelectToggleProps) => {
   const { setColorScheme } = useMantineColorScheme();
-  const colorScheme = useComputedColorScheme("light", { getInitialValueInEffect: true });
+  const colorScheme = useComputedColorScheme("light", {
+    getInitialValueInEffect: true,
+  });
   const combobox = useCombobox({
     onDropdownClose: () => combobox.resetSelectedOption(),
   });
 
-  const data: MantineColorScheme[] = [
-    "auto",
-    "light",
-    "dark",
-  ];
+  const data: MantineColorScheme[] = ["auto", "light", "dark"];
   const icons: Record<MantineColorScheme, ReactNode> = {
     auto: <IconDeviceDesktop />,
     light: <LightModeOutlinedIcon />,
@@ -78,7 +85,7 @@ export const ColorSchemeSelectToggle = ({
   return (
     <Combobox
       store={combobox}
-      onOptionSubmit={v => {
+      onOptionSubmit={(v) => {
         setColorScheme(v as MantineColorScheme);
         combobox.closeDropdown();
       }}
@@ -92,13 +99,19 @@ export const ColorSchemeSelectToggle = ({
           onClick={() => combobox.toggleDropdown()}
           classNames={classNames?.input}
         >
-          <span className={clsx("flex items-center gap-4", classNames?.label?.root)}>
-            <span className={classNames?.label?.icon}>{icons[colorScheme]}</span>
-            <span className={classNames?.label?.label}>{labels[colorScheme]}</span>
+          <span
+            className={clsx("flex items-center gap-4", classNames?.label?.root)}
+          >
+            <span className={classNames?.label?.icon}>
+              {icons[colorScheme]}
+            </span>
+            <span className={classNames?.label?.label}>
+              {labels[colorScheme]}
+            </span>
           </span>
         </InputBase>
       </Combobox.Target>
-      
+
       <Combobox.Dropdown classNames={classNames?.dropdown}>
         {data.map((value, index) => (
           <Combobox.Option
@@ -113,8 +126,8 @@ export const ColorSchemeSelectToggle = ({
         ))}
       </Combobox.Dropdown>
     </Combobox>
-  )
-}
+  );
+};
 
 export interface ColorSchemeSwitchToggleProps {
   size?: InputBaseProps["size"];
@@ -124,12 +137,14 @@ export const ColorSchemeSwitchToggle = ({
   size = "lg",
 }: ColorSchemeSwitchToggleProps) => {
   const { setColorScheme } = useMantineColorScheme();
-  const colorScheme = useComputedColorScheme("light", { getInitialValueInEffect: true });
+  const colorScheme = useComputedColorScheme("light", {
+    getInitialValueInEffect: true,
+  });
 
   return (
     <Switch
       defaultChecked={colorScheme === "dark"}
-      onChange={e => {
+      onChange={(e) => {
         const dark = e.currentTarget.checked;
         setColorScheme(dark ? "dark" : "light");
       }}
@@ -139,7 +154,8 @@ export const ColorSchemeSwitchToggle = ({
       classNames={{
         thumb: toggleStyles["thumb"],
         track: toggleStyles["track"],
+        root: "mb-0 pb-0",
       }}
     />
-  )
-}
+  );
+};

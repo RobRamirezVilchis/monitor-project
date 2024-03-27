@@ -178,7 +178,7 @@ const DevicePage = ({ params }: { params: { device_id: string } }) => {
         </div>
       )}
 
-      <div className="h-[80vh]">
+      <div className="h-[70vh]">
         <DataGrid instance={grid} />
       </div>
     </section>
@@ -195,6 +195,15 @@ const cols: ColumnDef<DeviceHistory>[] = [
     header: "Fecha",
     columnTitle: "Fecha",
     minSize: 250,
+    enableSorting: true,
+    filterVariant: "datetime-range",
+  },
+  {
+    accessorKey: "last_connection",
+    accessorFn: (row) => format(parseISO(row.last_connection), "Pp"),
+    header: "Última conexión",
+    columnTitle: "Última conexión",
+    minSize: 200,
     enableSorting: true,
     filterVariant: "datetime-range",
   },

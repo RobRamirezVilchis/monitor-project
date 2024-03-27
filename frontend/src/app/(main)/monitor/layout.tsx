@@ -1,4 +1,5 @@
 import { ReactNode, useMemo, useState } from "react";
+import "@mantine/charts/styles.css";
 
 const MonitorLayout = ({ children }: { children: ReactNode }) => {
   return (
