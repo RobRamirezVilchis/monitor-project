@@ -149,7 +149,8 @@ class UnitHistoryList(APIView):
         filters_serializer.is_valid(raise_exception=True)
 
         # Si no se especificó rango de fechas, regresar registros del último día
-        if not filters_serializer.validated_data.get('register_datetime_before') and not filters_serializer.validated_data.get('register_datetime_after'):
+        if not (filters_serializer.validated_data.get("register_datetime_after") or filters_serializer.validated_data.get("register_datetime_before")):
+
             import datetime
             import pytz
 
@@ -203,7 +204,7 @@ class DeviceHistoryList(APIView):
         filters_serializer.is_valid(raise_exception=True)
 
         # Si no se especificó rango de fechas, regresar registros del último día
-        if filters_serializer.validated_data == {}:
+        if not (filters_serializer.validated_data.get("register_datetime_after") or filters_serializer.validated_data.get("register_datetime_before")):
             import datetime
             import pytz
 

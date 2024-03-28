@@ -166,8 +166,6 @@ def get_devicehistory(args, filters=None):
     logs = DeviceHistory.objects.filter(
         device__id=args['device_id'],
     )
-    print("Filters2")
-    print(filters)
     return DeviceHistoryFilter(filters, logs).qs
 
 
