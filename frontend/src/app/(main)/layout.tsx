@@ -105,15 +105,13 @@ const MainLayout = ({ children }: MainLayoutProps) => {
             <span className="h-6">Monitor</span>
           </Link>
         </div>
-
+        <div className="flex gap-2 md:hidden items-center mx-4">
+          {visibleLinks.map((item) => (
+            <MobileNavLink key={item.href} item={item} />
+          ))}
+        </div>
         {/* <ProfileFloatingMenu /> */}
       </AppShell.Header>
-
-      <div className="flex gap-2 items-center mx-4">
-        {visibleLinks.map((item) => (
-          <MobileNavLink key={item.href} item={item} />
-        ))}
-      </div>
 
       <AppShell.Main>{children}</AppShell.Main>
     </AppShell>

@@ -105,6 +105,24 @@ export async function getLastUnitStatusChange(
   }
 }
 
+export async function getLastDeviceStatusChange(
+  filters: DeviceFilters,
+  config?: Parameters<typeof http.get>[1]
+) {
+  try {
+    const resp = await http.get<LastStatusChange>(
+      api.endpoints.monitor.industry.lastStatusChange(filters.device_id),
+      {
+        params: filters,
+        ...config,
+      }
+    );
+    return resp.data;
+  } catch (error) {
+    throw error;
+  }
+}
+
 // Industry API ----------------------------------------------------------
 
 export async function getDevices(config?: Parameters<typeof http.get>[1]) {

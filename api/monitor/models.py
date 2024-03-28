@@ -49,6 +49,7 @@ class Unit(Gx):
 
 class Device(Gx):
     license_days = models.IntegerField(null=True)
+    license_end = models.DateTimeField(null=True)
 
     def __str__(self):
         return self.client.name
@@ -177,7 +178,6 @@ class DeviceStatus(models.Model):
     camera_connection = models.DurationField()
     restart = models.IntegerField()
     license = models.IntegerField()
-    license_end = models.DateTimeField(null=True)
     shift_change = models.IntegerField()
     others = models.IntegerField()
     status = models.ForeignKey(GxStatus, on_delete=models.CASCADE, null=True)

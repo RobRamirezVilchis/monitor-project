@@ -1,5 +1,5 @@
 import { createQuery } from "../helpers/createQuery";
-import { getUnits, getDevices, getUnitHistory, getDrivingSeverityCount, getLastUnitStatusChange, getDeviceHistory, getIndustrySeverityCount, getUnitStatus, getDeviceStatus, getSafeDrivingClients, getIndustryClients } from "../services/monitor";
+import { getUnits, getDevices, getUnitHistory, getDrivingSeverityCount, getLastUnitStatusChange, getDeviceHistory, getIndustrySeverityCount, getUnitStatus, getDeviceStatus, getSafeDrivingClients, getIndustryClients, getLastDeviceStatusChange } from "../services/monitor";
 import { DeviceFilters, UnitFilters } from "../services/monitor/types";
 import defaultQueryClient from "../clients/defaultQueryClient";
 
@@ -55,6 +55,16 @@ export const useUnitLastStatusChange = createQuery({
   queryPrimaryKey: "last_status_change",
   queryKeyVariables: (vars: UnitFilters) => vars ? [vars] : [],
   queryFn: (ctx, vars) => getLastUnitStatusChange(vars, { signal: ctx.signal }),
+  cacheTime: 1000 * 60 * 5,  // 5 minutes
+  staleTime: 1000 * 60 * 3,  // 3 minutes
+  keepPreviousData: true,
+  queryClient: defaultQueryClient,
+});
+
+export const useDeviceLastStatusChange = createQuery({
+  queryPrimaryKey: "last_status_change",
+  queryKeyVariables: (vars: DeviceFilters) => vars ? [vars] : [],
+  queryFn: (ctx, vars) => getLastDeviceStatusChange(vars, { signal: ctx.signal }),
   cacheTime: 1000 * 60 * 5,  // 5 minutes
   staleTime: 1000 * 60 * 3,  // 3 minutes
   keepPreviousData: true,

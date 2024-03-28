@@ -150,15 +150,13 @@ class UnitHistoryList(APIView):
 
         # Si no se especificó rango de fechas, regresar registros del último día
         if not (filters_serializer.validated_data.get("register_datetime_after") or filters_serializer.validated_data.get("register_datetime_before")):
-
             import datetime
             import pytz
 
             date_now = datetime.datetime.now()
             end_date = date_now.astimezone(pytz.timezone("America/Mexico_City")).replace(
                 tzinfo=pytz.utc) + datetime.timedelta(hours=6)
-            start_date = end_date - \
-                timedelta(hours=24) + datetime.timedelta(hours=6)
+            start_date = end_date - timedelta(hours=24)
 
             filters_serializer.validated_data["register_datetime_before"] = end_date
             filters_serializer.validated_data["register_datetime_after"] = start_date
@@ -262,6 +260,43 @@ class UnitStatusTime(APIView):
             return Response(output)
 
 
+class DeviceStatusTime(APIView):
+    class OutputSerializer(serializers.Serializer):
+        register_datetime = serializers.DateTimeField()
+
+    def get(self, request, device_id, *args, **kwargs):
+        device_histories_with_next_severity = DeviceHistory.objects.filter(
+            device_id=device_id,
+        ).annotate(
+            next_severity=Window(
+                expression=Lead('status__severity'),
+                partition_by=[F('device_id')],
+                order_by=F('register_datetime').desc()
+            )
+        )
+        print("device status time")
+        print(device_histories_with_next_severity)
+
+        severity_changes = device_histories_with_next_severity.filter(
+            # Excludes the last record for each unit, as it has no "next" record
+            next_severity__isnull=False,
+            # Optional: Exclude records with no severity to avoid comparing None values
+            status__severity__isnull=False
+        ).exclude(
+            status__severity=F('next_severity')
+        )
+
+        if not severity_changes:
+            first_register = device_histories_with_next_severity[len(
+                device_histories_with_next_severity)-1]
+            output = self.OutputSerializer(first_register).data
+            return Response(output)
+        else:
+            last_change = severity_changes[0]
+            output = self.OutputSerializer(last_change).data
+            return Response(output)
+
+
 class UnitStatusAPI(APIView):
     class OutputSerializer(serializers.Serializer):
         unit_id = serializers.IntegerField()
@@ -286,6 +321,7 @@ class DeviceStatusAPI(APIView):
         device_id = serializers.IntegerField()
         device = serializers.CharField()
         last_connection = serializers.DateTimeField()
+        license_end = serializers.DateTimeField(source='device.license_end')
         severity = serializers.IntegerField(source='status.severity')
         description = serializers.CharField(source='status.description')
         delayed = serializers.BooleanField()

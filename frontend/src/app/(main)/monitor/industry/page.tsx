@@ -12,7 +12,6 @@ import { PieChart } from "@mantine/charts";
 
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { ColorSchemeSwitchToggle } from "@/components/shared";
 
 type StatusKey = 0 | 1 | 2 | 3 | 4 | 5;
 const statusStyles: { [key in StatusKey]: string } = {

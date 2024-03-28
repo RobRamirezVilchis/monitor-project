@@ -50,10 +50,17 @@ urlpatterns = [
          ], "device-history"))
          ),
 
+    # Time in current status
     path("driving-status/last-status-change/<int:unit_id>/",
          include(([
              path("", apis.UnitStatusTime.as_view(), name="list"),
          ], "unit-change"))
+         ),
+
+    path("industry-status/last-status-change/<int:device_id>/",
+         include(([
+             path("", apis.DeviceStatusTime.as_view(), name="list"),
+         ], "device-change"))
          ),
 
     # Clients

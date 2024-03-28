@@ -59,6 +59,7 @@ const api = {
       industry: {
         clients: "api/v1/monitor/industry/clients/",
         status: "api/v1/monitor/industry-status/",
+        lastStatusChange: (unit_id: UnitId) => `api/v1/monitor/industry-status/last-status-change/${unit_id}/`,
         deviceStatus: (device_id: DeviceId) => `api/v1/monitor/industry-status/${device_id}/`,
         deviceHistory: (device_id: DeviceId) => `api/v1/monitor/industry-status/history/${device_id}/`,
         severityCount: "api/v1/monitor/industry-status-count/"

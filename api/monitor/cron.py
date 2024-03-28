@@ -329,6 +329,7 @@ def get_industry_data(client):
                  "shift_change": "SRC"}
 
     days_remaining = None
+    license_end = None
     alerts = []
     for device, logs in response.items():
         output_camera = {k: {"connected": True, "disconnection_time": timedelta(0)}
@@ -373,6 +374,10 @@ def get_industry_data(client):
 
                             if start == "[LICENSE]":
                                 days_remaining = int(log["log"].split()[-2])
+                                date, time = log["log"].split("until")[
+                                    1].split()
+                                license_end = datetime.fromisoformat(
+                                    f'{date}T{time[:-1]}')
 
                     if not found_category:
                         for interval in intervals:
@@ -440,7 +445,7 @@ def get_industry_data(client):
                 for interval in intervals:
                     output_cameras[device][interval]["connected"] = False
 
-    return output_gx, output_cameras, days_remaining
+    return output_gx, output_cameras, days_remaining, license_end
 
 
 def update_driving_status():
@@ -633,7 +638,7 @@ def update_industry_status():
         output = get_industry_data(client_alias)
 
         if output:
-            gx_data, camera_data, days_remaining = get_industry_data(
+            gx_data, camera_data, days_remaining, license_end = get_industry_data(
                 client_alias)
         else:
             print(f"No data for {client_name}")
@@ -659,8 +664,9 @@ def update_industry_status():
         }
         device = get_or_create_device(device_args)
 
-        if days_remaining:
+        if days_remaining and license_end:
             device.license_days = days_remaining
+            device.license_end = license_end
             device.save()
 
         # Campos del registro a actualizar

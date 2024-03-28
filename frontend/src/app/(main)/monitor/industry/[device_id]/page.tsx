@@ -2,6 +2,7 @@
 
 import {
   useDeviceHistoryQuery,
+  useDeviceLastStatusChange,
   useDeviceStatusQuery,
   useUnitHistoryQuery,
 } from "@/api/queries/monitor";
@@ -16,7 +17,13 @@ import { useDataGrid, useSsrDataGrid } from "@/hooks/data-grid";
 import DataGrid from "@/ui/data-grid/DataGrid";
 import { ColumnDef } from "@/ui/data-grid/types";
 
-import { format, lightFormat, parseISO } from "date-fns";
+import {
+  format,
+  formatDistanceToNow,
+  parseISO,
+  differenceInDays,
+} from "date-fns";
+import { es } from "date-fns/locale";
 import Link from "next/link";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 
@@ -73,6 +80,8 @@ const DevicePage = ({ params }: { params: { device_id: string } }) => {
   });
 
   const deviceStatus = deviceStatusQuery.data;
+  const severity = deviceStatus?.severity;
+  const color = statusStyles[severity as StatusKey];
 
   const history_query = useDeviceHistoryQuery({
     variables: {
@@ -81,10 +90,30 @@ const DevicePage = ({ params }: { params: { device_id: string } }) => {
     },
   });
 
-  const last_log: DeviceHistory | undefined = history_query.data?.data[0];
+  let daysRemaining: number = -1;
+  if (deviceStatus?.license_end) {
+    daysRemaining = differenceInDays(deviceStatus.license_end, Date());
+  }
 
-  const severity = deviceStatus?.severity;
-  const color = statusStyles[severity as StatusKey];
+  const deviceLastStatusChange = useDeviceLastStatusChange({
+    variables: {
+      device_id: params.device_id,
+    },
+  });
+  console.log(deviceLastStatusChange);
+
+  let timeAgo: string;
+  if (deviceLastStatusChange.data != null) {
+    timeAgo = formatDistanceToNow(
+      deviceLastStatusChange.data?.register_datetime,
+      {
+        addSuffix: true,
+        locale: es,
+      }
+    );
+  } else {
+    timeAgo = "-";
+  }
 
   const grid = useDataGrid<DeviceHistory>({
     data: history_query.data?.data || [],
@@ -114,13 +143,20 @@ const DevicePage = ({ params }: { params: { device_id: string } }) => {
         <ArrowBackIcon />
       </Link>
       <div className="flex mb-4 justify-between items-center">
-        <div className="flex justify-start gap-4">
+        <div className="xl:flex xl:gap-6">
           <h1 className="text-5xl font-bold">{deviceStatus?.device}</h1>
-          <div
-            className={`inline-flex px-4 pt-1 pb-0.5 text-3xl font-semibold 
-                    border-2 ${color} rounded-full items-center`}
-          >
-            {statusNames[severity as StatusKey]}
+          <div className="md:flex justify-start items-center gap-4 mt-4 xl:mt-0">
+            <div
+              className={`inline-flex h-fit px-4 pt-1 pb-0.5 text-3xl font-semibold mb-2 md:mb-0
+              border-2 ${color} rounded-full items-center`}
+            >
+              {statusNames[severity as StatusKey]}
+            </div>
+            <div className="flex gap-3 text-xl text-gray-500 items-center">
+              <div className="shrink">{deviceStatus?.description}</div>
+              <div>|</div>
+              <div>Desde {timeAgo}</div>
+            </div>{" "}
           </div>
         </div>
       </div>
@@ -170,6 +206,11 @@ const DevicePage = ({ params }: { params: { device_id: string } }) => {
             </div>
           )}
           <div>
+            {daysRemaining != -1 && (
+              <p className="text-2xl text-gray-500">
+                Licencia termina en {daysRemaining} días
+              </p>
+            )}
             {deviceStatus.last_connection && (
               <p className="text-2xl text-gray-500">
                 Última conexión:{" "}

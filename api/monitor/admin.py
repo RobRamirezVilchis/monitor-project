@@ -1,6 +1,7 @@
 from django.contrib import admin
 from .models import *
 
+
 class UnitAdmin(admin.ModelAdmin):
     list_display = (
         'id',
@@ -13,7 +14,7 @@ class UnitStatusAdmin(admin.ModelAdmin):
     list_display = (
         'unit',
         'last_update',
-        #'get_client',
+        # 'get_client',
         'total',
         'restart',
         'start',
@@ -31,7 +32,7 @@ class UnitStatusAdmin(admin.ModelAdmin):
         'restarting_loop',
         'last_connection'
     )
-    
+
     search_fields = ('unit__name',)
 
     def get_client(self, obj):
@@ -40,12 +41,13 @@ class UnitStatusAdmin(admin.ModelAdmin):
     get_client.short_description = 'Client'
     get_client.admin_order_field = 'unit__client__name'
 
+
 class UnitHistoryAdmin(admin.ModelAdmin):
     list_display = (
         'unit',
         'register_datetime',
         'last_connection',
-        #'get_client',
+        # 'get_client',
         'total',
         'restart',
         'start',
@@ -59,7 +61,7 @@ class UnitHistoryAdmin(admin.ModelAdmin):
         'others',
         'status',
         'restarting_loop',
-        
+
     )
 
     search_fields = ('unit__name',)
@@ -82,6 +84,7 @@ class DeviceAdmin(admin.ModelAdmin):
 
 class DeviceStatusAdmin(admin.ModelAdmin):
     list_display = (
+        'id',
         'device',
         'last_update',
         'last_connection',
@@ -93,10 +96,11 @@ class DeviceStatusAdmin(admin.ModelAdmin):
         'license',
         'shift_change',
         'others',
-        
+
     )
 
     search_fields = ('device__name',)
+
 
 class DevicesHistoryAdmin(admin.ModelAdmin):
     list_display = (
@@ -122,6 +126,7 @@ class ClientAdmin(admin.ModelAdmin):
         'name',
         'deployment',
     )
+
 
 class CameraStatusAdmin(admin.ModelAdmin):
     list_display = (
@@ -178,6 +183,7 @@ class GxStatusAdmin(admin.ModelAdmin):
         'description',
         'deployment'
     )
+
 
 admin.site.register(UnitStatus, UnitStatusAdmin)
 admin.site.register(UnitHistory, UnitHistoryAdmin)
