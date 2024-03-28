@@ -109,6 +109,7 @@ class DeviceSeverityCount(APIView):
         serializer = self.SeverityCountSerializer(counts, many=True)
         return Response(serializer.data)
 
+
 # Device history
 
 

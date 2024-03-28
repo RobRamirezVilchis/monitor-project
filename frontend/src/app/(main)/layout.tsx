@@ -111,7 +111,7 @@ const MainLayout = ({ children }: MainLayoutProps) => {
 
       <div className="flex gap-2 items-center mx-4">
         {visibleLinks.map((item) => (
-          <DesktopNavLink key={item.href} item={item} />
+          <MobileNavLink key={item.href} item={item} />
         ))}
       </div>
 
