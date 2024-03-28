@@ -56,61 +56,60 @@ const UnitCard = ({ unit: unit_status }: GxCardProps) => {
   }
 
   return (
-    <div
-      className={`relative pb-6 w-[18rem] md:w-52 lg:w-[18rem] rounded-lg p-6 border-2 
+    <Link
+      className={`group relative pb-6 w-[18rem] md:w-52 lg:w-[18rem] rounded-lg p-6 border-2 
       transition duration-300 shadow-md dark:border-gray-700 hover:shadow-lg ${
         description == "Read only SSD" || description == "Tres cámaras fallando"
           ? "border-red-300 dark:border-red-300"
           : ""
       }`}
+      href={`/monitor/safedriving/${unit_id}`}
     >
-      <Link className="peer" href={`/monitor/safedriving/${unit_id}`}>
-        {on_trip && (
-          <span className="absolute right-4 animate-ping inline-flex h-2 w-2 rounded-full bg-blue-400 opacity-100"></span>
-        )}
+      {on_trip && (
+        <span className="absolute right-4 animate-ping inline-flex h-2 w-2 rounded-full bg-blue-400 opacity-100"></span>
+      )}
 
-        <div
-          className={`inline-flex mb-3 px-2.5 pt-1 pb-0.5 text-s font-semibold 
+      <div
+        className={`inline-flex mb-3 px-2.5 pt-1 pb-0.5 text-s font-semibold 
          border-2 ${color} rounded-full`}
+      >
+        {statusNames[severity as StatusKey]}
+      </div>
+
+      <div className="flex gap-3 mb-2 items-center">
+        <h3 className="ml-1 text-2xl font-bold">Unidad {unit}</h3>
+      </div>
+
+      <div className="flex items-center my-2">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          strokeWidth={1.5}
+          stroke="currentColor"
+          className="w-6 h-6"
         >
-          {statusNames[severity as StatusKey]}
-        </div>
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
+          />
+        </svg>
+        <p className="text-sm ml-1">{timeAgo}</p>
+      </div>
 
-        <div className="flex gap-3 mb-2 items-center">
-          <h3 className="ml-1 text-2xl font-bold">Unidad {unit}</h3>
-        </div>
-
-        <div className="flex items-center my-2">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            strokeWidth={1.5}
-            stroke="currentColor"
-            className="w-6 h-6"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
-            />
-          </svg>
-          <p className="text-sm ml-1">{timeAgo}</p>
-        </div>
-
-        <p className="text-lg px-2 dark:bg-gray-700 py-1 bg-gray-200 border border-gray-200 dark:border-gray-700 rounded-md">
-          {description}
-        </p>
-      </Link>
+      <p className="text-lg px-2 dark:bg-gray-700 py-1 bg-gray-200 border border-gray-200 dark:border-gray-700 rounded-md">
+        {description}
+      </p>
 
       <div
         className="absolute invisible opacity-0 bottom-full mb-2 px-4 py-2 bg-gray-600 text-white rounded shadow-lg 
-      transition-opacity ease-in-out duration-300 delay-200 ease-in-out peer-hover:visible peer-hover:opacity-100"
+      transition-opacity ease-in-out duration-300 delay-200 ease-in-out group-hover:visible group-hover:opacity-100"
       >
         <p>{pending_events} eventos pendientes</p>
         <p>{pending_status} status pendientes</p>
       </div>
-    </div>
+    </Link>
   );
 };
 

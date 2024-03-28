@@ -260,8 +260,8 @@ const cols: ColumnDef<DeviceHistory>[] = [
   {
     accessorKey: "camera_connection",
     accessorFn: (row) => row.camera_connection,
-    header: "Cámaras",
-    columnTitle: "Cámaras",
+    header: "Desconexión de cámaras",
+    columnTitle: "Desconexión de cámaras",
     size: 150,
     enableSorting: true,
   },

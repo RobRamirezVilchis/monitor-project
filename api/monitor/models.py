@@ -177,6 +177,7 @@ class DeviceStatus(models.Model):
     camera_connection = models.DurationField()
     restart = models.IntegerField()
     license = models.IntegerField()
+    license_end = models.DateTimeField(null=True)
     shift_change = models.IntegerField()
     others = models.IntegerField()
     status = models.ForeignKey(GxStatus, on_delete=models.CASCADE, null=True)
