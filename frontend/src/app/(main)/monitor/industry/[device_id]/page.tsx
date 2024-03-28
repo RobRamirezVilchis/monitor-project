@@ -110,7 +110,7 @@ const DevicePage = ({ params }: { params: { device_id: string } }) => {
 
   return (
     <section className="relative">
-      <Link href={"./"} className="absolute right-full mr-5 mt-2">
+      <Link href={"./"} className="absolute right-full mr-5 mt-2 opacity-40">
         <ArrowBackIcon />
       </Link>
       <div className="flex mb-4 justify-between items-center">

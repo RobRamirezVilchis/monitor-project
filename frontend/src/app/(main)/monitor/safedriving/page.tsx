@@ -91,7 +91,7 @@ const SafeDrivingPage = () => {
     { name: "Funcionando", value: 500, color: "indigo.6" },
   ];
   const data = [];
-  //for (let i = 0, i < countQuery.data?.length, )
+
   if (countQuery.data) {
     for (const level of countQuery?.data) {
       if (level["severity"] != 0) {
