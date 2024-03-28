@@ -147,8 +147,6 @@ class UnitHistoryList(APIView):
 
         filters_serializer = self.FiltersSerializer(data=request.query_params)
         filters_serializer.is_valid(raise_exception=True)
-        print("valdata")
-        print(filters_serializer.validated_data)
 
         # Si no se especificó rango de fechas, regresar registros del último día
         if not filters_serializer.validated_data.get('register_datetime_before') and not filters_serializer.validated_data.get('register_datetime_after'):
@@ -203,8 +201,6 @@ class DeviceHistoryList(APIView):
 
         filters_serializer = self.FiltersSerializer(data=request.query_params)
         filters_serializer.is_valid(raise_exception=True)
-        print("valdata")
-        print(filters_serializer.validated_data)
 
         # Si no se especificó rango de fechas, regresar registros del último día
         if filters_serializer.validated_data == {}:

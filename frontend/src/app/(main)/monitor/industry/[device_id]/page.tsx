@@ -239,6 +239,7 @@ const cols: ColumnDef<DeviceHistory>[] = [
     header: "Retraso",
     columnTitle: "Retraso",
     size: 120,
+    enableSorting: true,
   },
   {
     accessorKey: "delay_time",
@@ -246,6 +247,7 @@ const cols: ColumnDef<DeviceHistory>[] = [
     header: "Tiempo retraso",
     columnTitle: "Tiempo retraso",
     size: 170,
+    enableSorting: true,
   },
   {
     accessorKey: "restart",
@@ -253,6 +255,7 @@ const cols: ColumnDef<DeviceHistory>[] = [
     header: "Restart",
     columnTitle: "Restart",
     size: 120,
+    enableSorting: true,
   },
   {
     accessorKey: "camera_connection",
@@ -260,6 +263,7 @@ const cols: ColumnDef<DeviceHistory>[] = [
     header: "Cámaras",
     columnTitle: "Cámaras",
     size: 150,
+    enableSorting: true,
   },
   {
     accessorKey: "license",
@@ -267,6 +271,7 @@ const cols: ColumnDef<DeviceHistory>[] = [
     header: "License",
     columnTitle: "License",
     size: 110,
+    enableSorting: true,
   },
   {
     accessorKey: "shift_change",
@@ -274,6 +279,7 @@ const cols: ColumnDef<DeviceHistory>[] = [
     header: "Turno",
     columnTitle: "Turno",
     size: 100,
+    enableSorting: true,
   },
   {
     accessorKey: "others",
@@ -281,5 +287,6 @@ const cols: ColumnDef<DeviceHistory>[] = [
     header: "Otros",
     columnTitle: "Otros",
     size: 100,
+    enableSorting: true,
   },
 ];

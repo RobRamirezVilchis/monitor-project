@@ -143,6 +143,16 @@ class DeviceHistoryFilter(rf_filters.FilterSet):
         fields=(
             'register_datetime',
             ('status__severity', 'severity'),
+            'last_connection',
+            'delayed',
+            'delay_time',
+            'batch_dropping',
+            'camera_connection',
+            'restart',
+            'license',
+            'shift_change',
+            'others',
+            'status',
         )
     )
 
