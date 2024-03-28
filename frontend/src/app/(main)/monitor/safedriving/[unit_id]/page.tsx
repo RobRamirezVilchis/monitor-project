@@ -10,8 +10,11 @@ import { Unit, UnitHistory } from "@/api/services/monitor/types";
 import { useDataGrid, useSsrDataGrid } from "@/hooks/data-grid";
 import DataGrid from "@/ui/data-grid/DataGrid";
 import { ColumnDef } from "@/ui/data-grid/types";
+
 import { format, formatDistanceToNow, lightFormat, parseISO } from "date-fns";
 import { es } from "date-fns/locale";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import Link from "next/link";
 
 type StatusKey = 0 | 1 | 2 | 3 | 4 | 5;
 const statusStyles: { [key in StatusKey]: string } = {
@@ -125,7 +128,10 @@ const UnitPage = ({ params }: { params: { unit_id: string } }) => {
   });
 
   return (
-    <section>
+    <section className="relative">
+      <Link href={"./"} className="absolute right-full mr-5 mt-2">
+        <ArrowBackIcon />
+      </Link>
       <div className="flex mb-4 justify-between items-center">
         <div className="xl:flex xl:gap-6">
           <h1 className="text-5xl font-bold">Unidad {unitStatus?.unit}</h1>
@@ -186,8 +192,9 @@ const cols: ColumnDef<UnitHistory>[] = [
     header: "Fecha",
     columnTitle: "Fecha",
     minSize: 250,
-    enableSorting: true,
+    //enableSorting: true,
     filterVariant: "datetime-range",
+    enableMultiSort: true,
   },
   {
     accessorKey: "last_connection",
@@ -207,7 +214,8 @@ const cols: ColumnDef<UnitHistory>[] = [
     header: "Estátus",
     columnTitle: "Estátus",
     size: 100,
-    enableSorting: true,
+    //enableSorting: true,
+    enableMultiSort: true,
   },
   {
     accessorKey: "description",

@@ -11,10 +11,14 @@ import {
   Unit,
   UnitHistory,
 } from "@/api/services/monitor/types";
+
 import { useDataGrid, useSsrDataGrid } from "@/hooks/data-grid";
 import DataGrid from "@/ui/data-grid/DataGrid";
 import { ColumnDef } from "@/ui/data-grid/types";
+
 import { format, lightFormat, parseISO } from "date-fns";
+import Link from "next/link";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 
 type StatusKey = 0 | 1 | 2 | 3 | 4 | 5;
 const statusStyles: { [key in StatusKey]: string } = {
@@ -105,7 +109,10 @@ const DevicePage = ({ params }: { params: { device_id: string } }) => {
   });
 
   return (
-    <section>
+    <section className="relative">
+      <Link href={"./"} className="absolute right-full mr-5 mt-2">
+        <ArrowBackIcon />
+      </Link>
       <div className="flex mb-4 justify-between items-center">
         <div className="flex justify-start gap-4">
           <h1 className="text-5xl font-bold">{deviceStatus?.device}</h1>
@@ -200,7 +207,10 @@ const cols: ColumnDef<DeviceHistory>[] = [
   },
   {
     accessorKey: "last_connection",
-    accessorFn: (row) => format(parseISO(row.last_connection), "Pp"),
+    accessorFn: (row) =>
+      row.last_connection
+        ? format(parseISO(row.last_connection), "Pp")
+        : "Desconocida",
     header: "Última conexión",
     columnTitle: "Última conexión",
     minSize: 200,
