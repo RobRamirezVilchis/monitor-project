@@ -43,7 +43,7 @@ def get_or_create_client(args):
 
 def get_or_create_gxstatus(args):
     status_obj, created = GxStatus.objects.get_or_create(
-        reason=args['reason'],
+        description=args['description'],
         severity=args['severity'],
         deployment=args['deployment']
     )
@@ -182,3 +182,22 @@ def get_industry_clients():
         deployment=Deployment.objects.get(name="Industry"))
 
     return clients
+
+
+def get_or_create_alerttype(args):
+    alert_type, created = AlertType.objects.get_or_create(
+        description=args["description"]
+    )
+
+    return alert_type
+
+
+def create_alert(args):
+    alert = Alert.objects.create(
+        alert_type=args["alert_type"],
+        gx=args["gx"],
+        register_date=args["register_date"],
+        register_datetime=args["register_datetime"]
+    )
+
+    return alert

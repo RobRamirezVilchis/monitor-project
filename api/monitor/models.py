@@ -70,7 +70,7 @@ class Alert(models.Model):
     register_datetime = models.DateTimeField("Fecha registro")
 
     def __str__(self):
-        return self.name
+        return f'{self.gx.client} - {self.alert_type}'
 
 
 class Camera(models.Model):

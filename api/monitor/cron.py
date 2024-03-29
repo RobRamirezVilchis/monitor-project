@@ -239,15 +239,15 @@ def get_driving_data(client):
              and output_gx["hour"][device]["total"] < 5, 1, 1, "Comunicación reciente"),
         ]
 
-        for condition, level, rule in conditions:
+        for condition, level, rule, rule_des in conditions:
             if condition:
                 if level in severities:
-                    if rule in severities[level]:
-                        severities[level][rule].add(device)
+                    if rule_des in severities[level]:
+                        severities[level][rule_des].add(device)
                     else:
-                        severities[level][rule] = set([device])
+                        severities[level][rule_des] = set([device])
                 else:
-                    severities[level] = {rule: set([device])}
+                    severities[level] = {rule_des: set([device])}
 
     units_left = set(device_dict.keys())
 
@@ -257,9 +257,9 @@ def get_driving_data(client):
 
     for unit in units_left:
         if 0 not in severities:
-            severities[0] = {1: set([unit])}
+            severities[0] = {"Inactivo": set([unit])}
         else:
-            severities[0][1].add(unit)
+            severities[0]["Inactivo"].add(unit)
 
     return output_gx, output_cameras, severities
 
@@ -350,26 +350,27 @@ def get_industry_data(client):
             output_gx["last_connection"] = last_log_date
 
             for log in logs:
-                register_time = datetime.fromisoformat(log["register_time"][:-1]).astimezone(
-                    pytz.timezone('America/Mexico_City')).replace(tzinfo=pytz.utc)
+                register_time = datetime.fromisoformat(
+                    log["register_time"][:-1]).replace(tzinfo=pytz.utc)
                 log_time = datetime.fromisoformat(f'{log["log_date"]}T{log["log_time"]}').replace(
                     tzinfo=pytz.utc) + timedelta(hours=6)
+
+                alert_conditions = (
+                    (register_time - log_time >
+                     timedelta(minutes=10), "Problemas de Wi-Fi"),
+                )
 
                 if register_time > now - timedelta(minutes=10):
                     intervals = ["hour", "ten_minutes"]
                     first_log_time = datetime.fromisoformat(log["register_time"][:-1]).astimezone(
                         pytz.timezone('America/Mexico_City')).replace(tzinfo=pytz.utc)
                     output_gx["first_log_time"] = first_log_time
+
+                    for cond, description in alert_conditions:
+                        if cond:
+                            alerts.append((device, description))
                 else:
                     intervals = ["hour"]
-
-                alert_conditions = (
-                    (register_time - log_time >
-                     timedelta(minutes=10), "Problemas de Wi-Fi")
-                )
-                for cond in alert_conditions:
-                    if cond:
-                        alerts.append((device, cond[1]))
 
                 if log["log"] != "":
                     found_category = False
@@ -452,7 +453,7 @@ def get_industry_data(client):
                 for interval in intervals:
                     output_cameras[device][interval]["connected"] = False
 
-    return output_gx, output_cameras, days_remaining, license_end
+    return output_gx, output_cameras, days_remaining, license_end, alerts
 
 
 def update_driving_status():
@@ -503,12 +504,12 @@ def update_driving_status():
                 for condition, units in rules.items():
                     if unit in units:
                         status = level
-                        rule = condition
+                        description = condition
 
             # Obtener objeto GxStatus
             status_args = {
                 'severity': status,
-                'reason': rule,
+                'description': description,
                 'deployment': deployment
             }
             status_obj = get_or_create_gxstatus(status_args)
@@ -645,7 +646,7 @@ def update_industry_status():
         output = get_industry_data(client_alias)
 
         if output:
-            gx_data, camera_data, days_remaining, license_end = get_industry_data(
+            gx_data, camera_data, days_remaining, license_end, alerts = get_industry_data(
                 client_alias)
         else:
             print(f"No data for {client_name}")
@@ -670,6 +671,13 @@ def update_industry_status():
             'name': "GX_01"
         }
         device = get_or_create_device(device_args)
+
+        for alert in alerts:
+            alert_type = get_or_create_alerttype({"description": alert[1]})
+
+            alert_args = {"alert_type": alert_type, "gx": device,
+                          "register_datetime": date_now, "register_date": date_now.date()}
+            alert = create_alert(alert_args)
 
         if days_remaining and license_end:
             device.license_days = days_remaining
@@ -738,24 +746,26 @@ def update_industry_status():
             update_values['delay_time'] = db_delay_time + timedelta(minutes=10)
 
         conditions = [
-            (recent_data['camera_connection'] > timedelta(0), 3, 3),
-            (update_values['batch_dropping'] > 0, 3, 2),
+            (recent_data['camera_connection'] >
+             timedelta(0), 3, 3, "Cámara desconectada"),
+            (update_values['batch_dropping'] > 0, 3, 2, "Batch dropping"),
             (update_values['delayed'] and update_values['delay_time']
-             < timedelta(minutes=60), 3, 1),
-            (update_values['delay_time'] >= timedelta(minutes=60), 5, 1),
-            (update_values['restart'] > 0, 5, 2),
+             < timedelta(minutes=60), 3, 1, "Retraso menor a 1h"),
+            (update_values['delay_time'] >= timedelta(
+                minutes=60), 5, 1, "Retraso mayor a 1h"),
+            (update_values['restart'] > 0, 5, 2, "Restarts"),
         ]
 
         severity = 1
-        rule = 1
-        for condition, status, r in conditions:
+        rule = "Comunicación reciente"
+        for condition, status, r, description in conditions:
             if condition:
                 severity = status
-                rule = r
+                rule = description
 
         gxstatus_args = {
             'severity': severity,
-            'reason': rule,
+            'description': rule,
             'deployment': deployment
         }
         status = get_or_create_gxstatus(gxstatus_args)
