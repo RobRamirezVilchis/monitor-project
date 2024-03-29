@@ -85,11 +85,8 @@ const SafeDrivingPage = () => {
 
   const clients = clientsQuery.data?.map((data) => data.name);
 
-  const unitData = unitsStatusQuery.data;
-  const pieData = [
-    { name: "Crítico", value: 180, color: "yellow.6" },
-    { name: "Funcionando", value: 500, color: "indigo.6" },
-  ];
+  const unitsData = unitsStatusQuery.data;
+
   const data = [];
 
   if (countQuery.data) {
@@ -101,6 +98,40 @@ const SafeDrivingPage = () => {
           color: statusColors[level["severity"] as StatusKey],
         });
       }
+    }
+  }
+
+  const severityCountDict: { [key in StatusKey]: number } = {
+    5: 0,
+    4: 0,
+    3: 0,
+    2: 0,
+    1: 0,
+    0: 0,
+  };
+  const severityCount: {
+    level: number;
+    name: string;
+    value: number;
+    color: string;
+  }[] = [];
+  if (unitsData) {
+    for (const unitData of unitsData) {
+      if (clientValue) {
+        if (clientValue == unitData.client) {
+          severityCountDict[unitData.severity as StatusKey]++;
+        }
+      } else {
+        severityCountDict[unitData.severity as StatusKey]++;
+      }
+    }
+    for (let i = 5; i >= 0; i--) {
+      severityCount.push({
+        level: i,
+        name: statusNames[i as StatusKey],
+        value: severityCountDict[i as StatusKey],
+        color: statusColors[i as StatusKey],
+      });
     }
   }
 
@@ -137,35 +168,33 @@ const SafeDrivingPage = () => {
 
           {countQuery.data && (
             <div className="flex w-fit py-2 mb-4 gap-6 flex-wrap">
-              {countQuery.data.map((severity_count) => (
+              {severityCount.map((severity_count) => (
                 <div
-                  key={severity_count.severity}
+                  key={severity_count.level}
                   className="flex gap-2 items-center"
                 >
-                  <p>{severity_count.count}</p>
+                  <p>{severity_count.value}</p>
                   <p>-</p>
 
                   <Link
                     href={
-                      filter == null ||
-                      Number(filter) != severity_count.severity
+                      filter == null || Number(filter) != severity_count.level
                         ? "/monitor/safedriving/?" +
                           createQueryString(
                             "filter",
-                            String(severity_count.severity)
+                            String(severity_count.level)
                           )
                         : "/monitor/safedriving/"
                     }
                     className={`${
-                      severity_count.severity == Number(filter) ||
-                      filter == null
+                      severity_count.level == Number(filter) || filter == null
                         ? "opacity-100"
                         : "opacity-30"
                     } inline-flex px-2.5 pt-1 pb-0.5 text-s font-semibold border-2 ${
-                      statusStyles[severity_count.severity as StatusKey]
+                      statusStyles[severity_count.level as StatusKey]
                     } rounded-full`}
                   >
-                    {statusNames[severity_count.severity as StatusKey]}
+                    {statusNames[severity_count.level as StatusKey]}
                   </Link>
                 </div>
               ))}
@@ -174,7 +203,7 @@ const SafeDrivingPage = () => {
         </div>
         <div className="hidden md:block">
           <PieChart
-            data={data}
+            data={severityCount.slice(0, 5)}
             mt={0}
             mb={0}
             py={0}
@@ -190,7 +219,7 @@ const SafeDrivingPage = () => {
       </div>
 
       <div className="flex flex-row gap-4 flex-wrap">
-        {unitData?.map((unit) =>
+        {unitsData?.map((unit) =>
           unit.unit.startsWith(value) &&
           (unit.client == clientValue || clientValue == null) &&
           (filter == null || unit.severity == Number(filter)) ? (

@@ -97,7 +97,8 @@ class UnitHistoryFilter(rf_filters.FilterSet):
             'pending_status',
             'restarting_loop',
             'on_trip',
-            ('status__severity', 'severity')
+            ('status__severity', 'severity'),
+            ('status__description', 'description')
         )
     )
 
@@ -105,6 +106,7 @@ class UnitHistoryFilter(rf_filters.FilterSet):
         model = UnitHistory
         fields = ['register_datetime',
                   'status',
+
                   'total',
                   'restart',
                   'reboot',
@@ -132,8 +134,7 @@ def get_unithistory(args, filters=None):
     logs = UnitHistory.objects.filter(
         unit_id=args['unit_id'],
     )
-    print("Filters2")
-    print(filters)
+
     return UnitHistoryFilter(filters, logs).qs
 
 

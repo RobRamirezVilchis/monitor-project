@@ -418,7 +418,6 @@ def get_industry_data(client):
                 output_cameras[device] = output_camera.copy()
 
             for log in logs:
-                last_disconnect_time = 0
                 register_time = datetime.fromisoformat(log["register_time"][:-1]).astimezone(
                     pytz.timezone('America/Mexico_City')).replace(tzinfo=pytz.utc)
 

@@ -210,11 +210,11 @@ const cols: ColumnDef<UnitHistory>[] = [
   },
   {
     accessorKey: "severity",
-    accessorFn: (row) => row.severity,
+    accessorFn: (row) => statusNames[row.severity as StatusKey],
     header: "Estátus",
     columnTitle: "Estátus",
     size: 100,
-    //enableSorting: true,
+    enableSorting: true,
     enableMultiSort: true,
   },
   {

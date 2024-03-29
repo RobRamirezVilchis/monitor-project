@@ -260,7 +260,7 @@ const cols: ColumnDef<DeviceHistory>[] = [
   },
   {
     accessorKey: "severity",
-    accessorFn: (row) => row.severity,
+    accessorFn: (row) => statusNames[row.severity as StatusKey],
     header: "Estátus",
     columnTitle: "Estátus",
     size: 120,
