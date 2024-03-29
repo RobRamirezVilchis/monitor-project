@@ -213,7 +213,7 @@ const cols: ColumnDef<UnitHistory>[] = [
     accessorFn: (row) => statusNames[row.severity as StatusKey],
     header: "Estátus",
     columnTitle: "Estátus",
-    size: 100,
+    size: 120,
     enableSorting: true,
     enableMultiSort: true,
   },

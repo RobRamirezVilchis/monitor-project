@@ -203,32 +203,40 @@ def get_driving_data(client):
             last_connection = None
 
         conditions = [
-            # (Condition, Status, Severity Key)
-            (datos.get("Estatus") == "red", 5, 1),
+            # (Condition, Status, Severity Key, Description)
+            (datos.get("Estatus") == "red", 5, 1, "Sin comunicación reciente"),
             (output_gx["ten_minutes"][device]["restarting_loop"]
-             and datos.get("En_viaje"), 5, 3),
-            (output_gx["hour"][device]["read_only_ssd"] > 0, 5, 4),
-            (output_gx["hour"][device]["forced_reboot"] > 5, 5, 5),
+             and datos.get("En_viaje"), 5, 3, "Múltiples restarts"),
+            (output_gx["hour"][device]["read_only_ssd"]
+             > 0, 5, 4, "Read only SSD"),
+            (output_gx["hour"][device]["forced_reboot"]
+             > 5, 5, 5, "forced reboot (>1)"),
             (datos.get("Jsons_eventos_pendientes") > 100 or datos.get(
-                "Jsons_status_pendientes") > 1000, 5, 6),
-            (datos.get("En_viaje") and disc_cameras == 3, 5, 7),
-            (datos.get("En_viaje") and disc_cameras in {1, 2}, 4, 1),
+                "Jsons_status_pendientes") > 1000, 5, 6, "Demasiados logs pendientes"),
+            (datos.get("En_viaje") and disc_cameras ==
+             3, 5, 7, "Tres cámaras fallando"),
+            (datos.get("En_viaje") and disc_cameras in {
+             1, 2}, 4, 1, "1-2 cámaras fallando"),
             (output_gx["ten_minutes"][device]["restarting_loop"]
-             and not datos.get("En_viaje"), 4, 2),
-            (1 <= output_gx["hour"][device]["forced_reboot"] <= 5, 4, 3),
-            (datos.get("Estatus") == "orange", 4, 4),
-            (output_gx["hour"][device]["storage_devices"] > 0, 3, 1),
+             and not datos.get("En_viaje"), 4, 2, "Múltiples restarts"),
+            (1 <= output_gx["hour"][device]["forced_reboot"]
+             <= 5, 4, 3, "Forced reboot reciente"),
+            (datos.get("Estatus") == "orange", 4, 4,
+             "Sin comunicación reciente (< 1 día)"),
+            (output_gx["hour"][device]["storage_devices"]
+             > 0, 3, 1, "Errores de memoria"),
             (100 > datos.get("Jsons_eventos_pendientes") >
-             20 or datos.get("Jsons_status_pendientes") > 100, 3, 2),
-            (output_gx["hour"][device]["total"] > 10, 3, 3),
+             20 or datos.get("Jsons_status_pendientes") > 100, 3, 2, "Muchos logs pendientes"),
+            (output_gx["hour"][device]["total"]
+             > 10, 3, 3, "Más de 10 mensajes	"),
             (datos.get("Estatus") == "green" and (
-                output_gx["hour"][device]["Aux"] == 0 or output_gx["hour"][device]["Ignición"] == 0), 2, 1),
+                output_gx["hour"][device]["Aux"] == 0 or output_gx["hour"][device]["Ignición"] == 0), 2, 1, "Sin AUX ni Ignición"),
             (last_connection and not datos.get("En_viaje")
-             and last_connection > now - timedelta(hours=2), 2, 2),
+             and last_connection > now - timedelta(hours=2), 2, 2, "Comunicación reciente"),
             (datos.get("En_viaje") and last_connection > now - timedelta(hours=1)
-             and 10 > output_gx["hour"][device]["total"] > 5, 2, 3),
+             and 10 > output_gx["hour"][device]["total"] > 5, 2, 3, "De 5 a 10 mensajes en última hora"),
             (datos.get("En_viaje") and last_connection > now - timedelta(hours=1)
-             and output_gx["hour"][device]["total"] < 5, 1, 1),
+             and output_gx["hour"][device]["total"] < 5, 1, 1, "Comunicación reciente"),
         ]
 
         for condition, level, rule in conditions:
