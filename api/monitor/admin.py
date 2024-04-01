@@ -156,12 +156,12 @@ class CameraHistoryAdmin(admin.ModelAdmin):
     list_display = (
         'get_camera',
         'get_client',
-        'register_date',
+        'register_datetime',
         'connected',
         'disconnection_time',
     )
 
-    search_fields = ('camera__name',)
+    search_fields = ('camera__gx__client__name',)
 
     def get_client(self, obj):
         return obj.camera.gx.client.name

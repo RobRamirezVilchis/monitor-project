@@ -135,26 +135,33 @@ def get_driving_data(client):
                                  for device, datos in device_dict.items()}
                       for interval in ["hour", "ten_minutes"]}
 
-    unit_status = {device: 1 for device, datos in device_dict.items()}
+    alerts = {}
 
     for i in range(len(logs_last_hour)):
         log = logs_last_hour.iloc[i]
-        row_idx = log.name
-
-        recent = log["Timestamp"] > now - timedelta(minutes=10)
-
-        if recent:
-            intervals = ["hour", "ten_minutes"]
-        else:
-            intervals = ["hour"]
-
         unit = log["Unidad"]
         log_type = log["Tipo"]
 
+        alert_conditions = {
+            "Read only SSD": log["Tipo"] == "read_only_ssd"
+        }
+
+        recent = log["Timestamp"] > now - timedelta(minutes=10)
+        if recent:
+            intervals = ["hour", "ten_minutes"]
+
+            for description, cond in alert_conditions.items():
+                if cond:
+                    if unit not in alerts:
+                        alerts[unit] = set([description])
+                    else:
+                        alerts[unit].add(description)
+        else:
+            intervals = ["hour"]
+
         for interval in intervals:
             if unit not in output_gx[interval]:
-                for key in intervals:
-                    output_gx[interval][unit] = {t: 0 for t in log_types}
+                output_gx[interval][unit] = {t: 0 for t in log_types}
 
             if log_type in output_gx[interval][unit]:
                 output_gx[interval][unit][log_type] += 1
@@ -261,7 +268,7 @@ def get_driving_data(client):
         else:
             severities[0]["Inactivo"].add(unit)
 
-    return output_gx, output_cameras, severities
+    return output_gx, output_cameras, severities, alerts
 
     '''
     for i in range(len(past_logs)):
@@ -338,7 +345,9 @@ def get_industry_data(client):
 
     days_remaining = None
     license_end = None
-    alerts = []
+
+    alerts = set()
+
     for device, logs in response.items():
         output_camera = {k: {"connected": True, "disconnection_time": timedelta(0)}
                          for k in ["hour", "ten_minutes"]}
@@ -355,20 +364,21 @@ def get_industry_data(client):
                 log_time = datetime.fromisoformat(f'{log["log_date"]}T{log["log_time"]}').replace(
                     tzinfo=pytz.utc) + timedelta(hours=6)
 
-                alert_conditions = (
-                    (register_time - log_time >
-                     timedelta(minutes=10), "Problemas de Wi-Fi"),
-                )
+                alert_conditions = {
+                    "Problemas de Wi-Fi": (register_time - log_time >
+                                           timedelta(minutes=10))
+                }
 
                 if register_time > now - timedelta(minutes=10):
                     intervals = ["hour", "ten_minutes"]
+
                     first_log_time = datetime.fromisoformat(log["register_time"][:-1]).astimezone(
                         pytz.timezone('America/Mexico_City')).replace(tzinfo=pytz.utc)
                     output_gx["first_log_time"] = first_log_time
 
-                    for cond, description in alert_conditions:
+                    for description, cond in alert_conditions.items():
                         if cond:
-                            alerts.append((device, description))
+                            alerts.add(description)
                 else:
                     intervals = ["hour"]
 
@@ -465,7 +475,7 @@ def update_driving_status():
     for client_alias, client_name in clients.items():
         output = get_driving_data(client_alias)
         if output:
-            data, camera_data, units_status = output
+            data, camera_data, units_status, alerts = output
         else:
             print(f"No data for {client_name}")
 
@@ -473,7 +483,7 @@ def update_driving_status():
             output = get_driving_data(client_alias)
 
             if output:
-                data, camera_data, units_status = output
+                data, camera_data, units_status, alerts = output
             else:
                 print(f"No data for {client_name}")
                 continue
@@ -520,6 +530,15 @@ def update_driving_status():
                 'client': client
             }
             unit_obj = get_or_create_unit(unit_args)
+
+            if unit in alerts:
+                for alert in alerts[unit]:
+                    alert_type = get_or_create_alerttype(
+                        {"description": alert})
+
+                    alert_args = {"alert_type": alert_type, "gx": unit_obj,
+                                  "register_datetime": date_now, "register_date": date_now.date()}
+                    alert = create_alert(alert_args)
 
             camerastatus_list = []
             camerahistory_list = []
@@ -586,7 +605,7 @@ def update_driving_status():
                     'status': status_obj
                 }
             }
-            unitstatus_obj = update_or_create_unitstatus(unit_status_args)
+            unitstatus = update_or_create_unitstatus(unit_status_args)
 
             # Últimos 10 minutos
 
@@ -672,8 +691,8 @@ def update_industry_status():
         }
         device = get_or_create_device(device_args)
 
-        for alert in alerts:
-            alert_type = get_or_create_alerttype({"description": alert[1]})
+        for description in alerts:
+            alert_type = get_or_create_alerttype({"description": description})
 
             alert_args = {"alert_type": alert_type, "gx": device,
                           "register_datetime": date_now, "register_date": date_now.date()}
