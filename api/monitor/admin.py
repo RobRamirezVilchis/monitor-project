@@ -185,6 +185,23 @@ class GxStatusAdmin(admin.ModelAdmin):
     )
 
 
+class GxStatusAdmin(admin.ModelAdmin):
+    list_display = (
+        'severity',
+        'reason',
+        'description',
+        'deployment'
+    )
+
+
+class AlertAdmin(admin.ModelAdmin):
+    list_display = (
+        'gx',
+        'alert_type',
+        'register_datetime'
+    )
+
+
 admin.site.register(UnitStatus, UnitStatusAdmin)
 admin.site.register(UnitHistory, UnitHistoryAdmin)
 admin.site.register(Unit, UnitAdmin)
@@ -198,4 +215,4 @@ admin.site.register(Camera)
 admin.site.register(CameraStatus, CameraStatusAdmin)
 admin.site.register(CameraHistory, CameraHistoryAdmin)
 admin.site.register(GxStatus, GxStatusAdmin)
-admin.site.register(Alert)
+admin.site.register(Alert, AlertAdmin)

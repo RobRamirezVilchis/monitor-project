@@ -151,8 +151,8 @@ const UnitPage = ({ params }: { params: { unit_id: string } }) => {
         </div>
         {unitStatus?.on_trip && (
           <div className="flex items-center top-0">
-            <span className="animate-ping inline-flex h-4 w-4 rounded-full bg-blue-400 opacity-100"></span>
-            <div className="text-3xl font-semibold ml-4">En viaje</div>
+            <span className="animate-ping inline-flex h-3 w-3 rounded-full bg-blue-400 opacity-100"></span>
+            <div className="text-2xl font-semibold ml-6">En viaje</div>
           </div>
         )}
       </div>
