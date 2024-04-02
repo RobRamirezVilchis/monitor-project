@@ -74,4 +74,12 @@ urlpatterns = [
              path("", apis.IndustryClientList.as_view(), name="list"),
          ], "industry-clients"))
          ),
+
+
+    # Camera disconnections
+    path("industry/camera_disconnections/<int:device_id>/",
+         include(([
+             path("", apis.CameraDisconnectionsList.as_view(), name="list"),
+         ], "industry-disconnections"))
+         ),
 ]

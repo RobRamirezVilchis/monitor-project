@@ -354,6 +354,47 @@ class CameraStatusList(APIView):
         return Response(data)
 
 
+class CameraDisconnectionsList(APIView):
+    class FiltersSerializer(serializers.Serializer):
+        register_datetime_after = serializers.DateTimeField(required=False)
+        register_datetime_before = serializers.DateTimeField(required=False)
+        sort = serializers.CharField(required=False)
+        camera = serializers.CharField(required=False)
+
+    class OutputSerializer(serializers.Serializer):
+        camera = serializers.CharField()
+        register_datetime = serializers.DateTimeField()
+        disconnection_time = serializers.DurationField()
+
+    def get(self, request, device_id, *args, **kwargs):
+
+        filters_serializer = self.FiltersSerializer(data=request.query_params)
+        filters_serializer.is_valid(raise_exception=True)
+
+        # Si no se especificó rango de fechas, regresar registros del último día
+        if not (filters_serializer.validated_data.get("register_datetime_after") or filters_serializer.validated_data.get("register_datetime_before")):
+            import datetime
+            import pytz
+
+            date_now = datetime.datetime.now()
+            end_date = date_now.astimezone(pytz.timezone("America/Mexico_City")).replace(
+                tzinfo=pytz.utc) + datetime.timedelta(hours=6)
+            start_date = end_date - timedelta(hours=24)
+
+            filters_serializer.validated_data["register_datetime_before"] = end_date
+            filters_serializer.validated_data["register_datetime_after"] = start_date
+
+        data = {'device_id': device_id}
+        logs = get_cameradisconnections(
+            data, filters=filters_serializer.validated_data)[::-1]
+
+        return get_paginated_response(
+            serializer_class=self.OutputSerializer,
+            queryset=logs,
+            request=request,
+        )
+
+
 class SafeDrivingClientList(APIView):
     class OutputSerializer(serializers.Serializer):
         name = serializers.CharField()

@@ -76,6 +76,12 @@ export interface DeviceHistory {
   others: number,
 }
 
+export interface CameraDisconnection {
+  camera: string,
+  register_datetime: string,
+  disconnection_time: number,
+}
+
 export interface SeverityCount {
   severity: number;
   count: number;

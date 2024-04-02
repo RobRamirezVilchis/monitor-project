@@ -14,6 +14,43 @@ def camerastatus_list():
     return CameraStatus.objects.all()
 
 
+class CameraDisconnectionsFilter(rf_filters.FilterSet):
+    register_datetime = rf_filters.DateTimeFromToRangeFilter()
+    camera = rf_filters.CharFilter(
+        field_name='camera__name', lookup_expr="icontains")
+    sort = rf_filters.OrderingFilter(
+        fields=(
+            'register_datetime',
+            'camera',
+            'disconnection_time',
+        )
+    )
+
+    class Meta:
+        model = CameraHistory
+        fields = ['register_datetime',
+                  'camera__name',
+                  'disconnection_time',
+                  ]
+
+
+def get_cameradisconnections(args, filters=None):
+    logs = CameraHistory.objects.filter(
+        camera__gx_id=args['device_id'], connected=False)
+
+    return CameraDisconnectionsFilter(filters, logs).qs
+
+
+def get_unithistory(args, filters=None):
+
+    # print(start_date, end_date)
+    logs = UnitHistory.objects.filter(
+        unit_id=args['unit_id'],
+    )
+
+    return UnitHistoryFilter(filters, logs).qs
+
+
 def get_unitstatus(unit_id):
     return UnitStatus.objects.get(
         unit_id=unit_id

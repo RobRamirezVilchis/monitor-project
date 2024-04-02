@@ -1,4 +1,4 @@
-import { UnitStatus, SeverityCount, UnitHistory, DeviceStatus, UnitFilters, LastStatusChange, DeviceFilters, DeviceHistory, Client } from "./types";
+import { UnitStatus, SeverityCount, UnitHistory, DeviceStatus, UnitFilters, LastStatusChange, DeviceFilters, DeviceHistory, Client, CameraDisconnection } from "./types";
 import { Id, Paginated } from "@/api/types";
 import { Role, User } from "../auth/types";
 import api from "../..";
@@ -196,6 +196,24 @@ export async function getIndustrySeverityCount(config?: Parameters<typeof http.g
     const resp = await http.get<SeverityCount[]>(
       api.endpoints.monitor.industry.severityCount,
       {
+        ...config,
+      }
+    );
+    return resp.data;
+  } catch (error) {
+    throw error;
+  }
+}
+
+export async function getIndustryCameraDisconnections(
+  filters: DeviceFilters,
+  config?: Parameters<typeof http.get>[1]
+) {
+  try {
+    const resp = await http.get<Paginated<CameraDisconnection>>(
+      api.endpoints.monitor.industry.cameraDisconnections(filters.device_id),
+      {
+        params: filters,
         ...config,
       }
     );

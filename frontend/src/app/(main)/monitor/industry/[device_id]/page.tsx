@@ -1,12 +1,14 @@
 "use client";
 
 import {
+  useCameraDisconnectionsQuery,
   useDeviceHistoryQuery,
   useDeviceLastStatusChange,
   useDeviceStatusQuery,
   useUnitHistoryQuery,
 } from "@/api/queries/monitor";
 import {
+  CameraDisconnection,
   Device,
   DeviceHistory,
   Unit,
@@ -83,7 +85,14 @@ const DevicePage = ({ params }: { params: { device_id: string } }) => {
   const severity = deviceStatus?.severity;
   const color = statusStyles[severity as StatusKey];
 
-  const history_query = useDeviceHistoryQuery({
+  const historyQuery = useDeviceHistoryQuery({
+    variables: {
+      device_id: params.device_id,
+      ...queryVariables,
+    },
+  });
+
+  const disconnectionsQuery = useCameraDisconnectionsQuery({
     variables: {
       device_id: params.device_id,
       ...queryVariables,
@@ -100,7 +109,6 @@ const DevicePage = ({ params }: { params: { device_id: string } }) => {
       device_id: params.device_id,
     },
   });
-  console.log(deviceLastStatusChange);
 
   let timeAgo: string;
   if (deviceLastStatusChange.data != null) {
@@ -116,7 +124,7 @@ const DevicePage = ({ params }: { params: { device_id: string } }) => {
   }
 
   const grid = useDataGrid<DeviceHistory>({
-    data: history_query.data?.data || [],
+    data: historyQuery.data?.data || [],
     columns: cols,
     rowNumberingMode: "static",
     enableRowNumbering: true,
@@ -125,7 +133,7 @@ const DevicePage = ({ params }: { params: { device_id: string } }) => {
       density: "compact",
     },
     state: {
-      loading: history_query.isLoading || history_query.isFetching,
+      loading: historyQuery.isLoading || historyQuery.isFetching,
       ...dataGridState,
     },
     enableColumnResizing: true,
@@ -133,8 +141,30 @@ const DevicePage = ({ params }: { params: { device_id: string } }) => {
     enableColumnActions: true,
 
     ...(dataGridConfig as any),
-    pageCount: history_query.data?.pagination?.pages ?? 0,
-    rowCount: history_query.data?.pagination?.count ?? 0,
+    pageCount: historyQuery.data?.pagination?.pages ?? 0,
+    rowCount: historyQuery.data?.pagination?.count ?? 0,
+  });
+
+  const camerasGrid = useDataGrid<CameraDisconnection>({
+    data: disconnectionsQuery.data?.data || [],
+    columns: cameraGridCols,
+    rowNumberingMode: "static",
+    enableRowNumbering: true,
+    disableCellSelectionOnClick: true,
+    initialState: {
+      density: "compact",
+    },
+    state: {
+      loading: disconnectionsQuery.isLoading || disconnectionsQuery.isFetching,
+      ...dataGridState,
+    },
+    enableColumnResizing: true,
+    hideColumnFooters: true,
+    enableColumnActions: true,
+
+    ...(dataGridConfig as any),
+    pageCount: disconnectionsQuery.data?.pagination?.pages ?? 0,
+    rowCount: disconnectionsQuery.data?.pagination?.count ?? 0,
   });
 
   return (
@@ -169,13 +199,13 @@ const DevicePage = ({ params }: { params: { device_id: string } }) => {
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
                 viewBox="0 0 24 24"
-                stroke-width="1.5"
+                strokeWidth="1.5"
                 stroke="currentColor"
                 className="w-6 h-6"
               >
                 <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
                   d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z"
                 />
               </svg>
@@ -191,13 +221,13 @@ const DevicePage = ({ params }: { params: { device_id: string } }) => {
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
                 viewBox="0 0 24 24"
-                stroke-width="2.5"
+                strokeWidth="2.5"
                 stroke="currentColor"
                 className="w-6 h-6"
               >
                 <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
                   d="m4.5 12.75 6 6 9-13.5"
                 />
               </svg>
@@ -228,6 +258,10 @@ const DevicePage = ({ params }: { params: { device_id: string } }) => {
 
       <div className="h-[70vh]">
         <DataGrid instance={grid} />
+      </div>
+      <h3 className="text-2xl opacity-60 mt-10">Desconexiones de cámaras</h3>
+      <div className="h-[70vh]">
+        <DataGrid instance={camerasGrid} />
       </div>
     </section>
   );
@@ -328,6 +362,36 @@ const cols: ColumnDef<DeviceHistory>[] = [
     header: "Otros",
     columnTitle: "Otros",
     size: 100,
+    enableSorting: true,
+  },
+];
+
+const cameraGridCols: ColumnDef<CameraDisconnection>[] = [
+  {
+    accessorKey: "register_datetime",
+    accessorFn: (row) => format(parseISO(row.register_datetime), "Pp"),
+    header: "Fecha",
+    columnTitle: "Fecha",
+    minSize: 350,
+    enableSorting: true,
+    filterVariant: "datetime-range",
+  },
+  {
+    accessorKey: "camera",
+    accessorFn: (row) => row.camera,
+    header: "Cámara",
+    columnTitle: "Cámara",
+    minSize: 200,
+    enableSorting: true,
+    //filterVariant: "datetime-range",
+  },
+
+  {
+    accessorKey: "disconnection_time",
+    accessorFn: (row) => row.disconnection_time,
+    header: "Desconexión",
+    columnTitle: "Desconexión",
+    size: 200,
     enableSorting: true,
   },
 ];
