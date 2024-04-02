@@ -113,6 +113,8 @@ def get_or_create_device(args):
 
 class UnitHistoryFilter(rf_filters.FilterSet):
     register_datetime = rf_filters.DateTimeFromToRangeFilter()
+    description = rf_filters.CharFilter(
+        field_name='status__description', lookup_expr="icontains")
     sort = rf_filters.OrderingFilter(
         fields=(
             'register_datetime',
@@ -143,7 +145,6 @@ class UnitHistoryFilter(rf_filters.FilterSet):
         model = UnitHistory
         fields = ['register_datetime',
                   'status',
-
                   'total',
                   'restart',
                   'reboot',
@@ -161,8 +162,7 @@ class UnitHistoryFilter(rf_filters.FilterSet):
                   'pending_events',
                   'pending_status',
                   'restarting_loop',
-                  'on_trip',
-                  'status']
+                  'on_trip']
 
 
 def get_unithistory(args, filters=None):
@@ -177,6 +177,8 @@ def get_unithistory(args, filters=None):
 
 class DeviceHistoryFilter(rf_filters.FilterSet):
     register_datetime = rf_filters.DateTimeFromToRangeFilter()
+    description = rf_filters.CharFilter(
+        field_name='status__description', lookup_expr="icontains")
     sort = rf_filters.OrderingFilter(
         fields=(
             'register_datetime',

@@ -259,7 +259,7 @@ const DevicePage = ({ params }: { params: { device_id: string } }) => {
       <div className="h-[70vh]">
         <DataGrid instance={grid} />
       </div>
-      <h3 className="text-2xl opacity-60 mt-10">Desconexiones de cámaras</h3>
+      <h3 className="text-2xl opacity-60 mt-10">Desconexiones de cámaras:</h3>
       <div className="h-[70vh]">
         <DataGrid instance={camerasGrid} />
       </div>
@@ -389,9 +389,9 @@ const cameraGridCols: ColumnDef<CameraDisconnection>[] = [
   {
     accessorKey: "disconnection_time",
     accessorFn: (row) => row.disconnection_time,
-    header: "Desconexión",
+    header: "Tiempo de desconexión",
     columnTitle: "Desconexión",
-    size: 200,
+    size: 250,
     enableSorting: true,
   },
 ];

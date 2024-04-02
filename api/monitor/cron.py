@@ -691,6 +691,7 @@ def update_industry_status():
         }
         device = get_or_create_device(device_args)
 
+        # Crear registros de alertas
         for description in alerts:
             alert_type = get_or_create_alerttype({"description": description})
 

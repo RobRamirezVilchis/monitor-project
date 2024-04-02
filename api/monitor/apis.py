@@ -122,6 +122,7 @@ class UnitHistoryList(APIView):
         register_datetime_after = serializers.DateTimeField(required=False)
         register_datetime_before = serializers.DateTimeField(required=False)
         sort = serializers.CharField(required=False)
+        description = serializers.CharField(required=False)
 
     class OutputSerializer(serializers.Serializer):
         unit = serializers.CharField()
@@ -182,6 +183,7 @@ class DeviceHistoryList(APIView):
         register_datetime_after = serializers.DateTimeField(required=False)
         register_datetime_before = serializers.DateTimeField(required=False)
         sort = serializers.CharField(required=False)
+        description = serializers.CharField(required=False)
 
     class OutputSerializer(serializers.Serializer):
         device_id = serializers.IntegerField()
@@ -219,6 +221,8 @@ class DeviceHistoryList(APIView):
             filters_serializer.validated_data["register_datetime_after"] = start_date
 
         data = {'device_id': device_id}
+        print("val data")
+        print(filters_serializer.validated_data)
         logs = get_devicehistory(
             data, filters=filters_serializer.validated_data)[::-1]
 
