@@ -317,19 +317,19 @@ def update_driving_status():
             units_status = processed_data["severities"]
             alerts = processed_data["alerts"]
 
-            import json
 
             def set_default(obj):
                 if isinstance(obj, set):
                     return list(obj)
                 raise TypeError
 
+            '''import json
             with open(f'/home/spare/Documents/monitor/monitor-project/api/monitor/{client_alias}_driving_process_input.json', "w") as f:
                 json.dump(response, f, ensure_ascii=False)
             with open(f'/home/spare/Documents/monitor/monitor-project/api/monitor/{client_alias}_driving_process_output.json', "w") as f:
                 print(type(processed_data))
                 json.dump(processed_data, f, ensure_ascii=False,
-                          default=set_default)
+                          default=set_default)'''
 
         else:
             print(f"No data for {client_name}")
