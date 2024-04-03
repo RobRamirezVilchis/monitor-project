@@ -35,6 +35,7 @@ const UnitCard = ({ unit: unit_status }: GxCardProps) => {
     unit_id,
     unit,
     description,
+    priority,
     on_trip,
     last_connection,
     severity,
@@ -59,9 +60,7 @@ const UnitCard = ({ unit: unit_status }: GxCardProps) => {
     <Link
       className={`group relative pb-6 w-[18rem] md:w-52 lg:w-[18rem] rounded-lg p-6 border-2 
       transition duration-300 shadow-md dark:border-gray-700 hover:shadow-lg ${
-        description == "Read only SSD" || description == "Tres cámaras fallando"
-          ? "border-red-300 dark:border-red-300"
-          : ""
+        priority ? "border-red-300 dark:border-red-300" : ""
       }`}
       href={`/monitor/safedriving/${unit_id}`}
     >

@@ -14,6 +14,7 @@ export interface UnitStatus {
   on_trip: boolean;
   status: string;
   severity: number;
+  priority: boolean;
   description: string | null;
   last_connection: string | null; 
   pending_events: number | null;

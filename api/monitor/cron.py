@@ -207,7 +207,7 @@ def process_driving_data(response):
                         output_gx["hour"][unit]["restarting_loop"] = True
                         output_gx["ten_minutes"][unit]["restarting_loop"] = True
 
-    severities = {n: {} for n in range(1, 6)}
+    severities = {}
     for device, datos in device_dict.items():
         disc_cameras = sum(
             [mins > 0 for cam, mins in output_cameras["ten_minutes"][device].items()])
@@ -219,17 +219,17 @@ def process_driving_data(response):
 
         conditions = [
             # (Condition, Status, Severity Key, Description)
-            (datos.get("Estatus") == "red", 5, 1, "Sin comunicación reciente"),
-            (output_gx["ten_minutes"][device]["restarting_loop"]
-             and datos.get("En_viaje"), 5, 3, "Múltiples restarts"),
             (output_gx["hour"][device]["read_only_ssd"]
              > 0, 5, 4, "Read only SSD"),
-            (output_gx["hour"][device]["forced_reboot"]
-             > 5, 5, 5, "forced reboot (>1)"),
-            (datos.get("Jsons_eventos_pendientes") > 100 or datos.get(
-                "Jsons_status_pendientes") > 1000, 5, 6, "Demasiados logs pendientes"),
             (datos.get("En_viaje") and disc_cameras ==
              3, 5, 7, "Tres cámaras fallando"),
+            (output_gx["ten_minutes"][device]["restarting_loop"]
+             and datos.get("En_viaje"), 5, 3, "Múltiples restarts"),
+            (output_gx["hour"][device]["forced_reboot"]
+             > 5, 5, 5, "forced reboot (>1)"),
+            (datos.get("Estatus") == "red", 5, 1, "Sin comunicación reciente"),
+            (datos.get("Jsons_eventos_pendientes") > 100 or datos.get(
+                "Jsons_status_pendientes") > 1000, 5, 6, "Demasiados logs pendientes"),
             (datos.get("En_viaje") and disc_cameras in {
              1, 2}, 4, 1, "1-2 cámaras fallando"),
             (output_gx["ten_minutes"][device]["restarting_loop"]
@@ -256,25 +256,15 @@ def process_driving_data(response):
 
         for condition, level, rule, rule_des in conditions:
             if condition:
-                if level in severities:
-                    if rule_des in severities[level]:
-                        severities[level][rule_des].add(device)
-                    else:
-                        severities[level][rule_des] = set([device])
+                new_status = {"severity": level, "description": rule_des}
+                if device not in severities:
+                    severities[device] = [new_status]
                 else:
-                    severities[level] = {rule_des: set([device])}
+                    severities[device].append(new_status)
 
-    units_left = set(device_dict.keys())
-
-    for level, rules in severities.items():
-        for rule, devices in rules.items():
-            units_left -= devices
-
-    for unit in units_left:
-        if 0 not in severities:
-            severities[0] = {"Inactivo": set([unit])}
-        else:
-            severities[0]["Inactivo"].add(unit)
+    for device in device_dict.keys():
+        if device not in severities:
+            severities[device] = [{"severity": 0, "description": "Inactivo"}]
 
     return {"gx": output_gx,
             "cameras": output_cameras,
@@ -314,7 +304,7 @@ def update_driving_status():
 
             data = processed_data["gx"]
             camera_data = processed_data["cameras"]
-            units_status = processed_data["severities"]
+            all_units_status = processed_data["severities"]
             alerts = processed_data["alerts"]
 
             def set_default(obj):
@@ -353,14 +343,28 @@ def update_driving_status():
                 unit_logs["En_viaje"] = None
                 unit_logs["Estatus"] = None
 
+            # Obtener objeto Unit
+            unit_args = {
+                'name': unit,
+                'client': client
+            }
+            unit_obj = get_or_create_unit(unit_args)
+
             # Si una unidad entró en más de un nivel, tomar el más grave
-            # Si cumple con dos reglas en un nivel, se toma la última (arreglar)
-            for level in range(6):
-                rules = units_status[level]
-                for condition, units in rules.items():
-                    if unit in units:
-                        status = level
-                        description = condition
+            unit_status = all_units_status[unit]
+
+            most_severe = max(unit_status, key=lambda x: x["severity"])
+            status = most_severe["severity"]
+            description = most_severe["description"]
+
+            priority = False
+            if description.startswith("Sin comunicación") or description == "Inactivo":
+                last_active_status = get_unit_last_active_status(
+                    {"unit_id": unit_obj.id})
+                if last_active_status:
+                    if last_active_status.status.description == "Read only SSD":
+                        status = 5
+                        priority = True
 
             # Obtener objeto GxStatus
             status_args = {
@@ -368,14 +372,9 @@ def update_driving_status():
                 'description': description,
                 'deployment': deployment
             }
+            if priority:
+                status_args["priority"] = True
             status_obj = get_or_create_gxstatus(status_args)
-
-            # Obtener objeto Unit
-            unit_args = {
-                'name': unit,
-                'client': client
-            }
-            unit_obj = get_or_create_unit(unit_args)
 
             if unit in alerts:
                 for alert in alerts[unit]:

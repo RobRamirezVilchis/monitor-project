@@ -27,6 +27,7 @@ class UnitStatusList(APIView):
         on_trip = serializers.BooleanField()
         severity = serializers.IntegerField(source='status.severity')
         description = serializers.CharField(source='status.description')
+        priority = serializers.BooleanField(source='status.priority')
         last_connection = serializers.DateTimeField()
         pending_events = serializers.IntegerField()
         pending_status = serializers.IntegerField()
@@ -43,13 +44,9 @@ class UnitStatusList(APIView):
             return other.obj < self.obj
 
     def get(self, request, *args, **kwargs):
-        import time
         devices = unitstatus_list()
-        start = time.time()
         sorted_units = sorted(
             devices, key=lambda x: (x.status.priority, x.status.severity), reverse=True)
-
-        diff = time.time() - start
 
         data = self.OutputSerializer(sorted_units, many=True).data
 
@@ -325,12 +322,9 @@ class UnitLastActiveStatus(APIView):
         description = serializers.CharField(source='status.description')
 
     def get(self, request, unit_id, *args, **kwargs):
-        histories = UnitHistory.objects.filter(unit_id=unit_id).exclude(
-            Q(status__description="Inactivo") |
-            Q(status__description="Sin comunicación reciente") |
-            Q(status__description="Sin comunicación reciente (< 1 día)")).order_by('-register_datetime').first()
+        last_status = get_unit_last_active_status({"unit_id": unit_id})
 
-        data = self.OutputSerializer(histories).data
+        data = self.OutputSerializer(last_status).data
 
         return Response(data)
 

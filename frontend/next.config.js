@@ -28,6 +28,7 @@ const nextConfig = {
       "@mantine/dates",
       "@tabler/icons-react",
     ],
+    scrollRestoration: true,
   },
 }
 

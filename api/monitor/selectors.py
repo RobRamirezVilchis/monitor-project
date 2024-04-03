@@ -1,5 +1,6 @@
 from .models import *
 from django_filters import rest_framework as rf_filters
+from django.db.models import Q
 
 
 def unitstatus_list():
@@ -79,11 +80,9 @@ def get_or_create_client(args):
 
 
 def get_or_create_gxstatus(args):
-    status_obj, created = GxStatus.objects.get_or_create(
-        description=args['description'],
-        severity=args['severity'],
-        deployment=args['deployment']
-    )
+
+    status_obj, created = GxStatus.objects.get_or_create(**args)
+
     return status_obj
 
 
@@ -232,12 +231,10 @@ def get_or_create_alerttype(args):
     return alert_type
 
 
-def create_alert(args):
-    alert = Alert.objects.create(
-        alert_type=args["alert_type"],
-        gx=args["gx"],
-        register_date=args["register_date"],
-        register_datetime=args["register_datetime"]
-    )
+def get_unit_last_active_status(args):
+    last_status = UnitHistory.objects.filter(unit_id=args["unit_id"]).exclude(
+        Q(status__description="Inactivo") |
+        Q(status__description="Sin comunicación reciente") |
+        Q(status__description="Sin comunicación reciente (< 1 día)")).order_by('-register_datetime').first()
 
-    return alert
+    return last_status
