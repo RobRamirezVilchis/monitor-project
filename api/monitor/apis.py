@@ -123,6 +123,7 @@ class UnitHistoryList(APIView):
         register_datetime_before = serializers.DateTimeField(required=False)
         sort = serializers.CharField(required=False)
         description = serializers.CharField(required=False)
+        on_trip = serializers.BooleanField(required=False)
 
     class OutputSerializer(serializers.Serializer):
         unit = serializers.CharField()

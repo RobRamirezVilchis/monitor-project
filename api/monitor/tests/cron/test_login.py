@@ -14,3 +14,8 @@ class LoginTests(TestCase):
         token = login(client=client, credentials=credentials)
 
         self.assertIsNotNone(token)
+
+
+class DataProcessingTests(TestCase):
+    def setUp(self) -> None:
+        return super().setUp()

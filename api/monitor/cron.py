@@ -50,6 +50,8 @@ def make_request(interval, token):
     return r, r.status_code
 
 
+# Safe Driving
+
 def get_driving_data(client):
     global login_url
     global request_url
@@ -82,6 +84,13 @@ def get_driving_data(client):
     else:
         print(f"Status code: {status}")
         return
+
+    return response
+
+
+def process_driving_data(response):
+    now = datetime.now(tz=pytz.timezone('UTC')).astimezone(pytz.timezone(
+        'America/Mexico_City')).replace(tzinfo=pytz.utc)
 
     logs = response["logs"]
     devices = response["devices"]
@@ -200,7 +209,6 @@ def get_driving_data(client):
 
     severities = {n: {} for n in range(1, 6)}
     for device, datos in device_dict.items():
-        status = 0
         disc_cameras = sum(
             [mins > 0 for cam, mins in output_cameras["ten_minutes"][device].items()])
         if datos["Ultima_actualizacion"] != 'null':
@@ -268,7 +276,10 @@ def get_driving_data(client):
         else:
             severities[0]["Inactivo"].add(unit)
 
-    return output_gx, output_cameras, severities, alerts
+    return {"gx": output_gx,
+            "cameras": output_cameras,
+            "severities": severities,
+            "alerts": alerts}
 
     '''
     for i in range(len(past_logs)):
@@ -288,184 +299,6 @@ def get_driving_data(client):
     '''
 
 
-def get_industry_data(client):
-    global login_url
-    global request_url
-
-    login_url = f'https://{client}.industry.aivat.io/login/'
-    request_url = f'https://{client}.industry.aivat.io/stats_json/'
-
-    credentials = get_credentials(client)
-
-    try:
-        token = login(client, credentials)
-    except requests.exceptions.ConnectionError:
-        print("Connection error")
-        return
-
-    now = datetime.utcnow().astimezone(pytz.timezone(
-        'America/Mexico_City')).replace(tzinfo=pytz.utc)
-    time_interval = {
-        "initial_datetime": (now - timedelta(hours=1, minutes=10)).isoformat(timespec="seconds")
-    }
-
-    response, status = make_request(time_interval, token)
-    if status == 401:
-        token = login(client, credentials)
-        response, status = make_request(time_interval, token)
-
-    if status == 200 or status == 201:
-        response = response.json()
-    else:
-        print(f"Status code: {status}")
-        return
-
-    fields = {"batch_dropping": 0,
-              "camera_connection": timedelta(0),
-              "restart": 0,
-              "license": 0,
-              "shift_change": 0,
-              "others": 0,
-              "delayed": False,
-              "delay_time": timedelta(0)}
-
-    output_gx = {
-        "hour": fields.copy(),
-        "ten_minutes": fields.copy(),
-        "first_log_time": None,
-        "last_connection": None,
-        "status": 1,
-    }
-    output_cameras = {}
-
-    log_types = {"batch_dropping": "Batch dropping",
-                 "restart": "Restarting",
-                 "license": "[LICENSE]",
-                 "shift_change": "SRC"}
-
-    days_remaining = None
-    license_end = None
-
-    alerts = set()
-
-    for device, logs in response.items():
-        output_camera = {k: {"connected": True, "disconnection_time": timedelta(0)}
-                         for k in ["hour", "ten_minutes"]}
-
-        if device.startswith("GX"):
-            last_log = logs[0]
-            last_log_date = datetime.fromisoformat(last_log["register_time"][:-1]).astimezone(
-                pytz.timezone('America/Mexico_City')).replace(tzinfo=pytz.utc)
-            output_gx["last_connection"] = last_log_date
-
-            for log in logs:
-                register_time = datetime.fromisoformat(
-                    log["register_time"][:-1]).replace(tzinfo=pytz.utc)
-                log_time = datetime.fromisoformat(f'{log["log_date"]}T{log["log_time"]}').replace(
-                    tzinfo=pytz.utc) + timedelta(hours=6)
-
-                alert_conditions = {
-                    "Problemas de Wi-Fi": (register_time - log_time >
-                                           timedelta(minutes=10))
-                }
-
-                if register_time > now - timedelta(minutes=10):
-                    intervals = ["hour", "ten_minutes"]
-
-                    first_log_time = datetime.fromisoformat(log["register_time"][:-1]).astimezone(
-                        pytz.timezone('America/Mexico_City')).replace(tzinfo=pytz.utc)
-                    output_gx["first_log_time"] = first_log_time
-
-                    for description, cond in alert_conditions.items():
-                        if cond:
-                            alerts.add(description)
-                else:
-                    intervals = ["hour"]
-
-                if log["log"] != "":
-                    found_category = False
-                    for name, start in log_types.items():
-                        if log["log"].startswith(start):
-
-                            for interval in intervals:
-                                output_gx[interval][name] += 1
-                            found_category = True
-
-                            if start == "[LICENSE]":
-                                days_remaining = int(log["log"].split()[-2])
-                                date, time = log["log"].split("until")[
-                                    1].split()
-                                license_end = datetime.fromisoformat(
-                                    f'{date}T{time[:-1]}')
-
-                    if not found_category:
-                        for interval in intervals:
-                            output_gx[interval]["others"] += 1
-
-            last_register_time = datetime.fromisoformat(
-                logs[0]["register_time"][:-1])
-            try:
-                penul_register_time = datetime.fromisoformat(
-                    logs[1]["register_time"][:-1])
-            except IndexError:  # Si sólo hubo un log en la última hora, tomar el tiempo del penúltimo como hace una hora
-                penul_register_time = now - timedelta(hours=1)
-                last_register_time = last_register_time.astimezone(
-                    pytz.timezone('America/Mexico_City')).replace(tzinfo=pytz.utc)
-
-            time_since_log = now - last_register_time.astimezone(
-                pytz.timezone('America/Mexico_City')).replace(tzinfo=pytz.utc)
-            prev_time_gap = last_register_time - penul_register_time
-
-            delay_time = timedelta(0)
-            delay_found = False
-            # Si hay un restraso en este momento
-            if time_since_log > timedelta(minutes=11):
-                delay_time = time_since_log - timedelta(minutes=10)
-                delay_found = True
-
-            # Si hubo un retraso entre el último y el penúltimo
-            elif prev_time_gap > timedelta(minutes=11):
-                delay_time = prev_time_gap - timedelta(minutes=10)
-                delay_found = True
-
-            for interval in intervals:
-                output_gx[interval]["delayed"] = delay_found
-                output_gx[interval]["delay_time"] = delay_time
-
-        else:
-            if device not in output_cameras:
-                output_cameras[device] = output_camera.copy()
-
-            for log in logs:
-                register_time = datetime.fromisoformat(log["register_time"][:-1]).astimezone(
-                    pytz.timezone('America/Mexico_City')).replace(tzinfo=pytz.utc)
-
-                if register_time > now - timedelta(minutes=10):
-                    intervals = ["hour", "ten_minutes"]
-                else:
-                    intervals = ["hour"]
-
-                if log["log"].startswith("Desconectada"):
-                    for interval in intervals:
-
-                        output_cameras[device][interval]["disconnection_time"] += timedelta(
-                            minutes=2)
-                        output_gx[interval]["camera_connection"] += timedelta(
-                            minutes=2)
-
-            last_log = logs[0]
-            if last_log['log'].startswith("Cámara") or last_log['log'].startswith("Desconectada"):
-                last_register_time = datetime.fromisoformat(last_log["register_time"][:-1]).astimezone(
-                    pytz.timezone('America/Mexico_City')).replace(tzinfo=pytz.utc)
-
-                intervals = ["hour", "ten_minutes"]
-
-                for interval in intervals:
-                    output_cameras[device][interval]["connected"] = False
-
-    return output_gx, output_cameras, days_remaining, license_end, alerts
-
-
 def update_driving_status():
     clients = {"tp": "Transpais",
                "cemex": "Cemex Concretos"}
@@ -473,20 +306,33 @@ def update_driving_status():
     deployment = get_deployment('Safe Driving')
 
     for client_alias, client_name in clients.items():
-        output = get_driving_data(client_alias)
-        if output:
-            data, camera_data, units_status, alerts = output
+
+        response = get_driving_data(client_alias)
+        if response is not None:
+
+            processed_data = process_driving_data(response)
+
+            data = processed_data["gx"]
+            camera_data = processed_data["cameras"]
+            units_status = processed_data["severities"]
+            alerts = processed_data["alerts"]
+
+            import json
+
+            def set_default(obj):
+                if isinstance(obj, set):
+                    return list(obj)
+                raise TypeError
+
+            with open(f'/home/spare/Documents/monitor/monitor-project/api/monitor/{client_alias}_driving_process_input.json', "w") as f:
+                json.dump(response, f, ensure_ascii=False)
+            with open(f'/home/spare/Documents/monitor/monitor-project/api/monitor/{client_alias}_driving_process_output.json', "w") as f:
+                print(type(processed_data))
+                json.dump(processed_data, f, ensure_ascii=False,
+                          default=set_default)
+
         else:
             print(f"No data for {client_name}")
-
-        if not output:
-            output = get_driving_data(client_alias)
-
-            if output:
-                data, camera_data, units_status, alerts = output
-            else:
-                print(f"No data for {client_name}")
-                continue
 
         hour_data = data["hour"]
         recent_data = data["ten_minutes"]
@@ -651,6 +497,193 @@ def update_driving_status():
         bulk_create_unithistory(history_logs)
 
 
+# Industry
+
+def get_industry_data(client):
+    global login_url
+    global request_url
+
+    login_url = f'https://{client}.industry.aivat.io/login/'
+    request_url = f'https://{client}.industry.aivat.io/stats_json/'
+
+    credentials = get_credentials(client)
+
+    try:
+        token = login(client, credentials)
+    except requests.exceptions.ConnectionError:
+        print("Connection error")
+        return
+
+    now = datetime.utcnow().astimezone(pytz.timezone(
+        'America/Mexico_City')).replace(tzinfo=pytz.utc)
+    time_interval = {
+        "initial_datetime": (now - timedelta(hours=1, minutes=10)).isoformat(timespec="seconds")
+    }
+
+    response, status = make_request(time_interval, token)
+    if not (status == 200 or status == 201):
+        token = login(client, credentials)
+        response, status = make_request(time_interval, token)
+
+    if status == 200 or status == 201:
+        response = response.json()
+    else:
+        print(f"Status code: {status}")
+        return
+
+    return response
+
+
+def process_industry_data(response):
+    now = datetime.utcnow().astimezone(pytz.timezone(
+        'America/Mexico_City')).replace(tzinfo=pytz.utc)
+
+    fields = {"batch_dropping": 0,
+              "camera_connection": timedelta(0),
+              "restart": 0,
+              "license": 0,
+              "shift_change": 0,
+              "others": 0,
+              "delayed": False,
+              "delay_time": timedelta(0)}
+
+    output_gx = {
+        "hour": fields.copy(),
+        "ten_minutes": fields.copy(),
+        "first_log_time": None,
+        "last_connection": None,
+        "status": 1,
+    }
+    output_cameras = {}
+
+    log_types = {"batch_dropping": "Batch dropping",
+                 "restart": "Restarting",
+                 "license": "[LICENSE]",
+                 "shift_change": "SRC"}
+
+    days_remaining = None
+    license_end = None
+
+    alerts = set()
+
+    for device, logs in response.items():
+        output_camera = {k: {"connected": True, "disconnection_time": timedelta(0)}
+                         for k in ["hour", "ten_minutes"]}
+
+        if device.startswith("GX"):
+            last_log = logs[0]
+            last_log_date = datetime.fromisoformat(last_log["register_time"][:-1]).astimezone(
+                pytz.timezone('America/Mexico_City')).replace(tzinfo=pytz.utc)
+            output_gx["last_connection"] = last_log_date
+
+            for log in logs:
+                register_time = datetime.fromisoformat(
+                    log["register_time"][:-1]).replace(tzinfo=pytz.utc)
+                log_time = datetime.fromisoformat(f'{log["log_date"]}T{log["log_time"]}').replace(
+                    tzinfo=pytz.utc) + timedelta(hours=6)
+
+                alert_conditions = {
+                    "Problemas de Wi-Fi": (register_time - log_time >
+                                           timedelta(minutes=10))
+                }
+
+                if register_time > now - timedelta(minutes=10):
+                    intervals = ["hour", "ten_minutes"]
+
+                    first_log_time = datetime.fromisoformat(log["register_time"][:-1]).astimezone(
+                        pytz.timezone('America/Mexico_City')).replace(tzinfo=pytz.utc)
+                    output_gx["first_log_time"] = first_log_time
+
+                    for description, cond in alert_conditions.items():
+                        if cond:
+                            alerts.add(description)
+                else:
+                    intervals = ["hour"]
+
+                if log["log"] != "":
+                    found_category = False
+                    for name, start in log_types.items():
+                        if log["log"].startswith(start):
+
+                            for interval in intervals:
+                                output_gx[interval][name] += 1
+                            found_category = True
+
+                            if start == "[LICENSE]":
+                                days_remaining = int(log["log"].split()[-2])
+                                date, time = log["log"].split("until")[
+                                    1].split()
+                                license_end = datetime.fromisoformat(
+                                    f'{date}T{time[:-1]}')
+
+                    if not found_category:
+                        for interval in intervals:
+                            output_gx[interval]["others"] += 1
+
+            last_register_time = datetime.fromisoformat(
+                logs[0]["register_time"][:-1])
+            try:
+                penul_register_time = datetime.fromisoformat(
+                    logs[1]["register_time"][:-1])
+            except IndexError:  # Si sólo hubo un log en la última hora, tomar el tiempo del penúltimo como hace una hora
+                penul_register_time = now - timedelta(hours=1)
+                last_register_time = last_register_time.astimezone(
+                    pytz.timezone('America/Mexico_City')).replace(tzinfo=pytz.utc)
+
+            time_since_log = now - last_register_time.astimezone(
+                pytz.timezone('America/Mexico_City')).replace(tzinfo=pytz.utc)
+            prev_time_gap = last_register_time - penul_register_time
+
+            delay_time = timedelta(0)
+            delay_found = False
+            # Si hay un restraso en este momento
+            if time_since_log > timedelta(minutes=11):
+                delay_time = time_since_log - timedelta(minutes=10)
+                delay_found = True
+
+            # Si hubo un retraso entre el último y el penúltimo
+            elif prev_time_gap > timedelta(minutes=11):
+                delay_time = prev_time_gap - timedelta(minutes=10)
+                delay_found = True
+
+            for interval in intervals:
+                output_gx[interval]["delayed"] = delay_found
+                output_gx[interval]["delay_time"] = delay_time
+
+        else:
+            if device not in output_cameras:
+                output_cameras[device] = output_camera.copy()
+
+            for log in logs:
+                register_time = datetime.fromisoformat(log["register_time"][:-1]).astimezone(
+                    pytz.timezone('America/Mexico_City')).replace(tzinfo=pytz.utc)
+
+                if register_time > now - timedelta(minutes=10):
+                    intervals = ["hour", "ten_minutes"]
+                else:
+                    intervals = ["hour"]
+
+                if log["log"].startswith("Desconectada"):
+                    for interval in intervals:
+
+                        output_cameras[device][interval]["disconnection_time"] += timedelta(
+                            minutes=2)
+                        output_gx[interval]["camera_connection"] += timedelta(
+                            minutes=2)
+
+            last_log = logs[0]
+            if last_log['log'].startswith("Cámara") or last_log['log'].startswith("Desconectada"):
+                last_register_time = datetime.fromisoformat(last_log["register_time"][:-1]).astimezone(
+                    pytz.timezone('America/Mexico_City')).replace(tzinfo=pytz.utc)
+
+                intervals = ["hour", "ten_minutes"]
+
+                for interval in intervals:
+                    output_cameras[device][interval]["connected"] = False
+
+    return output_gx, output_cameras, days_remaining, license_end, alerts
+
+
 def update_industry_status():
     clients = {
         "rgs": "Ragasa",
@@ -662,14 +695,15 @@ def update_industry_status():
     deployment = get_deployment('Industry')
 
     for client_alias, client_name in clients.items():
-        output = get_industry_data(client_alias)
+        response = get_industry_data(client_alias)
 
-        if output:
-            gx_data, camera_data, days_remaining, license_end, alerts = get_industry_data(
-                client_alias)
+        if response is not None:
+            processed_data = process_industry_data(response)
         else:
             print(f"No data for {client_name}")
-            return
+            continue
+
+        gx_data, camera_data, days_remaining, license_end, alerts = processed_data
 
         hour_data = gx_data["hour"]
         recent_data = gx_data["ten_minutes"]

@@ -115,6 +115,7 @@ class UnitHistoryFilter(rf_filters.FilterSet):
     register_datetime = rf_filters.DateTimeFromToRangeFilter()
     description = rf_filters.CharFilter(
         field_name='status__description', lookup_expr="icontains")
+    on_trip = rf_filters.BooleanFilter(field_name='on_trip')
     sort = rf_filters.OrderingFilter(
         fields=(
             'register_datetime',

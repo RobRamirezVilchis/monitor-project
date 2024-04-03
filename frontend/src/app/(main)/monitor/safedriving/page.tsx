@@ -47,7 +47,7 @@ const statusColors: { [key in StatusKey]: string } = {
   0: "gray",
   1: "blue",
   2: "green",
-  3: "yellow",
+  3: "yellow.5",
   4: "orange",
   5: "red",
 };
@@ -86,20 +86,6 @@ const SafeDrivingPage = () => {
   const clients = clientsQuery.data?.map((data) => data.name);
 
   const unitsData = unitsStatusQuery.data;
-
-  const data = [];
-
-  if (countQuery.data) {
-    for (const level of countQuery?.data) {
-      if (level["severity"] != 0) {
-        data.push({
-          name: statusNames[level["severity"] as StatusKey],
-          value: level["count"],
-          color: statusColors[level["severity"] as StatusKey],
-        });
-      }
-    }
-  }
 
   const severityCountDict: { [key in StatusKey]: number } = {
     5: 0,

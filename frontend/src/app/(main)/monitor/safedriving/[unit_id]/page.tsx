@@ -232,6 +232,7 @@ const cols: ColumnDef<UnitHistory>[] = [
     columnTitle: "Viaje",
     size: 100,
     enableSorting: true,
+    filterVariant: "checkbox",
   },
   {
     accessorKey: "pending_events",

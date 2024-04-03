@@ -34,7 +34,7 @@ const statusColors: { [key in StatusKey]: string } = {
   0: "gray",
   1: "blue",
   2: "green",
-  3: "yellow",
+  3: "yellow.5",
   4: "orange",
   5: "red",
 };
