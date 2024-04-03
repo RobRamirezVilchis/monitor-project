@@ -243,7 +243,7 @@ def process_driving_data(response):
             (100 > datos.get("Jsons_eventos_pendientes") >
              20 or datos.get("Jsons_status_pendientes") > 100, 3, 2, "Muchos logs pendientes"),
             (output_gx["hour"][device]["total"]
-             > 10, 3, 3, "Más de 10 mensajes	"),
+             > 10, 3, 3, "Más de 10 mensajes"),
             (datos.get("Estatus") == "green" and (
                 output_gx["hour"][device]["Aux"] == 0 or output_gx["hour"][device]["Ignición"] == 0), 2, 1, "Sin AUX ni Ignición"),
             (last_connection and not datos.get("En_viaje")
@@ -317,7 +317,6 @@ def update_driving_status():
             units_status = processed_data["severities"]
             alerts = processed_data["alerts"]
 
-
             def set_default(obj):
                 if isinstance(obj, set):
                     return list(obj)
@@ -333,6 +332,7 @@ def update_driving_status():
 
         else:
             print(f"No data for {client_name}")
+            continue
 
         hour_data = data["hour"]
         recent_data = data["ten_minutes"]
