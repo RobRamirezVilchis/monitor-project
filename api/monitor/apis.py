@@ -125,6 +125,19 @@ class UnitHistoryList(APIView):
         description = serializers.CharField(required=False)
         on_trip = serializers.BooleanField(required=False)
 
+        def __init__(self, *args, **kwargs):
+            super().__init__(*args, **kwargs)
+
+            # Check if 'data' is in kwargs and if 'on_trip' key is not present in the incoming data
+            if 'data' in kwargs:
+                incoming_data = kwargs['data']
+                # If incoming_data is a QueryDict (as in a typical request object), convert it to a standard dict
+                if hasattr(incoming_data, 'dict'):
+                    incoming_data = incoming_data.dict()
+                if 'on_trip' not in incoming_data:
+                    # If 'on_trip' is not in the incoming data, remove it from the serializer fields
+                    self.fields.pop('on_trip')
+
     class OutputSerializer(serializers.Serializer):
         unit = serializers.CharField()
         register_datetime = serializers.DateTimeField()
