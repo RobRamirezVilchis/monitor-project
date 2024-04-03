@@ -82,4 +82,11 @@ urlpatterns = [
              path("", apis.CameraDisconnectionsList.as_view(), name="list"),
          ], "industry-disconnections"))
          ),
+
+    # Last active status
+    path("driving-status/last-active-status/<int:unit_id>/",
+         include(([
+             path("", apis.UnitLastActiveStatus.as_view(), name="status"),
+         ], "unit-last_active-status"))
+         ),
 ]

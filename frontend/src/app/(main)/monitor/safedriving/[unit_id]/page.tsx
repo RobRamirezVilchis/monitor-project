@@ -2,6 +2,7 @@
 
 import {
   useUnitHistoryQuery,
+  useUnitLastActiveStatus,
   useUnitLastStatusChange,
   useUnitStatusQuery,
 } from "@/api/queries/monitor";
@@ -73,6 +74,10 @@ const UnitPage = ({ params }: { params: { unit_id: string } }) => {
   });
 
   const unitStatus = unitStatusQuery.data;
+  const inactive =
+    unitStatus?.description == "Inactivo" ||
+    unitStatus?.description == "Sin comunicación reciente" ||
+    unitStatus?.description == "Sin comunicación reciente (< 1 día)";
 
   const historyQuery = useUnitHistoryQuery({
     variables: {
@@ -82,6 +87,12 @@ const UnitPage = ({ params }: { params: { unit_id: string } }) => {
   });
 
   const unitLastStatusChange = useUnitLastStatusChange({
+    variables: {
+      unit_id: params.unit_id,
+    },
+  });
+
+  const unitLastActiveStatus = useUnitLastActiveStatus({
     variables: {
       unit_id: params.unit_id,
     },
@@ -158,6 +169,13 @@ const UnitPage = ({ params }: { params: { unit_id: string } }) => {
       </div>
 
       <div>
+        {inactive && unitLastActiveStatus.data && (
+          <p className="text-xl text-gray-500">
+            Último estátus activo:{" "}
+            {statusNames[unitLastActiveStatus?.data.severity as StatusKey]} -{" "}
+            {unitLastActiveStatus?.data.description}
+          </p>
+        )}
         {unitStatus && (
           <div className="text-xl text-gray-500">
             {unitStatus.last_connection && (

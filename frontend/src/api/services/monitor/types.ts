@@ -95,6 +95,11 @@ export interface LastStatusChange {
   register_datetime: string;
 }
 
+export interface LastActiveStatus {
+  severity: number,
+  description: string,
+}
+
 
 export interface UnitFilters extends Partial<PageNumberPaginationParams>{
   unit_id: string;

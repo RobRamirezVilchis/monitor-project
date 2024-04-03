@@ -1,4 +1,4 @@
-import { UnitStatus, SeverityCount, UnitHistory, DeviceStatus, UnitFilters, LastStatusChange, DeviceFilters, DeviceHistory, Client, CameraDisconnection } from "./types";
+import { UnitStatus, SeverityCount, UnitHistory, DeviceStatus, UnitFilters, LastStatusChange, DeviceFilters, DeviceHistory, Client, CameraDisconnection, LastActiveStatus } from "./types";
 import { Id, Paginated } from "@/api/types";
 import { Role, User } from "../auth/types";
 import api from "../..";
@@ -87,7 +87,7 @@ export async function getUnitHistory(
 }
 
 
-export async function getLastUnitStatusChange(
+export async function getUnitLastStatusChange(
   filters: UnitFilters,
   config?: Parameters<typeof http.get>[1]
 ) {
@@ -105,13 +105,14 @@ export async function getLastUnitStatusChange(
   }
 }
 
-export async function getLastDeviceStatusChange(
-  filters: DeviceFilters,
+
+export async function getUnitLastActiveStatus(
+  filters: UnitFilters,
   config?: Parameters<typeof http.get>[1]
 ) {
   try {
-    const resp = await http.get<LastStatusChange>(
-      api.endpoints.monitor.industry.lastStatusChange(filters.device_id),
+    const resp = await http.get<LastActiveStatus>(
+      api.endpoints.monitor.driving.lastActiveStatus(filters.unit_id),
       {
         params: filters,
         ...config,
@@ -122,6 +123,7 @@ export async function getLastDeviceStatusChange(
     throw error;
   }
 }
+
 
 // Industry API ----------------------------------------------------------
 
@@ -196,6 +198,24 @@ export async function getIndustrySeverityCount(config?: Parameters<typeof http.g
     const resp = await http.get<SeverityCount[]>(
       api.endpoints.monitor.industry.severityCount,
       {
+        ...config,
+      }
+    );
+    return resp.data;
+  } catch (error) {
+    throw error;
+  }
+}
+
+export async function getDeviceLastStatusChange(
+  filters: DeviceFilters,
+  config?: Parameters<typeof http.get>[1]
+) {
+  try {
+    const resp = await http.get<LastStatusChange>(
+      api.endpoints.monitor.industry.lastStatusChange(filters.device_id),
+      {
+        params: filters,
         ...config,
       }
     );

@@ -51,19 +51,20 @@ const api = {
       driving: {
         clients: "api/v1/monitor/driving/clients/",
         status: "api/v1/monitor/driving-status/",
+        severityCount: "api/v1/monitor/driving-status-count/",
         lastStatusChange: (unit_id: UnitId) => `api/v1/monitor/driving-status/last-status-change/${unit_id}/`,
+        lastActiveStatus: (unit_id: UnitId) => `api/v1/monitor/driving-status/last-active-status/${unit_id}/`,
         unitStatus: (unit_id: UnitId) => `api/v1/monitor/driving-status/${unit_id}/`,
         unitHistory: (unit_id: UnitId) => `api/v1/monitor/driving-status/history/${unit_id}/`,
-        severityCount: "api/v1/monitor/driving-status-count/"
       },
       industry: {
         clients: "api/v1/monitor/industry/clients/",
         status: "api/v1/monitor/industry-status/",
-        lastStatusChange: (unit_id: UnitId) => `api/v1/monitor/industry-status/last-status-change/${unit_id}/`,
+        severityCount: "api/v1/monitor/industry-status-count/",
+        lastStatusChange: (device_id: DeviceId) => `api/v1/monitor/industry-status/last-status-change/${device_id}/`,
         deviceStatus: (device_id: DeviceId) => `api/v1/monitor/industry-status/${device_id}/`,
         deviceHistory: (device_id: DeviceId) => `api/v1/monitor/industry-status/history/${device_id}/`,
-        severityCount: "api/v1/monitor/industry-status-count/",
-        cameraDisconnections: (device_id: DeviceId) => `api/v1/monitor/industry/camera_disconnections/${device_id}/`
+        cameraDisconnections: (device_id: DeviceId) => `api/v1/monitor/industry/camera_disconnections/${device_id}/`,
       }
     }
   },

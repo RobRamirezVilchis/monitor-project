@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from django.db.models import Count, F, Window
+from django.db.models import Count, F, Window, Q
 from django.db.models.functions import Lead
 from django_filters.rest_framework import DjangoFilterBackend
 
@@ -317,6 +317,22 @@ class DeviceStatusTime(APIView):
             last_change = severity_changes[0]
             output = self.OutputSerializer(last_change).data
             return Response(output)
+
+
+class UnitLastActiveStatus(APIView):
+    class OutputSerializer(serializers.Serializer):
+        severity = serializers.IntegerField(source='status.severity')
+        description = serializers.CharField(source='status.description')
+
+    def get(self, request, unit_id, *args, **kwargs):
+        histories = UnitHistory.objects.filter(unit_id=unit_id).exclude(
+            Q(status__description="Inactivo") |
+            Q(status__description="Sin comunicación reciente") |
+            Q(status__description="Sin comunicación reciente (< 1 día)")).order_by('-register_datetime').first()
+
+        data = self.OutputSerializer(histories).data
+
+        return Response(data)
 
 
 class UnitStatusAPI(APIView):

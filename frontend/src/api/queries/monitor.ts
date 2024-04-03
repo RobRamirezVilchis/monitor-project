@@ -1,5 +1,5 @@
 import { createQuery } from "../helpers/createQuery";
-import { getUnits, getDevices, getUnitHistory, getDrivingSeverityCount, getLastUnitStatusChange, getDeviceHistory, getIndustrySeverityCount, getUnitStatus, getDeviceStatus, getSafeDrivingClients, getIndustryClients, getLastDeviceStatusChange, getIndustryCameraDisconnections } from "../services/monitor";
+import { getUnits, getDevices, getUnitHistory, getDrivingSeverityCount, getUnitLastStatusChange, getDeviceHistory, getIndustrySeverityCount, getUnitStatus, getDeviceStatus, getSafeDrivingClients, getIndustryClients, getDeviceLastStatusChange, getIndustryCameraDisconnections, getUnitLastActiveStatus } from "../services/monitor";
 import { DeviceFilters, UnitFilters } from "../services/monitor/types";
 import defaultQueryClient from "../clients/defaultQueryClient";
 
@@ -54,22 +54,13 @@ export const useDrivingSeverityCount = createQuery({
 export const useUnitLastStatusChange = createQuery({
   queryPrimaryKey: "last_status_change",
   queryKeyVariables: (vars: UnitFilters) => vars ? [vars] : [],
-  queryFn: (ctx, vars) => getLastUnitStatusChange(vars, { signal: ctx.signal }),
+  queryFn: (ctx, vars) => getUnitLastStatusChange(vars, { signal: ctx.signal }),
   cacheTime: 1000 * 60 * 5,  // 5 minutes
   staleTime: 1000 * 60 * 3,  // 3 minutes
   keepPreviousData: true,
   queryClient: defaultQueryClient,
 });
 
-export const useDeviceLastStatusChange = createQuery({
-  queryPrimaryKey: "last_status_change",
-  queryKeyVariables: (vars: DeviceFilters) => vars ? [vars] : [],
-  queryFn: (ctx, vars) => getLastDeviceStatusChange(vars, { signal: ctx.signal }),
-  cacheTime: 1000 * 60 * 5,  // 5 minutes
-  staleTime: 1000 * 60 * 3,  // 3 minutes
-  keepPreviousData: true,
-  queryClient: defaultQueryClient,
-});
 
 export const useSafeDrivingClientsQuery = createQuery({
   queryPrimaryKey: "safe_driving_clients",
@@ -83,6 +74,15 @@ export const useSafeDrivingClientsQuery = createQuery({
   refetchIntervalInBackground: true
 });
 
+export const useUnitLastActiveStatus = createQuery({
+  queryPrimaryKey: "last_active_status",
+  queryKeyVariables: (vars: UnitFilters) => vars ? [vars] : [],
+  queryFn: (ctx, vars) => getUnitLastActiveStatus(vars, { signal: ctx.signal }),
+  cacheTime: 1000 * 60 * 5,  // 5 minutes
+  staleTime: 1000 * 60 * 3,  // 3 minutes
+  keepPreviousData: true,
+  queryClient: defaultQueryClient,
+});
 
 // Industry API ----------------------------------------------------------
 
@@ -148,6 +148,16 @@ export const useCameraDisconnectionsQuery = createQuery({
   queryPrimaryKey: "camera_disconnections",
   queryKeyVariables: (vars: DeviceFilters) => vars ? [vars] : [],
   queryFn: (ctx, vars) => getIndustryCameraDisconnections(vars, { signal: ctx.signal }),
+  cacheTime: 1000 * 60 * 5,  // 5 minutes
+  staleTime: 1000 * 60 * 3,  // 3 minutes
+  keepPreviousData: true,
+  queryClient: defaultQueryClient,
+});
+
+export const useDeviceLastStatusChange = createQuery({
+  queryPrimaryKey: "last_status_change",
+  queryKeyVariables: (vars: DeviceFilters) => vars ? [vars] : [],
+  queryFn: (ctx, vars) => getDeviceLastStatusChange(vars, { signal: ctx.signal }),
   cacheTime: 1000 * 60 * 5,  // 5 minutes
   staleTime: 1000 * 60 * 3,  // 3 minutes
   keepPreviousData: true,
