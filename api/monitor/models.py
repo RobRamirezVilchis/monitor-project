@@ -57,7 +57,7 @@ class Device(Gx):
 
 
 class AlertType(models.Model):
-    description = models.CharField(max_length=50)
+    description = models.CharField(max_length=100)
 
     def __str__(self):
         return self.description

@@ -10,6 +10,35 @@ from datetime import datetime, timedelta
 
 import pytz
 import os
+import asyncio
+
+
+def send_telegram(message: str):
+    TELEGRAM_CHAT = os.environ.get("TELEGRAM_CHAT")
+    TELEGRAM_BOT = os.environ.get("TELEGRAM_BOT")
+
+    params = {
+        'chat_id': TELEGRAM_CHAT,
+        'text': message
+    }
+    print(f"{datetime.now()} Enviando {message}")
+
+    requests.get(
+        f'https://api.telegram.org/bot{TELEGRAM_BOT}/sendMessage',
+        params=params
+    )
+
+
+def send_alerts(alerts):
+    now = datetime.now(tz=pytz.timezone('UTC')).astimezone(pytz.timezone(
+        'America/Mexico_City')).replace(tzinfo=pytz.utc)
+    loop = asyncio.get_event_loop()
+
+    message = f"Hora: {now.time().isoformat(timespec='seconds')}\n\n"
+    for unit, descriptions in alerts.items():
+        for description in descriptions:
+            message += f'- Unidad {unit}: {description}\n'
+    send_telegram(message=message)
 
 
 def get_credentials(client):
@@ -88,9 +117,10 @@ def get_driving_data(client):
     return response
 
 
-def process_driving_data(response):
-    now = datetime.now(tz=pytz.timezone('UTC')).astimezone(pytz.timezone(
-        'America/Mexico_City')).replace(tzinfo=pytz.utc)
+def process_driving_data(response, now=None):
+    if not now:
+        now = datetime.now(tz=pytz.timezone('UTC')).astimezone(pytz.timezone(
+            'America/Mexico_City')).replace(tzinfo=pytz.utc)
 
     logs = response["logs"]
     devices = response["devices"]
@@ -144,27 +174,15 @@ def process_driving_data(response):
                                  for device, datos in device_dict.items()}
                       for interval in ["hour", "ten_minutes"]}
 
-    alerts = {}
-
     for i in range(len(logs_last_hour)):
         log = logs_last_hour.iloc[i]
         unit = log["Unidad"]
         log_type = log["Tipo"]
 
-        alert_conditions = {
-            "Read only SSD": log["Tipo"] == "read_only_ssd"
-        }
-
         recent = log["Timestamp"] > now - timedelta(minutes=10)
         if recent:
             intervals = ["hour", "ten_minutes"]
 
-            for description, cond in alert_conditions.items():
-                if cond:
-                    if unit not in alerts:
-                        alerts[unit] = set([description])
-                    else:
-                        alerts[unit].add(description)
         else:
             intervals = ["hour"]
 
@@ -208,6 +226,7 @@ def process_driving_data(response):
                         output_gx["ten_minutes"][unit]["restarting_loop"] = True
 
     severities = {}
+    alerts = {}
     for device, datos in device_dict.items():
         disc_cameras = sum(
             [mins > 0 for cam, mins in output_cameras["ten_minutes"][device].items()])
@@ -216,6 +235,18 @@ def process_driving_data(response):
                 datos["Ultima_actualizacion"]).replace(tzinfo=pytz.utc)
         else:
             last_connection = None
+
+        alert_conditions = {
+            "Read only SSD": output_gx["ten_minutes"][device]["read_only_ssd"] > 0,
+            "En viaje con tres cámaras fallando": datos.get("En_viaje") and disc_cameras == 3
+        }
+
+        for description, cond in alert_conditions.items():
+            if cond:
+                if device not in alerts:
+                    alerts[device] = set([description])
+                else:
+                    alerts[device].add(description)
 
         conditions = [
             # (Condition, Status, Severity Key, Description)
@@ -226,7 +257,7 @@ def process_driving_data(response):
             (output_gx["ten_minutes"][device]["restarting_loop"]
              and datos.get("En_viaje"), 5, 3, "Múltiples restarts"),
             (output_gx["hour"][device]["forced_reboot"]
-             > 5, 5, 5, "forced reboot (>1)"),
+             > 1, 5, 5, "forced reboot (>1)"),
             (datos.get("Estatus") == "red", 5, 1, "Sin comunicación reciente"),
             (datos.get("Jsons_eventos_pendientes") > 100 or datos.get(
                 "Jsons_status_pendientes") > 1000, 5, 6, "Demasiados logs pendientes"),
@@ -299,26 +330,26 @@ def update_driving_status():
 
         response = get_driving_data(client_alias)
         if response is not None:
-
+            now = datetime.now(tz=pytz.timezone('UTC')).astimezone(pytz.timezone(
+                'America/Mexico_City')).replace(tzinfo=pytz.utc)
             processed_data = process_driving_data(response)
 
-            data = processed_data["gx"]
-            camera_data = processed_data["cameras"]
-            all_units_status = processed_data["severities"]
-            alerts = processed_data["alerts"]
-
-            def set_default(obj):
+            def set_defºault(obj):
                 if isinstance(obj, set):
                     return list(obj)
                 raise TypeError
 
             '''import json
-            with open(f'/home/spare/Documents/monitor/monitor-project/api/monitor/{client_alias}_driving_process_input.json', "w") as f:
+            with open(f'/home/spare/Documents/monitor/monitor-project/api/monitor/{client_alias}_driving_process_input_{now.isoformat()}.json', "w") as f:
                 json.dump(response, f, ensure_ascii=False)
-            with open(f'/home/spare/Documents/monitor/monitor-project/api/monitor/{client_alias}_driving_process_output.json', "w") as f:
-                print(type(processed_data))
+            with open(f'/home/spare/Documents/monitor/monitor-project/api/monitor/{client_alias}_driving_process_output_{now.isoformat()}.json', "w") as f:
                 json.dump(processed_data, f, ensure_ascii=False,
                           default=set_default)'''
+
+            data = processed_data["gx"]
+            camera_data = processed_data["cameras"]
+            all_units_status = processed_data["severities"]
+            alerts = processed_data["alerts"]
 
         else:
             print(f"No data for {client_name}")
@@ -365,6 +396,11 @@ def update_driving_status():
                     if last_active_status.status.description == "Read only SSD":
                         status = 5
                         priority = True
+                        message = "Sin comunicación reciente, último mensaje fue Read only SSD"
+                        if unit in alerts:
+                            alerts[unit].append(message)
+                        else:
+                            alerts[unit] = [message]
 
             # Obtener objeto GxStatus
             status_args = {
@@ -377,9 +413,9 @@ def update_driving_status():
             status_obj = get_or_create_gxstatus(status_args)
 
             if unit in alerts:
-                for alert in alerts[unit]:
+                for description in alerts[unit]:
                     alert_type = get_or_create_alerttype(
-                        {"description": alert})
+                        {"description": description})
 
                     alert_args = {"alert_type": alert_type, "gx": unit_obj,
                                   "register_datetime": date_now, "register_date": date_now.date()}
@@ -494,6 +530,9 @@ def update_driving_status():
             })
 
         bulk_create_unithistory(history_logs)
+
+        if alerts and os.environ.get("ALERTS") == "true":
+            send_alerts(alerts)
 
 
 # Industry
@@ -730,6 +769,7 @@ def update_industry_status():
 
             alert_args = {"alert_type": alert_type, "gx": device,
                           "register_datetime": date_now, "register_date": date_now.date()}
+            send_telegram(f'{client_name} - {device}: {description}')
             alert = create_alert(alert_args)
 
         if days_remaining and license_end:
