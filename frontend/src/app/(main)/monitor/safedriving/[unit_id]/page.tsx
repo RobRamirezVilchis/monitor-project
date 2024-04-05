@@ -252,7 +252,10 @@ const UnitPage = ({ params }: { params: { unit_id: string } }) => {
             <Tooltip />
             <Scatter data={plotData} dataKey="severity" fill="#8884d8">
               {plotData.map((entry, index) => (
-                <Cell fill={barColors[entry.severity as StatusKey]}></Cell>
+                <Cell
+                  key={`cell-${index}`}
+                  fill={barColors[entry.severity as StatusKey]}
+                ></Cell>
               ))}
             </Scatter>
           </ScatterChart>
