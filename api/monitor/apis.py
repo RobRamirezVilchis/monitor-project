@@ -177,6 +177,8 @@ class UnitHistoryList(APIView):
             filters_serializer.validated_data["register_datetime_before"] = end_date
             filters_serializer.validated_data["register_datetime_after"] = start_date
 
+        print("val data")
+        print(filters_serializer.validated_data)
         data = {'unit_id': unit_id}
         logs = get_unithistory(
             data, filters=filters_serializer.validated_data)[::-1]
@@ -461,4 +463,43 @@ class DrivingDailyReportAPI(APIView):
         clients = get_industry_clients()
 
         data = self.OutputSerializer(clients, many=True).data
+        return Response(data)
+
+
+class UnitScatterPlotAPI(APIView):
+    class OutputSerializer(serializers.Serializer):
+        hour = serializers.DateTimeField()
+        severity = serializers.IntegerField()
+
+    def get(self, request, unit_id, *args, **kwargs):
+        import datetime
+        import math
+        import pytz
+
+        date_now = datetime.datetime.now()
+        end_date = (date_now.astimezone(pytz.timezone("America/Mexico_City")).replace(
+            tzinfo=pytz.utc) + datetime.timedelta(hours=6))
+        start_date = (end_date - timedelta(hours=24))
+
+        filter_args = {"register_datetime_after": start_date,
+                       "register_datetime_before": end_date}
+
+        registers = get_unithistory({"unit_id": unit_id}, filters=filter_args)
+
+        grouped_by_hour = {}
+
+        for register in registers:
+            hour = register.register_datetime.isoformat(timespec="hours")
+            severity = register.status.severity
+
+            if hour not in grouped_by_hour:
+                grouped_by_hour[hour] = [severity]
+            else:
+                grouped_by_hour[hour].append(severity)
+
+        output = [{"hour": date, "severity": max(set(severities), key=severities.count)}
+                  for date, severities in grouped_by_hour.items()]
+
+        data = self.OutputSerializer(output, many=True).data
+
         return Response(data)

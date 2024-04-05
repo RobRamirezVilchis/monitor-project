@@ -1,4 +1,4 @@
-import { UnitStatus, SeverityCount, UnitHistory, DeviceStatus, UnitFilters, LastStatusChange, DeviceFilters, DeviceHistory, Client, CameraDisconnection, LastActiveStatus } from "./types";
+import { UnitStatus, SeverityCount, UnitHistory, DeviceStatus, UnitFilters, LastStatusChange, DeviceFilters, DeviceHistory, Client, CameraDisconnection, LastActiveStatus, SeverityHistory } from "./types";
 import { Id, Paginated } from "@/api/types";
 import { Role, User } from "../auth/types";
 import api from "../..";
@@ -113,6 +113,25 @@ export async function getUnitLastActiveStatus(
   try {
     const resp = await http.get<LastActiveStatus>(
       api.endpoints.monitor.driving.lastActiveStatus(filters.unit_id),
+      {
+        params: filters,
+        ...config,
+      }
+    );
+    return resp.data;
+  } catch (error) {
+    throw error;
+  }
+}
+
+
+export async function getUnitSeverityHistory(
+  filters: UnitFilters,
+  config?: Parameters<typeof http.get>[1]
+) {
+  try {
+    const resp = await http.get<SeverityHistory[]>(
+      api.endpoints.monitor.driving.severityHistory(filters.unit_id),
       {
         params: filters,
         ...config,

@@ -101,6 +101,11 @@ export interface LastActiveStatus {
   description: string,
 }
 
+export interface SeverityHistory {
+  hour: string,
+  severity: number,
+}
+
 
 export interface UnitFilters extends Partial<PageNumberPaginationParams>{
   unit_id: string;

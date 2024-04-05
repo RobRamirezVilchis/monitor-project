@@ -87,6 +87,12 @@ urlpatterns = [
     path("driving-status/last-active-status/<int:unit_id>/",
          include(([
              path("", apis.UnitLastActiveStatus.as_view(), name="status"),
-         ], "unit-last_active-status"))
+         ], "unit-last-active-status"))
+         ),
+
+    path("driving-status/severity-history/<int:unit_id>/",
+         include(([
+             path("", apis.UnitScatterPlotAPI.as_view(), name="status"),
+         ], "unit-scatterplot"))
          ),
 ]

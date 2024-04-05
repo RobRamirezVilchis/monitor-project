@@ -1,5 +1,5 @@
 import { createQuery } from "../helpers/createQuery";
-import { getUnits, getDevices, getUnitHistory, getDrivingSeverityCount, getUnitLastStatusChange, getDeviceHistory, getIndustrySeverityCount, getUnitStatus, getDeviceStatus, getSafeDrivingClients, getIndustryClients, getDeviceLastStatusChange, getIndustryCameraDisconnections, getUnitLastActiveStatus } from "../services/monitor";
+import { getUnits, getDevices, getUnitHistory, getDrivingSeverityCount, getUnitLastStatusChange, getDeviceHistory, getIndustrySeverityCount, getUnitStatus, getDeviceStatus, getSafeDrivingClients, getIndustryClients, getDeviceLastStatusChange, getIndustryCameraDisconnections, getUnitLastActiveStatus, getUnitSeverityHistory } from "../services/monitor";
 import { DeviceFilters, UnitFilters } from "../services/monitor/types";
 import defaultQueryClient from "../clients/defaultQueryClient";
 
@@ -78,6 +78,16 @@ export const useUnitLastActiveStatus = createQuery({
   queryPrimaryKey: "last_active_status",
   queryKeyVariables: (vars: UnitFilters) => vars ? [vars] : [],
   queryFn: (ctx, vars) => getUnitLastActiveStatus(vars, { signal: ctx.signal }),
+  cacheTime: 1000 * 60 * 5,  // 5 minutes
+  staleTime: 1000 * 60 * 3,  // 3 minutes
+  keepPreviousData: true,
+  queryClient: defaultQueryClient,
+});
+
+export const useUnitSeverityHistory = createQuery({
+  queryPrimaryKey: "severity_history",
+  queryKeyVariables: (vars: UnitFilters) => vars ? [vars] : [],
+  queryFn: (ctx, vars) => getUnitSeverityHistory(vars, { signal: ctx.signal }),
   cacheTime: 1000 * 60 * 5,  // 5 minutes
   staleTime: 1000 * 60 * 3,  // 3 minutes
   keepPreviousData: true,

@@ -56,6 +56,7 @@ const api = {
         lastActiveStatus: (unit_id: UnitId) => `api/v1/monitor/driving-status/last-active-status/${unit_id}/`,
         unitStatus: (unit_id: UnitId) => `api/v1/monitor/driving-status/${unit_id}/`,
         unitHistory: (unit_id: UnitId) => `api/v1/monitor/driving-status/history/${unit_id}/`,
+        severityHistory: (unit_id: UnitId) => `api/v1/monitor/driving-status/severity-history/${unit_id}/`,
       },
       industry: {
         clients: "api/v1/monitor/industry/clients/",

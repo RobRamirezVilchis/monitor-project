@@ -968,7 +968,7 @@ def send_daily_sd_report():
     for problem, units in unit_problems.items():
         if not units:
             continue
-        message += f"\n\n{problem}\n"
+        message += f"\n\n{problem}:\n"
         for unit in units:
             message += f"{unit} - "
         message = message[:-3]

@@ -4,6 +4,7 @@ import {
   useUnitHistoryQuery,
   useUnitLastActiveStatus,
   useUnitLastStatusChange,
+  useUnitSeverityHistory,
   useUnitStatusQuery,
 } from "@/api/queries/monitor";
 import { Unit, UnitHistory } from "@/api/services/monitor/types";
@@ -15,6 +16,20 @@ import { ColumnDef } from "@/ui/data-grid/types";
 import { format, formatDistanceToNow, lightFormat, parseISO } from "date-fns";
 import { es } from "date-fns/locale";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+//import { BarChart } from "@mantine/charts";
+import {
+  BarChart,
+  Bar,
+  Cell,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  ResponsiveContainer,
+  Tooltip,
+  ScatterChart,
+  Scatter,
+} from "recharts";
+
 import Link from "next/link";
 
 type StatusKey = 0 | 1 | 2 | 3 | 4 | 5;
@@ -34,6 +49,14 @@ const statusNames: { [key in StatusKey]: string } = {
   3: "Alerta",
   4: "Fallando",
   5: "Crítico",
+};
+const barColors: { [key in StatusKey]: string } = {
+  0: "#c9c9c9",
+  1: "#70bafa",
+  2: "#57d46c",
+  3: "#ffd919",
+  4: "#fca14c",
+  5: "#f74a36",
 };
 
 const UnitPage = ({ params }: { params: { unit_id: string } }) => {
@@ -97,6 +120,14 @@ const UnitPage = ({ params }: { params: { unit_id: string } }) => {
       unit_id: params.unit_id,
     },
   });
+
+  const unitSeverityHistory = useUnitSeverityHistory({
+    variables: {
+      unit_id: params.unit_id,
+    },
+  });
+
+  const plotData = unitSeverityHistory.data;
 
   let timeAgo: string;
   if (unitLastStatusChange.data != null) {
@@ -193,9 +224,40 @@ const UnitPage = ({ params }: { params: { unit_id: string } }) => {
           </div>
         )}
       </div>
-      <div className="h-[70vh]">
+
+      <div className="h-[70vh] mb-10">
         <DataGrid instance={grid} />
       </div>
+
+      <p className="text-xl text-gray-500">Estátus en el último día:</p>
+      {plotData && (
+        <ResponsiveContainer width="100%" height={500}>
+          <ScatterChart
+            margin={{
+              top: 20,
+              right: 20,
+              bottom: 120,
+              left: 20,
+            }}
+          >
+            <CartesianGrid strokeDasharray={"3 3"} />
+            <XAxis dataKey="hour" />
+            <YAxis
+              type="number"
+              dataKey="severity"
+              domain={[0, "dataMax"]}
+              interval={0}
+              ticks={[0, 1, 2, 3, 4, 5]}
+            />
+            <Tooltip />
+            <Scatter data={plotData} dataKey="severity" fill="#8884d8">
+              {plotData.map((entry, index) => (
+                <Cell fill={barColors[entry.severity as StatusKey]}></Cell>
+              ))}
+            </Scatter>
+          </ScatterChart>
+        </ResponsiveContainer>
+      )}
     </section>
   );
 };
