@@ -21,7 +21,6 @@ def send_telegram(message: str):
         'chat_id': TELEGRAM_CHAT,
         'text': message
     }
-    print(f"{datetime.now()} Enviando {message}")
 
     requests.get(
         f'https://api.telegram.org/bot{TELEGRAM_BOT}/sendMessage',
@@ -32,7 +31,6 @@ def send_telegram(message: str):
 def send_alerts(alerts):
     now = datetime.now(tz=pytz.timezone('UTC')).astimezone(pytz.timezone(
         'America/Mexico_City')).replace(tzinfo=pytz.utc)
-    loop = asyncio.get_event_loop()
 
     message = f"Hora: {now.time().isoformat(timespec='seconds')}\n\n"
     for unit, descriptions in alerts.items():
@@ -334,7 +332,7 @@ def update_driving_status():
                 'America/Mexico_City')).replace(tzinfo=pytz.utc)
             processed_data = process_driving_data(response)
 
-            def set_defºault(obj):
+            def set_default(obj):
                 if isinstance(obj, set):
                     return list(obj)
                 raise TypeError
@@ -389,7 +387,7 @@ def update_driving_status():
             description = most_severe["description"]
 
             priority = False
-            if description.startswith("Sin comunicación") or description == "Inactivo":
+            if description.startswith("Sin comunicación") or description == "Inactivo" or description.endswith("logs pendientes"):
                 last_active_status = get_unit_last_active_status(
                     {"unit_id": unit_obj.id})
                 if last_active_status:
@@ -922,3 +920,57 @@ def update_industry_status():
 
         bulk_update_camerastatus(camerastatus_data)
         bulk_create_camerahistory(camerahistory_data)
+
+
+def send_daily_sd_report():
+
+    all_critical_registers = get_sd_critical_last_day()
+
+    unit_problems = {}
+    for register in all_critical_registers:
+        name = register.unit.name
+        description = register.status.description
+        priority = register.status.priority
+        critical_last_message = "Sin comunicación, último mensaje fue read only SSD"
+
+        description_out = description
+
+        # Hacer mensaje de sin comunicación más descriptivo
+        if description == "Sin comunicación":
+            description_out = "En viaje, sin comunicación (>1 día)"
+
+        # Revisar si es una unidad que tuvo read only ssd en el pasado
+        # Si el último status (descartando los que se presentan sin conexión) fue read only, priority es True
+        if priority and (description.startswith("Sin comunicación") or description == "Inactivo" or
+                         description.endswith("logs pendientes")):
+            description_out = critical_last_message
+
+        if description_out not in unit_problems:
+            unit_problems[description_out] = {name}
+        else:
+            unit_problems[description_out].add(name)
+
+    # Si una de las unidades se repite entre Read only SSD y critical_last_message, dejarlo sólo en Read only
+    filtered_units = unit_problems[critical_last_message].copy(
+    )
+    if critical_last_message in unit_problems:
+        units = unit_problems[critical_last_message]
+        for u in units:
+            if u in unit_problems.get("Read only SSD"):
+                filtered_units.remove(u)
+        unit_problems[critical_last_message] = filtered_units
+
+    # Ordenar lista de problemas según cantidad de unidades
+    unit_problems = dict(
+        sorted(unit_problems.items(), key=lambda x: len(x[1])))
+
+    message = f"Reporte de últimas 24 horas ({datetime.now().date()})\n"
+    for problem, units in unit_problems.items():
+        if not units:
+            continue
+        message += f"\n\n{problem}\n"
+        for unit in units:
+            message += f"{unit} - "
+        message = message[:-3]
+
+    send_telegram(message)

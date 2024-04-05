@@ -443,3 +443,22 @@ class IndustryClientList(APIView):
 
         data = self.OutputSerializer(clients, many=True).data
         return Response(data)
+
+
+class DrivingDailyReportAPI(APIView):
+    class OutputSerializer(serializers.Serializer):
+        unit = serializers.CharField()
+        register_datetime = serializers.DateTimeField()
+        total = serializers.IntegerField()
+        restart = serializers.IntegerField()
+        forced_reboot = serializers.IntegerField()
+        read_only_ssd = serializers.IntegerField()
+        on_trip = serializers.BooleanField()
+        severity = serializers.IntegerField(source='status.severity')
+        description = serializers.CharField(source='status.description')
+
+    def get(self, request, *args, **kwargs):
+        clients = get_industry_clients()
+
+        data = self.OutputSerializer(clients, many=True).data
+        return Response(data)

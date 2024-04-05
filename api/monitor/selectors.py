@@ -240,3 +240,17 @@ def get_unit_last_active_status(args):
         Q(status__description="Demasiados logs pendientes")).order_by('-register_datetime').first()
 
     return last_status
+
+
+def get_sd_critical_last_day():
+    import datetime
+    import pytz
+
+    date_now = datetime.datetime.now()
+    end_date = date_now.astimezone(pytz.timezone("America/Mexico_City")).replace(
+        tzinfo=pytz.utc) + datetime.timedelta(hours=6)
+    start_date = end_date - timedelta(hours=24)
+    all_critical_registers = UnitHistory.objects.filter(
+        status__severity=5, register_datetime__range=(start_date, end_date))
+
+    return all_critical_registers
