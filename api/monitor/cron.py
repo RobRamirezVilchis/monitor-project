@@ -404,10 +404,10 @@ def update_driving_status():
             status_args = {
                 'severity': status,
                 'description': description,
-                'deployment': deployment
+                'deployment': deployment,
+                'priority': priority
             }
-            if priority:
-                status_args["priority"] = True
+
             status_obj = get_or_create_gxstatus(status_args)
 
             if unit in alerts:
