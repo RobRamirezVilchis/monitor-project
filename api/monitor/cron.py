@@ -552,7 +552,7 @@ def get_industry_data(client):
         print("Connection error")
         return
 
-    now = datetime.utcnow().astimezone(pytz.timezone(
+    now = datetime.now(tz=pytz.timezone('UTC')).astimezone(pytz.timezone(
         'America/Mexico_City')).replace(tzinfo=pytz.utc)
     time_interval = {
         "initial_datetime": (now - timedelta(hours=1, minutes=10)).isoformat(timespec="seconds")
@@ -573,7 +573,7 @@ def get_industry_data(client):
 
 
 def process_industry_data(response):
-    now = datetime.utcnow().astimezone(pytz.timezone(
+    now = datetime.now(tz=pytz.timezone('UTC')).astimezone(pytz.timezone(
         'America/Mexico_City')).replace(tzinfo=pytz.utc)
 
     fields = {"batch_dropping": 0,
