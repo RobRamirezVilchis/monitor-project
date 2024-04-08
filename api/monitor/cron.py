@@ -387,7 +387,7 @@ def update_driving_status():
             description = most_severe["description"]
 
             priority = False
-            if description == "Read only SSD" or description == "forced reboot (>1)":
+            if description == "Read only SSD" or description == "forced reboot (>1)" or description == "Tres cámaras fallando":
                 priority = True
             elif description.startswith("Sin comunicación") or description == "Inactivo" or description.endswith("logs pendientes"):
                 last_active_status = get_unit_last_active_status(
