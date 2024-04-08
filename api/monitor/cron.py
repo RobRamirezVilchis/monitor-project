@@ -650,7 +650,7 @@ def process_industry_data(response):
                             if start == "[LICENSE]":
                                 days_remaining = int(log["log"].split()[-2])
                                 date, time = log["log"].split("until")[
-                                    1].split()
+                                    1].split()[:2]
                                 license_end = datetime.fromisoformat(
                                     f'{date}T{time[:-1]}')
 
@@ -976,5 +976,7 @@ def send_daily_sd_report():
 
     if unit_problems == {}:
         message += "\nNo hubieron unidades críticas"
+
+    print(message)
 
     send_telegram(message)
