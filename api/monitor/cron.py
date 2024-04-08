@@ -37,6 +37,7 @@ def send_alerts(alerts):
         for description in descriptions:
             message += f'- Unidad {unit}: {description}\n'
     send_telegram(message=message)
+    print("Message sent")
 
 
 def get_credentials(client):
