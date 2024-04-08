@@ -489,7 +489,8 @@ class UnitScatterPlotAPI(APIView):
         grouped_by_hour = {}
 
         for register in registers:
-            hour = register.register_datetime.isoformat(timespec="hours")
+            hour = (register.register_datetime -
+                    timedelta(hours=6)).isoformat(timespec="hours", sep=' ')
             severity = register.status.severity
 
             if hour not in grouped_by_hour:
