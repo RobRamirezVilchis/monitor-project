@@ -467,24 +467,36 @@ class DrivingDailyReportAPI(APIView):
 
 
 class UnitScatterPlotAPI(APIView):
+    class FiltersSerializer(serializers.Serializer):
+        register_datetime_after = serializers.DateTimeField(required=False)
+        register_datetime_before = serializers.DateTimeField(required=False)
+
     class OutputSerializer(serializers.Serializer):
-        hour = serializers.DateTimeField()
-        severity = serializers.IntegerField()
+        hora = serializers.DateTimeField()
+        severidad = serializers.IntegerField()
 
     def get(self, request, unit_id, *args, **kwargs):
         import datetime
-        import math
         import pytz
 
-        date_now = datetime.datetime.now()
-        end_date = (date_now.astimezone(pytz.timezone("America/Mexico_City")).replace(
-            tzinfo=pytz.utc) + datetime.timedelta(hours=6))
-        start_date = (end_date - timedelta(hours=24))
+        filters_serializer = self.FiltersSerializer(data=request.query_params)
+        filters_serializer.is_valid(raise_exception=True)
 
-        filter_args = {"register_datetime_after": start_date,
-                       "register_datetime_before": end_date}
+        # Si no se especificó rango de fechas, regresar registros del último día
+        if not (filters_serializer.validated_data.get("register_datetime_after") or filters_serializer.validated_data.get("register_datetime_before")):
+            import datetime
+            import pytz
 
-        registers = get_unithistory({"unit_id": unit_id}, filters=filter_args)
+            date_now = datetime.datetime.now()
+            end_date = date_now.astimezone(pytz.timezone("America/Mexico_City")).replace(
+                tzinfo=pytz.utc) + datetime.timedelta(hours=6)
+            start_date = end_date - timedelta(hours=24)
+
+            filters_serializer.validated_data["register_datetime_before"] = end_date
+            filters_serializer.validated_data["register_datetime_after"] = start_date
+
+        registers = get_scatterplot_data(
+            {"unit_id": unit_id}, filters=filters_serializer.validated_data)
 
         grouped_by_hour = {}
 
@@ -498,7 +510,7 @@ class UnitScatterPlotAPI(APIView):
             else:
                 grouped_by_hour[hour].append(severity)
 
-        output = [{"hour": date, "severity": max(set(severities), key=severities.count)}
+        output = [{"hora": date, "severidad": max(set(severities), key=severities.count), "descripción": "asdfas"}
                   for date, severities in grouped_by_hour.items()]
 
         data = self.OutputSerializer(output, many=True).data

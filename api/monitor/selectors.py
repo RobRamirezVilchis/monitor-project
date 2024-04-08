@@ -167,7 +167,6 @@ class UnitHistoryFilter(rf_filters.FilterSet):
 
 def get_unithistory(args, filters=None):
 
-    # print(start_date, end_date)
     logs = UnitHistory.objects.filter(
         unit_id=args['unit_id'],
     )
@@ -254,3 +253,40 @@ def get_sd_critical_last_day():
         status__severity=5, register_datetime__range=(start_date, end_date))
 
     return all_critical_registers
+
+
+class ScatterplotDataFilter(rf_filters.FilterSet):
+    register_datetime = rf_filters.DateFromToRangeFilter()
+
+    class Meta:
+        model = UnitHistory
+        fields = ['register_datetime',
+                  'status',
+                  'total',
+                  'restart',
+                  'reboot',
+                  'start',
+                  'data_validation',
+                  'source_missing',
+                  'camera_connection',
+                  'storage_devices',
+                  'forced_reboot',
+                  'read_only_ssd',
+                  'ignition',
+                  'aux',
+                  'others',
+                  'last_connection',
+                  'pending_events',
+                  'pending_status',
+                  'restarting_loop',
+                  'on_trip']
+
+
+def get_scatterplot_data(args, filters=None):
+
+    # print(start_date, end_date)
+    logs = UnitHistory.objects.filter(
+        unit_id=args['unit_id'],
+    )
+
+    return ScatterplotDataFilter(filters, logs).qs

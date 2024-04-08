@@ -31,6 +31,8 @@ import {
 } from "recharts";
 
 import Link from "next/link";
+import { useState } from "react";
+import { DatePickerInput } from "@mantine/dates";
 
 type StatusKey = 0 | 1 | 2 | 3 | 4 | 5;
 const statusStyles: { [key in StatusKey]: string } = {
@@ -64,6 +66,15 @@ const UnitPage = ({ params }: { params: { unit_id: string } }) => {
     name: params.unit_id,
   };
 
+  const currentDate = new Date();
+  let yesterday = new Date();
+  yesterday.setDate(yesterday.getDate() - 1);
+
+  const [dateValue, setDateValue] = useState<[Date | null, Date | null]>([
+    yesterday,
+    currentDate,
+  ]);
+
   const { dataGridState, queryVariables, dataGridConfig } = useSsrDataGrid<{
     name: string;
     register_datetime: [Date | null, Date | null];
@@ -73,6 +84,7 @@ const UnitPage = ({ params }: { params: { unit_id: string } }) => {
       navigateOptions: {
         scroll: false,
       },
+
       history: "replace",
     },
     transform: {
@@ -120,10 +132,12 @@ const UnitPage = ({ params }: { params: { unit_id: string } }) => {
       unit_id: params.unit_id,
     },
   });
-
+  console.log(dateValue);
   const unitSeverityHistory = useUnitSeverityHistory({
     variables: {
       unit_id: params.unit_id,
+      register_datetime_after: dateValue[0],
+      register_datetime_before: dateValue[1],
     },
   });
 
@@ -229,7 +243,17 @@ const UnitPage = ({ params }: { params: { unit_id: string } }) => {
         <DataGrid instance={grid} />
       </div>
 
-      <p className="text-xl text-gray-500">Estátus en el último día:</p>
+      <div className="md:flex items-center gap-4">
+        <p className="text-xl text-gray-500">Gráfica de estátus: </p>
+        <div className="w-80">
+          <DatePickerInput
+            type="range"
+            placeholder="Pick date"
+            value={dateValue}
+            onChange={setDateValue}
+          />
+        </div>
+      </div>
       {plotData && (
         <ResponsiveContainer width="100%" height={500}>
           <ScatterChart
@@ -241,20 +265,20 @@ const UnitPage = ({ params }: { params: { unit_id: string } }) => {
             }}
           >
             <CartesianGrid strokeDasharray={"3 3"} />
-            <XAxis dataKey="hour" />
+            <XAxis dataKey="hora" />
             <YAxis
               type="number"
-              dataKey="severity"
+              dataKey="severidad"
               domain={[0, "dataMax"]}
               interval={0}
               ticks={[0, 1, 2, 3, 4, 5]}
             />
             <Tooltip />
-            <Scatter data={plotData} dataKey="severity" fill="#8884d8">
+            <Scatter data={plotData} dataKey="severidad" fill="#8884d8">
               {plotData.map((entry, index) => (
                 <Cell
                   key={`cell-${index}`}
-                  fill={barColors[entry.severity as StatusKey]}
+                  fill={barColors[entry.severidad as StatusKey]}
                 ></Cell>
               ))}
             </Scatter>

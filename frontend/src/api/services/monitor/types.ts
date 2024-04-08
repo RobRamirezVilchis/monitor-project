@@ -102,8 +102,14 @@ export interface LastActiveStatus {
 }
 
 export interface SeverityHistory {
-  hour: string,
-  severity: number,
+  hora: string,
+  severidad: number,
+}
+
+export interface SeverityHistoryFilters {
+  unit_id: string,
+  register_datetime_after: Date | null,
+  register_datetime_before: Date | null,
 }
 
 
@@ -114,3 +120,4 @@ export interface UnitFilters extends Partial<PageNumberPaginationParams>{
 export interface DeviceFilters extends Partial<PageNumberPaginationParams>{
   device_id: string;
 }
+
