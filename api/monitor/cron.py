@@ -929,11 +929,11 @@ def send_daily_sd_report():
     all_critical_registers = get_sd_critical_last_day()
 
     unit_problems = {}
+    critical_last_message = "Sin comunicación, último mensaje fue read only SSD"
     for register in all_critical_registers:
         name = register.unit.name
         description = register.status.description
         priority = register.status.priority
-        critical_last_message = "Sin comunicación, último mensaje fue read only SSD"
 
         description_out = description
 
@@ -953,9 +953,8 @@ def send_daily_sd_report():
             unit_problems[description_out].add(name)
 
     # Si una de las unidades se repite entre Read only SSD y critical_last_message, dejarlo sólo en Read only
-    filtered_units = unit_problems[critical_last_message].copy(
-    )
     if critical_last_message in unit_problems:
+        filtered_units = unit_problems[critical_last_message].copy()
         units = unit_problems[critical_last_message]
         for u in units:
             if u in unit_problems.get("Read only SSD"):
@@ -974,5 +973,8 @@ def send_daily_sd_report():
         for unit in units:
             message += f"{unit} - "
         message = message[:-3]
+
+    if unit_problems == {}:
+        message += "\nNo hubieron unidades críticas"
 
     send_telegram(message)
