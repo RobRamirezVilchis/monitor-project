@@ -111,6 +111,7 @@ class CameraHistory(models.Model):
 class UnitStatus(models.Model):
     unit = models.OneToOneField(Unit, on_delete=models.CASCADE)
     last_update = models.DateTimeField("Last update", null=True)
+    last_alert = models.DateTimeField(null=True)
     total = models.IntegerField('Total')
     restart = models.IntegerField('Restarts')
     reboot = models.IntegerField('Reboots')
@@ -173,6 +174,7 @@ class DeviceStatus(models.Model):
     device = models.OneToOneField(Device, on_delete=models.CASCADE)
     last_update = models.DateTimeField("Last update", null=True)
     last_connection = models.DateTimeField("Last connection", null=True)
+    last_alert = models.DateTimeField(null=True)
     delayed = models.BooleanField(null=True)
     delay_time = models.DurationField(default=timedelta(0))
     batch_dropping = models.IntegerField()
