@@ -18,13 +18,8 @@ def send_telegram(message: str):
     TELEGRAM_CHAT = os.environ.get("TELEGRAM_CHAT")
     TELEGRAM_BOT = os.environ.get("TELEGRAM_BOT")
 
-    params = {
-        'chat_id': TELEGRAM_CHAT,
-        'text': message
-    }
-
     subprocess.run(
-        f"curl -X POST -H 'Content-Type: application/json' -d '{{\"chat_id\": \"{TELEGRAM_CHAT}\", \"text\": \"Curl prueba\"}}\' https://api.telegram.org/bot{TELEGRAM_BOT}/sendMessage",
+        f"curl -X POST -H 'Content-Type: application/json' -d '{{\"chat_id\": \"{TELEGRAM_CHAT}\", \"{message}\": \"Curl prueba\"}}\' https://api.telegram.org/bot{TELEGRAM_BOT}/sendMessage",
         shell=True)
 
     print("Message sent")
