@@ -19,7 +19,7 @@ def send_telegram(message: str):
     TELEGRAM_BOT = os.environ.get("TELEGRAM_BOT")
 
     subprocess.run(
-        f"curl -X POST -H 'Content-Type: application/json' -d '{{\"chat_id\": \"{TELEGRAM_CHAT}\", \"{message}\": \"Curl prueba\"}}\' https://api.telegram.org/bot{TELEGRAM_BOT}/sendMessage",
+        f"curl -X POST -H 'Content-Type: application/json' -d '{{\"chat_id\": \"{TELEGRAM_CHAT}\", \"text\": \"{message}\"}}\' https://api.telegram.org/bot{TELEGRAM_BOT}/sendMessage",
         shell=True)
 
     print("Message sent")
@@ -922,6 +922,9 @@ def update_industry_status():
 
 
 def send_daily_sd_report():
+    if os.environ.get("ALERTS") != "true":
+        print("Alerts are disabled")
+        return
 
     all_critical_registers = get_sd_critical_last_day()
 
