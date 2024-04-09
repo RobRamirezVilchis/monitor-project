@@ -977,6 +977,4 @@ def send_daily_sd_report():
     if unit_problems == {}:
         message += "\nNo hubieron unidades críticas"
 
-    print(message)
-
     send_telegram(message)
