@@ -11,6 +11,7 @@ from datetime import datetime, timedelta
 import pytz
 import os
 import asyncio
+import subprocess
 
 
 def send_telegram(message: str):
@@ -22,10 +23,11 @@ def send_telegram(message: str):
         'text': message
     }
 
-    requests.get(
-        f'https://api.telegram.org/bot{TELEGRAM_BOT}/sendMessage',
-        params=params
-    )
+    subprocess.run(
+        f"curl -X POST -H 'Content-Type: application/json' -d '{{\"chat_id\": \"{TELEGRAM_CHAT}\", \"text\": \"Curl prueba\"}}\' https://api.telegram.org/bot{TELEGRAM_BOT}/sendMessage",
+        shell=True)
+
+    print("Message sent")
 
 
 def send_alerts(alerts):
@@ -37,7 +39,6 @@ def send_alerts(alerts):
         for description in descriptions:
             message += f'- Unidad {unit}: {description}\n'
     send_telegram(message=message)
-    print("Message sent")
 
 
 def get_credentials(client):
