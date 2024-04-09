@@ -612,10 +612,10 @@ def process_industry_data(response):
             output_gx["last_connection"] = last_log_date
 
             for log in logs:
-                register_time = datetime.fromisoformat(
-                    log["register_time"][:-1]).replace(tzinfo=pytz.utc)
+                register_time = datetime.fromisoformat(log["register_time"][:-1]).astimezone(
+                    pytz.timezone('America/Mexico_City')).replace(tzinfo=pytz.utc)
                 log_time = datetime.fromisoformat(f'{log["log_date"]}T{log["log_time"]}').replace(
-                    tzinfo=pytz.utc) + timedelta(hours=6)
+                    tzinfo=pytz.utc)
 
                 alert_conditions = {
                     "Problemas de Wi-Fi": (register_time - log_time >
