@@ -922,6 +922,7 @@ def update_industry_status():
 
 
 def send_daily_sd_report():
+    load_dotenv()
     if os.environ.get("ALERTS") != "true":
         print("Alerts are disabled")
         return
