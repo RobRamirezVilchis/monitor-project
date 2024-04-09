@@ -454,6 +454,8 @@ def update_driving_status():
 
             alert_interval = 20
             if unit in alerts and (last_alert == None or date_now - last_alert > timedelta(minutes=alert_interval)):
+                print("New alert")
+                print(alerts[unit])
                 for description in alerts[unit]:
                     alert_type = get_or_create_alerttype(
                         {"description": description})
@@ -536,6 +538,8 @@ def update_driving_status():
 
         bulk_create_unithistory(history_logs)
 
+        print("Alerts to send")
+        print(alerts_to_send)
         if alerts_to_send and os.environ.get("ALERTS") == "true":
             send_alerts(chat="SAFEDRIVING_CHAT", alerts=alerts_to_send)
 
@@ -787,8 +791,10 @@ def update_industry_status():
                               "register_datetime": date_now, "register_date": date_now.date()}
                 alert = create_alert(alert_args)
 
-                send_telegram(chat="INDUSTRY_CHAT",
-                              message=f'{client_name} - {device.name}: {description}')
+                if os.environ.get("ALERTS") == "true":
+                    send_telegram(chat="INDUSTRY_CHAT",
+                                  message=f'{client_name} - {device.name}: {description}')
+
                 last_alert = date_now
 
         # Campos del registro a actualizar
