@@ -837,11 +837,15 @@ def update_industry_status():
                 # como retraso
 
                 # Arreglar caso en el que se missea el log reciente por poquito, produciendo un retraso falso
-                if first_log_time - db_last_connection > timedelta(minutes=11) and \
+                if first_log_time and first_log_time - db_last_connection > timedelta(minutes=11) and \
                         not last_connection - db_register_time > timedelta(minutes=11):
                     update_values['delayed'] = True
-                    update_values['delay_time'] = last_connection - \
+
+                    # Redondear a segundos
+                    delay_time = first_log_time - \
                         db_last_connection - timedelta(minutes=10)
+                    delay_time -= timedelta(microseconds=delay_time.microseconds)
+                    update_values['delay_time'] = delay_time
 
                 # Si hay un retraso actualmente
                 elif time_since_last_log > timedelta(minutes=11):

@@ -129,6 +129,7 @@ DistributiveOmit<
    * Label used in menus and header cell's title attribute.
    */
   columnTitle?: string;
+  columnTitleCustom?: string;
   /**
    * Label used as cell's title attribute. If not given, a title value will try to 
    * be rendered based on the cell's value. Useful when the cell's value is not a string.

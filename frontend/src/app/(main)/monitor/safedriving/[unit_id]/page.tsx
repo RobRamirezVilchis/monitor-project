@@ -273,6 +273,7 @@ const UnitPage = ({ params }: { params: { unit_id: string } }) => {
               interval={0}
               ticks={[0, 1, 2, 3, 4, 5]}
             />
+
             <Tooltip />
             <Scatter data={plotData} dataKey="severidad" fill="#8884d8">
               {plotData.map((entry, index) => (
@@ -287,6 +288,10 @@ const UnitPage = ({ params }: { params: { unit_id: string } }) => {
       )}
     </section>
   );
+};
+
+const RenderTooltip = ({ data: num }: { data: number }) => {
+  return <div>{num}</div>;
 };
 
 //export default UnitPage;
@@ -311,6 +316,7 @@ const cols: ColumnDef<UnitHistory>[] = [
         : "Desconocida",
     header: "Última conexión",
     columnTitle: "Última conexión",
+    columnTitleCustom: "Última conexión",
     minSize: 200,
     enableSorting: true,
     filterVariant: "datetime-range",
