@@ -860,8 +860,12 @@ def update_industry_status():
             update_values['delayed'] = True
 
             if db_last_connection:  # Si hay última conexión en BD, usarla para calcular retraso
-                update_values['delay_time'] = date_now - \
+                delay_from_last_connection = date_now - \
                     db_last_connection - timedelta(minutes=10)
+                delay_from_last_connection -= timedelta(
+                    microseconds=delay_from_last_connection.microseconds)
+                update_values['delay_time'] = delay_from_last_connection
+
             else:  # Si no, sumar 10 minutos a tiempo de retraso en BD
                 update_values['delay_time'] = db_delay_time + \
                     timedelta(minutes=10)
