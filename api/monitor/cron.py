@@ -807,7 +807,7 @@ def update_industry_status():
             'others': hour_data["others"],
         }
 
-      # Obtener última conexión del registro del dispositivo
+        # Obtener última conexión del registro del dispositivo
         db_delay_time = timedelta(0)
         try:
             device_status = DeviceStatus.objects.get(device_id=device.id)
@@ -823,42 +823,48 @@ def update_industry_status():
         if gx_data["last_connection"]:
             # Asignar nueva última conexión
             last_connection = gx_data["last_connection"] + timedelta(hours=6)
+            time_since_last_log = date_now - last_connection
 
             # Agregar nueva última conexión a los campos a actualizar
             update_values['last_connection'] = last_connection
             first_log_time = gx_data["first_log_time"] + timedelta(hours=6)
 
-        # Si existe ese dato, ver si tiene más de 10 minutos. En ese caso, ponerlo como atrasado
-        if last_connection and db_last_connection:
-            difference = date_now - last_connection
+            # Si existe ese dato, ver si tiene más de 10 minutos. En ese caso, ponerlo como atrasado
+            if db_last_connection:
 
-            # Revisar si hubo retraso entre el primer log en los últimos 10 minutos y la última conexión según la DB
-            # Se verifica que hayan registros recientes (con db_register_time) para no tomar un falla en el ćodigo
-            # como retraso
+                # Revisar si hubo retraso entre el primer log en los últimos 10 minutos y la última conexión según la DB
+                # Se verifica que hayan registros recientes (con db_register_time) para no tomar un falla en el ćodigo
+                # como retraso
 
-            # Arreglar caso en el que se missea el log reciente por poquito, produciendo un retraso falso
-            if first_log_time - db_last_connection > timedelta(minutes=11) and not last_connection - db_register_time > timedelta(minutes=11):
-                update_values['delayed'] = True
-                update_values['delay_time'] = last_connection - \
-                    db_last_connection - timedelta(minutes=10)
+                # Arreglar caso en el que se missea el log reciente por poquito, produciendo un retraso falso
+                if first_log_time - db_last_connection > timedelta(minutes=11) and \
+                        not last_connection - db_register_time > timedelta(minutes=11):
+                    update_values['delayed'] = True
+                    update_values['delay_time'] = last_connection - \
+                        db_last_connection - timedelta(minutes=10)
 
-            # Si hay un retraso actualmente
-            elif difference > timedelta(minutes=11):
-                update_values['delayed'] = True
-                update_values['delay_time'] = difference - \
-                    timedelta(minutes=10)
-            else:
+                # Si hay un retraso actualmente
+                elif time_since_last_log > timedelta(minutes=11):
+                    update_values['delayed'] = True
+                    update_values['delay_time'] = time_since_last_log - \
+                        timedelta(minutes=10)
+                else:
+                    update_values['delayed'] = False
+                    update_values['delay_time'] = timedelta(0)
+
+            else:  # En caso de que haya un nuevo dispositivo
                 update_values['delayed'] = False
                 update_values['delay_time'] = timedelta(0)
 
-        elif db_last_connection == None and last_connection:  # En caso de que haya un nuevo dispositivo
-            update_values['delayed'] = False
-            update_values['delay_time'] = timedelta(0)
-
-        # Si no han llegado logs en la última hora, sumar 10 minutos a retraso
         else:
             update_values['delayed'] = True
-            update_values['delay_time'] = db_delay_time + timedelta(minutes=10)
+
+            if db_last_connection:  # Si hay última conexión en BD, usarla para calcular retraso
+                update_values['delay_time'] = date_now - \
+                    db_last_connection - timedelta(minutes=10)
+            else:  # Si no, sumar 10 minutos a tiempo de retraso en BD
+                update_values['delay_time'] = db_delay_time + \
+                    timedelta(minutes=10)
 
         conditions = [
             (recent_data['camera_connection'] >
