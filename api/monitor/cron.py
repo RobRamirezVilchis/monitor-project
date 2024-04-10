@@ -232,7 +232,7 @@ def process_driving_data(response, now=None):
             last_connection = None
 
         alert_conditions = {
-            "Read only SSD": output_gx["ten_minutes"][device]["read_only_ssd"] > 0,
+            "Read only SSD": output_gx["hour"][device]["read_only_ssd"] > 0,
             "En viaje con tres cámaras fallando": datos.get("En_viaje") and disc_cameras == 3
         }
 
@@ -452,7 +452,7 @@ def update_driving_status():
             current_unit_status = get_unitstatus(unit_id=unit_obj.id)
             last_alert = current_unit_status.last_alert
 
-            alert_interval = 20
+            alert_interval = 55
             if unit in alerts and (last_alert == None or date_now - last_alert > timedelta(minutes=alert_interval)):
                 for description in alerts[unit]:
                     alert_type = get_or_create_alerttype(
@@ -777,7 +777,7 @@ def update_industry_status():
 
         current_device_status = get_devicestatus(device_id=device.id)
         last_alert = current_device_status.last_alert
-        alert_interval = 20
+        alert_interval = 55
 
         # Crear registros de alertas
         if last_alert == None or last_alert - date_now > timedelta(minutes=alert_interval):
@@ -817,12 +817,15 @@ def update_industry_status():
         except:
             db_last_connection = None
 
-        last_connection = None
+        # Inicializar last_connection con valor obtenido de BD
+        last_connection = db_last_connection
+
         if gx_data["last_connection"]:
-            # Agregar nueva última conexión a los campos a actualizar
-            update_values['last_connection'] = gx_data["last_connection"] + \
-                timedelta(hours=6)
+            # Asignar nueva última conexión
             last_connection = gx_data["last_connection"] + timedelta(hours=6)
+
+            # Agregar nueva última conexión a los campos a actualizar
+            update_values['last_connection'] = last_connection
             first_log_time = gx_data["first_log_time"] + timedelta(hours=6)
 
         # Si existe ese dato, ver si tiene más de 10 minutos. En ese caso, ponerlo como atrasado
