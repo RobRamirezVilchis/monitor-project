@@ -794,7 +794,7 @@ def update_industry_status():
                                   message=f'{client_name} - {device.name}: {description}')
 
                 last_alert = date_now
-        print(f'{client_name} passed alerts')
+
         # Campos del registro a actualizar
         update_values = {
             'last_update': date_now,
@@ -1000,4 +1000,4 @@ def send_daily_sd_report():
     if unit_problems == {}:
         message += "\nNo hubieron unidades críticas"
 
-    send_telegram(message)
+    send_telegram(chat="SAFEDRIVING_CHAT", message=message)
