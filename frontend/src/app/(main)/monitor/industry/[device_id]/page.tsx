@@ -168,7 +168,7 @@ const DevicePage = ({ params }: { params: { device_id: string } }) => {
   });
 
   return (
-    <section className="relative">
+    <section className="relative mb-20">
       <Link href={"./"} className="absolute right-full mr-5 mt-2 opacity-40">
         <ArrowBackIcon />
       </Link>
@@ -270,12 +270,22 @@ const DevicePage = ({ params }: { params: { device_id: string } }) => {
 //export default UnitPage;
 export default DevicePage;
 
+const ConvertBool = (condition: boolean) => {
+  if (condition) {
+    return "Sí";
+  } else {
+    return "No";
+  }
+};
+
 const cols: ColumnDef<DeviceHistory>[] = [
   {
     accessorKey: "register_datetime",
     accessorFn: (row) => format(parseISO(row.register_datetime), "Pp"),
     header: "Fecha",
     columnTitle: "Fecha",
+    columnTitleCustom:
+      "Fecha y hora de registro, cada uno considera logs en un intervalo de 10 minutos hacia atrás",
     minSize: 250,
     enableSorting: true,
     filterVariant: "datetime-range",
@@ -304,15 +314,16 @@ const cols: ColumnDef<DeviceHistory>[] = [
     accessorKey: "description",
     accessorFn: (row) => row.description,
     header: "Descripción",
-    columnTitle: "Descripción",
+    columnTitle: "Descripción de estátus",
     size: 250,
     enableSorting: true,
   },
   {
     accessorKey: "delayed",
-    accessorFn: (row) => row.delayed,
+    accessorFn: (row) => ConvertBool(row.delayed),
     header: "Retraso",
-    columnTitle: "Retraso",
+    columnTitle:
+      "Está en retraso cuando transcurren 10 minutos sin que llegue ningún log",
     size: 120,
     enableSorting: true,
   },
@@ -320,8 +331,18 @@ const cols: ColumnDef<DeviceHistory>[] = [
     accessorKey: "delay_time",
     accessorFn: (row) => row.delay_time,
     header: "Tiempo retraso",
-    columnTitle: "Tiempo retraso",
+    columnTitle:
+      "Tiempo transcurrido sin recibir ningún log, pasando 10 minutos",
     size: 170,
+    enableSorting: true,
+  },
+  {
+    accessorKey: "camera_connection",
+    accessorFn: (row) => row.camera_connection,
+    header: "Desconexión de cámaras",
+    columnTitle:
+      "Tiempo acumulado de desconexión de todas las cámaras en intervalo de 10 minutos",
+    size: 150,
     enableSorting: true,
   },
   {
@@ -329,22 +350,17 @@ const cols: ColumnDef<DeviceHistory>[] = [
     accessorFn: (row) => row.restart,
     header: "Restart",
     columnTitle: "Restart",
+    columnTitleCustom: "Cantidad de logs recibidos de reinicios de pipeline",
     size: 120,
     enableSorting: true,
   },
-  {
-    accessorKey: "camera_connection",
-    accessorFn: (row) => row.camera_connection,
-    header: "Desconexión de cámaras",
-    columnTitle: "Desconexión de cámaras",
-    size: 150,
-    enableSorting: true,
-  },
+
   {
     accessorKey: "license",
     accessorFn: (row) => row.license,
     header: "License",
     columnTitle: "License",
+    columnTitleCustom: "Cantidad de logs recibidos de licencia",
     size: 110,
     enableSorting: true,
   },
@@ -353,6 +369,7 @@ const cols: ColumnDef<DeviceHistory>[] = [
     accessorFn: (row) => row.shift_change,
     header: "Turno",
     columnTitle: "Turno",
+    columnTitleCustom: "Cantidad de logs recibidos de cambio de turno",
     size: 100,
     enableSorting: true,
   },
@@ -361,6 +378,7 @@ const cols: ColumnDef<DeviceHistory>[] = [
     accessorFn: (row) => row.others,
     header: "Otros",
     columnTitle: "Otros",
+    columnTitleCustom: "Cantidad de logs recibidos de otros casos",
     size: 100,
     enableSorting: true,
   },

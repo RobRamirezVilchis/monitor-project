@@ -132,7 +132,7 @@ const UnitPage = ({ params }: { params: { unit_id: string } }) => {
       unit_id: params.unit_id,
     },
   });
-  console.log(dateValue);
+
   const unitSeverityHistory = useUnitSeverityHistory({
     variables: {
       unit_id: params.unit_id,
@@ -297,12 +297,22 @@ const RenderTooltip = ({ data: num }: { data: number }) => {
 //export default UnitPage;
 export default UnitPage;
 
+const ConvertBool = (row: UnitHistory) => {
+  if (row.on_trip) {
+    return "Sí";
+  } else {
+    return "No";
+  }
+};
+
 const cols: ColumnDef<UnitHistory>[] = [
   {
     accessorKey: "register_datetime",
     accessorFn: (row) => format(parseISO(row.register_datetime), "Pp"),
     header: "Fecha",
     columnTitle: "Fecha",
+    columnTitleCustom:
+      "Fecha y hora de registro, cada uno considera logs en un intervalo de 10 minutos hacia atrás",
     minSize: 250,
     //enableSorting: true,
     filterVariant: "datetime-range",
@@ -316,7 +326,7 @@ const cols: ColumnDef<UnitHistory>[] = [
         : "Desconocida",
     header: "Última conexión",
     columnTitle: "Última conexión",
-    columnTitleCustom: "Última conexión",
+    columnTitleCustom: "Hora de última conexión",
     minSize: 200,
     enableSorting: true,
     filterVariant: "datetime-range",
@@ -340,9 +350,9 @@ const cols: ColumnDef<UnitHistory>[] = [
   },
   {
     accessorKey: "on_trip",
-    accessorFn: (row) => row.on_trip,
-    header: "Viaje",
-    columnTitle: "Viaje",
+    accessorFn: ConvertBool,
+    header: "En viaje",
+    columnTitle: "En viaje",
     size: 100,
     enableSorting: true,
     filterVariant: "checkbox",
@@ -351,7 +361,7 @@ const cols: ColumnDef<UnitHistory>[] = [
     accessorKey: "pending_events",
     accessorFn: (row) => row.pending_events,
     header: "Eventos pendientes",
-    columnTitle: "Eventos pendientes",
+    columnTitle: "Eventos pendientes por mandar",
     minSize: 30,
     enableSorting: true,
   },
@@ -359,7 +369,7 @@ const cols: ColumnDef<UnitHistory>[] = [
     accessorKey: "pending_status",
     accessorFn: (row) => row.pending_status,
     header: "Status pendientes",
-    columnTitle: "Status pendientes",
+    columnTitle: "Status pendientes por mandar",
     minSize: 30,
     enableSorting: true,
   },
@@ -368,6 +378,8 @@ const cols: ColumnDef<UnitHistory>[] = [
     accessorFn: (row) => row.total,
     header: "Total",
     columnTitle: "Total",
+    columnTitleCustom:
+      "Cantidad total de logs recibidos en el intervalo de 10 minutos",
     size: 120,
     enableSorting: true,
   },
@@ -376,6 +388,7 @@ const cols: ColumnDef<UnitHistory>[] = [
     accessorFn: (row) => row.restart,
     header: "Restart",
     columnTitle: "Restart",
+    columnTitleCustom: "Cantidad de logs recibidos de reinicios de pipeline",
     size: 120,
   },
   {
@@ -383,6 +396,7 @@ const cols: ColumnDef<UnitHistory>[] = [
     accessorFn: (row) => row.camera_connection,
     header: "Cámaras",
     columnTitle: "Cámaras",
+    columnTitleCustom: "Cantidad de logs recibidos de desconexiones de cámaras",
     size: 120,
   },
   {
@@ -390,6 +404,7 @@ const cols: ColumnDef<UnitHistory>[] = [
     accessorFn: (row) => row.read_only_ssd,
     header: "Read only",
     columnTitle: "Read only SSD",
+    columnTitleCustom: 'Cantidad de logs de "read only SSD" recibidos',
     size: 120,
   },
   {
@@ -397,6 +412,7 @@ const cols: ColumnDef<UnitHistory>[] = [
     accessorFn: (row) => row.forced_reboot,
     header: "Forced reboot",
     columnTitle: "Forced reboot",
+    columnTitleCustom: 'Cantidad de logs de "forced reboot" recibidos',
     size: 120,
   },
   {
@@ -404,6 +420,7 @@ const cols: ColumnDef<UnitHistory>[] = [
     accessorFn: (row) => row.start,
     header: "Start",
     columnTitle: "Start",
+    columnTitleCustom: "Cantidad de logs recibidos de inicio de pipeline",
     size: 120,
   },
   {
@@ -411,6 +428,7 @@ const cols: ColumnDef<UnitHistory>[] = [
     accessorFn: (row) => row.reboot,
     header: "Reboot",
     columnTitle: "Reboot",
+    columnTitleCustom: "Cantidad de logs recibidos de encendido de GX",
     size: 120,
   },
   {
@@ -418,6 +436,7 @@ const cols: ColumnDef<UnitHistory>[] = [
     accessorFn: (row) => row.reboot,
     header: "Data Val",
     columnTitle: "Data Val",
+    columnTitleCustom: 'Cantidad de logs de "data validation" recibidos',
     size: 120,
   },
   {
@@ -425,6 +444,7 @@ const cols: ColumnDef<UnitHistory>[] = [
     accessorFn: (row) => row.source_missing,
     header: "SourceID",
     columnTitle: "SourceID",
+    columnTitleCustom: 'Cantidad de logs de "source id missing" recibidos',
     size: 120,
   },
   {
@@ -432,6 +452,7 @@ const cols: ColumnDef<UnitHistory>[] = [
     accessorFn: (row) => row.storage_devices,
     header: "Memory",
     columnTitle: "Memory",
+    columnTitleCustom: "Cantidad de logs de errores de memoria recibidos",
     size: 120,
   },
   {
@@ -439,6 +460,7 @@ const cols: ColumnDef<UnitHistory>[] = [
     accessorFn: (row) => row.others,
     header: "Others",
     columnTitle: "Others",
+    columnTitleCustom: "Cantidad de logs recibidos de otros casos",
     size: 120,
   },
 ];
