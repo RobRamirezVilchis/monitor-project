@@ -454,8 +454,6 @@ def update_driving_status():
 
             alert_interval = 20
             if unit in alerts and (last_alert == None or date_now - last_alert > timedelta(minutes=alert_interval)):
-                print("New alert")
-                print(alerts[unit])
                 for description in alerts[unit]:
                     alert_type = get_or_create_alerttype(
                         {"description": description})
@@ -538,8 +536,6 @@ def update_driving_status():
 
         bulk_create_unithistory(history_logs)
 
-        print("Alerts to send")
-        print(alerts_to_send)
         if alerts_to_send and os.environ.get("ALERTS") == "true":
             send_alerts(chat="SAFEDRIVING_CHAT", alerts=alerts_to_send)
 
@@ -746,6 +742,8 @@ def update_industry_status():
 
         if response is not None:
             processed_data = process_industry_data(response)
+            print(client_name)
+            print(processed_data)
         else:
             print(f"No data for {client_name}")
             continue
@@ -796,7 +794,7 @@ def update_industry_status():
                                   message=f'{client_name} - {device.name}: {description}')
 
                 last_alert = date_now
-
+        print(f'{client_name} passed alerts')
         # Campos del registro a actualizar
         update_values = {
             'last_update': date_now,
@@ -810,139 +808,139 @@ def update_industry_status():
         }
 
       # Obtener última conexión del registro del dispositivo
-    db_delay_time = timedelta(0)
-    try:
-        device_status = DeviceStatus.objects.get(device_id=device.id)
-        db_register_time = device_status.last_update
-        db_last_connection = device_status.last_connection
-        db_delay_time = device_status.delay_time
-    except:
-        db_last_connection = None
+        db_delay_time = timedelta(0)
+        try:
+            device_status = DeviceStatus.objects.get(device_id=device.id)
+            db_register_time = device_status.last_update
+            db_last_connection = device_status.last_connection
+            db_delay_time = device_status.delay_time
+        except:
+            db_last_connection = None
 
-    last_connection = None
-    if gx_data["last_connection"]:
-        # Agregar nueva última conexión a los campos a actualizar
-        update_values['last_connection'] = gx_data["last_connection"] + \
-            timedelta(hours=6)
-        last_connection = gx_data["last_connection"] + timedelta(hours=6)
-        first_log_time = gx_data["first_log_time"] + timedelta(hours=6)
+        last_connection = None
+        if gx_data["last_connection"]:
+            # Agregar nueva última conexión a los campos a actualizar
+            update_values['last_connection'] = gx_data["last_connection"] + \
+                timedelta(hours=6)
+            last_connection = gx_data["last_connection"] + timedelta(hours=6)
+            first_log_time = gx_data["first_log_time"] + timedelta(hours=6)
 
-    # Si existe ese dato, ver si tiene más de 10 minutos. En ese caso, ponerlo como atrasado
-    if last_connection and db_last_connection:
-        difference = date_now - last_connection
+        # Si existe ese dato, ver si tiene más de 10 minutos. En ese caso, ponerlo como atrasado
+        if last_connection and db_last_connection:
+            difference = date_now - last_connection
 
-        # Revisar si hubo retraso entre el primer log en los últimos 10 minutos y la última conexión según la DB
-        # Se verifica que hayan registros recientes (con db_register_time) para no tomar un falla en el ćodigo
-        # como retraso
+            # Revisar si hubo retraso entre el primer log en los últimos 10 minutos y la última conexión según la DB
+            # Se verifica que hayan registros recientes (con db_register_time) para no tomar un falla en el ćodigo
+            # como retraso
 
-        # Arreglar caso en el que se missea el log reciente por poquito, produciendo un retraso falso
-        if first_log_time - db_last_connection > timedelta(minutes=11) and not last_connection - db_register_time > timedelta(minutes=11):
-            update_values['delayed'] = True
-            update_values['delay_time'] = last_connection - \
-                db_last_connection - timedelta(minutes=10)
+            # Arreglar caso en el que se missea el log reciente por poquito, produciendo un retraso falso
+            if first_log_time - db_last_connection > timedelta(minutes=11) and not last_connection - db_register_time > timedelta(minutes=11):
+                update_values['delayed'] = True
+                update_values['delay_time'] = last_connection - \
+                    db_last_connection - timedelta(minutes=10)
 
-        # Si hay un retraso actualmente
-        elif difference > timedelta(minutes=11):
-            update_values['delayed'] = True
-            update_values['delay_time'] = difference - \
-                timedelta(minutes=10)
-        else:
+            # Si hay un retraso actualmente
+            elif difference > timedelta(minutes=11):
+                update_values['delayed'] = True
+                update_values['delay_time'] = difference - \
+                    timedelta(minutes=10)
+            else:
+                update_values['delayed'] = False
+                update_values['delay_time'] = timedelta(0)
+
+        elif db_last_connection == None and last_connection:  # En caso de que haya un nuevo dispositivo
             update_values['delayed'] = False
             update_values['delay_time'] = timedelta(0)
 
-    elif db_last_connection == None and last_connection:  # En caso de que haya un nuevo dispositivo
-        update_values['delayed'] = False
-        update_values['delay_time'] = timedelta(0)
+        # Si no han llegado logs en la última hora, sumar 10 minutos a retraso
+        else:
+            update_values['delayed'] = True
+            update_values['delay_time'] = db_delay_time + timedelta(minutes=10)
 
-    # Si no han llegado logs en la última hora, sumar 10 minutos a retraso
-    else:
-        update_values['delayed'] = True
-        update_values['delay_time'] = db_delay_time + timedelta(minutes=10)
+        conditions = [
+            (recent_data['camera_connection'] >
+             timedelta(0), 3, 3, "Cámara desconectada"),
+            (update_values['batch_dropping'] > 0, 3, 2, "Batch dropping"),
+            (update_values['delayed'] and update_values['delay_time']
+             < timedelta(minutes=60), 3, 1, "Retraso menor a 1h"),
+            (update_values['delay_time'] >= timedelta(
+                minutes=60), 5, 1, "Retraso mayor a 1h"),
+            (update_values['restart'] > 0, 5, 2, "Restarts"),
+        ]
 
-    conditions = [
-        (recent_data['camera_connection'] >
-         timedelta(0), 3, 3, "Cámara desconectada"),
-        (update_values['batch_dropping'] > 0, 3, 2, "Batch dropping"),
-        (update_values['delayed'] and update_values['delay_time']
-         < timedelta(minutes=60), 3, 1, "Retraso menor a 1h"),
-        (update_values['delay_time'] >= timedelta(
-            minutes=60), 5, 1, "Retraso mayor a 1h"),
-        (update_values['restart'] > 0, 5, 2, "Restarts"),
-    ]
+        severity = 1
+        rule = "Comunicación reciente"
+        for condition, status, r, description in conditions:
+            if condition:
+                severity = status
+                rule = description
 
-    severity = 1
-    rule = "Comunicación reciente"
-    for condition, status, r, description in conditions:
-        if condition:
-            severity = status
-            rule = description
-
-    gxstatus_args = {
-        'severity': severity,
-        'description': rule,
-        'deployment': deployment
-    }
-    status = get_or_create_gxstatus(gxstatus_args)
-
-    update_values['status'] = status
-    devicestatus_args = {
-        'device': device,
-        'defaults': update_values,
-    }
-    device_status = update_or_create_devicestatus(devicestatus_args)
-
-    delay_time = update_values['delay_time'] if 'delay_time' in update_values else timedelta(
-        0)
-    delayed = update_values['delayed'] if 'delayed' in update_values else False
-
-    # Arreglar: Y si no hubo last connection de gx_data?
-    devicehistory_args = {
-        'device': device,
-        'register_date': date_now.date(),
-        'register_datetime': date_now,
-        'delayed': delayed,
-        'delay_time': delay_time,
-        'batch_dropping': recent_data["batch_dropping"],
-        'camera_connection': recent_data["camera_connection"],
-        'restart': recent_data["restart"],
-        'license': recent_data["license"],
-        'shift_change': recent_data["shift_change"],
-        'others': recent_data["others"],
-        'last_connection': last_connection,
-        'status': status
-    }
-    create_device_history(devicehistory_args)
-
-    camerastatus_data = []
-    camerahistory_data = []
-
-    for name, camera_data in camera_data.items():
-        recent_data = camera_data["ten_minutes"]
-        hour_data = camera_data["hour"]
-
-        camera_args = {
-            'name': name,
-            'gx': device
+        gxstatus_args = {
+            'severity': severity,
+            'description': rule,
+            'deployment': deployment
         }
-        camera = get_or_create_camera(camera_args)
+        status = get_or_create_gxstatus(gxstatus_args)
 
-        camerastatus_data.append({
-            'camera': camera,
-            'connected': hour_data["connected"],
-            'last_update': date_now,
-            'disconnection_time': hour_data["disconnection_time"]
-        })
+        update_values['status'] = status
+        devicestatus_args = {
+            'device': device,
+            'defaults': update_values,
+        }
+        device_status = update_or_create_devicestatus(devicestatus_args)
 
-        camerahistory_data.append({
-            'camera': camera,
-            'register_date': date_now,
+        delay_time = update_values['delay_time'] if 'delay_time' in update_values else timedelta(
+            0)
+        delayed = update_values['delayed'] if 'delayed' in update_values else False
+
+        # Arreglar: Y si no hubo last connection de gx_data?
+        devicehistory_args = {
+            'device': device,
+            'register_date': date_now.date(),
             'register_datetime': date_now,
-            'connected': recent_data["connected"],
-            'disconnection_time': recent_data["disconnection_time"]
-        })
+            'delayed': delayed,
+            'delay_time': delay_time,
+            'batch_dropping': recent_data["batch_dropping"],
+            'camera_connection': recent_data["camera_connection"],
+            'restart': recent_data["restart"],
+            'license': recent_data["license"],
+            'shift_change': recent_data["shift_change"],
+            'others': recent_data["others"],
+            'last_connection': last_connection,
+            'status': status
+        }
+        create_device_history(devicehistory_args)
 
-    bulk_update_camerastatus(camerastatus_data)
-    bulk_create_camerahistory(camerahistory_data)
+        camerastatus_data = []
+        camerahistory_data = []
+
+        for name, camera_data in camera_data.items():
+            recent_data = camera_data["ten_minutes"]
+            hour_data = camera_data["hour"]
+
+            camera_args = {
+                'name': name,
+                'gx': device
+            }
+            camera = get_or_create_camera(camera_args)
+
+            camerastatus_data.append({
+                'camera': camera,
+                'connected': hour_data["connected"],
+                'last_update': date_now,
+                'disconnection_time': hour_data["disconnection_time"]
+            })
+
+            camerahistory_data.append({
+                'camera': camera,
+                'register_date': date_now,
+                'register_datetime': date_now,
+                'connected': recent_data["connected"],
+                'disconnection_time': recent_data["disconnection_time"]
+            })
+
+        bulk_update_camerastatus(camerastatus_data)
+        bulk_create_camerahistory(camerahistory_data)
 
 
 def send_daily_sd_report():
