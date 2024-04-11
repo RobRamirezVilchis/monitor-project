@@ -87,7 +87,7 @@ const MainLayout = ({ children }: MainLayoutProps) => {
               height={32}
               alt="Picture of the author"
             ></Image>
-            <span className="ml-2 mt-1">Monitor</span>
+            <span className="ml-2 mt-1 text-lg font-bold">Monitor</span>
           </Link>
           <div className="flex items-center">
             <ColorSchemeSwitchToggle />
@@ -102,7 +102,7 @@ const MainLayout = ({ children }: MainLayoutProps) => {
         {/* Mobile */}
         <div className="flex-1 flex md:hidden justify-center">
           <Link href="/">
-            <span className="h-6">Monitor</span>
+            <span className="h-6 text-lg font-bold">Monitor</span>
           </Link>
         </div>
         <div className="flex gap-2 md:hidden items-center mx-4">

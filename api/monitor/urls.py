@@ -90,9 +90,17 @@ urlpatterns = [
          ], "unit-last-active-status"))
          ),
 
+    # Scatterplot data
     path("driving-status/severity-history/<int:unit_id>/",
          include(([
              path("", apis.UnitScatterPlotAPI.as_view(), name="status"),
+         ], "unit-scatterplot"))
+         ),
+
+    # Scatterplot data
+    path("driving-status/area-plot-data/",
+         include(([
+             path("", apis.SafeDrivingAreaPlotAPI.as_view(), name="status"),
          ], "unit-scatterplot"))
          ),
 ]

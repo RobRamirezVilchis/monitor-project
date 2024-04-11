@@ -66,7 +66,9 @@ CRONJOBS = [
     ('*/10 * * * *', 'monitor.cron.update_industry_status', '>> ' +
      os.path.join(BASE_DIR, 'monitor/log/debug_ind.log' + ' 2>&1 ')),
     ('30 9 * * *', 'monitor.cron.send_daily_sd_report', '>> ' +
-     os.path.join(BASE_DIR, 'monitor/log/debug_reports.log' + ' 2>&1 '))
+     os.path.join(BASE_DIR, 'monitor/log/debug_reports.log' + ' 2>&1 ')),
+    ('0 * * * *', 'monitor.cron.register_severity_counts', '>> ' +
+     os.path.join(BASE_DIR, 'monitor/log/debug_counts.log' + ' 2>&1 ')),
 ]
 
 INSTALLED_APPS = [

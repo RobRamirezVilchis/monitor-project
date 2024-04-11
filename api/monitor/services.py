@@ -187,3 +187,8 @@ def create_alert(args):
     )
 
     return alert
+
+
+def create_severity_count(args):
+    severity_count = SeverityCount.objects.create(**args)
+    return severity_count

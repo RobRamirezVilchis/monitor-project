@@ -353,9 +353,7 @@ def update_driving_status():
         hour_data = data["hour"]
         recent_data = data["ten_minutes"]
 
-        tz_utc = pytz.utc
-        date_now = tz_utc.localize(datetime.utcnow())
-        # date_now = date_now.astimezone(pytz.timezone("America/Mexico_City")).replace(tzinfo=pytz.utc)
+        date_now = datetime.now(tz=pytz.timezone('UTC'))
 
         client_args = {
             'name': client_name,
@@ -753,9 +751,7 @@ def update_industry_status():
         hour_data = gx_data["hour"]
         recent_data = gx_data["ten_minutes"]
 
-        tz_utc = pytz.utc
-        date_now = tz_utc.localize(datetime.utcnow())
-        # date_now = datetime.utcnow().astimezone(pytz.timezone('America/Mexico_City')).replace(tzinfo=pytz.utc)
+        date_now = datetime.now(tz=pytz.timezone('UTC'))
 
         client_args = {
             'name': client_name,
@@ -1018,3 +1014,42 @@ def send_daily_sd_report():
         message += "\nNo hubieron unidades críticas"
 
     send_telegram(chat="SAFEDRIVING_CHAT", message=message)
+
+
+def register_severity_counts():
+    now = datetime.now(tz=pytz.timezone('UTC'))
+    unit_severity_counts = get_units_severity_counts()
+    unit_counts_json = {}
+    for count in unit_severity_counts:
+        unit_counts_json[count['severity']] = count['count']
+
+    device_severity_counts = get_devices_severity_counts()
+    device_counts_json = {}
+    for count in device_severity_counts:
+        device_counts_json[count['severity']] = count['count']
+
+    # Si hay categorías vacías, incluirlas en el diccionario
+    for n in range(1, 6):
+        if n not in unit_counts_json:
+            unit_counts_json[n] = 0
+        if n not in device_counts_json:
+            device_counts_json[n] = 0
+
+    safe_driving = get_deployment("Safe Driving")
+    industry = get_deployment("Industry")
+
+    sd_count_args = {
+        "deployment": safe_driving,
+        "timestamp": now,
+        "date": now.date(),
+        "severity_counts": unit_counts_json
+    }
+    create_severity_count(sd_count_args)
+
+    ind_count_args = {
+        "deployment": industry,
+        "timestamp": now,
+        "date": now.date(),
+        "severity_counts": device_counts_json
+    }
+    create_severity_count(ind_count_args)

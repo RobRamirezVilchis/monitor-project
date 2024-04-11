@@ -213,3 +213,14 @@ class DeviceHistory(models.Model):
 
     def __str__(self):
         return self.register_date.strftime("%Y-%m-%d %H:%M:%S") + ' - ' + str(self.device.name)
+
+
+class SeverityCount(models.Model):
+    deployment = models.ForeignKey(Deployment, on_delete=models.CASCADE)
+    timestamp = models.DateTimeField()
+    date = models.DateField(db_index=True)
+    severity_counts = models.JSONField()
+    status_fields = models.JSONField(null=True)
+
+    def __str__(self):
+        return f'{self.deployment} - {self.timestamp}'

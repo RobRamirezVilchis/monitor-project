@@ -1,6 +1,6 @@
 import { createQuery } from "../helpers/createQuery";
-import { getUnits, getDevices, getUnitHistory, getDrivingSeverityCount, getUnitLastStatusChange, getDeviceHistory, getIndustrySeverityCount, getUnitStatus, getDeviceStatus, getSafeDrivingClients, getIndustryClients, getDeviceLastStatusChange, getIndustryCameraDisconnections, getUnitLastActiveStatus, getUnitSeverityHistory } from "../services/monitor";
-import { DeviceFilters, SeverityHistoryFilters, UnitFilters } from "../services/monitor/types";
+import { getUnits, getDevices, getUnitHistory, getDrivingSeverityCount, getUnitLastStatusChange, getDeviceHistory, getIndustrySeverityCount, getUnitStatus, getDeviceStatus, getSafeDrivingClients, getIndustryClients, getDeviceLastStatusChange, getIndustryCameraDisconnections, getUnitLastActiveStatus, getUnitSeverityHistory, getSafeDrivingAreaPlotData } from "../services/monitor";
+import { AreaPlotFilters, DeviceFilters, SeverityHistoryFilters, UnitFilters } from "../services/monitor/types";
 import defaultQueryClient from "../clients/defaultQueryClient";
 
 // Safe Driving API ----------------------------------------------------------
@@ -51,6 +51,18 @@ export const useDrivingSeverityCount = createQuery({
   refetchIntervalInBackground: true
 });
 
+export const useSafeDrivingAreaPlotData = createQuery({
+  queryPrimaryKey: "driving_area_plot_data",
+  queryKeyVariables: (vars: AreaPlotFilters) => vars ? [vars] : [],
+  queryFn: (ctx, vars) => getSafeDrivingAreaPlotData(vars, { signal: ctx.signal }),
+  cacheTime: 1000 * 60 * 5,  // 5 minutes
+  staleTime: 1000 * 60 * 3,  // 3 minutes
+  keepPreviousData: true,
+  queryClient: defaultQueryClient,
+  refetchInterval: 60000,
+  refetchIntervalInBackground: true
+});
+
 export const useUnitLastStatusChange = createQuery({
   queryPrimaryKey: "last_status_change",
   queryKeyVariables: (vars: UnitFilters) => vars ? [vars] : [],
@@ -84,6 +96,7 @@ export const useUnitLastActiveStatus = createQuery({
   queryClient: defaultQueryClient,
 });
 
+// Scatterplot
 export const useUnitSeverityHistory = createQuery({
   queryPrimaryKey: "severity_history",
   queryKeyVariables: (vars: SeverityHistoryFilters) => vars ? [vars] : [],

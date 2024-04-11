@@ -52,6 +52,7 @@ const api = {
         clients: "api/v1/monitor/driving/clients/",
         status: "api/v1/monitor/driving-status/",
         severityCount: "api/v1/monitor/driving-status-count/",
+        areaPlotData: "api/v1/monitor/driving-status/area-plot-data/",
         lastStatusChange: (unit_id: UnitId) => `api/v1/monitor/driving-status/last-status-change/${unit_id}/`,
         lastActiveStatus: (unit_id: UnitId) => `api/v1/monitor/driving-status/last-active-status/${unit_id}/`,
         unitStatus: (unit_id: UnitId) => `api/v1/monitor/driving-status/${unit_id}/`,

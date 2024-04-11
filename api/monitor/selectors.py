@@ -1,6 +1,6 @@
 from .models import *
 from django_filters import rest_framework as rf_filters
-from django.db.models import Q
+from django.db.models import Q, F, Count
 
 
 def unitstatus_list():
@@ -290,3 +290,37 @@ def get_scatterplot_data(args, filters=None):
     )
 
     return ScatterplotDataFilter(filters, logs).qs
+
+
+def get_units_severity_counts():
+    counts = UnitStatus.objects.values('status__severity') \
+        .annotate(severity=F('status__severity')) \
+        .values('severity') \
+        .annotate(count=Count('id')) \
+        .order_by('-severity')
+
+    return counts
+
+
+class AreaPlotDataFilter(rf_filters.FilterSet):
+    timestamp = rf_filters.DateFromToRangeFilter()
+
+    class Meta:
+        model = SeverityCount
+        fields = ['timestamp']
+
+
+def get_area_plot_data(deployment_name, filters=None):
+    logs = SeverityCount.objects.filter(deployment__name=deployment_name)
+
+    return AreaPlotDataFilter(filters, logs).qs
+
+
+def get_devices_severity_counts():
+    counts = DeviceStatus.objects.values('status__severity') \
+        .annotate(severity=F('status__severity')) \
+        .values('severity') \
+        .annotate(count=Count('id')) \
+        .order_by('-severity')
+
+    return counts

@@ -1,4 +1,4 @@
-import { UnitStatus, SeverityCount, UnitHistory, DeviceStatus, UnitFilters, LastStatusChange, DeviceFilters, DeviceHistory, Client, CameraDisconnection, LastActiveStatus, SeverityHistory } from "./types";
+import { UnitStatus, SeverityCount, UnitHistory, DeviceStatus, UnitFilters, LastStatusChange, DeviceFilters, DeviceHistory, Client, CameraDisconnection, LastActiveStatus, SeverityHistory, AreaPlotData, AreaPlotFilters } from "./types";
 import { Id, Paginated } from "@/api/types";
 import { Role, User } from "../auth/types";
 import api from "../..";
@@ -48,6 +48,24 @@ export async function getDrivingSeverityCount(config?: Parameters<typeof http.ge
   }
 }
 
+
+export async function getSafeDrivingAreaPlotData(
+  filters: AreaPlotFilters, 
+  config?: Parameters<typeof http.get>[1]
+  ) {
+  try {
+    const resp = await http.get<AreaPlotData[]>(
+      api.endpoints.monitor.driving.areaPlotData,
+      {
+        params: filters,
+        ...config,
+      }
+    );
+    return resp.data;
+  } catch (error) {
+    throw error;
+  }
+}
 
 export async function getUnitStatus(
   filters: UnitFilters,

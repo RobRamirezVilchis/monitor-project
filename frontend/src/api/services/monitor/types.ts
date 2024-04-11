@@ -101,6 +101,18 @@ export interface LastActiveStatus {
   description: string,
 }
 
+export interface AreaPlotData {
+  timestamp: Date,
+  severity_counts: {
+    [key: string]: number;
+  },
+}
+
+export interface AreaPlotFilters {
+  timestamp_after: Date | null,
+  timestamp_before: Date | null,
+}
+
 export interface SeverityHistory {
   hora: string,
   severidad: number,
