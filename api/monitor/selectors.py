@@ -1,3 +1,4 @@
+from .services import create_severity_count
 from .models import *
 from django_filters import rest_framework as rf_filters
 from django.db.models import Q, F, Count
@@ -311,7 +312,8 @@ class AreaPlotDataFilter(rf_filters.FilterSet):
 
 
 def get_area_plot_data(deployment_name, filters=None):
-    logs = SeverityCount.objects.filter(deployment__name=deployment_name)
+    logs = SeverityCount.objects.filter(
+        deployment__name=deployment_name).order_by("timestamp")
 
     return AreaPlotDataFilter(filters, logs).qs
 
@@ -324,3 +326,48 @@ def get_devices_severity_counts():
         .order_by('-severity')
 
     return counts
+
+
+def register_area_plot_historics():
+    from datetime import datetime
+
+    safe_driving = Deployment.objects.get(name="Safe Driving")
+
+    current_hour = datetime.now().replace(
+        minute=0, second=0, microsecond=0) - timedelta(hours=6)
+    hour_to_search = current_hour
+
+    no_data = 0
+    all_counts = {}
+    while no_data < 100:
+        limit = hour_to_search + timedelta(minutes=1)
+        logs_in_interval = UnitHistory.objects.filter(
+            register_datetime__range=(hour_to_search, limit))
+
+        severity_count_in_hour = logs_in_interval.values('status__severity') \
+            .annotate(severity=F('status__severity')) \
+            .values('severity') \
+            .annotate(count=Count('id')) \
+            .order_by('-severity')
+
+        if severity_count_in_hour:
+            count_dict = {str(x["severity"]): x["count"]
+                          for x in severity_count_in_hour}
+            all_counts[hour_to_search.isoformat(
+            )] = count_dict
+
+            sd_count_args = {
+                "deployment": safe_driving,
+                "timestamp": hour_to_search,
+                "date": hour_to_search.date(),
+                "severity_counts": count_dict
+            }
+            create_severity_count(sd_count_args)
+
+        hour_to_search -= timedelta(hours=1)
+        if not logs_in_interval:
+            no_data += 1
+        else:
+            no_data = 0
+
+    print(all_counts)

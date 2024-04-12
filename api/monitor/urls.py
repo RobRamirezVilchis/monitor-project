@@ -101,6 +101,6 @@ urlpatterns = [
     path("driving-status/area-plot-data/",
          include(([
              path("", apis.SafeDrivingAreaPlotAPI.as_view(), name="status"),
-         ], "unit-scatterplot"))
+         ], "units-area-plot"))
          ),
 ]

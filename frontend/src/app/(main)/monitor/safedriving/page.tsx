@@ -1,8 +1,8 @@
 "use client";
 
-import { useCallback, useState } from "react";
-import { Tabs, rem } from "@mantine/core";
-import { AreaChart } from "@mantine/charts";
+import { useCallback, useEffect, useState } from "react";
+import { Checkbox, SegmentedControl, Tabs, rem } from "@mantine/core";
+import { AreaChart, AreaChartType } from "@mantine/charts";
 import {
   IconPhoto,
   IconMessageCircle,
@@ -68,11 +68,16 @@ const SafeDrivingPage = () => {
     onDropdownClose: () => combobox.resetSelectedOption(),
   });
   const [clientValue, setClientValue] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState<string | null>("details");
+  const [graphMode, setGraphMode] = useState<string>("percent");
+  const [showInactive, setShowInactive] = useState<boolean>(false);
   const [value, setValue] = useState("");
   const searchParams = useSearchParams();
   const tab = searchParams.get("tab");
   const filter = searchParams.get("filter");
+
+  useEffect(() => {
+    router.replace("/monitor/safedriving?tab=details");
+  }, [router]);
 
   const currentDate = new Date();
   let yesterday = new Date();
@@ -124,12 +129,14 @@ const SafeDrivingPage = () => {
     1: 0,
     0: 0,
   };
+
   const severityCount: {
     level: number;
     name: string;
     value: number;
     color: string;
   }[] = [];
+
   if (unitsData) {
     for (const unitData of unitsData) {
       if (clientValue) {
@@ -157,11 +164,11 @@ const SafeDrivingPage = () => {
     Alerta: number;
     Normal: number;
     Funcionando: number;
+    Inactivo: number;
   }[] = [];
 
   if (areaPlotQueryData) {
     for (const hourCount of areaPlotQueryData) {
-      console.log(hourCount.severity_counts["5"]);
       areaPlotData.push({
         fecha: hourCount.timestamp,
         Crítico: hourCount.severity_counts["5"],
@@ -169,6 +176,7 @@ const SafeDrivingPage = () => {
         Alerta: hourCount.severity_counts["3"],
         Normal: hourCount.severity_counts["2"],
         Funcionando: hourCount.severity_counts["1"],
+        Inactivo: hourCount.severity_counts["0"],
       });
     }
   }
@@ -178,7 +186,6 @@ const SafeDrivingPage = () => {
       <Tabs
         value={tab}
         onChange={(value) => {
-          setActiveTab(value);
           value
             ? router.push(
                 "/monitor/safedriving/?" + createQueryString("tab", value)
@@ -287,12 +294,29 @@ const SafeDrivingPage = () => {
           <div className="flex items-center mb-6">
             <h2 className="text-xl ">Gráfica de estátus en el tiempo:</h2>
 
-            <div className="w-80 ml-4">
-              <DatePickerInput
-                type="range"
-                placeholder="Pick date"
-                value={dateValue}
-                onChange={setDateValue}
+            <div className="flex gap-10 items-center">
+              <div className="w-70 ml-4 mr-0">
+                <DatePickerInput
+                  type="range"
+                  placeholder="Pick date"
+                  value={dateValue}
+                  onChange={setDateValue}
+                />
+              </div>
+              <SegmentedControl
+                value={graphMode}
+                onChange={setGraphMode}
+                data={[
+                  { label: "Percent", value: "percent" },
+                  { label: "Stacked", value: "stacked" },
+                ]}
+              />
+              <Checkbox
+                label={"Mostrar unidades inactivas"}
+                checked={showInactive}
+                onChange={(event) =>
+                  setShowInactive(event.currentTarget.checked)
+                }
               />
             </div>
           </div>
@@ -304,14 +328,27 @@ const SafeDrivingPage = () => {
                 data={areaPlotData}
                 dataKey="fecha"
                 tooltipAnimationDuration={200}
-                type="percent"
-                series={[
-                  { name: "Funcionando", color: "blue" },
-                  { name: "Normal", color: "green" },
-                  { name: "Alerta", color: "yellow.5" },
-                  { name: "Fallando", color: "orange" },
-                  { name: "Crítico", color: "red" },
-                ]}
+                type={graphMode as AreaChartType}
+                dotProps={{ r: 0 }}
+                series={
+                  showInactive
+                    ? [
+                        { name: "Inactivo", color: "gray" },
+                        { name: "Funcionando", color: "blue" },
+                        { name: "Normal", color: "green" },
+                        { name: "Alerta", color: "yellow.5" },
+                        { name: "Fallando", color: "orange" },
+                        { name: "Crítico", color: "red" },
+                      ]
+                    : [
+                        { name: "Funcionando", color: "blue" },
+                        { name: "Normal", color: "green" },
+                        { name: "Alerta", color: "yellow.5" },
+                        { name: "Fallando", color: "orange" },
+                        { name: "Crítico", color: "red" },
+                      ]
+                }
+                curveType="monotone"
               />
             </div>
           )}
