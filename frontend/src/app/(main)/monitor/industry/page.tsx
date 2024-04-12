@@ -46,7 +46,7 @@ const statusColors: { [key in StatusKey]: string } = {
 const IndustryPage = () => {
   const router = useRouter();
   const [value, setValue] = useState("");
-  const [graphMode, setGraphMode] = useState<string>("percent");
+  const [graphMode, setGraphMode] = useState<string>("stacked");
   const [showInactive, setShowInactive] = useState<boolean>(false);
   const searchParams = useSearchParams();
   const filter = searchParams.get("filter");
@@ -157,67 +157,69 @@ const IndustryPage = () => {
 
         <Tabs.Panel value="details">
           <div className="flex items-center">
-            <div className="mr-24">
-              <TextInput
-                className="flex gap-3 items-center w-100 mb-4"
-                styles={{
-                  label: { fontSize: 18 },
-                }}
-                label="Buscar dispositivo:"
-                value={value}
-                onChange={(event) => setValue(event.currentTarget.value)}
-              />
+            <div className="relative mr-10">
+              <div className="mr-24">
+                <TextInput
+                  className="flex gap-3 items-center w-100 mb-4"
+                  styles={{
+                    label: { fontSize: 18 },
+                  }}
+                  label="Buscar dispositivo:"
+                  value={value}
+                  onChange={(event) => setValue(event.currentTarget.value)}
+                />
 
-              {countQuery.data && (
-                <div className="flex w-fit py-2 mb-4 gap-6 flex-wrap">
-                  {countQuery.data.map((severity_count) => (
-                    <div
-                      key={severity_count.severity}
-                      className="flex gap-2 items-center"
-                    >
-                      <p>{severity_count.count}</p>
-                      <p>-</p>
-                      <Link
-                        href={
-                          filter == null
-                            ? "/monitor/industry/?" +
-                              createQueryString(
-                                "filter",
-                                String(severity_count.severity)
-                              )
-                            : "/monitor/industry/"
-                        }
-                        className={`${
-                          severity_count.severity == Number(filter) ||
-                          filter == null
-                            ? "opacity-100"
-                            : "opacity-50"
-                        } inline-flex px-2.5 pt-1 pb-0.5 text-s font-semibold border-2 ${
-                          statusStyles[severity_count.severity as StatusKey]
-                        } rounded-full`}
+                {countQuery.data && (
+                  <div className="flex w-fit py-2 mb-4 gap-6 flex-wrap">
+                    {countQuery.data.map((severity_count) => (
+                      <div
+                        key={severity_count.severity}
+                        className="flex gap-2 items-center"
                       >
-                        {statusNames[severity_count.severity as StatusKey]}
-                      </Link>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
+                        <p>{severity_count.count}</p>
+                        <p>-</p>
+                        <Link
+                          href={
+                            filter == null
+                              ? "/monitor/industry/?" +
+                                createQueryString(
+                                  "filter",
+                                  String(severity_count.severity)
+                                )
+                              : "/monitor/industry/"
+                          }
+                          className={`${
+                            severity_count.severity == Number(filter) ||
+                            filter == null
+                              ? "opacity-100"
+                              : "opacity-50"
+                          } inline-flex px-2.5 pt-1 pb-0.5 text-s font-semibold border-2 ${
+                            statusStyles[severity_count.severity as StatusKey]
+                          } rounded-full`}
+                        >
+                          {statusNames[severity_count.severity as StatusKey]}
+                        </Link>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
 
-            <div className="hidden md:block">
-              <PieChart
-                data={data}
-                mt={0}
-                mb={0}
-                py={0}
-                size={150}
-                withLabels
-                withLabelsLine
-                labelsType="percent"
-                labelsPosition="outside"
-                withTooltip
-                tooltipDataSource="segment"
-              />
+              <div className="absolute -right-60 bottom-0 hidden md:block">
+                <PieChart
+                  data={data}
+                  mt={0}
+                  mb={0}
+                  py={0}
+                  size={150}
+                  withLabels
+                  withLabelsLine
+                  labelsType="percent"
+                  labelsPosition="outside"
+                  withTooltip
+                  tooltipDataSource="segment"
+                />
+              </div>
             </div>
           </div>
 
@@ -244,6 +246,14 @@ const IndustryPage = () => {
                   onChange={setDateValue}
                 />
               </div>
+              <SegmentedControl
+                value={graphMode}
+                onChange={setGraphMode}
+                data={[
+                  { label: "Percent", value: "percent" },
+                  { label: "Stacked", value: "stacked" },
+                ]}
+              />
             </div>
           </div>
 

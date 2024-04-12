@@ -182,7 +182,7 @@ const SafeDrivingPage = () => {
   }
 
   return (
-    <section className="relative mb-20">
+    <section className="mb-20">
       <Tabs
         value={tab}
         onChange={(value) => {
@@ -206,81 +206,84 @@ const SafeDrivingPage = () => {
         </div>
         <Tabs.Panel value="details">
           <div className="flex items-center">
-            <div className="mr-10">
-              <div className="flex flex-col md:flex-row mb-4 gap-4 md:gap-10">
-                <TextInput
-                  className="md:flex gap-3 items-center "
-                  styles={{
-                    label: { fontSize: 18 },
-                  }}
-                  label="Buscar unidad:"
-                  value={value}
-                  onChange={(event) => setValue(event.currentTarget.value)}
-                />
+            <div className="relative mr-10">
+              <div className="pr-28">
+                <div className="flex flex-col md:flex-row mb-4 gap-4 md:gap-10">
+                  <TextInput
+                    className="md:flex gap-3 items-center "
+                    styles={{
+                      label: { fontSize: 18 },
+                    }}
+                    label="Buscar unidad:"
+                    value={value}
+                    onChange={(event) => setValue(event.currentTarget.value)}
+                  />
 
-                <Select
-                  className="md:flex gap-3 items-center"
-                  styles={{
-                    label: { fontSize: 18 },
-                  }}
-                  label="Filtrar por cliente:"
-                  placeholder="Todos"
-                  data={clients}
-                  onChange={(value: string | null) => setClientValue(value)}
-                ></Select>
+                  <Select
+                    className="md:flex gap-3 items-center"
+                    styles={{
+                      label: { fontSize: 18 },
+                    }}
+                    label="Filtrar por cliente:"
+                    placeholder="Todos"
+                    data={clients}
+                    onChange={(value: string | null) => setClientValue(value)}
+                  ></Select>
+                </div>
+
+                {countQuery.data && (
+                  <div className="flex w-fit py-2 mb-4 gap-6 flex-wrap">
+                    {severityCount.map((severity_count) => (
+                      <div
+                        key={severity_count.level}
+                        className="flex gap-2 items-center"
+                      >
+                        <p>{severity_count.value}</p>
+                        <p>-</p>
+
+                        <Link
+                          href={
+                            filter == null ||
+                            Number(filter) != severity_count.level
+                              ? "/monitor/safedriving/?" +
+                                createQueryString(
+                                  "filter",
+                                  String(severity_count.level)
+                                )
+                              : "/monitor/safedriving/"
+                          }
+                          className={`${
+                            severity_count.level == Number(filter) ||
+                            filter == null
+                              ? "opacity-100"
+                              : "opacity-30"
+                          } inline-flex px-2.5 pt-1 pb-0.5 text-s font-semibold border-2 ${
+                            statusStyles[severity_count.level as StatusKey]
+                          } rounded-full`}
+                        >
+                          {statusNames[severity_count.level as StatusKey]}
+                        </Link>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
 
-              {countQuery.data && (
-                <div className="flex w-fit py-2 mb-4 gap-6 flex-wrap">
-                  {severityCount.map((severity_count) => (
-                    <div
-                      key={severity_count.level}
-                      className="flex gap-2 items-center"
-                    >
-                      <p>{severity_count.value}</p>
-                      <p>-</p>
-
-                      <Link
-                        href={
-                          filter == null ||
-                          Number(filter) != severity_count.level
-                            ? "/monitor/safedriving/?" +
-                              createQueryString(
-                                "filter",
-                                String(severity_count.level)
-                              )
-                            : "/monitor/safedriving/"
-                        }
-                        className={`${
-                          severity_count.level == Number(filter) ||
-                          filter == null
-                            ? "opacity-100"
-                            : "opacity-30"
-                        } inline-flex px-2.5 pt-1 pb-0.5 text-s font-semibold border-2 ${
-                          statusStyles[severity_count.level as StatusKey]
-                        } rounded-full`}
-                      >
-                        {statusNames[severity_count.level as StatusKey]}
-                      </Link>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-            <div className="hidden md:block">
-              <PieChart
-                data={severityCount.slice(0, 5)}
-                mt={0}
-                mb={0}
-                py={0}
-                size={150}
-                withLabels
-                withLabelsLine
-                labelsType="percent"
-                labelsPosition="outside"
-                withTooltip
-                tooltipDataSource="segment"
-              />
+              <div className="absolute -right-32 bottom-0 hidden md:block">
+                <PieChart
+                  data={severityCount.slice(0, 5)}
+                  mt={0}
+                  mb={0}
+                  py={0}
+                  size={150}
+                  withLabels
+                  withLabelsLine
+                  labelsType="percent"
+                  labelsPosition="outside"
+                  withTooltip
+                  tooltipDataSource="segment"
+                />
+              </div>
             </div>
           </div>
 

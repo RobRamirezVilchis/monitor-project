@@ -443,7 +443,7 @@ def update_driving_status():
 
             # last_connection = datetime.fromisoformat(unit_logs['Ultima_actualizacion']).replace(
             #    tzinfo=pytz.timezone("America/Monterrey")) if unit_logs['Ultima_actualizacion'] != 'null' else None
-            last_connection = datetime.fromisoformat(unit_logs['Ultima_actualizacion']) + timedelta(hours=6) \
+            last_connection = (datetime.fromisoformat(unit_logs['Ultima_actualizacion']) + timedelta(hours=6)).replace(tzinfo=pytz.UTC) \
                 if unit_logs['Ultima_actualizacion'] != 'null' else None
             # last_connection = last_connection.astimezone(pytz.timezone('UTC')) if last_connection else None
 
@@ -504,7 +504,7 @@ def update_driving_status():
             # last_connection = datetime.fromisoformat(recent_unit_logs['Ultima_actualizacion']).replace(
             #    tzinfo=pytz.timezone("America/Mexico_City")) if recent_unit_logs['Ultima_actualizacion'] != 'null' else None
             # last_connection = last_connection.astimezone(pytz.timezone('UTC')) if last_connection else None
-            last_connection = datetime.fromisoformat(unit_logs['Ultima_actualizacion']) + timedelta(hours=6) \
+            last_connection = (datetime.fromisoformat(unit_logs['Ultima_actualizacion']) + timedelta(hours=6)).replace(tzinfo=pytz.UTC) \
                 if unit_logs['Ultima_actualizacion'] != 'null' else None
 
             history_logs.append({
@@ -740,8 +740,6 @@ def update_industry_status():
 
         if response is not None:
             processed_data = process_industry_data(response)
-            print(client_name)
-            print(processed_data)
         else:
             print(f"No data for {client_name}")
             continue
