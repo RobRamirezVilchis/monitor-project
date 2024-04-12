@@ -156,7 +156,7 @@ const IndustryPage = () => {
         </div>
 
         <Tabs.Panel value="details">
-          <div className="flex">
+          <div className="flex items-center">
             <div className="mr-24">
               <TextInput
                 className="flex gap-3 items-center w-100 mb-4"
