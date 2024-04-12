@@ -193,11 +193,15 @@ const SafeDrivingPage = () => {
             : router.push("/monitor/safedriving/");
         }}
       >
-        <div className="flex pb-2 mb-3 md:mb-6">
-          <h1 className="text-5xl font-bold  pr-10">Safe Driving</h1>
+        <div className="md:flex pb-2 mb-3 md:mb-6">
+          <h1 className="text-5xl font-bold  pr-10 mb-4 ">Safe Driving</h1>
           <Tabs.List>
-            <Tabs.Tab value="details">Detalles</Tabs.Tab>
-            <Tabs.Tab value="statistics">Estadísticas</Tabs.Tab>
+            <Tabs.Tab className="text-lg" value="details">
+              Detalles
+            </Tabs.Tab>
+            <Tabs.Tab className="text-lg" value="statistics">
+              Estadísticas
+            </Tabs.Tab>
           </Tabs.List>
         </div>
         <Tabs.Panel value="details">
@@ -291,11 +295,12 @@ const SafeDrivingPage = () => {
           </div>
         </Tabs.Panel>
         <Tabs.Panel value="statistics">
-          <div className="flex items-center mb-6">
-            <h2 className="text-xl ">Gráfica de estátus en el tiempo:</h2>
-
-            <div className="flex gap-10 items-center">
-              <div className="w-70 ml-4 mr-0">
+          <div className="md:flex items-center mb-6">
+            <h2 className="text-xl mb-2 md:mb-0">
+              Gráfica de estátus en el tiempo:
+            </h2>
+            <div className="md:flex space-y-4 md:space-y-0 gap-10 items-center">
+              <div className="w-70 ml-0 md:ml-4 mr-0">
                 <DatePickerInput
                   type="range"
                   placeholder="Pick date"
@@ -303,6 +308,7 @@ const SafeDrivingPage = () => {
                   onChange={setDateValue}
                 />
               </div>
+
               <SegmentedControl
                 value={graphMode}
                 onChange={setGraphMode}

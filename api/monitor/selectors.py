@@ -369,5 +369,3 @@ def register_area_plot_historics():
             no_data += 1
         else:
             no_data = 0
-
-    print(all_counts)
