@@ -328,7 +328,7 @@ def get_devices_severity_counts():
     return counts
 
 
-def register_area_plot_historics():
+def register_sd_area_plot_historicals():
     from datetime import datetime
 
     safe_driving = Deployment.objects.get(name="Safe Driving")
@@ -342,6 +342,49 @@ def register_area_plot_historics():
     while no_data < 100:
         limit = hour_to_search + timedelta(minutes=1)
         logs_in_interval = UnitHistory.objects.filter(
+            register_datetime__range=(hour_to_search, limit))
+
+        severity_count_in_hour = logs_in_interval.values('status__severity') \
+            .annotate(severity=F('status__severity')) \
+            .values('severity') \
+            .annotate(count=Count('id')) \
+            .order_by('-severity')
+
+        if severity_count_in_hour:
+            count_dict = {str(x["severity"]): x["count"]
+                          for x in severity_count_in_hour}
+            all_counts[hour_to_search.isoformat(
+            )] = count_dict
+
+            sd_count_args = {
+                "deployment": safe_driving,
+                "timestamp": hour_to_search,
+                "date": hour_to_search.date(),
+                "severity_counts": count_dict
+            }
+            create_severity_count(sd_count_args)
+
+        hour_to_search -= timedelta(hours=1)
+        if not logs_in_interval:
+            no_data += 1
+        else:
+            no_data = 0
+
+
+def register_ind_area_plot_historicals():
+    from datetime import datetime
+
+    safe_driving = Deployment.objects.get(name="Industry")
+
+    current_hour = datetime.now().replace(
+        minute=0, second=0, microsecond=0) - timedelta(hours=6)
+    hour_to_search = current_hour
+
+    no_data = 0
+    all_counts = {}
+    while no_data < 100:
+        limit = hour_to_search + timedelta(minutes=1)
+        logs_in_interval = DeviceHistory.objects.filter(
             register_datetime__range=(hour_to_search, limit))
 
         severity_count_in_hour = logs_in_interval.values('status__severity') \

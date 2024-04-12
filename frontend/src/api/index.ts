@@ -63,6 +63,7 @@ const api = {
         clients: "api/v1/monitor/industry/clients/",
         status: "api/v1/monitor/industry-status/",
         severityCount: "api/v1/monitor/industry-status-count/",
+        areaPlotData: "api/v1/monitor/industry-status/area-plot-data/",
         lastStatusChange: (device_id: DeviceId) => `api/v1/monitor/industry-status/last-status-change/${device_id}/`,
         deviceStatus: (device_id: DeviceId) => `api/v1/monitor/industry-status/${device_id}/`,
         deviceHistory: (device_id: DeviceId) => `api/v1/monitor/industry-status/history/${device_id}/`,

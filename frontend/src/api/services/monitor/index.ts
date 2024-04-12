@@ -67,6 +67,24 @@ export async function getSafeDrivingAreaPlotData(
   }
 }
 
+export async function getIndustryAreaPlotData(
+  filters: AreaPlotFilters, 
+  config?: Parameters<typeof http.get>[1]
+  ) {
+  try {
+    const resp = await http.get<AreaPlotData[]>(
+      api.endpoints.monitor.industry.areaPlotData,
+      {
+        params: filters,
+        ...config,
+      }
+    );
+    return resp.data;
+  } catch (error) {
+    throw error;
+  }
+}
+
 export async function getUnitStatus(
   filters: UnitFilters,
   config?: Parameters<typeof http.get>[1]

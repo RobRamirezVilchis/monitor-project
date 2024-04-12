@@ -193,8 +193,8 @@ const SafeDrivingPage = () => {
             : router.push("/monitor/safedriving/");
         }}
       >
-        <div className="md:flex pb-2 mb-3 md:mb-6">
-          <h1 className="text-5xl font-bold  pr-10 mb-4 ">Safe Driving</h1>
+        <div className="md:flex md:items-center pb-2 mb-3 md:mb-6">
+          <h1 className="text-5xl font-bold pr-10 ">Safe Driving</h1>
           <Tabs.List>
             <Tabs.Tab className="text-lg" value="details">
               Detalles

@@ -553,3 +553,44 @@ class SafeDrivingAreaPlotAPI(APIView):
 
         data = self.OutputSerializer(registers, many=True).data
         return Response(data)
+
+
+class IndustryAreaPlotAPI(APIView):
+    class FiltersSerializer(serializers.Serializer):
+        timestamp_after = serializers.DateTimeField(required=False)
+        timestamp_before = serializers.DateTimeField(required=False)
+
+    class OutputSerializer(serializers.Serializer):
+        timestamp = serializers.DateTimeField()
+        severity_counts = serializers.JSONField()
+
+    def get(self, request, *args, **kwargs):
+        import datetime
+        import pytz
+
+        filters_serializer = self.FiltersSerializer(data=request.query_params)
+        filters_serializer.is_valid(raise_exception=True)
+
+        # Si no se especificó rango de fechas, regresar registros del último día
+        if not (filters_serializer.validated_data.get("timestamp_after") or
+                filters_serializer.validated_data.get("timestamp_before")):
+            import datetime
+            import pytz
+
+            date_now = datetime.datetime.now()
+            end_date = date_now.astimezone(pytz.timezone("America/Mexico_City")).replace(
+                tzinfo=pytz.utc) + datetime.timedelta(hours=6)
+            start_date = end_date - timedelta(hours=24)
+
+            filters_serializer.validated_data["timestamp_before"] = end_date
+            filters_serializer.validated_data["timestamp_after"] = start_date
+
+        registers = get_area_plot_data(
+            "Industry", filters=filters_serializer.validated_data)
+
+        for register in registers:
+            register.timestamp = register.timestamp.astimezone(pytz.timezone("America/Mexico_City")).replace(
+                tzinfo=None).isoformat(timespec="hours", sep=' ') + "h"
+
+        data = self.OutputSerializer(registers, many=True).data
+        return Response(data)

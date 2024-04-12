@@ -103,4 +103,11 @@ urlpatterns = [
              path("", apis.SafeDrivingAreaPlotAPI.as_view(), name="status"),
          ], "units-area-plot"))
          ),
+
+    # Scatterplot data
+    path("industry-status/area-plot-data/",
+         include(([
+             path("", apis.IndustryAreaPlotAPI.as_view(), name="status"),
+         ], "devices-area-plot"))
+         ),
 ]
