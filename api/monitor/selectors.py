@@ -38,7 +38,7 @@ class CameraDisconnectionsFilter(rf_filters.FilterSet):
 
 def get_cameradisconnections(args, filters=None):
     logs = CameraHistory.objects.filter(
-        camera__gx_id=args['device_id'], connected=False).order_by('register_datetime')
+        camera__gx_id=args['device_id'], disconnection_time__gt=timedelta(0)).order_by('register_datetime')
 
     return CameraDisconnectionsFilter(filters, logs).qs
 

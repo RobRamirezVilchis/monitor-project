@@ -161,7 +161,7 @@ class CameraHistoryAdmin(admin.ModelAdmin):
         'disconnection_time',
     )
 
-    search_fields = ('camera__gx__client__name',)
+    search_fields = ('camera__name',)
 
     def get_client(self, obj):
         return obj.camera.gx.client.name
