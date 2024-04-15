@@ -794,7 +794,7 @@ def update_industry_status():
                               "register_datetime": date_now, "register_date": date_now.date()}
                 alert = create_alert(alert_args)
 
-            if os.environ.get("ALERTS") == "true":
+            if alerts and os.environ.get("ALERTS") == "true":
                 send_telegram(chat="INDUSTRY_CHAT",
                               message=message)
 
