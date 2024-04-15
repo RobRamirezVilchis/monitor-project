@@ -628,6 +628,7 @@ def process_industry_data(response):
                                                                    timedelta(minutes=10))
                 }
 
+                # Validar si el log llegó recientemente
                 if register_time > now - timedelta(minutes=10):
                     intervals = ["hour", "ten_minutes"]
 
@@ -635,9 +636,6 @@ def process_industry_data(response):
                         pytz.timezone('America/Mexico_City')).replace(tzinfo=pytz.utc)
                     output_gx["first_log_time"] = first_log_time
 
-                    for description, cond in alert_conditions.items():
-                        if cond:
-                            alerts.add(description)
                 else:
                     intervals = ["hour"]
 
@@ -722,6 +720,16 @@ def process_industry_data(response):
                 for interval in intervals:
                     output_cameras[device][interval]["connected"] = False
 
+    alert_conditions = {
+        "Reinicios de pipeline": (output_gx["hour"]["restart"] > 0),
+        "Desconexión de cámara": (output_gx["hour"]["camera_connection"] > timedelta(0)),
+        "Batch dropping": (output_gx["hour"]["batch_dropping"] > 0),
+        "Sin conexión reciente": (output_gx["hour"]["delayed"])
+    }
+    for description, cond in alert_conditions.items():
+        if cond:
+            alerts.add(description)
+
     return output_gx, output_cameras, days_remaining, license_end, alerts
 
 
@@ -775,7 +783,10 @@ def update_industry_status():
 
         # Crear registros de alertas
         if last_alert == None or last_alert - date_now > timedelta(minutes=alert_interval):
+            message = f'{client_name} - {device.name}:\n'
+
             for description in alerts:
+                message += f'- {description}\n'
                 alert_type = get_or_create_alerttype(
                     {"description": description})
 
@@ -783,11 +794,11 @@ def update_industry_status():
                               "register_datetime": date_now, "register_date": date_now.date()}
                 alert = create_alert(alert_args)
 
-                if os.environ.get("ALERTS") == "true":
-                    send_telegram(chat="INDUSTRY_CHAT",
-                                  message=f'{client_name} - {device.name}: {description}')
+            if os.environ.get("ALERTS") == "true":
+                send_telegram(chat="INDUSTRY_CHAT",
+                              message=message)
 
-                last_alert = date_now
+            last_alert = date_now
 
         # Campos del registro a actualizar
         update_values = {
