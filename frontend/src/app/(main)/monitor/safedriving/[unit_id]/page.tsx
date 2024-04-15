@@ -111,6 +111,8 @@ const UnitPage = ({ params }: { params: { unit_id: string } }) => {
   const unitStatus = unitStatusQuery.data;
   const inactive =
     unitStatus?.description == "Inactivo" ||
+    unitStatus?.description == "Muchos logs pendientes" ||
+    unitStatus?.description == "Demasiados logs pendientes" ||
     unitStatus?.description == "Sin comunicación reciente" ||
     unitStatus?.description == "Sin comunicación reciente (< 1 día)";
 
