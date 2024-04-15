@@ -626,6 +626,9 @@ def process_industry_data(response):
                     "Problemas de conexión (mensajes atrasados)": (register_time - log_time >
                                                                    timedelta(minutes=10))
                 }
+                for description, cond in alert_conditions.items():
+                    if cond:
+                        alerts.add(description)
 
                 # Validar si el log llegó recientemente
                 if register_time > now - timedelta(minutes=10):
@@ -790,7 +793,7 @@ def update_industry_status():
                     {"description": description})
 
                 if description == "Desconexión de cámara":
-                    alert_info = f"{hour_data['camera_disconnection']} desconexiones"
+                    alert_info = str(hour_data['camera_connection'])
 
                 message += f'{description}: {alert_info}\n' if alert_info else f'{description}\n'
 
