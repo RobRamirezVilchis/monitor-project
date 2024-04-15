@@ -555,8 +555,7 @@ def get_industry_data(client):
         print("Connection error")
         return
 
-    now = datetime.now(tz=pytz.timezone('UTC')).astimezone(pytz.timezone(
-        'America/Mexico_City')).replace(tzinfo=pytz.utc)
+    now = datetime.now(tz=pytz.timezone('UTC'))
     time_interval = {
         "initial_datetime": (now - timedelta(hours=1, minutes=10)).isoformat(timespec="seconds")
     }
