@@ -781,7 +781,7 @@ def update_industry_status():
         alert_interval = 55
 
         # Crear registros de alertas
-        if last_alert == None or last_alert - date_now > timedelta(minutes=alert_interval):
+        if last_alert == None or date_now - last_alert > timedelta(minutes=alert_interval):
             message = f'{client_name} - {device.name}:\n'
             alert_info = ""
 
@@ -796,7 +796,7 @@ def update_industry_status():
 
                 alert_args = {"alert_type": alert_type, "gx": device,
                               "register_datetime": date_now, "register_date": date_now.date(),
-                              "description": description}
+                              "description": alert_info}
                 alert = create_alert(alert_args)
 
             if alerts and os.environ.get("ALERTS") == "true":
