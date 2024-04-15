@@ -731,6 +731,7 @@ def process_industry_data(response):
     for description, cond in alert_conditions.items():
         if cond:
             alerts.add(description)
+    print(alert_conditions, alerts)
 
     return output_gx, output_cameras, days_remaining, license_end, alerts
 
@@ -780,38 +781,10 @@ def update_industry_status():
             device.save()
 
         current_device_status = get_devicestatus(device_id=device.id)
-        last_alert = current_device_status.last_alert
-        alert_interval = 55
-
-        # Crear registros de alertas
-        if last_alert == None or date_now - last_alert > timedelta(minutes=alert_interval):
-            message = f'{client_name} - {device.name}:\n'
-            alert_info = ""
-
-            for description in alerts:
-                alert_type = get_or_create_alerttype(
-                    {"description": description})
-
-                if description == "Desconexión de cámara":
-                    alert_info = str(hour_data['camera_connection'])
-
-                message += f'{description}: {alert_info}\n' if alert_info else f'{description}\n'
-
-                alert_args = {"alert_type": alert_type, "gx": device,
-                              "register_datetime": date_now, "register_date": date_now.date(),
-                              "description": alert_info}
-                alert = create_alert(alert_args)
-
-            if alerts and os.environ.get("ALERTS") == "true":
-                send_telegram(chat="INDUSTRY_CHAT",
-                              message=message)
-
-            last_alert = date_now
 
         # Campos del registro a actualizar
         update_values = {
             'last_update': date_now,
-            'last_alert': last_alert,
             'batch_dropping': hour_data["batch_dropping"],
             'camera_connection': hour_data["camera_connection"],
             'restart': hour_data["restart"],
@@ -886,6 +859,38 @@ def update_industry_status():
             else:  # Si no, sumar 10 minutos a tiempo de retraso en BD
                 update_values['delay_time'] = db_delay_time + \
                     timedelta(minutes=10)
+
+        last_alert = current_device_status.last_alert
+        alert_interval = 55
+
+        if update_values['delayed']:
+            alerts.add("Sin conexión reciente")
+
+        # Crear registros de alertas
+        if last_alert == None or date_now - last_alert > timedelta(minutes=alert_interval):
+            message = f'{client_name} - {device.name}:\n'
+            alert_info = ""
+
+            for description in alerts:
+                alert_type = get_or_create_alerttype(
+                    {"description": description})
+
+                if description == "Desconexión de cámara":
+                    alert_info = str(hour_data['camera_connection'])
+
+                message += f'{description}: {alert_info}\n' if alert_info else f'{description}\n'
+
+                alert_args = {"alert_type": alert_type, "gx": device,
+                              "register_datetime": date_now, "register_date": date_now.date(),
+                              "description": alert_info}
+                alert = create_alert(alert_args)
+
+            if alerts and os.environ.get("ALERTS") == "true":
+                send_telegram(chat="INDUSTRY_CHAT",
+                              message=message)
+
+            last_alert = date_now
+        update_values["last_alert"] = last_alert
 
         conditions = [
             (recent_data['camera_connection'] >
