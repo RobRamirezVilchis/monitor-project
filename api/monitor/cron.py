@@ -790,7 +790,7 @@ def update_industry_status():
                     {"description": description})
 
                 if description == "Desconexión de cámara":
-                    alert_info = f"{hour_data["camera_disconnection"]} desconexiones"
+                    alert_info = f"{hour_data['camera_disconnection']} desconexiones"
 
                 message += f'{description}: {alert_info}\n' if alert_info else f'{description}\n'
 
