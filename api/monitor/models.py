@@ -68,6 +68,7 @@ class Alert(models.Model):
     gx = models.ForeignKey(Gx, on_delete=models.CASCADE, null=True)
     register_date = models.DateField("Dia registro", db_index=True)
     register_datetime = models.DateTimeField("Fecha registro")
+    description = models.CharField(max_length=100, null=True)
 
     def __str__(self):
         return f'{self.gx.client} - {self.alert_type}'

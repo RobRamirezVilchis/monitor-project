@@ -10,7 +10,6 @@ from datetime import datetime, timedelta
 
 import pytz
 import os
-import asyncio
 import subprocess
 
 
@@ -555,9 +554,10 @@ def get_industry_data(client):
         print("Connection error")
         return
 
-    now = datetime.now(tz=pytz.timezone('UTC'))
+    now = datetime.now(tz=pytz.timezone('UTC')).replace(tzinfo=None)
     time_interval = {
-        "initial_datetime": (now - timedelta(hours=1, minutes=10)).isoformat(timespec="seconds")
+        "initial_datetime": (now - timedelta(hours=1, minutes=10)).isoformat(timespec="seconds"),
+        "final_datetime": now.isoformat(timespec='seconds')
     }
 
     response, status = make_request(time_interval, token)
@@ -783,14 +783,20 @@ def update_industry_status():
         # Crear registros de alertas
         if last_alert == None or last_alert - date_now > timedelta(minutes=alert_interval):
             message = f'{client_name} - {device.name}:\n'
+            alert_info = ""
 
             for description in alerts:
-                message += f'- {description}\n'
                 alert_type = get_or_create_alerttype(
                     {"description": description})
 
+                if description == "Desconexión de cámara":
+                    alert_info = f"{hour_data["camera_disconnection"]} desconexiones"
+
+                message += f'{description}: {alert_info}\n' if alert_info else f'{description}\n'
+
                 alert_args = {"alert_type": alert_type, "gx": device,
-                              "register_datetime": date_now, "register_date": date_now.date()}
+                              "register_datetime": date_now, "register_date": date_now.date(),
+                              "description": description}
                 alert = create_alert(alert_args)
 
             if alerts and os.environ.get("ALERTS") == "true":

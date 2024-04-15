@@ -179,12 +179,7 @@ def bulk_create_unithistory(units):
 
 
 def create_alert(args):
-    alert = Alert.objects.create(
-        alert_type=args["alert_type"],
-        gx=args["gx"],
-        register_date=args["register_date"],
-        register_datetime=args["register_datetime"]
-    )
+    alert = Alert.objects.create(**args)
 
     return alert
 
