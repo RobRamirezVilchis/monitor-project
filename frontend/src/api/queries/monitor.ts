@@ -1,5 +1,5 @@
 import { createQuery } from "../helpers/createQuery";
-import { getUnits, getDevices, getUnitHistory, getDrivingSeverityCount, getUnitLastStatusChange, getDeviceHistory, getIndustrySeverityCount, getUnitStatus, getDeviceStatus, getSafeDrivingClients, getIndustryClients, getDeviceLastStatusChange, getIndustryCameraDisconnections, getUnitLastActiveStatus, getUnitSeverityHistory, getSafeDrivingAreaPlotData, getIndustryAreaPlotData } from "../services/monitor";
+import { getUnits, getDevices, getUnitHistory, getDrivingSeverityCount, getUnitLastStatusChange, getDeviceHistory, getIndustrySeverityCount, getUnitStatus, getDeviceStatus, getSafeDrivingClients, getIndustryClients, getDeviceLastStatusChange, getIndustryCameraDisconnections, getUnitLastActiveStatus, getUnitSeverityHistory, getSafeDrivingAreaPlotData, getIndustryAreaPlotData, getDrivingLastUpdate, getIndustryLastUpdate } from "../services/monitor";
 import { AreaPlotFilters, DeviceFilters, SeverityHistoryFilters, UnitFilters } from "../services/monitor/types";
 import defaultQueryClient from "../clients/defaultQueryClient";
 
@@ -43,6 +43,18 @@ export const useDrivingSeverityCount = createQuery({
   queryPrimaryKey: "driving_severity_count",
   //queryKeyVariables: (vars: UsersFilters) => vars ? [vars] : [],
   queryFn: (ctx, vars) => getDrivingSeverityCount({ signal: ctx.signal }),
+  cacheTime: 1000 * 60 * 5,  // 5 minutes
+  staleTime: 1000 * 60 * 3,  // 3 minutes
+  keepPreviousData: true,
+  queryClient: defaultQueryClient,
+  refetchInterval: 60000,
+  refetchIntervalInBackground: true
+});
+
+export const useDrivingLastUpdateQuery = createQuery({
+  queryPrimaryKey: "driving_last_update",
+  //queryKeyVariables: (vars: UsersFilters) => vars ? [vars] : [],
+  queryFn: (ctx, vars) => getDrivingLastUpdate({ signal: ctx.signal }),
   cacheTime: 1000 * 60 * 5,  // 5 minutes
   staleTime: 1000 * 60 * 3,  // 3 minutes
   keepPreviousData: true,
@@ -147,6 +159,18 @@ export const useIndustrySeverityCount = createQuery({
   queryPrimaryKey: "industry_severity_count",
   //queryKeyVariables: (vars: UsersFilters) => vars ? [vars] : [],
   queryFn: (ctx, vars) => getIndustrySeverityCount({ signal: ctx.signal }),
+  cacheTime: 1000 * 60 * 5,  // 5 minutes
+  staleTime: 1000 * 60 * 3,  // 3 minutes
+  keepPreviousData: true,
+  queryClient: defaultQueryClient,
+  refetchInterval: 60000,
+  refetchIntervalInBackground: true
+});
+
+export const useIndustryLastUpdateQuery = createQuery({
+  queryPrimaryKey: "industry_last_update",
+  //queryKeyVariables: (vars: UsersFilters) => vars ? [vars] : [],
+  queryFn: (ctx, vars) => getIndustryLastUpdate({ signal: ctx.signal }),
   cacheTime: 1000 * 60 * 5,  // 5 minutes
   staleTime: 1000 * 60 * 3,  // 3 minutes
   keepPreviousData: true,

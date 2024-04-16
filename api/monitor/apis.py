@@ -44,7 +44,7 @@ class UnitStatusList(APIView):
             return other.obj < self.obj
 
     def get(self, request, *args, **kwargs):
-        devices = unitstatus_list()
+        devices = active_unitstatus_list()
         sorted_units = sorted(
             devices, key=lambda x: (x.status.priority, x.status.severity), reverse=True)
 
@@ -594,3 +594,25 @@ class IndustryAreaPlotAPI(APIView):
 
         data = self.OutputSerializer(registers, many=True).data
         return Response(data)
+
+
+class SafeDrivingLastUpdateAPI(APIView):
+    class OutputSerializer(serializers.Serializer):
+        last_update = serializers.DateTimeField()
+
+    def get(self, request, *args, **kwargs):
+        last_update_sd = get_last_sd_update()
+        output = self.OutputSerializer(last_update_sd).data
+
+        return Response(output)
+
+
+class IndustryLastUpdateAPI(APIView):
+    class OutputSerializer(serializers.Serializer):
+        last_update = serializers.DateTimeField()
+
+    def get(self, request, *args, **kwargs):
+        last_update_sd = get_last_sd_update()
+        output = self.OutputSerializer(last_update_sd).data
+
+        return Response(output)

@@ -51,6 +51,7 @@ const api = {
       driving: {
         clients: "api/v1/monitor/driving/clients/",
         status: "api/v1/monitor/driving-status/",
+        lastUpdate: "api/v1/monitor/driving-status/last-update",
         severityCount: "api/v1/monitor/driving-status-count/",
         areaPlotData: "api/v1/monitor/driving-status/area-plot-data/",
         lastStatusChange: (unit_id: UnitId) => `api/v1/monitor/driving-status/last-status-change/${unit_id}/`,
@@ -62,6 +63,7 @@ const api = {
       industry: {
         clients: "api/v1/monitor/industry/clients/",
         status: "api/v1/monitor/industry-status/",
+        lastUpdate: "api/v1/monitor/industry-status/last-update",
         severityCount: "api/v1/monitor/industry-status-count/",
         areaPlotData: "api/v1/monitor/industry-status/area-plot-data/",
         lastStatusChange: (device_id: DeviceId) => `api/v1/monitor/industry-status/last-status-change/${device_id}/`,

@@ -9,12 +9,21 @@ urlpatterns = [
              path("", apis.UnitStatusList.as_view(), name="list"),
          ], "units"))
          ),
+    path("driving-status/last-update",
+         include(([
+             path("", apis.SafeDrivingLastUpdateAPI.as_view(), name="datetime"),
+         ], "last-update"))
+         ),
     path("industry-status/",
          include(([
              path("", apis.DeviceStatusList.as_view(), name="list"),
          ], "devices"))
          ),
-
+    path("industry-status/last-update",
+         include(([
+             path("", apis.IndustryLastUpdateAPI.as_view(), name="datetime"),
+         ], "last-update"))
+         ),
     path("driving-status-count/",
          include(([
              path("", apis.UnitSeverityCount.as_view(), name="list"),

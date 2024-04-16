@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import {
   useDevicesQuery,
   useIndustryAreaPlotData,
+  useIndustryLastUpdateQuery,
   useIndustrySeverityCount,
   useSafeDrivingAreaPlotData,
 } from "@/api/queries/monitor";
@@ -16,6 +17,8 @@ import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { DatePickerInput } from "@mantine/dates";
+import { formatDistanceToNow } from "date-fns";
+import { es } from "date-fns/locale";
 
 type StatusKey = 0 | 1 | 2 | 3 | 4 | 5;
 const statusStyles: { [key in StatusKey]: string } = {
@@ -82,6 +85,11 @@ const IndustryPage = () => {
   });
   const deviceData = devicesQuery.data;
 
+  const lastUpdateQuery = useIndustryLastUpdateQuery({
+    refetchOnWindowFocus: false,
+  });
+  const last_update = lastUpdateQuery.data;
+
   const areaPlotDataQuery = useIndustryAreaPlotData({
     variables: {
       timestamp_after: dateValue[0],
@@ -131,6 +139,16 @@ const IndustryPage = () => {
     }
   }
 
+  let timeSinceLastUpdate: string;
+  if (last_update != null) {
+    timeSinceLastUpdate = formatDistanceToNow(last_update.last_update, {
+      addSuffix: true,
+      locale: es,
+    });
+  } else {
+    timeSinceLastUpdate = "-";
+  }
+
   return (
     <section>
       <Tabs
@@ -153,12 +171,15 @@ const IndustryPage = () => {
               Estadísticas
             </Tabs.Tab>
           </Tabs.List>
+          <p className="hidden lg:block ml-8 text-md opacity-40">
+            Última actualización {timeSinceLastUpdate}
+          </p>
         </div>
 
         <Tabs.Panel value="details">
           <div className="flex items-center">
             <div className="relative mr-10">
-              <div className="mr-24">
+              <div className="pr-0 lg:pr-52">
                 <TextInput
                   className="flex gap-3 items-center w-100 mb-4"
                   styles={{
@@ -205,7 +226,7 @@ const IndustryPage = () => {
                 )}
               </div>
 
-              <div className="absolute -right-60 bottom-0 hidden md:block">
+              <div className="absolute -right-96 bottom-0 hidden md:block">
                 <PieChart
                   data={data}
                   mt={0}

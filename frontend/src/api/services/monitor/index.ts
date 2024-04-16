@@ -1,4 +1,4 @@
-import { UnitStatus, SeverityCount, UnitHistory, DeviceStatus, UnitFilters, LastStatusChange, DeviceFilters, DeviceHistory, Client, CameraDisconnection, LastActiveStatus, SeverityHistory, AreaPlotData, AreaPlotFilters } from "./types";
+import { UnitStatus, SeverityCount, UnitHistory, DeviceStatus, UnitFilters, LastStatusChange, DeviceFilters, DeviceHistory, Client, CameraDisconnection, LastActiveStatus, SeverityHistory, AreaPlotData, AreaPlotFilters, LastUpdate } from "./types";
 import { Id, Paginated } from "@/api/types";
 import { Role, User } from "../auth/types";
 import api from "../..";
@@ -38,6 +38,20 @@ export async function getDrivingSeverityCount(config?: Parameters<typeof http.ge
   try {
     const resp = await http.get<SeverityCount[]>(
       api.endpoints.monitor.driving.severityCount,
+      {
+        ...config,
+      }
+    );
+    return resp.data;
+  } catch (error) {
+    throw error;
+  }
+}
+
+export async function getDrivingLastUpdate(config?: Parameters<typeof http.get>[1]) {
+  try {
+    const resp = await http.get<LastUpdate>(
+      api.endpoints.monitor.driving.lastUpdate,
       {
         ...config,
       }
@@ -252,6 +266,20 @@ export async function getIndustrySeverityCount(config?: Parameters<typeof http.g
   try {
     const resp = await http.get<SeverityCount[]>(
       api.endpoints.monitor.industry.severityCount,
+      {
+        ...config,
+      }
+    );
+    return resp.data;
+  } catch (error) {
+    throw error;
+  }
+}
+
+export async function getIndustryLastUpdate(config?: Parameters<typeof http.get>[1]) {
+  try {
+    const resp = await http.get<LastUpdate>(
+      api.endpoints.monitor.industry.lastUpdate,
       {
         ...config,
       }

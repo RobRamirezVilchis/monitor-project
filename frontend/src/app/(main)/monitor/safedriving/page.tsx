@@ -26,6 +26,7 @@ import {
   useDrivingSeverityCount,
   useSafeDrivingClientsQuery,
   useSafeDrivingAreaPlotData,
+  useDrivingLastUpdateQuery,
 } from "@/api/queries/monitor";
 
 import UnitCard from "../(components)/UnitCard";
@@ -35,6 +36,8 @@ import { useSearchParams } from "next/navigation";
 import { useRouter } from "next/navigation";
 import { ColorSchemeSwitchToggle } from "@/components/shared";
 import { DatePickerInput } from "@mantine/dates";
+import { formatDistanceToNow } from "date-fns";
+import { es } from "date-fns/locale";
 
 type StatusKey = 0 | 1 | 2 | 3 | 4 | 5;
 const statusStyles: { [key in StatusKey]: string } = {
@@ -103,12 +106,21 @@ const SafeDrivingPage = () => {
   const unitsStatusQuery = useUnitsQuery({
     refetchOnWindowFocus: false,
   });
+  const unitsData = unitsStatusQuery.data;
+
   const countQuery = useDrivingSeverityCount({
     refetchOnWindowFocus: false,
   });
+  const lastUpdateQuery = useDrivingLastUpdateQuery({
+    refetchOnWindowFocus: false,
+  });
+  const last_update = lastUpdateQuery.data;
+
   const clientsQuery = useSafeDrivingClientsQuery({
     refetchOnWindowFocus: false,
   });
+  const clients = clientsQuery.data?.map((data) => data.name);
+
   const areaPlotDataQuery = useSafeDrivingAreaPlotData({
     variables: {
       timestamp_after: dateValue[0],
@@ -117,9 +129,15 @@ const SafeDrivingPage = () => {
   });
   const areaPlotQueryData = areaPlotDataQuery?.data;
 
-  const clients = clientsQuery.data?.map((data) => data.name);
-
-  const unitsData = unitsStatusQuery.data;
+  let timeAgo: string;
+  if (last_update != null) {
+    timeAgo = formatDistanceToNow(last_update.last_update, {
+      addSuffix: true,
+      locale: es,
+    });
+  } else {
+    timeAgo = "-";
+  }
 
   const severityCountDict: { [key in StatusKey]: number } = {
     5: 0,
@@ -194,7 +212,9 @@ const SafeDrivingPage = () => {
         }}
       >
         <div className="md:flex md:items-center pb-2 mb-3 md:mb-6">
-          <h1 className="text-5xl font-bold pr-10 ">Safe Driving</h1>
+          <h1 className="mb-4 md:mb-0 text-5xl font-bold pr-10 ">
+            Safe Driving
+          </h1>
           <Tabs.List>
             <Tabs.Tab className="text-lg" value="details">
               Detalles
@@ -203,11 +223,14 @@ const SafeDrivingPage = () => {
               Estadísticas
             </Tabs.Tab>
           </Tabs.List>
+          <p className="hidden lg:block ml-8 text-md opacity-40">
+            Última actualización {timeAgo}
+          </p>
         </div>
         <Tabs.Panel value="details">
           <div className="flex items-center">
             <div className="relative mr-10">
-              <div className="pr-28">
+              <div className="pr-0 lg:pr-28 mb-6">
                 <div className="flex flex-col md:flex-row mb-4 gap-4 md:gap-10">
                   <TextInput
                     className="md:flex gap-3 items-center "
@@ -250,7 +273,7 @@ const SafeDrivingPage = () => {
                                   "filter",
                                   String(severity_count.level)
                                 )
-                              : "/monitor/safedriving/"
+                              : "/monitor/safedriving/?tab=details"
                           }
                           className={`${
                             severity_count.level == Number(filter) ||
@@ -269,7 +292,7 @@ const SafeDrivingPage = () => {
                 )}
               </div>
 
-              <div className="absolute -right-32 bottom-0 hidden md:block">
+              <div className="absolute -right-40 bottom-0 hidden lg:block">
                 <PieChart
                   data={severityCount.slice(0, 5)}
                   mt={0}

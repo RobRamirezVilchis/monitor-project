@@ -112,7 +112,7 @@ class CameraHistory(models.Model):
 class UnitStatus(models.Model):
     unit = models.OneToOneField(Unit, on_delete=models.CASCADE)
     last_update = models.DateTimeField("Last update", null=True)
-    last_alert = models.DateTimeField(null=True)
+    last_alert = models.DateTimeField(null=True, blank=True)
     total = models.IntegerField('Total')
     restart = models.IntegerField('Restarts')
     reboot = models.IntegerField('Reboots')
@@ -132,6 +132,7 @@ class UnitStatus(models.Model):
     restarting_loop = models.BooleanField(default=False)
     on_trip = models.BooleanField("On trip", null=True)
     status = models.ForeignKey(GxStatus, on_delete=models.CASCADE, null=True)
+    active = models.BooleanField(default=True)
 
     class Meta:
         verbose_name_plural = "Unit status"

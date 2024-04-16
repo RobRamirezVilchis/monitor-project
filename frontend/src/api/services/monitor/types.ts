@@ -88,6 +88,10 @@ export interface SeverityCount {
   count: number;
 }
 
+export interface LastUpdate {
+  last_update: string;
+}
+
 export interface Client {
   name: string;
 }

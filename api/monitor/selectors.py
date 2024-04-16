@@ -1,11 +1,11 @@
 from .services import create_severity_count
 from .models import *
 from django_filters import rest_framework as rf_filters
-from django.db.models import Q, F, Count
+from django.db.models import Q, F, Count, Max, Min
 
 
-def unitstatus_list():
-    return UnitStatus.objects.all()
+def active_unitstatus_list():
+    return UnitStatus.objects.filter(active=True)
 
 
 def devicestatus_list():
@@ -412,3 +412,15 @@ def register_ind_area_plot_historicals():
             no_data += 1
         else:
             no_data = 0
+
+
+def get_last_sd_update():
+    status = UnitStatus.objects.filter(active=True).order_by('-last_update')[0]
+
+    return status
+
+
+def get_last_ind_update():
+    status = DeviceStatus.objects.order_by('-last_update')[0]
+
+    return status
