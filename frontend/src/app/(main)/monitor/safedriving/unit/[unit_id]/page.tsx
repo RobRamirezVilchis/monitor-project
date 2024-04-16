@@ -242,11 +242,11 @@ const UnitPage = ({ params }: { params: { unit_id: string } }) => {
             </div>
           )}
         </div>
-        <div>
+        {/* <div>
           <Link href={`${params.unit_id}/logs`}>
             <Button size="md">Consultar logs</Button>
           </Link>
-        </div>
+        </div> */}
       </div>
 
       <div className="h-[70vh] mb-10">
