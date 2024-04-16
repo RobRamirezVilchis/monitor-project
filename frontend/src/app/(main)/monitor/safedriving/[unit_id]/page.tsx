@@ -240,7 +240,9 @@ const UnitPage = ({ params }: { params: { unit_id: string } }) => {
           </div>
         )}
       </div>
-
+      {/* <div>
+        <Link href={`${params.unit_id}/logs`}>Consultar logs</Link>
+      </div> */}
       <div className="h-[70vh] mb-10">
         <DataGrid instance={grid} />
       </div>

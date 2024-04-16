@@ -223,7 +223,7 @@ const SafeDrivingPage = () => {
               Estadísticas
             </Tabs.Tab>
           </Tabs.List>
-          <p className="hidden lg:block ml-8 text-md opacity-40">
+          <p className="hidden lg:block ml-8 w-72 text-md opacity-40">
             Última actualización {timeAgo}
           </p>
         </div>
