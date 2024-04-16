@@ -1,6 +1,6 @@
 "use client";
 
-import { useUnitHistoryQuery } from "@/api/queries/monitor";
+import { useUnitHistoryQuery, useUnitStatusQuery } from "@/api/queries/monitor";
 import { UnitHistory } from "@/api/services/monitor/types";
 import { useDataGrid, useSsrDataGrid } from "@/hooks/data-grid";
 import DataGrid from "@/ui/data-grid/DataGrid";
@@ -34,6 +34,14 @@ const UnitLogsPage = ({ params }: { params: { unit_id: string } }) => {
     },
   });
 
+  const unitStatusQuery = useUnitStatusQuery({
+    variables: {
+      unit_id: params.unit_id,
+    },
+  });
+
+  const unitStatus = unitStatusQuery.data;
+
   const historyQuery = useUnitHistoryQuery({
     variables: {
       unit_id: params.unit_id,
@@ -66,8 +74,8 @@ const UnitLogsPage = ({ params }: { params: { unit_id: string } }) => {
   });
   return (
     <section>
-      <div className="flex text-5xl gap-4">
-        <h1 className="font-bold">Unidad 1234</h1>
+      <div className="flex text-5xl gap-4 mb-6">
+        <h1 className="font-bold">Unidad {unitStatus?.unit}</h1>
         <h1 className="opacity-40">-</h1>
         <h1 className="opacity-40">Logs</h1>
       </div>

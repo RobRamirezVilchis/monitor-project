@@ -33,6 +33,7 @@ import {
 import Link from "next/link";
 import { useState } from "react";
 import { DatePickerInput } from "@mantine/dates";
+import { Button } from "@mantine/core";
 
 type StatusKey = 0 | 1 | 2 | 3 | 4 | 5;
 const statusStyles: { [key in StatusKey]: string } = {
@@ -215,34 +216,39 @@ const UnitPage = ({ params }: { params: { unit_id: string } }) => {
         )}
       </div>
 
-      <div>
-        {inactive && unitLastActiveStatus.data && (
-          <p className="text-xl text-gray-500">
-            Último estátus activo:{" "}
-            {statusNames[unitLastActiveStatus?.data.severity as StatusKey]} -{" "}
-            {unitLastActiveStatus?.data.description}
-          </p>
-        )}
-        {unitStatus && (
-          <div className="text-xl text-gray-500">
-            {unitStatus.last_connection && (
-              <p>
-                Última conexión:{" "}
-                {format(parseISO(unitStatus.last_connection), "Pp")}
-              </p>
-            )}
-            {unitStatus.last_connection && (
-              <p>Eventos pendientes - {unitStatus.pending_events}</p>
-            )}
-            {unitStatus.last_connection && (
-              <p>Status pendientes - {unitStatus.pending_status}</p>
-            )}
-          </div>
-        )}
+      <div className="flex justify-between items-end">
+        <div>
+          {inactive && unitLastActiveStatus.data && (
+            <p className="text-xl text-gray-500">
+              Último estátus activo:{" "}
+              {statusNames[unitLastActiveStatus?.data.severity as StatusKey]} -{" "}
+              {unitLastActiveStatus?.data.description}
+            </p>
+          )}
+          {unitStatus && (
+            <div className="text-xl text-gray-500">
+              {unitStatus.last_connection && (
+                <p>
+                  Última conexión:{" "}
+                  {format(parseISO(unitStatus.last_connection), "Pp")}
+                </p>
+              )}
+              {unitStatus.last_connection && (
+                <p>Eventos pendientes - {unitStatus.pending_events}</p>
+              )}
+              {unitStatus.last_connection && (
+                <p>Status pendientes - {unitStatus.pending_status}</p>
+              )}
+            </div>
+          )}
+        </div>
+        <div>
+          <Link href={`${params.unit_id}/logs`}>
+            <Button size="md">Consultar logs</Button>
+          </Link>
+        </div>
       </div>
-      {/* <div>
-        <Link href={`${params.unit_id}/logs`}>Consultar logs</Link>
-      </div> */}
+
       <div className="h-[70vh] mb-10">
         <DataGrid instance={grid} />
       </div>
