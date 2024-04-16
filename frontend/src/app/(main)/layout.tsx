@@ -113,7 +113,9 @@ const MainLayout = ({ children }: MainLayoutProps) => {
         {/* <ProfileFloatingMenu /> */}
       </AppShell.Header>
 
-      <AppShell.Main>{children}</AppShell.Main>
+      <AppShell.Main>
+        <div className="mx-8 lg:mx-32 pb-2 md:pb-6 pt-14">{children}</div>
+      </AppShell.Main>
     </AppShell>
   );
 };

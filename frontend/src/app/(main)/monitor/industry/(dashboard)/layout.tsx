@@ -6,11 +6,29 @@ import { Tabs } from "@mantine/core";
 import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
 import path from "path";
+import { formatDistanceToNow } from "date-fns";
+import { useIndustryLastUpdateQuery } from "@/api/queries/monitor";
+import { es } from "date-fns/locale";
 
 const IndustryDashboardLayout = ({ children }: { children: ReactNode }) => {
   const router = useRouter();
   const pathname = usePathname();
   const currentTab = pathname.split("/").slice(-1)[0];
+
+  const lastUpdateQuery = useIndustryLastUpdateQuery({
+    refetchOnWindowFocus: false,
+  });
+  const last_update = lastUpdateQuery.data;
+
+  let timeSinceLastUpdate: string;
+  if (last_update != null) {
+    timeSinceLastUpdate = formatDistanceToNow(last_update.last_update, {
+      addSuffix: true,
+      locale: es,
+    });
+  } else {
+    timeSinceLastUpdate = "-";
+  }
 
   return (
     <section>
@@ -29,6 +47,9 @@ const IndustryDashboardLayout = ({ children }: { children: ReactNode }) => {
               </Tabs.Tab>
             </Link>
           </Tabs.List>
+          <p className="hidden lg:block ml-8 w-72 text-md opacity-40">
+            Última actualización {timeSinceLastUpdate}
+          </p>
         </div>
         <div>{children}</div>
       </Tabs>
