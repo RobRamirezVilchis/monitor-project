@@ -325,3 +325,21 @@ export async function getIndustryCameraDisconnections(
     throw error;
   }
 }
+
+export async function getDeviceSeverityHistory(
+  filters: DeviceFilters,
+  config?: Parameters<typeof http.get>[1]
+) {
+  try {
+    const resp = await http.get<SeverityHistory[]>(
+      api.endpoints.monitor.industry.severityHistory(filters.device_id),
+      {
+        params: filters,
+        ...config,
+      }
+    );
+    return resp.data;
+  } catch (error) {
+    throw error;
+  }
+}

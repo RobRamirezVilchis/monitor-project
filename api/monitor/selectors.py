@@ -256,41 +256,38 @@ def get_sd_critical_last_day():
     return all_critical_registers
 
 
-class ScatterplotDataFilter(rf_filters.FilterSet):
+class SDScatterplotDataFilter(rf_filters.FilterSet):
     register_datetime = rf_filters.DateFromToRangeFilter()
 
     class Meta:
         model = UnitHistory
-        fields = ['register_datetime',
-                  'status',
-                  'total',
-                  'restart',
-                  'reboot',
-                  'start',
-                  'data_validation',
-                  'source_missing',
-                  'camera_connection',
-                  'storage_devices',
-                  'forced_reboot',
-                  'read_only_ssd',
-                  'ignition',
-                  'aux',
-                  'others',
-                  'last_connection',
-                  'pending_events',
-                  'pending_status',
-                  'restarting_loop',
-                  'on_trip']
+        fields = ['register_datetime']
 
 
-def get_scatterplot_data(args, filters=None):
+def get_sd_scatterplot_data(args, filters=None):
 
-    # print(start_date, end_date)
     logs = UnitHistory.objects.filter(
         unit_id=args['unit_id'],
     )
 
-    return ScatterplotDataFilter(filters, logs).qs
+    return SDScatterplotDataFilter(filters, logs).qs
+
+
+class IndustryScatterplotDataFilter(rf_filters.FilterSet):
+    register_datetime = rf_filters.DateFromToRangeFilter()
+
+    class Meta:
+        model = DeviceHistory
+        fields = ['register_datetime']
+
+
+def get_ind_scatterplot_data(args, filters=None):
+
+    logs = DeviceHistory.objects.filter(
+        device_id=args['device_id'],
+    )
+
+    return IndustryScatterplotDataFilter(filters, logs).qs
 
 
 def get_units_severity_counts():

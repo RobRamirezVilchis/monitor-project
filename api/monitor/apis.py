@@ -491,8 +491,60 @@ class UnitScatterPlotAPI(APIView):
             filters_serializer.validated_data["register_datetime_before"] = end_date
             filters_serializer.validated_data["register_datetime_after"] = start_date
 
-        registers = get_scatterplot_data(
+        registers = get_sd_scatterplot_data(
             {"unit_id": unit_id}, filters=filters_serializer.validated_data)
+
+        grouped_by_hour = {}
+
+        for register in registers:
+            hour = (register.register_datetime -
+                    timedelta(hours=6)).replace(tzinfo=None).isoformat(timespec="hours", sep=' ') + "h"
+            severity = register.status.severity
+
+            if hour not in grouped_by_hour:
+                grouped_by_hour[hour] = [severity]
+            else:
+                grouped_by_hour[hour].append(severity)
+
+        output = [{"hora": date, "severidad": max(set(severities), key=severities.count)}
+                  for date, severities in grouped_by_hour.items()]
+
+        data = self.OutputSerializer(output, many=True).data
+
+        return Response(data)
+
+
+class DeviceScatterPlotAPI(APIView):
+    class FiltersSerializer(serializers.Serializer):
+        register_datetime_after = serializers.DateTimeField(required=False)
+        register_datetime_before = serializers.DateTimeField(required=False)
+
+    class OutputSerializer(serializers.Serializer):
+        hora = serializers.DateTimeField()
+        severidad = serializers.IntegerField()
+
+    def get(self, request, device_id, *args, **kwargs):
+        import datetime
+        import pytz
+
+        filters_serializer = self.FiltersSerializer(data=request.query_params)
+        filters_serializer.is_valid(raise_exception=True)
+
+        # Si no se especificó rango de fechas, regresar registros del último día
+        if not (filters_serializer.validated_data.get("register_datetime_after") or filters_serializer.validated_data.get("register_datetime_before")):
+            import datetime
+            import pytz
+
+            date_now = datetime.datetime.now()
+            end_date = date_now.astimezone(pytz.timezone("America/Mexico_City")).replace(
+                tzinfo=pytz.utc) + datetime.timedelta(hours=6)
+            start_date = end_date - timedelta(hours=24)
+
+            filters_serializer.validated_data["register_datetime_before"] = end_date
+            filters_serializer.validated_data["register_datetime_after"] = start_date
+
+        registers = get_ind_scatterplot_data(
+            {"device_id": device_id}, filters=filters_serializer.validated_data)
 
         grouped_by_hour = {}
 

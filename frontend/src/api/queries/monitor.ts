@@ -1,6 +1,6 @@
 import { createQuery } from "../helpers/createQuery";
-import { getUnits, getDevices, getUnitHistory, getDrivingSeverityCount, getUnitLastStatusChange, getDeviceHistory, getIndustrySeverityCount, getUnitStatus, getDeviceStatus, getSafeDrivingClients, getIndustryClients, getDeviceLastStatusChange, getIndustryCameraDisconnections, getUnitLastActiveStatus, getUnitSeverityHistory, getSafeDrivingAreaPlotData, getIndustryAreaPlotData, getDrivingLastUpdate, getIndustryLastUpdate } from "../services/monitor";
-import { AreaPlotFilters, DeviceFilters, SeverityHistoryFilters, UnitFilters } from "../services/monitor/types";
+import { getUnits, getDevices, getUnitHistory, getDrivingSeverityCount, getUnitLastStatusChange, getDeviceHistory, getIndustrySeverityCount, getUnitStatus, getDeviceStatus, getSafeDrivingClients, getIndustryClients, getDeviceLastStatusChange, getIndustryCameraDisconnections, getUnitLastActiveStatus, getUnitSeverityHistory, getSafeDrivingAreaPlotData, getIndustryAreaPlotData, getDrivingLastUpdate, getIndustryLastUpdate, getDeviceSeverityHistory } from "../services/monitor";
+import { AreaPlotFilters, DeviceFilters, UnitSeverityHistoryFilters, UnitFilters, DeviceSeverityHistoryFilters } from "../services/monitor/types";
 import defaultQueryClient from "../clients/defaultQueryClient";
 
 // Safe Driving API ----------------------------------------------------------
@@ -111,7 +111,7 @@ export const useUnitLastActiveStatus = createQuery({
 // Scatterplot
 export const useUnitSeverityHistory = createQuery({
   queryPrimaryKey: "severity_history",
-  queryKeyVariables: (vars: SeverityHistoryFilters) => vars ? [vars] : [],
+  queryKeyVariables: (vars: UnitSeverityHistoryFilters) => vars ? [vars] : [],
   queryFn: (ctx, vars) => getUnitSeverityHistory(vars, { signal: ctx.signal }),
   cacheTime: 1000 * 60 * 5,  // 5 minutes
   staleTime: 1000 * 60 * 3,  // 3 minutes
@@ -217,6 +217,17 @@ export const useDeviceLastStatusChange = createQuery({
   queryPrimaryKey: "last_status_change",
   queryKeyVariables: (vars: DeviceFilters) => vars ? [vars] : [],
   queryFn: (ctx, vars) => getDeviceLastStatusChange(vars, { signal: ctx.signal }),
+  cacheTime: 1000 * 60 * 5,  // 5 minutes
+  staleTime: 1000 * 60 * 3,  // 3 minutes
+  keepPreviousData: true,
+  queryClient: defaultQueryClient,
+});
+
+// Scatterplot
+export const useDeviceSeverityHistory = createQuery({
+  queryPrimaryKey: "severity_history",
+  queryKeyVariables: (vars: DeviceSeverityHistoryFilters) => vars ? [vars] : [],
+  queryFn: (ctx, vars) => getDeviceSeverityHistory(vars, { signal: ctx.signal }),
   cacheTime: 1000 * 60 * 5,  // 5 minutes
   staleTime: 1000 * 60 * 3,  // 3 minutes
   keepPreviousData: true,

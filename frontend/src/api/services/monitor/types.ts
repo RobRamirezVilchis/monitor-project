@@ -122,8 +122,14 @@ export interface SeverityHistory {
   severidad: number,
 }
 
-export interface SeverityHistoryFilters {
+export interface UnitSeverityHistoryFilters {
   unit_id: string,
+  register_datetime_after: Date | null,
+  register_datetime_before: Date | null,
+}
+
+export interface DeviceSeverityHistoryFilters {
+  device_id: string,
   register_datetime_after: Date | null,
   register_datetime_before: Date | null,
 }

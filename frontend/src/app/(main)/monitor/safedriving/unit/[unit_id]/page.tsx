@@ -187,8 +187,11 @@ const UnitPage = ({ params }: { params: { unit_id: string } }) => {
   });
 
   return (
-    <section className="relative">
-      <Link href={"./"} className="absolute right-full mr-5 mt-2 opacity-40">
+    <section className="relative mb-20">
+      <Link
+        href={"/monitor/safedriving/details"}
+        className="absolute right-full mr-5 mt-2 opacity-40"
+      >
         <ArrowBackIcon />
       </Link>
       <div className="flex mb-4 justify-between items-center">
@@ -253,8 +256,8 @@ const UnitPage = ({ params }: { params: { unit_id: string } }) => {
         <DataGrid instance={grid} />
       </div>
 
-      <div className="md:flex items-center gap-4">
-        <p className="text-xl text-gray-500">Gráfica de estátus: </p>
+      <div className="md:flex items-center gap-8">
+        <p className="text-2xl opacity-60">Gráfica de estátus: </p>
         <div className="w-80">
           <DatePickerInput
             type="range"

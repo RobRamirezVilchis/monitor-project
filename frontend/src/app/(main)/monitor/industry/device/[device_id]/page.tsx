@@ -4,6 +4,7 @@ import {
   useCameraDisconnectionsQuery,
   useDeviceHistoryQuery,
   useDeviceLastStatusChange,
+  useDeviceSeverityHistory,
   useDeviceStatusQuery,
   useUnitHistoryQuery,
 } from "@/api/queries/monitor";
@@ -28,6 +29,18 @@ import {
 import { es } from "date-fns/locale";
 import Link from "next/link";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import { useState } from "react";
+import {
+  CartesianGrid,
+  Cell,
+  ResponsiveContainer,
+  Scatter,
+  ScatterChart,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from "recharts";
+import { DatePickerInput } from "@mantine/dates";
 
 type StatusKey = 0 | 1 | 2 | 3 | 4 | 5;
 const statusStyles: { [key in StatusKey]: string } = {
@@ -48,7 +61,25 @@ const statusNames: { [key in StatusKey]: string } = {
   5: "Crítico",
 };
 
+const barColors: { [key in StatusKey]: string } = {
+  0: "#c9c9c9",
+  1: "#70bafa",
+  2: "#57d46c",
+  3: "#ffd919",
+  4: "#fca14c",
+  5: "#f74a36",
+};
+
 const DevicePage = ({ params }: { params: { device_id: string } }) => {
+  const currentDate = new Date();
+  let yesterday = new Date();
+  yesterday.setDate(yesterday.getDate() - 1);
+
+  const [dateValue, setDateValue] = useState<[Date | null, Date | null]>([
+    yesterday,
+    currentDate,
+  ]);
+
   const { dataGridState, queryVariables, dataGridConfig } = useSsrDataGrid<{
     name: string;
     register_datetime: [Date | null, Date | null];
@@ -167,9 +198,22 @@ const DevicePage = ({ params }: { params: { device_id: string } }) => {
     rowCount: disconnectionsQuery.data?.pagination?.count ?? 0,
   });
 
+  const deviceSeverityHistory = useDeviceSeverityHistory({
+    variables: {
+      device_id: params.device_id,
+      register_datetime_after: dateValue[0],
+      register_datetime_before: dateValue[1],
+    },
+  });
+
+  const plotData = deviceSeverityHistory.data;
+
   return (
     <section className="relative mb-20">
-      <Link href={"./"} className="absolute right-full mr-5 mt-2 opacity-40">
+      <Link
+        href={"/monitor/industry/details"}
+        className="absolute right-full mr-5 mt-2 opacity-40"
+      >
         <ArrowBackIcon />
       </Link>
       <div className="flex mb-4 justify-between items-center">
@@ -263,6 +307,50 @@ const DevicePage = ({ params }: { params: { device_id: string } }) => {
       <div className="h-[70vh]">
         <DataGrid instance={camerasGrid} />
       </div>
+
+      <div className="md:flex items-center gap-8 mt-10 mb-4">
+        <p className="text-2xl opacity-60">Gráfica de estátus: </p>
+        <div className="w-80">
+          <DatePickerInput
+            type="range"
+            placeholder="Pick date"
+            value={dateValue}
+            onChange={setDateValue}
+          />
+        </div>
+      </div>
+      {plotData && (
+        <ResponsiveContainer width="100%" height={500}>
+          <ScatterChart
+            margin={{
+              top: 20,
+              right: 20,
+              bottom: 120,
+              left: 20,
+            }}
+          >
+            <CartesianGrid strokeDasharray={"3 3"} />
+            <XAxis dataKey="hora" />
+            <YAxis
+              type="number"
+              dataKey="severidad"
+              domain={[0, "dataMax"]}
+              interval={0}
+              ticks={[0, 1, 2, 3, 4, 5]}
+            />
+
+            <Tooltip />
+            <Scatter data={plotData} dataKey="severidad" fill="#8884d8">
+              {plotData.map((entry, index) => (
+                <Cell
+                  key={`cell-${index}`}
+                  fill={barColors[entry.severidad as StatusKey]}
+                ></Cell>
+              ))}
+            </Scatter>
+          </ScatterChart>
+        </ResponsiveContainer>
+      )}
     </section>
   );
 };
@@ -270,13 +358,7 @@ const DevicePage = ({ params }: { params: { device_id: string } }) => {
 //export default UnitPage;
 export default DevicePage;
 
-const ConvertBool = (condition: boolean) => {
-  if (condition) {
-    return "Sí";
-  } else {
-    return "No";
-  }
-};
+const ConvertBool = (condition: boolean) => (condition ? "Sí" : "No");
 
 const cols: ColumnDef<DeviceHistory>[] = [
   {
