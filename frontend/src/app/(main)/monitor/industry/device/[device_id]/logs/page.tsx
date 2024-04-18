@@ -127,6 +127,6 @@ const cols: ColumnDef<DeviceLogs>[] = [
     columnTitle: "Log",
     columnTitleCustom: "Log",
     minSize: 500,
-    //enableSorting: true,
+    enableSorting: false,
   },
 ];
