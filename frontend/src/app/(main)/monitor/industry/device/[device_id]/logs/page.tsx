@@ -127,7 +127,6 @@ const cols: ColumnDef<DeviceLogs>[] = [
     columnTitle: "Log",
     columnTitleCustom: "Log",
     minSize: 500,
-    enableSorting: true,
-    filterVariant: "datetime-range",
+    //enableSorting: true,
   },
 ];
