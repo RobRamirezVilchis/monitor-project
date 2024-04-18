@@ -12,8 +12,12 @@ import { ColumnDef } from "@/ui/data-grid/types";
 import { format, parseISO } from "date-fns";
 import Link from "next/link";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import { Checkbox } from "@mantine/core";
+import { useState } from "react";
 
 const DeviceLogsPage = ({ params }: { params: { device_id: string } }) => {
+  const [showEmpty, setShowEmpty] = useState(true);
+
   const { dataGridState, queryVariables, dataGridConfig } = useSsrDataGrid<{
     name: string;
     register_time: [Date | null, Date | null];
@@ -51,6 +55,7 @@ const DeviceLogsPage = ({ params }: { params: { device_id: string } }) => {
   const deviceLogsQuery = useDeviceLogsQuery({
     variables: {
       device_id: params.device_id,
+      show_empty: showEmpty,
       ...queryVariables,
     },
   });
@@ -87,12 +92,22 @@ const DeviceLogsPage = ({ params }: { params: { device_id: string } }) => {
       >
         <ArrowBackIcon />
       </Link>
+
       <div className="flex text-5xl gap-4 mb-6">
         <h1 className="font-bold">{deviceStatus?.device}</h1>
         <h1 className="opacity-40">-</h1>
         <h1 className="opacity-40">Logs</h1>
       </div>
-      <div className="h-[45rem]">
+      <div className="flex justify-end">
+        <Checkbox
+          size="md"
+          label={"Mostrar logs vacíos"}
+          checked={showEmpty}
+          onChange={(event) => setShowEmpty(event.currentTarget.checked)}
+        />
+      </div>
+
+      <div className="h-[42rem]">
         <DataGrid instance={grid} />
       </div>
     </section>

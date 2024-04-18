@@ -716,14 +716,12 @@ class IndustryLogsAPI(APIView):
                 "final_datetime": now.isoformat(timespec='seconds')
             }
 
-        print("time interval")
-        print(time_interval)
-
         response, status = make_request(
             request_url, interval=time_interval, token=token)
         response = response.json()
 
         device_filter = "device" in request.query_params
+        show_empty = request.query_params["show_empty"]
 
         output = []
         for device, logs in response.items():
@@ -733,6 +731,8 @@ class IndustryLogsAPI(APIView):
                     continue
 
             for log in logs:
+                if show_empty == "false" and log["log"] == "":
+                    continue
                 output.append({"device": device,
                                ** log})
 
