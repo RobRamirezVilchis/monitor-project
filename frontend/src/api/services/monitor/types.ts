@@ -143,3 +143,17 @@ export interface DeviceFilters extends Partial<PageNumberPaginationParams>{
   device_id: string;
 }
 
+
+export interface DeviceLogsFilters extends Partial<PageNumberPaginationParams>{
+  device_id: string;
+  //register_time_before: string;
+  //register_time_after: string;
+}
+
+export interface DeviceLogs {
+  device: string;
+  log_date: string;
+  log_time: string;
+  log: string;
+  register_time: string;
+}

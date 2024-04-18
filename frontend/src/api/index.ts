@@ -70,6 +70,7 @@ const api = {
         deviceStatus: (device_id: DeviceId) => `api/v1/monitor/industry-status/${device_id}/`,
         deviceHistory: (device_id: DeviceId) => `api/v1/monitor/industry-status/history/${device_id}/`,
         cameraDisconnections: (device_id: DeviceId) => `api/v1/monitor/industry/camera_disconnections/${device_id}/`,
+        deviceLogs: (device_id: DeviceId) => `api/v1/monitor/industry/device-logs/${device_id}/`,
         severityHistory: (device_id: DeviceId) => `api/v1/monitor/industry-status/severity-history/${device_id}/`,
       }
     }

@@ -105,9 +105,10 @@ urlpatterns = [
              path("", apis.UnitScatterPlotAPI.as_view(), name="status"),
          ], "unit-scatterplot"))
          ),
-    path("industry-status/severity-history/<int:device_id>/",
+    path("industry-status/",
          include(([
-             path("", apis.DeviceScatterPlotAPI.as_view(), name="status"),
+             path("severity-history/<int:device_id>/",
+                  apis.DeviceScatterPlotAPI.as_view(), name="status"),
          ], "device-scatterplot"))
          ),
 
@@ -123,5 +124,12 @@ urlpatterns = [
          include(([
              path("", apis.IndustryAreaPlotAPI.as_view(), name="status"),
          ], "devices-area-plot"))
+         ),
+
+    # Get logs
+    path("industry/device-logs/<int:device_id>/",
+         include(([
+             path("", apis.IndustryLogsAPI.as_view(), name="status"),
+         ], "devices-logs"))
          ),
 ]

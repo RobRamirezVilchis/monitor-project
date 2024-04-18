@@ -1,8 +1,10 @@
+from datetime import datetime
 from django.shortcuts import render
 from django.db.models import Count, F, Window, Q
 from django.db.models.functions import Lead
 from django_filters.rest_framework import DjangoFilterBackend
 
+import pytz
 from rest_framework.views import APIView
 from rest_framework.generics import CreateAPIView, ListAPIView
 from rest_framework import serializers
@@ -13,6 +15,7 @@ from .selectors import *
 from .services import device_create_or_update
 from api.pagination import get_paginated_response, LimitOffsetPagination
 from .models import UnitStatus
+from .cron import get_credentials, login, make_request
 
 import operator
 
@@ -230,8 +233,7 @@ class DeviceHistoryList(APIView):
             filters_serializer.validated_data["register_datetime_after"] = start_date
 
         data = {'device_id': device_id}
-        print("val data")
-        print(filters_serializer.validated_data)
+
         logs = get_devicehistory(
             data, filters=filters_serializer.validated_data)[::-1]
 
@@ -668,3 +670,70 @@ class IndustryLastUpdateAPI(APIView):
         output = self.OutputSerializer(last_update_sd).data
 
         return Response(output)
+
+
+class IndustryLogsAPI(APIView):
+    class OutputSerializer(serializers.Serializer):
+        device = serializers.CharField(max_length=50)
+        log_date = serializers.CharField(max_length=50)
+        log_time = serializers.CharField(max_length=50)
+        log = serializers.CharField(max_length=50)
+        register_time = serializers.CharField(max_length=50)
+
+    def get(self, request, device_id, *args, **kwargs):
+        global request_url
+
+        client_keys = {
+            "Ragasa": "rgs",
+            "Cemex Regenera": "cmxrgn",
+            "Mexalit": "mxlt",
+            "Cemex Soc": "cmxsoc"
+        }
+
+        device = Device.objects.get(id=device_id)
+        client_name = device.client.name
+        client_key = client_keys[client_name]
+
+        credentials = get_credentials(client_key)
+        token = login(client=client_key, credentials=credentials)
+
+        request_url = f'https://{client_key}.industry.aivat.io/stats_json/'
+        sent_interval = False
+
+        print(request.query_params)
+        time_interval = {}
+        if 'register_time_after' in request.query_params:
+            time_interval["initial_datetime"] = request.query_params['register_time_after'][:-1]
+            sent_interval = True
+
+        if 'register_time_before' in request.query_params:
+            time_interval["final_datetime"] = request.query_params['register_time_before'][:-1]
+            sent_interval = True
+
+        if not sent_interval:
+            now = datetime.now(tz=pytz.timezone('UTC')).replace(tzinfo=None)
+            time_interval = {
+                "initial_datetime": (now - timedelta(days=1)).isoformat(timespec="seconds"),
+                "final_datetime": now.isoformat(timespec='seconds')
+            }
+
+        print("time interval")
+        print(time_interval)
+
+        response, status = make_request(
+            request_url, interval=time_interval, token=token)
+        response = response.json()
+
+        output = []
+        for device, logs in response.items():
+            for log in logs:
+                output.append({"device": device,
+                               ** log})
+
+        data = self.OutputSerializer(output, many=True).data
+
+        return get_paginated_response(
+            output,
+            self.OutputSerializer,
+            request
+        )

@@ -41,6 +41,7 @@ import {
   YAxis,
 } from "recharts";
 import { DatePickerInput } from "@mantine/dates";
+import { Button } from "@mantine/core";
 
 type StatusKey = 0 | 1 | 2 | 3 | 4 | 5;
 const statusStyles: { [key in StatusKey]: string } = {
@@ -235,70 +236,77 @@ const DevicePage = ({ params }: { params: { device_id: string } }) => {
         </div>
       </div>
 
-      {deviceStatus && (
-        <div>
-          {deviceStatus.delayed && (
-            <div className="flex items-center text-gray-500">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                strokeWidth="1.5"
-                stroke="currentColor"
-                className="w-6 h-6"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z"
-                />
-              </svg>
-
-              <p className="ml-2 text-2xl">
-                Retraso: {deviceStatus.delay_time}
-              </p>
-            </div>
-          )}
-          {!deviceStatus.delayed && (
-            <div className="flex items-center text-gray-500">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                strokeWidth="2.5"
-                stroke="currentColor"
-                className="w-6 h-6"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="m4.5 12.75 6 6 9-13.5"
-                />
-              </svg>
-
-              <p className="ml-2 mt-1 text-2xl">Comunicación reciente</p>
-            </div>
-          )}
+      <div className="flex justify-between items-end">
+        {deviceStatus && (
           <div>
-            {daysRemaining != -1 && (
-              <p className="text-2xl text-gray-500">
-                Licencia termina en {daysRemaining} días
-              </p>
+            {deviceStatus.delayed && (
+              <div className="flex items-center text-gray-500">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth="1.5"
+                  stroke="currentColor"
+                  className="w-6 h-6"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z"
+                  />
+                </svg>
+
+                <p className="ml-2 text-2xl">
+                  Retraso: {deviceStatus.delay_time}
+                </p>
+              </div>
             )}
-            {deviceStatus.last_connection && (
-              <p className="text-2xl text-gray-500">
-                Última conexión:{" "}
-                {format(parseISO(deviceStatus.last_connection), "Pp")}
-              </p>
+            {!deviceStatus.delayed && (
+              <div className="flex items-center text-gray-500">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth="2.5"
+                  stroke="currentColor"
+                  className="w-6 h-6"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="m4.5 12.75 6 6 9-13.5"
+                  />
+                </svg>
+
+                <p className="ml-2 mt-1 text-2xl">Comunicación reciente</p>
+              </div>
             )}
-            {!deviceStatus.last_connection && (
-              <p className="text-2xl text-gray-500">
-                Última conexión desconocida
-              </p>
-            )}
+            <div>
+              {daysRemaining != -1 && (
+                <p className="text-2xl text-gray-500">
+                  Licencia termina en {daysRemaining} días
+                </p>
+              )}
+              {deviceStatus.last_connection && (
+                <p className="text-2xl text-gray-500">
+                  Última conexión:{" "}
+                  {format(parseISO(deviceStatus.last_connection), "Pp")}
+                </p>
+              )}
+              {!deviceStatus.last_connection && (
+                <p className="text-2xl text-gray-500">
+                  Última conexión desconocida
+                </p>
+              )}
+            </div>
           </div>
-        </div>
-      )}
+        )}
+        {/* <div>
+          <Link href={`${params.device_id}/logs`}>
+            <Button size="md">Consultar logs</Button>
+          </Link>
+        </div> */}
+      </div>
 
       <div className="h-[70vh]">
         <DataGrid instance={grid} />

@@ -182,7 +182,7 @@ const IndustryStatisticsPage = () => {
                     { name: "Crítico", color: "red" },
                   ]
             }
-            curveType="monotone"
+            curveType="bump"
           />
         </div>
       )}

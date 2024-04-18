@@ -65,7 +65,7 @@ def login(client, credentials):
     return token
 
 
-def make_request(interval, token):
+def make_request(request_url, interval, token):
     headers = {"Authorization": f"Token {token}"}
     r = requests.get(request_url, data=interval, headers=headers)
     # print(r.status_code)
@@ -97,10 +97,11 @@ def get_driving_data(client):
         print("Connection error")
         return
 
-    response, status = make_request({"minutes": 60}, token=token)
+    response, status = make_request(request_url, {"minutes": 60}, token=token)
     if status == 401:
         token = login(client, credentials)
-        response, status = make_request({"minutes": 60}, token=token)
+        response, status = make_request(
+            request_url, {"minutes": 60}, token=token)
 
     if status == 200 or status == 201:
         response = response.json()
@@ -560,10 +561,10 @@ def get_industry_data(client):
         "final_datetime": now.isoformat(timespec='seconds')
     }
 
-    response, status = make_request(time_interval, token)
+    response, status = make_request(request_url, time_interval, token)
     if not (status == 200 or status == 201):
         token = login(client, credentials)
-        response, status = make_request(time_interval, token)
+        response, status = make_request(request_url, time_interval, token)
 
     if status == 200 or status == 201:
         response = response.json()
@@ -813,7 +814,10 @@ def update_industry_status():
 
             # Agregar nueva última conexión a los campos a actualizar
             update_values['last_connection'] = last_connection
-            first_log_time = gx_data["first_log_time"] + timedelta(hours=6)
+
+            first_log_time = None
+            if gx_data["first_log_time"]:
+                first_log_time = gx_data["first_log_time"] + timedelta(hours=6)
 
             # Si existe ese dato, ver si tiene más de 10 minutos. En ese caso, ponerlo como atrasado
             if db_last_connection:

@@ -70,7 +70,7 @@ export const defaultConfig: HttpClientConfig = {
 const axiosInstance = createAxiosInstance<Partial<HttpClientConfig>>(defaultConfig);
 
 addRejectRequestInterceptor(axiosInstance);
-addJwtInterceptor(axiosInstance);
+//addJwtInterceptor(axiosInstance);
 addCsrfInterceptor(axiosInstance);
 addDelayInterceptor(axiosInstance);
 addRetryInterceptor(axiosInstance);
