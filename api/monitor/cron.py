@@ -893,7 +893,8 @@ def update_industry_status():
                 send_telegram(chat="INDUSTRY_CHAT",
                               message=message)
 
-            last_alert = date_now
+                last_alert = date_now
+
         update_values["last_alert"] = last_alert
 
         conditions = [

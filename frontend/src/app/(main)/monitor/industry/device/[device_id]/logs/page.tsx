@@ -93,10 +93,10 @@ const DeviceLogsPage = ({ params }: { params: { device_id: string } }) => {
         <ArrowBackIcon />
       </Link>
 
-      <div className="flex text-5xl gap-4 mb-6">
+      <div className="flex text-5xl gap-4 mb-6 items-center">
         <h1 className="font-bold">{deviceStatus?.device}</h1>
-        <h1 className="opacity-40">-</h1>
-        <h1 className="opacity-40">Logs de estátus</h1>
+        <h1 className="opacity-40 text-4xl">-</h1>
+        <h1 className="opacity-40 text-4xl">Logs de estátus</h1>
       </div>
       <div className="flex justify-end">
         <Checkbox
