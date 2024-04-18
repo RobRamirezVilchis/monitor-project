@@ -96,7 +96,7 @@ const DeviceLogsPage = ({ params }: { params: { device_id: string } }) => {
       <div className="flex text-5xl gap-4 mb-6">
         <h1 className="font-bold">{deviceStatus?.device}</h1>
         <h1 className="opacity-40">-</h1>
-        <h1 className="opacity-40">Logs</h1>
+        <h1 className="opacity-40">Logs de estátus</h1>
       </div>
       <div className="flex justify-end">
         <Checkbox
@@ -120,10 +120,9 @@ const cols: ColumnDef<DeviceLogs>[] = [
   {
     accessorKey: "device",
     accessorFn: (row) => row.device,
-    header: "Dispositivo",
-    columnTitle: "Dispositivo",
-    columnTitleCustom: "",
-    minSize: 250,
+    header: "Device",
+    columnTitle: "Device",
+    minSize: 150,
     enableSorting: true,
     //filterVariant: "datetime-range",
     enableMultiSort: true,
@@ -131,21 +130,28 @@ const cols: ColumnDef<DeviceLogs>[] = [
   {
     accessorKey: "register_time",
     accessorFn: (row) => format(parseISO(row.register_time), "Pp"),
-    header: "Fecha",
-    columnTitle: "Fecha",
-    columnTitleCustom:
-      "Fecha y hora de registro, cada uno considera logs en un intervalo de 10 minutos hacia atrás",
+    header: "Register time",
+    columnTitle: "Register time",
     minSize: 250,
     enableSorting: true,
     filterVariant: "datetime-range",
     enableMultiSort: true,
   },
   {
+    accessorKey: "log_time",
+    accessorFn: (row) => format(parseISO(row.log_time), "Pp"),
+    header: "Log time",
+    columnTitle: "Log time",
+    minSize: 250,
+    enableSorting: false,
+    //filterVariant: "datetime-range",
+    //enableMultiSort: true,
+  },
+  {
     accessorKey: "log",
     accessorFn: (row) => (row.log == "" ? "Vacío" : row.log),
     header: "Log",
     columnTitle: "Log",
-    columnTitleCustom: "Log",
     minSize: 500,
     enableSorting: false,
   },

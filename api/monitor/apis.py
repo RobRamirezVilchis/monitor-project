@@ -675,7 +675,6 @@ class IndustryLastUpdateAPI(APIView):
 class IndustryLogsAPI(APIView):
     class OutputSerializer(serializers.Serializer):
         device = serializers.CharField(max_length=50)
-        log_date = serializers.CharField(max_length=50)
         log_time = serializers.CharField(max_length=50)
         log = serializers.CharField(max_length=50)
         register_time = serializers.CharField(max_length=50)
@@ -734,7 +733,9 @@ class IndustryLogsAPI(APIView):
                 if show_empty == "false" and log["log"] == "":
                     continue
                 output.append({"device": device,
-                               ** log})
+                               "register_time": log["register_time"],
+                               "log": log["log"],
+                               "log_time": f"{log['log_date']}T{log['log_time']}"})
 
         data = self.OutputSerializer(output, many=True).data
 
