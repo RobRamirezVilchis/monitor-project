@@ -1,11 +1,8 @@
 "use client";
 
 import {
-  useDeviceHistoryQuery,
   useDeviceLogsQuery,
   useDeviceStatusQuery,
-  useUnitHistoryQuery,
-  useUnitStatusQuery,
 } from "@/api/queries/monitor";
 import { login } from "@/api/services/auth";
 import { DeviceLogs, UnitHistory } from "@/api/services/monitor/types";
@@ -13,6 +10,8 @@ import { useDataGrid, useSsrDataGrid } from "@/hooks/data-grid";
 import DataGrid from "@/ui/data-grid/DataGrid";
 import { ColumnDef } from "@/ui/data-grid/types";
 import { format, parseISO } from "date-fns";
+import Link from "next/link";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 
 const DeviceLogsPage = ({ params }: { params: { device_id: string } }) => {
   const { dataGridState, queryVariables, dataGridConfig } = useSsrDataGrid<{
@@ -81,7 +80,13 @@ const DeviceLogsPage = ({ params }: { params: { device_id: string } }) => {
   });
 
   return (
-    <section>
+    <section className="relative">
+      <Link
+        href={`/monitor/industry/device/${params.device_id}`}
+        className="absolute right-full mr-5 mt-2 opacity-40"
+      >
+        <ArrowBackIcon />
+      </Link>
       <div className="flex text-5xl gap-4 mb-6">
         <h1 className="font-bold">{deviceStatus?.device}</h1>
         <h1 className="opacity-40">-</h1>
