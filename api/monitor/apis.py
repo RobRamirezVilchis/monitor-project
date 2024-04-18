@@ -700,14 +700,13 @@ class IndustryLogsAPI(APIView):
         request_url = f'https://{client_key}.industry.aivat.io/stats_json/'
         sent_interval = False
 
-        print(request.query_params)
         time_interval = {}
         if 'register_time_after' in request.query_params:
-            time_interval["initial_datetime"] = request.query_params['register_time_after'][:-1]
+            time_interval["initial_datetime"] = request.query_params['register_time_after'][:-5]
             sent_interval = True
 
         if 'register_time_before' in request.query_params:
-            time_interval["final_datetime"] = request.query_params['register_time_before'][:-1]
+            time_interval["final_datetime"] = request.query_params['register_time_before'][:-5]
             sent_interval = True
 
         if not sent_interval:
@@ -724,8 +723,15 @@ class IndustryLogsAPI(APIView):
             request_url, interval=time_interval, token=token)
         response = response.json()
 
+        device_filter = "device" in request.query_params
+
         output = []
         for device, logs in response.items():
+            if "device" in request.query_params:
+                if not request.query_params["device"] in device.lower():
+                    print(f"Skipped {device}")
+                    continue
+
             for log in logs:
                 output.append({"device": device,
                                ** log})

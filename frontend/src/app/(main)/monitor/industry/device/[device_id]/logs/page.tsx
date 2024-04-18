@@ -55,7 +55,6 @@ const DeviceLogsPage = ({ params }: { params: { device_id: string } }) => {
       ...queryVariables,
     },
   });
-  console.log(deviceLogsQuery.data);
 
   const grid = useDataGrid<DeviceLogs>({
     data: deviceLogsQuery.data?.data || [],
@@ -88,7 +87,7 @@ const DeviceLogsPage = ({ params }: { params: { device_id: string } }) => {
         <h1 className="opacity-40">-</h1>
         <h1 className="opacity-40">Logs</h1>
       </div>
-      <div>
+      <div className="h-[45rem]">
         <DataGrid instance={grid} />
       </div>
     </section>
@@ -99,6 +98,17 @@ export default DeviceLogsPage;
 
 const cols: ColumnDef<DeviceLogs>[] = [
   {
+    accessorKey: "device",
+    accessorFn: (row) => row.device,
+    header: "Dispositivo",
+    columnTitle: "Dispositivo",
+    columnTitleCustom: "",
+    minSize: 250,
+    enableSorting: true,
+    //filterVariant: "datetime-range",
+    enableMultiSort: true,
+  },
+  {
     accessorKey: "register_time",
     accessorFn: (row) => format(parseISO(row.register_time), "Pp"),
     header: "Fecha",
@@ -106,17 +116,17 @@ const cols: ColumnDef<DeviceLogs>[] = [
     columnTitleCustom:
       "Fecha y hora de registro, cada uno considera logs en un intervalo de 10 minutos hacia atrás",
     minSize: 250,
-    //enableSorting: true,
+    enableSorting: true,
     filterVariant: "datetime-range",
     enableMultiSort: true,
   },
   {
     accessorKey: "log",
-    accessorFn: (row) => row.log,
+    accessorFn: (row) => (row.log == "" ? "Vacío" : row.log),
     header: "Log",
     columnTitle: "Log",
     columnTitleCustom: "Log",
-    minSize: 200,
+    minSize: 500,
     enableSorting: true,
     filterVariant: "datetime-range",
   },

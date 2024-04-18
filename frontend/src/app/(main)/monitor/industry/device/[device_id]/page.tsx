@@ -301,11 +301,11 @@ const DevicePage = ({ params }: { params: { device_id: string } }) => {
             </div>
           </div>
         )}
-        {/* <div>
+        <div>
           <Link href={`${params.device_id}/logs`}>
             <Button size="md">Consultar logs</Button>
           </Link>
-        </div> */}
+        </div>
       </div>
 
       <div className="h-[70vh]">
@@ -491,7 +491,6 @@ const cameraGridCols: ColumnDef<CameraDisconnection>[] = [
     columnTitle: "Cámara",
     minSize: 200,
     enableSorting: true,
-    //filterVariant: "datetime-range",
   },
 
   {
