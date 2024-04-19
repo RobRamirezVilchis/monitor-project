@@ -674,51 +674,44 @@ class IndustryLastUpdateAPI(APIView):
 
 class SafeDrivingLogsAPI(APIView):
     class OutputSerializer(serializers.Serializer):
-        unidad = serializers.CharField(max_length=50)
-        fecha_subida = serializers.CharField(max_length=50)
-        timestamp = serializers.CharField(max_length=50)
-        tipo = serializers.CharField(max_length=50)
-        log = serializers.CharField(max_length=50)
+        unidad = serializers.CharField(max_length=50, source="Unidad")
+        fecha_subida = serializers.CharField(
+            max_length=50, source="Fecha_subida")
+        timestamp = serializers.CharField(max_length=50, source="Timestamp")
+        tipo = serializers.CharField(max_length=50, source="Tipo")
+        log = serializers.CharField(max_length=50, source="Log")
 
     def get(self, request, unit_id, *args, **kwargs):
-        client_keys = {"Transpais": "tp",
-                       "Cemex Concretos": "cemex"}
-
         unit = Unit.objects.get(id=unit_id)
-        client_name = unit.client.name
-        client_key = client_keys[client_name]
 
-        credentials = get_credentials(client_key)
-        token = login(client=client_key, credentials=credentials)
+        credentials = get_credentials("tp")
+        token = login(client="tp", credentials=credentials)
 
-        if client_key == "tp":
-            request_url = 'https://tp.introid.com/range-logs/'
+        request_url = 'https://tp.introid.com/range_logs/'
 
-        elif client_key == "cemex":
-            request_url = 'https://cmx.safe-d.aivat.io/cemex/range-logs/'
         sent_interval = False
 
-        params = {}
-        if 'fecha_subida_after' in request.query_params:
-            params["initial_datetime"] = request.query_params['register_time_after'][:-5]
+        now = datetime.now(tz=pytz.timezone('UTC'))
+        params = {
+            "start": (now - timedelta(days=1)).isoformat(timespec="seconds"),
+            "end": now.isoformat(timespec='seconds')
+        }
+
+        if 'timestamp_after' in request.query_params:
+            params["start"] = request.query_params['timestamp_after'][:-5]
             sent_interval = True
 
-        if 'fecha_subida_before' in request.query_params:
-            params["final_datetime"] = request.query_params['register_time_before'][:-5]
+        if 'timestamp_before' in request.query_params:
+            params["end"] = request.query_params['timestamp_before'][:-5]
             sent_interval = True
-
-        if not sent_interval:
-            now = datetime.now(tz=pytz.timezone('UTC')).replace(tzinfo=None)
-            params = {
-                "initial_datetime": (now - timedelta(days=1)).isoformat(timespec="seconds"),
-                "final_datetime": now.isoformat(timespec='seconds')
-            }
 
         params["unit"] = unit.name
 
         response, status = make_request(
             request_url, data=params, token=token)
+
         response = response.json()
+        response.reverse()
 
         return get_paginated_response(
             response,
@@ -792,7 +785,8 @@ class IndustryLogsAPI(APIView):
                                "log": log["log"],
                                "log_time": f"{log['log_date']}T{log['log_time']}"})
 
-        data = self.OutputSerializer(output, many=True).data
+        if request.query_params.get("sort") == "-register_time":
+            output.reverse()
 
         return get_paginated_response(
             output,

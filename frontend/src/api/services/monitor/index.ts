@@ -1,4 +1,4 @@
-import { UnitStatus, SeverityCount, UnitHistory, DeviceStatus, UnitFilters, LastStatusChange, DeviceFilters, DeviceHistory, Client, CameraDisconnection, LastActiveStatus, SeverityHistory, AreaPlotData, AreaPlotFilters, LastUpdate, DeviceLogsFilters, DeviceLogs, DeviceWifiStatus } from "./types";
+import { UnitStatus, SeverityCount, UnitHistory, DeviceStatus, UnitFilters, LastStatusChange, DeviceFilters, DeviceHistory, Client, CameraDisconnection, LastActiveStatus, SeverityHistory, AreaPlotData, AreaPlotFilters, LastUpdate, DeviceLogsFilters, DeviceLogs, DeviceWifiStatus, UnitLogsFilters, UnitLogs } from "./types";
 import { Id, Paginated } from "@/api/types";
 import { Role, User } from "../auth/types";
 import api from "../..";
@@ -351,6 +351,24 @@ export async function getDeviceSeverityHistory(
   try {
     const resp = await http.get<SeverityHistory[]>(
       api.endpoints.monitor.industry.severityHistory(filters.device_id),
+      {
+        params: filters,
+        ...config,
+      }
+    );
+    return resp.data;
+  } catch (error) {
+    throw error;
+  }
+}
+
+export async function getUnitLogs(
+  filters: UnitLogsFilters,
+  config?: Parameters<typeof http.get>[1]
+) {
+  try {
+    const resp = await http.get<Paginated<UnitLogs>>(
+      api.endpoints.monitor.driving.unitLogs(filters.unit_id),
       {
         params: filters,
         ...config,

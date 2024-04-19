@@ -190,11 +190,11 @@ const UnitPage = ({ params }: { params: { unit_id: string } }) => {
     <section className="relative mb-20">
       <Link
         href={"/monitor/safedriving/details"}
-        className="absolute right-full mr-5 mt-2 opacity-40"
+        className="absolute hidden lg:block right-full mr-5 mt-2 opacity-40"
       >
         <ArrowBackIcon />
       </Link>
-      <div className="flex mb-4 justify-between items-center">
+      <div className="relative flex mb-4 justify-between items-center">
         <div className="xl:flex xl:gap-6">
           <h1 className="text-5xl font-bold">Unidad {unitStatus?.unit}</h1>
           <div className="md:flex justify-start items-center gap-4 mt-4 xl:mt-0">
@@ -212,7 +212,7 @@ const UnitPage = ({ params }: { params: { unit_id: string } }) => {
           </div>
         </div>
         {unitStatus?.on_trip && (
-          <div className="flex items-center top-0">
+          <div className="absolute right-4 bottom-6 md:static flex items-center top-0">
             <span className="animate-ping inline-flex h-3 w-3 rounded-full bg-blue-400 opacity-100"></span>
             <div className="text-2xl font-semibold ml-6">En viaje</div>
           </div>
@@ -236,20 +236,26 @@ const UnitPage = ({ params }: { params: { unit_id: string } }) => {
                   {format(parseISO(unitStatus.last_connection), "Pp")}
                 </p>
               )}
-              {unitStatus.last_connection && (
-                <p>Eventos pendientes - {unitStatus.pending_events}</p>
-              )}
-              {unitStatus.last_connection && (
-                <p>Status pendientes - {unitStatus.pending_status}</p>
-              )}
+              {unitStatus.last_connection &&
+                (unitStatus.pending_events == 1 ? (
+                  <p>{unitStatus.pending_events} evento pendiente</p>
+                ) : (
+                  <p>{unitStatus.pending_events} eventos pendientes</p>
+                ))}
+              {unitStatus.last_connection &&
+                (unitStatus.pending_status == 1 ? (
+                  <p>{unitStatus.pending_status} status pendiente</p>
+                ) : (
+                  <p>{unitStatus.pending_status} status pendientes</p>
+                ))}
             </div>
           )}
         </div>
-        {/* <div>
+        <div>
           <Link href={`${params.unit_id}/logs`}>
             <Button size="md">Consultar logs</Button>
           </Link>
-        </div> */}
+        </div>
       </div>
 
       <div className="h-[70vh] mb-10">

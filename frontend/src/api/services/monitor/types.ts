@@ -163,10 +163,16 @@ export interface DeviceLogs {
   register_time: string;
 }
 
+export interface UnitLogsFilters extends Partial<PageNumberPaginationParams>{
+  unit_id: string;
+  //register_time_before: string;
+  //register_time_after: string;
+}
+
 export interface UnitLogs {
-  device: string;
-  log_date: string;
-  log_time: string;
+  unidad: string;
+  fecha_subida: string;
+  timestamp: string;
+  tipo: string;
   log: string;
-  register_time: string;
 }

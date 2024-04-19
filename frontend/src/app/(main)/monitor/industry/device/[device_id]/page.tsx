@@ -223,7 +223,7 @@ const DevicePage = ({ params }: { params: { device_id: string } }) => {
     <section className="relative mb-20">
       <Link
         href={"/monitor/industry/details"}
-        className="absolute right-full mr-5 mt-2 opacity-40"
+        className="hidden lg:block absolute right-full mr-5 mt-2 opacity-40"
       >
         <ArrowBackIcon />
       </Link>
@@ -245,14 +245,14 @@ const DevicePage = ({ params }: { params: { device_id: string } }) => {
           </div>
         </div>
         {hasWifiProblems && (
-          <div className="flex items-center gap-2 opacity-70 text-lg px-2 py-1 bg-gray-300 rounded-md">
+          <div className="hidden md:flex items-center gap-2 opacity-70 text-lg px-2 py-1 bg-gray-300 rounded-md  dark:text-black">
             <Image src={wifiError} width={30} alt={""}></Image>
             <p>Problemas de conexión</p>
           </div>
         )}
       </div>
 
-      <div className="flex justify-between items-end">
+      <div className="flex justify-between items-end mb-12 md:mb-0">
         {deviceStatus && (
           <div>
             {deviceStatus.delayed && (
@@ -317,14 +317,14 @@ const DevicePage = ({ params }: { params: { device_id: string } }) => {
             </div>
           </div>
         )}
-        <div>
+      </div>
+
+      <div className="relative h-[70vh]">
+        <div className="absolute right-0 -top-10">
           <Link href={`${params.device_id}/logs`}>
             <Button size="md">Consultar logs</Button>
           </Link>
         </div>
-      </div>
-
-      <div className="h-[70vh]">
         <DataGrid instance={grid} />
       </div>
       <h3 className="text-2xl opacity-60 mt-10">Desconexiones de cámaras:</h3>

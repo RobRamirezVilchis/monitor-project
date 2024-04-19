@@ -25,6 +25,8 @@ urlpatterns = [
                            name="last-active-status"),
                       path("severity-history/", apis.UnitScatterPlotAPI.as_view(),
                            name="scatter-plot"),
+                      path("logs/", apis.SafeDrivingLogsAPI.as_view(),
+                           name="device-logs"),
                   ], "unit")
                   )),
 
