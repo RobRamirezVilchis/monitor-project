@@ -65,9 +65,9 @@ def login(client, credentials):
     return token
 
 
-def make_request(request_url, interval, token):
+def make_request(request_url, data, token):
     headers = {"Authorization": f"Token {token}"}
-    r = requests.get(request_url, data=interval, headers=headers)
+    r = requests.get(request_url, data=data, headers=headers)
     # print(r.status_code)
     # print(r.text)
     return r, r.status_code
@@ -84,11 +84,9 @@ def get_driving_data(client):
     credentials = get_credentials(client)
 
     if client == "tp":
-        login_url = 'https://tp.introid.com/login/'
         request_url = 'https://tp.introid.com/logs/'
 
     elif client == "cemex":
-        login_url = 'https://cmx.safe-d.aivat.io/login/'
         request_url = 'https://cmx.safe-d.aivat.io/cemex/logs/'
 
     try:
