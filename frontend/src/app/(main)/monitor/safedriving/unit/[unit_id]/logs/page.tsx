@@ -78,7 +78,7 @@ const UnitLogsPage = ({ params }: { params: { unit_id: string } }) => {
   return (
     <section className="relative">
       <Link
-        href={`/monitor/driving/unit/${params.unit_id}`}
+        href={`/monitor/safedriving/unit/${params.unit_id}`}
         className="absolute right-full mr-5 mt-2 opacity-40"
       >
         <ArrowBackIcon />
