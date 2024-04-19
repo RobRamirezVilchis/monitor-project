@@ -55,11 +55,12 @@ urlpatterns = [
                            name="camera-disconnections"),
                       path("logs/", apis.IndustryLogsAPI.as_view(),
                            name="device-logs"),
+                      path("check-wifi-connection/", apis.DeviceWifiProblemsAPI.as_view(),
+                           name="device-connection"),
                   ], "device")
                   )),
 
          ], "industry"))
-
          ),
 
 ]

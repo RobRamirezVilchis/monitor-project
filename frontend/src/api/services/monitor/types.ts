@@ -100,6 +100,10 @@ export interface LastStatusChange {
   register_datetime: string;
 }
 
+export interface DeviceWifiStatus {
+  connection_problems: boolean;
+}
+
 export interface LastActiveStatus {
   severity: number,
   description: string,

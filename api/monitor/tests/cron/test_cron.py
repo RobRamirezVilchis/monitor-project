@@ -31,10 +31,10 @@ class DataProcessingTests(TestCase):
         import json
         from datetime import datetime
 
-        with open('monitor/tests/utils/tp_driving_process_input_2024-04-04T15:10:05.399250+00:00.json', 'r') as f:
+        with open('monitor/tests/utils/tp_driving_process_input_2024-04-04.json', 'r') as f:
             input_data = json.load(f)
-            # print(input_data["logs"][977])
-        with open('monitor/tests/utils/tp_driving_process_output_2024-04-04T15:10:05.399250+00:00.json', 'r') as f:
+
+        with open('monitor/tests/utils/tp_driving_process_output_2024-04-04.json', 'r') as f:
             expected_output = json.load(f)
 
         now = datetime.fromisoformat('2024-04-04T15:10:05.399250+00:00')

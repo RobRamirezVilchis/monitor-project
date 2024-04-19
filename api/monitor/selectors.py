@@ -421,3 +421,16 @@ def get_last_ind_update():
     status = DeviceStatus.objects.order_by('-last_update')[0]
 
     return status
+
+
+def check_wifi_alerts(device_id):
+    import datetime
+    import pytz
+
+    date_now = datetime.date.today()
+    limit = date_now - datetime.timedelta(weeks=1)
+
+    alerts = Alert.objects.filter(gx_id=device_id,  register_date__gt=limit,
+                                  alert_type__description="Problemas de conexión (mensajes atrasados)")
+
+    return alerts

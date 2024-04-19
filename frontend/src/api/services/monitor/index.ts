@@ -1,4 +1,4 @@
-import { UnitStatus, SeverityCount, UnitHistory, DeviceStatus, UnitFilters, LastStatusChange, DeviceFilters, DeviceHistory, Client, CameraDisconnection, LastActiveStatus, SeverityHistory, AreaPlotData, AreaPlotFilters, LastUpdate, DeviceLogsFilters, DeviceLogs } from "./types";
+import { UnitStatus, SeverityCount, UnitHistory, DeviceStatus, UnitFilters, LastStatusChange, DeviceFilters, DeviceHistory, Client, CameraDisconnection, LastActiveStatus, SeverityHistory, AreaPlotData, AreaPlotFilters, LastUpdate, DeviceLogsFilters, DeviceLogs, DeviceWifiStatus } from "./types";
 import { Id, Paginated } from "@/api/types";
 import { Role, User } from "../auth/types";
 import api from "../..";
@@ -297,6 +297,24 @@ export async function getDeviceLastStatusChange(
   try {
     const resp = await http.get<LastStatusChange>(
       api.endpoints.monitor.industry.lastStatusChange(filters.device_id),
+      {
+        params: filters,
+        ...config,
+      }
+    );
+    return resp.data;
+  } catch (error) {
+    throw error;
+  }
+}
+
+export async function getDeviceWifiStatus(
+  filters: DeviceFilters,
+  config?: Parameters<typeof http.get>[1]
+) {
+  try {
+    const resp = await http.get<DeviceWifiStatus>(
+      api.endpoints.monitor.industry.checkWifi(filters.device_id),
       {
         params: filters,
         ...config,

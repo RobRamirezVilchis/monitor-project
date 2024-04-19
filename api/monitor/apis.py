@@ -799,3 +799,19 @@ class IndustryLogsAPI(APIView):
             self.OutputSerializer,
             request
         )
+
+
+class DeviceWifiProblemsAPI(APIView):
+    class OutputSerializer(serializers.Serializer):
+        connection_problems = serializers.BooleanField()
+
+    def get(self, request, device_id, *args, **kwargs):
+        wifi_alerts = check_wifi_alerts(device_id=device_id)
+
+        has_wifi_problems = False
+        if wifi_alerts:
+            has_wifi_problems = True
+
+        output = self.OutputSerializer(
+            {"connection_problems": has_wifi_problems}).data
+        return Response(output)

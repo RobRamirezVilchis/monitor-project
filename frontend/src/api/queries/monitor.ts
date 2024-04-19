@@ -1,5 +1,5 @@
 import { createQuery } from "../helpers/createQuery";
-import { getUnits, getDevices, getUnitHistory, getDrivingSeverityCount, getUnitLastStatusChange, getDeviceHistory, getIndustrySeverityCount, getUnitStatus, getDeviceStatus, getSafeDrivingClients, getIndustryClients, getDeviceLastStatusChange, getIndustryCameraDisconnections, getUnitLastActiveStatus, getUnitSeverityHistory, getSafeDrivingAreaPlotData, getIndustryAreaPlotData, getDrivingLastUpdate, getIndustryLastUpdate, getDeviceSeverityHistory, getDeviceLogs } from "../services/monitor";
+import { getUnits, getDevices, getUnitHistory, getDrivingSeverityCount, getUnitLastStatusChange, getDeviceHistory, getIndustrySeverityCount, getUnitStatus, getDeviceStatus, getSafeDrivingClients, getIndustryClients, getDeviceLastStatusChange, getIndustryCameraDisconnections, getUnitLastActiveStatus, getUnitSeverityHistory, getSafeDrivingAreaPlotData, getIndustryAreaPlotData, getDrivingLastUpdate, getIndustryLastUpdate, getDeviceSeverityHistory, getDeviceLogs, getDeviceWifiStatus } from "../services/monitor";
 import { AreaPlotFilters, DeviceFilters, UnitSeverityHistoryFilters, UnitFilters, DeviceSeverityHistoryFilters, DeviceLogsFilters } from "../services/monitor/types";
 import defaultQueryClient from "../clients/defaultQueryClient";
 
@@ -222,6 +222,17 @@ export const useDeviceLastStatusChange = createQuery({
   keepPreviousData: true,
   queryClient: defaultQueryClient,
 });
+
+export const useCheckDeviceWifiQuery = createQuery({
+  queryPrimaryKey: "check_wifi",
+  queryKeyVariables: (vars: DeviceFilters) => vars ? [vars] : [],
+  queryFn: (ctx, vars) => getDeviceWifiStatus(vars, { signal: ctx.signal }),
+  cacheTime: 1000 * 60 * 5,  // 5 minutes
+  staleTime: 1000 * 60 * 3,  // 3 minutes
+  keepPreviousData: true,
+  queryClient: defaultQueryClient,
+});
+
 
 // Scatterplot
 export const useDeviceSeverityHistory = createQuery({

@@ -2,6 +2,7 @@
 
 import {
   useCameraDisconnectionsQuery,
+  useCheckDeviceWifiQuery as useDeviceWifiQuery,
   useDeviceHistoryQuery,
   useDeviceLastStatusChange,
   useDeviceSeverityHistory,
@@ -28,6 +29,8 @@ import {
 } from "date-fns";
 import { es } from "date-fns/locale";
 import Link from "next/link";
+import Image from "next/image";
+import wifiError from "@/media/error-de-conexion.png";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { useState } from "react";
 import {
@@ -142,6 +145,13 @@ const DevicePage = ({ params }: { params: { device_id: string } }) => {
     },
   });
 
+  const checkWifiQuery = useDeviceWifiQuery({
+    variables: {
+      device_id: params.device_id,
+    },
+  });
+  const hasWifiProblems = checkWifiQuery.data?.connection_problems;
+
   let timeAgo: string;
   if (deviceLastStatusChange.data != null) {
     timeAgo = formatDistanceToNow(
@@ -234,6 +244,12 @@ const DevicePage = ({ params }: { params: { device_id: string } }) => {
             </div>{" "}
           </div>
         </div>
+        {hasWifiProblems && (
+          <div className="flex items-center gap-2 opacity-70 text-lg px-2 py-1 bg-gray-300 rounded-md">
+            <Image src={wifiError} width={30} alt={""}></Image>
+            <p>Problemas de conexión</p>
+          </div>
+        )}
       </div>
 
       <div className="flex justify-between items-end">

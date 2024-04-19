@@ -73,6 +73,7 @@ const api = {
         severityHistory: (device_id: DeviceId) => `api/v1/monitor/industry/devices/${device_id}/severity-history/`,
         deviceLogs: (device_id: DeviceId) => `api/v1/monitor/industry/devices/${device_id}/logs/`,
         cameraDisconnections: (device_id: DeviceId) => `api/v1/monitor/industry/devices/${device_id}/camera-disconnections/`,
+        checkWifi: (device_id: DeviceId) => `api/v1/monitor/industry/devices/${device_id}/check-wifi-connection/`,
       }
     }
   },
