@@ -730,7 +730,6 @@ def process_industry_data(response):
     for description, cond in alert_conditions.items():
         if cond:
             alerts.add(description)
-    print(alert_conditions, alerts)
 
     return output_gx, output_cameras, days_remaining, license_end, alerts
 
@@ -878,7 +877,7 @@ def update_industry_status():
                     {"description": description})
 
                 if description == "Desconexión de cámara":
-                    alert_info = str(hour_data['camera_connection'])
+                    alert_info = str(hour_data['camera_connection']) # Mandar minutos de desconexión en última hora
 
                 message += f'{description}: {alert_info}\n' if alert_info else f'{description}\n'
 

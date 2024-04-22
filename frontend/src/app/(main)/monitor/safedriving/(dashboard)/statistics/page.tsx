@@ -1,8 +1,20 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { Checkbox, SegmentedControl, Tabs, rem } from "@mantine/core";
-import { AreaChart, AreaChartType } from "@mantine/charts";
+import {
+  Checkbox,
+  Paper,
+  Text,
+  SegmentedControl,
+  Tabs,
+  rem,
+} from "@mantine/core";
+import {
+  AreaChart,
+  AreaChartType,
+  ChartTooltipProps,
+  getFilteredChartTooltipPayload,
+} from "@mantine/charts";
 import { TextInput, useCombobox, Select } from "@mantine/core";
 import { PieChart } from "@mantine/charts";
 
@@ -22,6 +34,7 @@ import { useRouter } from "next/navigation";
 import { DatePickerInput } from "@mantine/dates";
 import { formatDistanceToNow } from "date-fns";
 import { es } from "date-fns/locale";
+import { ConstructionOutlined, Pause } from "@mui/icons-material";
 
 type StatusKey = 0 | 1 | 2 | 3 | 4 | 5;
 const statusStyles: { [key in StatusKey]: string } = {
@@ -219,6 +232,11 @@ const SafeDrivingPage = () => {
             tooltipAnimationDuration={200}
             type={graphMode as AreaChartType}
             dotProps={{ r: 0 }}
+            tooltipProps={{
+              content: ({ label, payload }) => (
+                <ChartTooltip label={label} payload={payload} />
+              ),
+            }}
             series={
               showInactive
                 ? [
@@ -242,6 +260,34 @@ const SafeDrivingPage = () => {
         </div>
       )}
     </section>
+  );
+};
+
+const ChartTooltip = ({ label, payload }: ChartTooltipProps) => {
+  if (!payload) return null;
+  const unitsPerCategory = getFilteredChartTooltipPayload(payload).map(
+    (a) => a.value
+  );
+
+  const totalUnits = unitsPerCategory.reduce(
+    (partialSum, a) => partialSum + a,
+    0
+  );
+
+  return (
+    <Paper px="md" py="sm" withBorder shadow="md" radius="md">
+      <Text fw={500} mb={5}>
+        {label}
+      </Text>
+      <Text fw={500} mb={5}>
+        Total: {totalUnits}
+      </Text>
+      {getFilteredChartTooltipPayload(payload).map((item: any) => (
+        <Text key={item.name} fz="sm">
+          {item.name}: {item.value}
+        </Text>
+      ))}
+    </Paper>
   );
 };
 
