@@ -321,7 +321,7 @@ class UnitLastActiveStatus(APIView):
         description = serializers.CharField(source='status.description')
 
     def get(self, request, unit_id, *args, **kwargs):
-        last_status = get_unit_last_active_status({"unit_id": unit_id})
+        last_status = get_unit_last_active_status(unit_id)
 
         data = self.OutputSerializer(last_status).data
 

@@ -236,6 +236,7 @@ const SafeDrivingPage = () => {
       {areaPlotData && (
         <div className="mt-8">
           <AreaChart
+            //strokeWidth={0.5}
             h={500}
             data={areaPlotData}
             dataKey="fecha"

@@ -407,6 +407,7 @@ def update_driving_status():
                 else:
                     # Si la unidad no estuvo activa, simplemente copiar el valor de prioridad
                     priority = current_unit_status.status.priority
+                    severity = 5 if priority else severity
 
             # Obtener objeto GxStatus
             status_args = {
