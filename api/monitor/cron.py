@@ -157,8 +157,8 @@ def process_driving_data(response, now=None):
     device_dict = {dev["Unidad"]: {k: v for k, v in dev.items() if k != "Unidad"}
                    for dev in devices}
 
-    # Inicializar el diccionario "output" con los datos del dispositivo (última conexión y jsons pendientes)
-    # y con las categrías de errores en 0
+    # Initialize "output_gx" dictionary with device info (last connection and pending jsons),
+    # and all log categories with zeroes, for each time interval
     output_gx = {interval: {device: {**datos, **{t: 0 for t in log_types}, "restarting_loop": False}
                             for device, datos in device_dict.items()}
                  for interval in ["hour", "ten_minutes"]}
@@ -194,11 +194,11 @@ def process_driving_data(response, now=None):
                     for camera in cameras_num:
                         output_cameras[interval][unit][int(camera)] += 5
 
-            # No considerar Ignición o Aux en la cuenta total de logs
+            # Ignore Ignition or Aux in total log count
             if log_type not in {"Ignición", "Aux"}:
                 output_gx[interval][unit]["total"] += 1
 
-            # Checar qué restarts fueron justo después de una ignición (5 minutos)
+            # Discard restarts that happened right after ignition
             if log_type == "restart":
                 unit_ignitions = all_ignitions[all_ignitions["Unidad"] == unit]
 
@@ -210,7 +210,9 @@ def process_driving_data(response, now=None):
                     if ignition_time + timedelta(minutes=5) > restart_time > ignition_time:
                         output_gx[interval][unit][log_type] -= 1
                         output_gx[interval][unit]["total"] -= 1
-                        break  # Si hay más de una ignición antes del restart, no restar varias veces
+                        # Break out of the loop, to prevent repeating this logic
+                        # in case there was more than one ignition before the restart
+                        break
 
                 if recent and "Restarting" in log["Log"]:
                     execution_number = int(log["Log"].split()[4])
@@ -366,39 +368,49 @@ def update_driving_status():
                 unit_logs["En_viaje"] = None
                 unit_logs["Estatus"] = None
 
-            # Obtener objeto Unit
+            # Get Unit instance
             unit_args = {
                 'name': unit,
                 'client': client
             }
             unit_obj = get_or_create_unit(unit_args)
 
-            # Si una unidad entró en más de un nivel, tomar el más grave
+            current_unit_status = get_unitstatus(unit_id=unit_obj.id)
+            was_unit_active = not (current_unit_status.status.description.startswith("Sin comunicación") or
+                                   current_unit_status.status.description.endswith("logs pendientes") or
+                                   current_unit_status.status.description == "Inactivo")
+
             unit_status = all_units_status[unit]
 
+            # If the unit met the conditions for more than one severity level, take the most critical (max)
             most_severe = max(unit_status, key=lambda x: x["severity"])
-            status = most_severe["severity"]
+            severity = most_severe["severity"]
             description = most_severe["description"]
 
             priority = False
             if description == "Read only SSD" or description == "forced reboot (>1)" or description == "Tres cámaras fallando":
                 priority = True
             elif description.startswith("Sin comunicación") or description == "Inactivo" or description.endswith("logs pendientes"):
-                last_active_status = get_unit_last_active_status(
-                    {"unit_id": unit_obj.id})
-                if last_active_status:
-                    if last_active_status.status.description == "Read only SSD":
-                        status = 5
-                        priority = True
-                        message = "Sin comunicación reciente, último mensaje fue Read only SSD"
-                        if unit in alerts:
-                            alerts[unit].append(message)
-                        else:
-                            alerts[unit] = [message]
+                # Si la unidad apenas está inactiva, revisar cuál fue su último status
+                # si fue read only, darle un gxstatus con prioridad1
+                if was_unit_active:
+                    last_active_status = get_unit_last_active_status(unit_obj)
+                    if last_active_status:
+                        if last_active_status.status.description == "Read only SSD":
+                            severity = 5
+                            priority = True
+                            message = "Sin comunicación reciente, último mensaje fue Read only SSD"
+                            if unit in alerts:
+                                alerts[unit].append(message)
+                            else:
+                                alerts[unit] = [message]
+                else:
+                    # Si la unidad no estuvo activa, simplemente copiar el valor de prioridad
+                    priority = current_unit_status.status.priority
 
             # Obtener objeto GxStatus
             status_args = {
-                'severity': status,
+                'severity': severity,
                 'description': description,
                 'deployment': deployment,
                 'priority': priority
@@ -445,7 +457,6 @@ def update_driving_status():
                 if unit_logs['Ultima_actualizacion'] != 'null' else None
             # last_connection = last_connection.astimezone(pytz.timezone('UTC')) if last_connection else None
 
-            current_unit_status = get_unitstatus(unit_id=unit_obj.id)
             last_alert = current_unit_status.last_alert
 
             alert_interval = 55
@@ -877,7 +888,8 @@ def update_industry_status():
                     {"description": description})
 
                 if description == "Desconexión de cámara":
-                    alert_info = str(hour_data['camera_connection']) # Mandar minutos de desconexión en última hora
+                    # Mandar minutos de desconexión en última hora
+                    alert_info = str(hour_data['camera_connection'])
 
                 message += f'{description}: {alert_info}\n' if alert_info else f'{description}\n'
 
@@ -1042,38 +1054,32 @@ def send_daily_sd_report():
 
 def register_severity_counts():
     now = datetime.now(tz=pytz.timezone('UTC'))
-    unit_severity_counts = get_units_severity_counts()
-    unit_counts_json = {}
-    for count in unit_severity_counts:
-        unit_counts_json[count['severity']] = count['count']
 
-    device_severity_counts = get_devices_severity_counts()
-    device_counts_json = {}
-    for count in device_severity_counts:
-        device_counts_json[count['severity']] = count['count']
-
-    # Si hay categorías vacías, incluirlas en el diccionario
-    for n in range(1, 6):
-        if n not in unit_counts_json:
-            unit_counts_json[n] = 0
-        if n not in device_counts_json:
-            device_counts_json[n] = 0
-
-    safe_driving = get_deployment("Safe Driving")
-    industry = get_deployment("Industry")
-
-    sd_count_args = {
-        "deployment": safe_driving,
-        "timestamp": now,
-        "date": now.date(),
-        "severity_counts": unit_counts_json
+    get_severity_counts = {
+        "Safe Driving": get_units_severity_counts,
+        "Industry": get_devices_severity_counts,
     }
-    create_severity_count(sd_count_args)
 
-    ind_count_args = {
-        "deployment": industry,
-        "timestamp": now,
-        "date": now.date(),
-        "severity_counts": device_counts_json
-    }
-    create_severity_count(ind_count_args)
+    for deployment_name in ("Safe Driving", "Industry"):
+        dep_clients = get_clients(deployment_name)
+        deployment = get_deployment(deployment_name)
+
+        for client in dep_clients:
+            severity_counts = get_severity_counts[deployment_name](client)
+
+            counts_json = {}
+            for count in severity_counts:
+                counts_json[count['severity']] = count['count']
+
+            for n in range(1, 6):
+                if n not in counts_json:
+                    counts_json[n] = 0
+
+            count_args = {
+                "deployment": deployment,
+                "client": client,
+                "timestamp": now,
+                "date": now.date(),
+                "severity_counts": counts_json
+            }
+            create_severity_count(count_args)

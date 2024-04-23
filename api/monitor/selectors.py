@@ -16,6 +16,13 @@ def camerastatus_list():
     return CameraStatus.objects.all()
 
 
+def get_clients(deployment_name=None):
+    deployment_query = Q()
+    if deployment_name:
+        deployment_query = Q(deployment__name=deployment_name)
+    return Client.objects.filter(deployment_query)
+
+
 class CameraDisconnectionsFilter(rf_filters.FilterSet):
     register_datetime = rf_filters.DateTimeFromToRangeFilter()
     camera = rf_filters.CharFilter(
@@ -231,8 +238,8 @@ def get_or_create_alerttype(args):
     return alert_type
 
 
-def get_unit_last_active_status(args):
-    last_status = UnitHistory.objects.filter(unit_id=args["unit_id"]).exclude(
+def get_unit_last_active_status(unit_id):
+    last_status = UnitHistory.objects.filter(unit_id=unit_id).exclude(
         Q(status__description="Inactivo") |
         Q(status__description="Sin comunicación reciente") |
         Q(status__description="Sin comunicación reciente (< 1 día)") |
@@ -290,8 +297,24 @@ def get_ind_scatterplot_data(args, filters=None):
     return IndustryScatterplotDataFilter(filters, logs).qs
 
 
-def get_units_severity_counts():
-    counts = UnitStatus.objects.values('status__severity') \
+def get_units_severity_counts(client=None):
+    client_query = Q()
+    if client:
+        client_query = Q(unit__client=client)
+    counts = UnitStatus.objects.filter(client_query).values('status__severity') \
+        .annotate(severity=F('status__severity')) \
+        .values('severity') \
+        .annotate(count=Count('id')) \
+        .order_by('-severity')
+
+    return counts
+
+
+def get_devices_severity_counts(client):
+    client_query = Q()
+    if client:
+        client_query = Q(device__client=client)
+    counts = DeviceStatus.objects.filter(client_query).values('status__severity') \
         .annotate(severity=F('status__severity')) \
         .values('severity') \
         .annotate(count=Count('id')) \
@@ -308,107 +331,119 @@ class AreaPlotDataFilter(rf_filters.FilterSet):
         fields = ['timestamp']
 
 
-def get_area_plot_data(deployment_name, filters=None):
+def get_area_plot_data(deployment_name, client_name=None, filters=None):
+    client_query = Q()
+    if client_name:
+        client_query = Q(client__name=client_name)
     logs = SeverityCount.objects.filter(
+        client_query,
         deployment__name=deployment_name).order_by("timestamp")
 
     return AreaPlotDataFilter(filters, logs).qs
-
-
-def get_devices_severity_counts():
-    counts = DeviceStatus.objects.values('status__severity') \
-        .annotate(severity=F('status__severity')) \
-        .values('severity') \
-        .annotate(count=Count('id')) \
-        .order_by('-severity')
-
-    return counts
 
 
 def register_sd_area_plot_historicals():
     from datetime import datetime
 
     safe_driving = Deployment.objects.get(name="Safe Driving")
+    clients = get_clients(deployment_name="Safe Driving")
 
-    current_hour = datetime.now().replace(
-        minute=0, second=0, microsecond=0) - timedelta(hours=6)
-    hour_to_search = current_hour
+    for client in clients:
+        current_hour = datetime.now().replace(
+            minute=0, second=0, microsecond=0)
+        hour_to_search = current_hour
+        no_data = 0
 
-    no_data = 0
-    all_counts = {}
-    while no_data < 100:
-        limit = hour_to_search + timedelta(minutes=1)
-        logs_in_interval = UnitHistory.objects.filter(
-            register_datetime__range=(hour_to_search, limit))
+        all_severity_counts = []
+        while no_data < 100:
+            limit = hour_to_search + timedelta(minutes=1)
+            logs_in_interval = UnitHistory.objects.filter(
+                unit__client=client,
+                register_datetime__range=(hour_to_search, limit))
 
-        severity_count_in_hour = logs_in_interval.values('status__severity') \
-            .annotate(severity=F('status__severity')) \
-            .values('severity') \
-            .annotate(count=Count('id')) \
-            .order_by('-severity')
+            severity_count_in_hour = logs_in_interval.values('status__severity') \
+                .annotate(severity=F('status__severity')) \
+                .values('severity') \
+                .annotate(count=Count('id')) \
+                .order_by('-severity')
 
-        if severity_count_in_hour:
-            count_dict = {str(x["severity"]): x["count"]
-                          for x in severity_count_in_hour}
-            all_counts[hour_to_search.isoformat(
-            )] = count_dict
+            if severity_count_in_hour:
+                count_dict = {str(x["severity"]): x["count"]
+                              for x in severity_count_in_hour}
 
-            sd_count_args = {
-                "deployment": safe_driving,
-                "timestamp": hour_to_search,
-                "date": hour_to_search.date(),
-                "severity_counts": count_dict
-            }
-            create_severity_count(sd_count_args)
+                for n in range(6):
+                    if str(n) not in count_dict:
+                        count_dict[str(n)] = 0
 
-        hour_to_search -= timedelta(hours=1)
-        if not logs_in_interval:
-            no_data += 1
-        else:
-            no_data = 0
+                sd_count_args = {
+                    "deployment": safe_driving,
+                    "client": client,
+                    "timestamp": hour_to_search,
+                    "date": hour_to_search.date(),
+                    "severity_counts": count_dict
+                }
+                all_severity_counts.append(SeverityCount(**sd_count_args))
+
+            hour_to_search -= timedelta(hours=1)
+            if not logs_in_interval:
+                no_data += 1
+            else:
+                no_data = 0
+
+        SeverityCount.objects.bulk_create(all_severity_counts)
 
 
 def register_ind_area_plot_historicals():
     from datetime import datetime
 
-    safe_driving = Deployment.objects.get(name="Industry")
+    industry = Deployment.objects.get(name="Industry")
+    clients = get_clients("Industry")
 
-    current_hour = datetime.now().replace(
-        minute=0, second=0, microsecond=0) - timedelta(hours=6)
-    hour_to_search = current_hour
+    for client in clients:
+        current_hour = datetime.now().replace(
+            minute=0, second=0, microsecond=0)
+        hour_to_search = current_hour
+        no_data = 0
 
-    no_data = 0
-    all_counts = {}
-    while no_data < 100:
-        limit = hour_to_search + timedelta(minutes=1)
-        logs_in_interval = DeviceHistory.objects.filter(
-            register_datetime__range=(hour_to_search, limit))
+        all_severity_counts = []
+        while no_data < 100:
+            limit = hour_to_search + timedelta(minutes=1)
+            logs_in_interval = DeviceHistory.objects.filter(
+                device__client=client,
+                register_datetime__range=(hour_to_search, limit))
 
-        severity_count_in_hour = logs_in_interval.values('status__severity') \
-            .annotate(severity=F('status__severity')) \
-            .values('severity') \
-            .annotate(count=Count('id')) \
-            .order_by('-severity')
+            severity_count_in_hour = logs_in_interval.values('status__severity') \
+                .annotate(severity=F('status__severity')) \
+                .values('severity') \
+                .annotate(count=Count('id')) \
+                .order_by('-severity')
 
-        if severity_count_in_hour:
-            count_dict = {str(x["severity"]): x["count"]
-                          for x in severity_count_in_hour}
-            all_counts[hour_to_search.isoformat(
-            )] = count_dict
+            if severity_count_in_hour:
+                count_dict = {str(x["severity"]): x["count"]
+                              for x in severity_count_in_hour}
 
-            sd_count_args = {
-                "deployment": safe_driving,
-                "timestamp": hour_to_search,
-                "date": hour_to_search.date(),
-                "severity_counts": count_dict
-            }
-            create_severity_count(sd_count_args)
+                for n in range(6):
+                    if str(n) not in count_dict:
+                        count_dict[str(n)] = 0
 
-        hour_to_search -= timedelta(hours=1)
-        if not logs_in_interval:
-            no_data += 1
-        else:
-            no_data = 0
+                severity_count_args = {
+                    "deployment": industry,
+                    "client": client,
+                    "timestamp": hour_to_search,
+                    "date": hour_to_search.date(),
+                    "severity_counts": count_dict
+                }
+                all_severity_counts.append(
+                    SeverityCount(**severity_count_args))
+                print(severity_count_args)
+
+            hour_to_search -= timedelta(hours=1)
+            if not logs_in_interval:
+                no_data += 1
+            else:
+                no_data = 0
+
+        SeverityCount.objects.bulk_create(all_severity_counts)
 
 
 def get_last_sd_update():

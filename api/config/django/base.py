@@ -16,6 +16,7 @@ from config.env import BASE_DIR, env
 
 
 env.read_env(os.path.join(BASE_DIR, ".env"))
+DATA_UPLOAD_MAX_NUMBER_FIELDS = 10000
 
 
 # Quick-start development settings - unsuitable for production

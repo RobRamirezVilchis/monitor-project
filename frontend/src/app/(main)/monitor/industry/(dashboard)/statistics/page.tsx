@@ -4,13 +4,28 @@ import { useCallback, useEffect, useState } from "react";
 import {
   useDevicesQuery,
   useIndustryAreaPlotData,
+  useIndustryClientsQuery,
   useIndustryLastUpdateQuery,
   useIndustrySeverityCount,
   useSafeDrivingAreaPlotData,
 } from "@/api/queries/monitor";
 
-import { Checkbox, SegmentedControl, Tabs, TextInput } from "@mantine/core";
-import { AreaChart, AreaChartType, PieChart } from "@mantine/charts";
+import {
+  Checkbox,
+  Paper,
+  Text,
+  SegmentedControl,
+  Tabs,
+  TextInput,
+  Select,
+} from "@mantine/core";
+import {
+  AreaChart,
+  AreaChartType,
+  ChartTooltipProps,
+  PieChart,
+  getFilteredChartTooltipPayload,
+} from "@mantine/charts";
 
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
@@ -40,6 +55,7 @@ const statusColors: { [key in StatusKey]: string } = {
 
 const IndustryStatisticsPage = () => {
   const router = useRouter();
+  const [clientValue, setClientValue] = useState<string | null>(null);
   const [graphMode, setGraphMode] = useState<string>("stacked");
   const [showInactive, setShowInactive] = useState<boolean>(false);
   const searchParams = useSearchParams();
@@ -65,20 +81,16 @@ const IndustryStatisticsPage = () => {
     [searchParams]
   );
 
-  const devicesQuery = useDevicesQuery({
+  const clientsQuery = useIndustryClientsQuery({
     refetchOnWindowFocus: false,
   });
-  const deviceData = devicesQuery.data;
-
-  const lastUpdateQuery = useIndustryLastUpdateQuery({
-    refetchOnWindowFocus: false,
-  });
-  const last_update = lastUpdateQuery.data;
+  const clients = clientsQuery.data?.map((data) => data.name);
 
   const areaPlotDataQuery = useIndustryAreaPlotData({
     variables: {
       timestamp_after: dateValue[0],
       timestamp_before: dateValue[1],
+      client: clientValue,
     },
   });
   const areaPlotQueryData = areaPlotDataQuery?.data;
@@ -124,16 +136,6 @@ const IndustryStatisticsPage = () => {
     }
   }
 
-  let timeSinceLastUpdate: string;
-  if (last_update != null) {
-    timeSinceLastUpdate = formatDistanceToNow(last_update.last_update, {
-      addSuffix: true,
-      locale: es,
-    });
-  } else {
-    timeSinceLastUpdate = "-";
-  }
-
   return (
     <section>
       <div className="md:flex items-center mb-6">
@@ -157,6 +159,16 @@ const IndustryStatisticsPage = () => {
               { label: "Stacked", value: "stacked" },
             ]}
           />
+          <Select
+            className="md:flex gap-3 items-center"
+            styles={{
+              label: { fontSize: 18 },
+            }}
+            label="Filtrar por cliente:"
+            placeholder="Todos"
+            data={clients}
+            onChange={(value: string | null) => setClientValue(value)}
+          ></Select>
         </div>
       </div>
 
@@ -166,6 +178,11 @@ const IndustryStatisticsPage = () => {
             h={500}
             data={areaPlotData}
             dataKey="fecha"
+            tooltipProps={{
+              content: ({ label, payload }) => (
+                <ChartTooltip label={label} payload={payload} />
+              ),
+            }}
             tooltipAnimationDuration={200}
             type={graphMode as AreaChartType}
             dotProps={{ r: 0 }}
@@ -187,6 +204,34 @@ const IndustryStatisticsPage = () => {
         </div>
       )}
     </section>
+  );
+};
+
+const ChartTooltip = ({ label, payload }: ChartTooltipProps) => {
+  if (!payload) return null;
+  const devicesPerCategory = getFilteredChartTooltipPayload(payload).map(
+    (a) => a.value
+  );
+
+  const totalDevices = devicesPerCategory.reduce(
+    (partialSum, a) => partialSum + a,
+    0
+  );
+
+  return (
+    <Paper px="md" py="sm" withBorder shadow="md" radius="md">
+      <Text fw={500} mb={5}>
+        {label}
+      </Text>
+      <Text fw={500} mb={5}>
+        Total: {totalDevices}
+      </Text>
+      {getFilteredChartTooltipPayload(payload).map((item: any) => (
+        <Text key={item.name} fz="sm">
+          {item.name}: {item.value}
+        </Text>
+      ))}
+    </Paper>
   );
 };
 

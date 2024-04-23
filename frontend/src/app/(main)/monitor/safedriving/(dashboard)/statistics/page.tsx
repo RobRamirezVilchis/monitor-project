@@ -70,7 +70,6 @@ const SafeDrivingPage = () => {
   const [clientValue, setClientValue] = useState<string | null>(null);
   const [graphMode, setGraphMode] = useState<string>("percent");
   const [showInactive, setShowInactive] = useState<boolean>(false);
-  const [value, setValue] = useState("");
   const searchParams = useSearchParams();
   const filter = searchParams.get("filter");
 
@@ -117,6 +116,7 @@ const SafeDrivingPage = () => {
     variables: {
       timestamp_after: dateValue[0],
       timestamp_before: dateValue[1],
+      client: clientValue,
     },
   });
   const areaPlotQueryData = areaPlotDataQuery?.data;
@@ -220,6 +220,16 @@ const SafeDrivingPage = () => {
             checked={showInactive}
             onChange={(event) => setShowInactive(event.currentTarget.checked)}
           />
+          <Select
+            className="md:flex gap-3 items-center"
+            styles={{
+              label: { fontSize: 18 },
+            }}
+            label="Filtrar por cliente:"
+            placeholder="Todos"
+            data={clients}
+            onChange={(value: string | null) => setClientValue(value)}
+          ></Select>
         </div>
       </div>
 

@@ -202,6 +202,17 @@ class AlertAdmin(admin.ModelAdmin):
     )
 
 
+class SeverityCountAdmin(admin.ModelAdmin):
+    list_display = (
+        'deployment',
+        'client',
+        'timestamp',
+        'severity_counts',
+    )
+
+    search_fields = ('deployment__name',)
+
+
 admin.site.register(UnitStatus, UnitStatusAdmin)
 admin.site.register(UnitHistory, UnitHistoryAdmin)
 admin.site.register(Unit, UnitAdmin)
@@ -216,4 +227,4 @@ admin.site.register(CameraStatus, CameraStatusAdmin)
 admin.site.register(CameraHistory, CameraHistoryAdmin)
 admin.site.register(GxStatus, GxStatusAdmin)
 admin.site.register(Alert, AlertAdmin)
-admin.site.register(SeverityCount)
+admin.site.register(SeverityCount, SeverityCountAdmin)

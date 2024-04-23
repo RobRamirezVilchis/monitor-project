@@ -119,6 +119,7 @@ export interface AreaPlotData {
 export interface AreaPlotFilters {
   timestamp_after: Date | null,
   timestamp_before: Date | null,
+  client: string | null,
 }
 
 export interface SeverityHistory {

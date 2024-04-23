@@ -1,7 +1,8 @@
 from datetime import datetime
 from django.shortcuts import render
-from django.db.models import Count, F, Window, Q
+from django.db.models import Count, F, Window, Q, Sum
 from django.db.models.functions import Lead
+from django.utils.timezone import make_aware
 from django_filters.rest_framework import DjangoFilterBackend
 
 import pytz
@@ -16,8 +17,6 @@ from .services import device_create_or_update
 from api.pagination import get_paginated_response, LimitOffsetPagination
 from .models import UnitStatus
 from .cron import get_credentials, login, make_request
-
-import operator
 
 
 # All gx status list
@@ -584,28 +583,52 @@ class SafeDrivingAreaPlotAPI(APIView):
         filters_serializer = self.FiltersSerializer(data=request.query_params)
         filters_serializer.is_valid(raise_exception=True)
 
+        severity_keys = list(range(6))
+        timezone = pytz.timezone("America/Mexico_City")
+
         # Si no se especificó rango de fechas, regresar registros del último día
         if not (filters_serializer.validated_data.get("timestamp_after") or
                 filters_serializer.validated_data.get("timestamp_before")):
-            import datetime
-            import pytz
 
             date_now = datetime.datetime.now()
-            end_date = date_now.astimezone(pytz.timezone("America/Mexico_City")).replace(
+            end_date = date_now.astimezone(timezone).replace(
                 tzinfo=pytz.utc) + datetime.timedelta(hours=6)
             start_date = end_date - timedelta(hours=24)
 
             filters_serializer.validated_data["timestamp_before"] = end_date
             filters_serializer.validated_data["timestamp_after"] = start_date
 
+        client_name = request.query_params.get("client")
         registers = get_area_plot_data(
-            "Safe Driving", filters=filters_serializer.validated_data)
+            "Safe Driving", client_name=client_name, filters=filters_serializer.validated_data)
 
-        for register in registers:
-            register.timestamp = register.timestamp.astimezone(pytz.timezone("America/Mexico_City")).replace(
-                tzinfo=None).isoformat(timespec="hours", sep=' ') + "h"
+        hourly_counts = {}
+
+        if not client_name:
+            for register in registers:
+                # Agrupar registros, de diferentes clientes, por hora
+                if register.timestamp in hourly_counts:
+                    hourly_counts[register.timestamp] = {
+                        k: hourly_counts[register.timestamp][k] + v
+                        for k, v in register.severity_counts.items()}
+                else:
+                    hourly_counts[register.timestamp] = register.severity_counts
+
+            registers = []
+            for timestamp, counts in hourly_counts.items():
+                registers.append(
+                    {"timestamp": timestamp, "severity_counts": counts})
+
+            for register in registers:
+                register["timestamp"] = register["timestamp"].astimezone(pytz.timezone("America/Mexico_City")).replace(
+                    tzinfo=None).isoformat() + "h"
+        else:
+            for register in registers:
+                register.timestamp = register.timestamp.astimezone(pytz.timezone("America/Mexico_City")).replace(
+                    tzinfo=None).isoformat() + "h"
 
         data = self.OutputSerializer(registers, many=True).data
+
         return Response(data)
 
 
@@ -639,14 +662,36 @@ class IndustryAreaPlotAPI(APIView):
             filters_serializer.validated_data["timestamp_before"] = end_date
             filters_serializer.validated_data["timestamp_after"] = start_date
 
+        client_name = request.query_params.get("client")
         registers = get_area_plot_data(
-            "Industry", filters=filters_serializer.validated_data)
+            "Industry", client_name=client_name, filters=filters_serializer.validated_data)
 
-        for register in registers:
-            register.timestamp = register.timestamp.astimezone(pytz.timezone("America/Mexico_City")).replace(
-                tzinfo=None).isoformat(timespec="hours", sep=' ') + "h"
+        hourly_counts = {}
+
+        if not client_name:
+            for register in registers:
+                if register.timestamp in hourly_counts:
+                    hourly_counts[register.timestamp] = {
+                        k: hourly_counts[register.timestamp][k] + v
+                        for k, v in register.severity_counts.items()}
+                else:
+                    hourly_counts[register.timestamp] = register.severity_counts
+
+            registers = []
+            for timestamp, counts in hourly_counts.items():
+                registers.append(
+                    {"timestamp": timestamp, "severity_counts": counts})
+
+            for register in registers:
+                register["timestamp"] = register["timestamp"].astimezone(pytz.timezone("America/Mexico_City")).replace(
+                    tzinfo=None).isoformat() + "h"
+        else:
+            for register in registers:
+                register.timestamp = register.timestamp.astimezone(pytz.timezone("America/Mexico_City")).replace(
+                    tzinfo=None).isoformat() + "h"
 
         data = self.OutputSerializer(registers, many=True).data
+
         return Response(data)
 
 

@@ -219,10 +219,11 @@ class DeviceHistory(models.Model):
 
 class SeverityCount(models.Model):
     deployment = models.ForeignKey(Deployment, on_delete=models.CASCADE)
+    client = models.ForeignKey(Client, null=True, on_delete=models.CASCADE)
     timestamp = models.DateTimeField()
     date = models.DateField(db_index=True)
     severity_counts = models.JSONField()
-    status_fields = models.JSONField(null=True)
+    status_fields = models.JSONField(null=True, blank=True)
 
     def __str__(self):
-        return f'{self.deployment} - {self.timestamp}'
+        return f'{self.deployment} | {self.client} - {self.timestamp}'

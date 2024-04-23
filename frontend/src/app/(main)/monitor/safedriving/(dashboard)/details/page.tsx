@@ -117,14 +117,6 @@ const SafeDrivingPage = () => {
   });
   const clients = clientsQuery.data?.map((data) => data.name);
 
-  const areaPlotDataQuery = useSafeDrivingAreaPlotData({
-    variables: {
-      timestamp_after: dateValue[0],
-      timestamp_before: dateValue[1],
-    },
-  });
-  const areaPlotQueryData = areaPlotDataQuery?.data;
-
   let timeAgo: string;
   if (last_update != null) {
     timeAgo = formatDistanceToNow(last_update.last_update, {
@@ -180,20 +172,6 @@ const SafeDrivingPage = () => {
     Funcionando: number;
     Inactivo: number;
   }[] = [];
-
-  if (areaPlotQueryData) {
-    for (const hourCount of areaPlotQueryData) {
-      areaPlotData.push({
-        fecha: hourCount.timestamp,
-        Crítico: hourCount.severity_counts["5"],
-        Fallando: hourCount.severity_counts["4"],
-        Alerta: hourCount.severity_counts["3"],
-        Normal: hourCount.severity_counts["2"],
-        Funcionando: hourCount.severity_counts["1"],
-        Inactivo: hourCount.severity_counts["0"],
-      });
-    }
-  }
 
   return (
     <section className="mb-20">
