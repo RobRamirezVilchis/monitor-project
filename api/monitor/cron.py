@@ -391,8 +391,8 @@ def update_driving_status():
             if description == "Read only SSD" or description == "forced reboot (>1)" or description == "Tres cámaras fallando":
                 priority = True
             elif description.startswith("Sin comunicación") or description == "Inactivo" or description.endswith("logs pendientes"):
-                # Si la unidad apenas está inactiva, revisar cuál fue su último status
-                # si fue read only, darle un gxstatus con prioridad1
+                # If the unit just turned inactive, check last active status
+                # If the last status was read only ssd, override severity to 5 and priority to True
                 if was_unit_active:
                     last_active_status = get_unit_last_active_status(unit_obj)
                     if last_active_status:
@@ -405,7 +405,7 @@ def update_driving_status():
                             else:
                                 alerts[unit] = [message]
                 else:
-                    # Si la unidad no estuvo activa, simplemente copiar el valor de prioridad
+                    # If the unit was inactive before, copy previous priority
                     priority = current_unit_status.status.priority
                     severity = 5 if priority else severity
 
@@ -452,11 +452,8 @@ def update_driving_status():
             bulk_update_camerastatus(camerastatus_list)
             bulk_create_camerahistory(camerahistory_list)
 
-            # last_connection = datetime.fromisoformat(unit_logs['Ultima_actualizacion']).replace(
-            #    tzinfo=pytz.timezone("America/Monterrey")) if unit_logs['Ultima_actualizacion'] != 'null' else None
             last_connection = (datetime.fromisoformat(unit_logs['Ultima_actualizacion']) + timedelta(hours=6)).replace(tzinfo=pytz.UTC) \
                 if unit_logs['Ultima_actualizacion'] != 'null' else None
-            # last_connection = last_connection.astimezone(pytz.timezone('UTC')) if last_connection else None
 
             last_alert = current_unit_status.last_alert
 
@@ -501,7 +498,7 @@ def update_driving_status():
             }
             unitstatus = update_or_create_unitstatus(unit_status_args)
 
-            # Últimos 10 minutos
+            # Last 10 minutes
 
             recent_unit_logs = recent_data[unit]
             if client_alias == "cemex":
@@ -511,9 +508,6 @@ def update_driving_status():
             if 'Ultima_actualizacion' not in recent_unit_logs:
                 print(recent_unit_logs)
 
-            # last_connection = datetime.fromisoformat(recent_unit_logs['Ultima_actualizacion']).replace(
-            #    tzinfo=pytz.timezone("America/Mexico_City")) if recent_unit_logs['Ultima_actualizacion'] != 'null' else None
-            # last_connection = last_connection.astimezone(pytz.timezone('UTC')) if last_connection else None
             last_connection = (datetime.fromisoformat(unit_logs['Ultima_actualizacion']) + timedelta(hours=6)).replace(tzinfo=pytz.UTC) \
                 if unit_logs['Ultima_actualizacion'] != 'null' else None
 
@@ -641,7 +635,7 @@ def process_industry_data(response):
                     if cond:
                         alerts.add(description)
 
-                # Validar si el log llegó recientemente
+                # Check if the log arrived at the server within the last 10 minutes
                 if register_time > now - timedelta(minutes=10):
                     intervals = ["hour", "ten_minutes"]
 
@@ -677,7 +671,8 @@ def process_industry_data(response):
             try:
                 penul_register_time = datetime.fromisoformat(
                     logs[1]["register_time"][:-1])
-            except IndexError:  # Si sólo hubo un log en la última hora, tomar el tiempo del penúltimo como hace una hora
+            # If only a single log was received within the last hour, assign the penultimate register time as one hour ago
+            except IndexError:
                 penul_register_time = now - timedelta(hours=1)
                 last_register_time = last_register_time.astimezone(
                     pytz.timezone('America/Mexico_City')).replace(tzinfo=pytz.utc)
@@ -688,12 +683,12 @@ def process_industry_data(response):
 
             delay_time = timedelta(0)
             delay_found = False
-            # Si hay un restraso en este momento
+            # Verify if there is a delay currently
             if time_since_log > timedelta(minutes=11):
                 delay_time = time_since_log - timedelta(minutes=10)
                 delay_found = True
 
-            # Si hubo un retraso entre el último y el penúltimo
+            # Verify if there was a delay between the last and second to last logs
             elif prev_time_gap > timedelta(minutes=11):
                 delay_time = prev_time_gap - timedelta(minutes=10)
                 delay_found = True
@@ -790,9 +785,44 @@ def update_industry_status():
             device.license_end = license_end
             device.save()
 
+        camerastatus_data = []
+        camerahistory_data = []
+
+        max_cam_disc_time = timedelta(0)
+        for name, camera_data in camera_data.items():
+            cameras_recent_data = camera_data["ten_minutes"]
+            cameras_hour_data = camera_data["hour"]
+
+            if cameras_recent_data["disconnection_time"] > max_cam_disc_time:
+                max_cam_disc_time = cameras_recent_data["disconnection_time"]
+
+            camera_args = {
+                'name': name,
+                'gx': device
+            }
+            camera = get_or_create_camera(camera_args)
+
+            camerastatus_data.append({
+                'camera': camera,
+                'connected': cameras_hour_data["connected"],
+                'last_update': date_now,
+                'disconnection_time': cameras_hour_data["disconnection_time"]
+            })
+
+            camerahistory_data.append({
+                'camera': camera,
+                'register_date': date_now,
+                'register_datetime': date_now,
+                'connected': cameras_recent_data["connected"],
+                'disconnection_time': cameras_recent_data["disconnection_time"]
+            })
+
+        bulk_update_camerastatus(camerastatus_data)
+        bulk_create_camerahistory(camerahistory_data)
+
         current_device_status = get_devicestatus(device_id=device.id)
 
-        # Campos del registro a actualizar
+        # Fields in the DeviceStatus entry to update
         update_values = {
             'last_update': date_now,
             'batch_dropping': hour_data["batch_dropping"],
@@ -803,7 +833,7 @@ def update_industry_status():
             'others': hour_data["others"],
         }
 
-        # Obtener última conexión del registro del dispositivo
+        # Get last connection from DeviceStatus entry
         db_delay_time = timedelta(0)
         try:
             device_status = DeviceStatus.objects.get(device_id=device.id)
@@ -813,7 +843,7 @@ def update_industry_status():
         except:
             db_last_connection = None
 
-        # Inicializar last_connection con valor obtenido de BD
+        # Initialize last connection with database value
         last_connection = db_last_connection
 
         if gx_data["last_connection"]:
@@ -879,7 +909,7 @@ def update_industry_status():
         if update_values['delayed']:
             alerts.add("Sin conexión reciente")
 
-        # Crear registros de alertas
+        # Create and send new alerts
         if last_alert == None or date_now - last_alert > timedelta(minutes=alert_interval):
             message = f'{client_name} - {device.name}:\n'
             alert_info = ""
@@ -908,23 +938,25 @@ def update_industry_status():
         update_values["last_alert"] = last_alert
         restarted_recently = current_device_status.status.description == "Restarts"
 
-        conditions = [
+        status_conditions = [
             (recent_data['restart'] >
-             0 and not restarted_recently, 3, 4, "Restarts"),
-            (recent_data['camera_connection'] >
-             timedelta(0), 3, 3, "Cámara desconectada"),
-            (update_values['batch_dropping'] > 0, 3, 2, "Batch dropping"),
+             0 and not restarted_recently, 3, "Restarts"),
+            (timedelta(minutes=10) > max_cam_disc_time >
+             timedelta(minutes=2), 3, "Cámara desconectada"),
+            (update_values['batch_dropping'] > 0, 3, "Batch dropping"),
             (update_values['delayed'] and update_values['delay_time']
-             < timedelta(minutes=60), 3, 1, "Retraso menor a 1h"),
+             < timedelta(minutes=60), 3, "Retraso menor a 1h"),
+            (max_cam_disc_time >= timedelta(
+                minutes=10), 5, "Cámara desconectada"),
             (recent_data['restart'] >
-             0 and restarted_recently, 5, 2, "Restarts"),
+             0 and restarted_recently, 5, "Restarts"),
             (update_values['delay_time'] >= timedelta(
-                minutes=60), 5, 1, "Retraso mayor a 1h"),
+                minutes=60), 5, "Retraso mayor a 1h"),
         ]
 
         severity = 1
         rule = "Comunicación reciente"
-        for condition, status, r, description in conditions:
+        for condition, status, description in status_conditions:
             if condition:
                 severity = status
                 rule = description
@@ -965,37 +997,6 @@ def update_industry_status():
         }
         create_device_history(devicehistory_args)
 
-        camerastatus_data = []
-        camerahistory_data = []
-
-        for name, camera_data in camera_data.items():
-            recent_data = camera_data["ten_minutes"]
-            hour_data = camera_data["hour"]
-
-            camera_args = {
-                'name': name,
-                'gx': device
-            }
-            camera = get_or_create_camera(camera_args)
-
-            camerastatus_data.append({
-                'camera': camera,
-                'connected': hour_data["connected"],
-                'last_update': date_now,
-                'disconnection_time': hour_data["disconnection_time"]
-            })
-
-            camerahistory_data.append({
-                'camera': camera,
-                'register_date': date_now,
-                'register_datetime': date_now,
-                'connected': recent_data["connected"],
-                'disconnection_time': recent_data["disconnection_time"]
-            })
-
-        bulk_update_camerastatus(camerastatus_data)
-        bulk_create_camerahistory(camerahistory_data)
-
 
 def send_daily_sd_report():
     load_dotenv()
@@ -1014,12 +1015,11 @@ def send_daily_sd_report():
 
         description_out = description
 
-        # Hacer mensaje de sin comunicación más descriptivo
+        # Make the message more descriptive
         if description == "Sin comunicación reciente":
             description_out = "En viaje, sin comunicación (>1 día)"
 
-        # Revisar si es una unidad que tuvo read only ssd en el pasado
-        # Si el último status (descartando los que se presentan sin conexión) fue read only, priority es True
+        # Verify if the unit is inactive, and its last active status was read only ssd
         if priority and (description.startswith("Sin comunicación") or description == "Inactivo" or
                          description.endswith("logs pendientes")):
             description_out = critical_last_message
@@ -1029,7 +1029,7 @@ def send_daily_sd_report():
         else:
             unit_problems[description_out].add(name)
 
-    # Si una de las unidades se repite entre Read only SSD y critical_last_message, dejarlo sólo en Read only
+    # If any unit shows up in both read_only_ssd and critical_last_message categories, only leave it in read_only_ssd
     if critical_last_message in unit_problems:
         filtered_units = unit_problems[critical_last_message].copy()
         units = unit_problems[critical_last_message]
@@ -1038,7 +1038,7 @@ def send_daily_sd_report():
                 filtered_units.remove(u)
         unit_problems[critical_last_message] = filtered_units
 
-    # Ordenar lista de problemas según cantidad de unidades
+    # Sort list of possible problems by amount of units in each one
     unit_problems = dict(
         sorted(unit_problems.items(), key=lambda x: len(x[1])))
 

@@ -728,11 +728,19 @@ class SafeDrivingLogsAPI(APIView):
 
     def get(self, request, unit_id, *args, **kwargs):
         unit = Unit.objects.get(id=unit_id)
+        client_name = unit.client.name
+        client_keys = {
+            "Transpais": "tp",
+            "Cemex Concretos": "cemex"
+        }
 
-        credentials = get_credentials("tp")
-        token = login(client="tp", credentials=credentials)
+        credentials = get_credentials(client_keys[client_name])
+        token = login(client=client_keys[client_name], credentials=credentials)
 
-        request_url = 'https://tp.introid.com/range_logs/'
+        if client_name == "Transpais":
+            request_url = 'https://tp.introid.com/range_logs/'
+        else:
+            request_url = "https://cmx.safe-d.aivat.io/cemex/range_logs/"
 
         sent_interval = False
 
@@ -754,8 +762,13 @@ class SafeDrivingLogsAPI(APIView):
 
         response, status = make_request(
             request_url, data=params, token=token)
-
         response = response.json()
+
+        if "tipo" in request.query_params:
+            query_log_type = request.query_params["tipo"]
+            response = list(filter(lambda log: query_log_type.lower()
+                                   in log["Tipo"], response))
+
         response.reverse()
 
         return get_paginated_response(
@@ -812,7 +825,6 @@ class IndustryLogsAPI(APIView):
             request_url, data=time_interval, token=token)
         response = response.json()
 
-        device_filter = "device" in request.query_params
         show_empty = request.query_params["show_empty"]
 
         output = []

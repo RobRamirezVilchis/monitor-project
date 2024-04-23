@@ -180,15 +180,7 @@ class GxStatusAdmin(admin.ModelAdmin):
     list_display = (
         'severity',
         'reason',
-        'description',
-        'deployment'
-    )
-
-
-class GxStatusAdmin(admin.ModelAdmin):
-    list_display = (
-        'severity',
-        'reason',
+        'priority',
         'description',
         'deployment'
     )
