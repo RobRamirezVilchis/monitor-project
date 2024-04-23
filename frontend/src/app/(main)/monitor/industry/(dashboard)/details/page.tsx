@@ -83,14 +83,6 @@ const IndustryDetailsPage = () => {
   });
   const last_update = lastUpdateQuery.data;
 
-  const areaPlotDataQuery = useIndustryAreaPlotData({
-    variables: {
-      timestamp_after: dateValue[0],
-      timestamp_before: dateValue[1],
-    },
-  });
-  const areaPlotQueryData = areaPlotDataQuery?.data;
-
   const countQuery = useIndustrySeverityCount({
     refetchOnWindowFocus: false,
   });
@@ -114,23 +106,6 @@ const IndustryDetailsPage = () => {
     Alerta: number;
     Funcionando: number;
   }[] = [];
-
-  if (areaPlotQueryData) {
-    for (const hourCount of areaPlotQueryData) {
-      areaPlotData.push({
-        fecha: hourCount.timestamp,
-        Crítico: hourCount.severity_counts["5"]
-          ? hourCount.severity_counts["5"]
-          : 0,
-        Alerta: hourCount.severity_counts["3"]
-          ? hourCount.severity_counts["3"]
-          : 0,
-        Funcionando: hourCount.severity_counts["1"]
-          ? hourCount.severity_counts["1"]
-          : 0,
-      });
-    }
-  }
 
   let timeSinceLastUpdate: string;
   if (last_update != null) {
