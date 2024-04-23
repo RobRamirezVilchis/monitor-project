@@ -906,16 +906,20 @@ def update_industry_status():
                 last_alert = date_now
 
         update_values["last_alert"] = last_alert
+        restarted_recently = current_device_status.status.description == "Restarts"
 
         conditions = [
+            (recent_data['restart'] >
+             0 and not restarted_recently, 3, 4, "Restarts"),
             (recent_data['camera_connection'] >
              timedelta(0), 3, 3, "Cámara desconectada"),
             (update_values['batch_dropping'] > 0, 3, 2, "Batch dropping"),
             (update_values['delayed'] and update_values['delay_time']
              < timedelta(minutes=60), 3, 1, "Retraso menor a 1h"),
+            (recent_data['restart'] >
+             0 and restarted_recently, 5, 2, "Restarts"),
             (update_values['delay_time'] >= timedelta(
                 minutes=60), 5, 1, "Retraso mayor a 1h"),
-            (update_values['restart'] > 0, 5, 2, "Restarts"),
         ]
 
         severity = 1

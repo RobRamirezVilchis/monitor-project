@@ -200,6 +200,7 @@ const DevicePage = ({ params }: { params: { device_id: string } }) => {
       loading: disconnectionsQuery.isLoading || disconnectionsQuery.isFetching,
       ...dataGridState,
     },
+    //enableMultiSort: true,
     enableColumnResizing: true,
     hideColumnFooters: true,
     enableColumnActions: true,
