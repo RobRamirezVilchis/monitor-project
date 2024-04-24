@@ -439,8 +439,10 @@ class IndustryClientList(APIView):
 
     def get(self, request, *args, **kwargs):
         clients = get_industry_clients()
+        active_clients = clients.exclude(
+            name="Ternium").exclude(name="Bekaert")
 
-        data = self.OutputSerializer(clients, many=True).data
+        data = self.OutputSerializer(active_clients, many=True).data
         return Response(data)
 
 
