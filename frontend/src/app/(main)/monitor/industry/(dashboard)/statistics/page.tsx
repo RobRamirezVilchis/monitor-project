@@ -138,20 +138,23 @@ const IndustryStatisticsPage = () => {
 
   return (
     <section>
-      <div className="md:flex items-center mb-6">
-        <h2 className="text-xl mb-2 md:mb-0">
-          Gráfica de estátus en el tiempo:
-        </h2>
-        <div className="md:flex space-y-4 md:space-y-0 gap-10 items-center">
-          <div className="w-70 ml-0 md:ml-4 mr-0">
-            <DatePickerInput
-              type="range"
-              placeholder="Pick date"
-              value={dateValue}
-              onChange={setDateValue}
-            />
-          </div>
+      <h2 className="text-2xl mb-2 md:mb-4 opacity-50">
+        Estátus general en el tiempo
+      </h2>
+
+      <div className="md:flex items-center mb-6 gap-4 md:gap-8 space-y-4 md:space-y-0 justify-start">
+        <div className="md:flex gap-0 sm:gap-2 items-center">
+          <p className="hidden md:block">Rango de tiempo:</p>
+          <DatePickerInput
+            type="range"
+            placeholder="Pick date"
+            value={dateValue}
+            onChange={setDateValue}
+          />
+        </div>
+        <div className="min-w-12">
           <SegmentedControl
+            className="flex md:max-xl:flex-col min-w-12"
             value={graphMode}
             onChange={setGraphMode}
             data={[
@@ -159,17 +162,18 @@ const IndustryStatisticsPage = () => {
               { label: "Stacked", value: "stacked" },
             ]}
           />
-          <Select
-            className="md:flex gap-3 items-center"
-            styles={{
-              label: { fontSize: 18 },
-            }}
-            label="Filtrar por cliente:"
-            placeholder="Todos"
-            data={clients}
-            onChange={(value: string | null) => setClientValue(value)}
-          ></Select>
         </div>
+
+        <Select
+          className="md:flex space-y-2 md:space-y-0 gap-3 items-center"
+          styles={{
+            label: { fontSize: 18 },
+          }}
+          label="Filtrar por cliente:"
+          placeholder="Todos"
+          data={clients}
+          onChange={(value: string | null) => setClientValue(value)}
+        ></Select>
       </div>
 
       {areaPlotData && (
@@ -199,7 +203,7 @@ const IndustryStatisticsPage = () => {
                     { name: "Crítico", color: "red" },
                   ]
             }
-            curveType="bump"
+            curveType="monotone"
           />
         </div>
       )}

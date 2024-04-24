@@ -193,12 +193,13 @@ const SafeDrivingPage = () => {
 
   return (
     <section className="mb-20">
-      <div className="md:flex items-center mb-6">
-        <h2 className="text-xl mb-2 md:mb-0">
-          Gráfica de estátus en el tiempo:
-        </h2>
-        <div className="md:flex space-y-4 md:space-y-0 gap-10 items-center">
-          <div className="w-70 ml-0 md:ml-4 mr-0">
+      <h2 className="text-2xl mb-2 md:mb-4 opacity-50">
+        Estátus general en el tiempo
+      </h2>
+      <div className="md:flex items-center mb-6 gap-4 md:gap-8 space-y-4 md:space-y-0 justify-start">
+        <div className="md:flex gap-0 sm:gap-2 items-center">
+          <p className="hidden md:block">Rango de tiempo:</p>
+          <div className="w-70">
             <DatePickerInput
               type="range"
               placeholder="Pick date"
@@ -206,31 +207,35 @@ const SafeDrivingPage = () => {
               onChange={setDateValue}
             />
           </div>
+        </div>
 
+        <div className="min-w-12">
           <SegmentedControl
             value={graphMode}
+            className="flex md:max-xl:flex-col min-w-12"
             onChange={setGraphMode}
             data={[
               { label: "Percent", value: "percent" },
               { label: "Stacked", value: "stacked" },
             ]}
           />
-          <Checkbox
-            label={"Mostrar unidades inactivas"}
-            checked={showInactive}
-            onChange={(event) => setShowInactive(event.currentTarget.checked)}
-          />
-          <Select
-            className="md:flex gap-3 items-center"
-            styles={{
-              label: { fontSize: 18 },
-            }}
-            label="Filtrar por cliente:"
-            placeholder="Todos"
-            data={clients}
-            onChange={(value: string | null) => setClientValue(value)}
-          ></Select>
         </div>
+
+        <Checkbox
+          label={"Mostrar unidades inactivas"}
+          checked={showInactive}
+          onChange={(event) => setShowInactive(event.currentTarget.checked)}
+        />
+        <Select
+          className="md:flex space-y-2 md:space-y-0 gap-3 items-center"
+          styles={{
+            label: { fontSize: 16 },
+          }}
+          label="Filtrar por cliente:"
+          placeholder="Todos"
+          data={clients}
+          onChange={(value: string | null) => setClientValue(value)}
+        ></Select>
       </div>
 
       {areaPlotData && (
