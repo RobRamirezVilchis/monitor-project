@@ -45,6 +45,7 @@ import {
 } from "recharts";
 import { DatePickerInput } from "@mantine/dates";
 import { Button } from "@mantine/core";
+import { useRouter } from "next/navigation";
 
 type StatusKey = 0 | 1 | 2 | 3 | 4 | 5;
 const statusStyles: { [key in StatusKey]: string } = {
@@ -75,6 +76,8 @@ const barColors: { [key in StatusKey]: string } = {
 };
 
 const DevicePage = ({ params }: { params: { device_id: string } }) => {
+  const router = useRouter();
+
   const currentDate = new Date();
   let yesterday = new Date();
   yesterday.setDate(yesterday.getDate() - 1);
@@ -222,12 +225,12 @@ const DevicePage = ({ params }: { params: { device_id: string } }) => {
 
   return (
     <section className="relative mb-20">
-      <Link
-        href={"/monitor/industry/details"}
-        className="hidden lg:block absolute right-full mr-5 mt-2 opacity-40"
+      <div
+        className="absolute hidden lg:block right-full mr-5 mt-2 opacity-40"
+        onClick={() => router.back()}
       >
         <ArrowBackIcon />
-      </Link>
+      </div>
       <div className="flex mb-4 justify-between items-center">
         <div className="xl:flex xl:gap-6">
           <h1 className="text-5xl font-bold">{deviceStatus?.device}</h1>

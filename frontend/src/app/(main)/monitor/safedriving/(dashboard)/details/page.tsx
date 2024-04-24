@@ -18,6 +18,7 @@ import { useSearchParams } from "next/navigation";
 import { useRouter } from "next/navigation";
 import { formatDistanceToNow } from "date-fns";
 import { es } from "date-fns/locale";
+import router from "next/router";
 
 type StatusKey = 0 | 1 | 2 | 3 | 4 | 5;
 const statusStyles: { [key in StatusKey]: string } = {
@@ -46,6 +47,7 @@ const statusColors: { [key in StatusKey]: string } = {
 };
 
 const SafeDrivingPage = () => {
+  const router = useRouter();
   const combobox = useCombobox({
     onDropdownClose: () => combobox.resetSelectedOption(),
   });
@@ -53,7 +55,8 @@ const SafeDrivingPage = () => {
 
   const [value, setValue] = useState("");
   const searchParams = useSearchParams();
-  const filter = searchParams.get("filter");
+  const statusFilter = searchParams.get("status");
+  const clientFilter = searchParams.get("client");
 
   // Get a new searchParams string by merging the current
   // searchParams with a provided key/value pair
@@ -61,6 +64,15 @@ const SafeDrivingPage = () => {
     (name: string, value: string) => {
       const params = new URLSearchParams(searchParams.toString());
       params.set(name, value);
+
+      return params.toString();
+    },
+    [searchParams]
+  );
+  const removeQueryParam = useCallback(
+    (name: string) => {
+      const params = new URLSearchParams(searchParams.toString());
+      params.delete(name);
 
       return params.toString();
     },
@@ -155,7 +167,17 @@ const SafeDrivingPage = () => {
                 label="Filtrar por cliente:"
                 placeholder="Todos"
                 data={clients}
-                onChange={(value: string | null) => setClientValue(value)}
+                value={clientFilter}
+                onChange={(value: string | null) => {
+                  router.push(
+                    value
+                      ? "/monitor/safedriving/details/?" +
+                          createQueryString("client", value)
+                      : "/monitor/safedriving/details/?" +
+                          removeQueryParam("client")
+                  );
+                  setClientValue(value);
+                }}
               ></Select>
             </div>
 
@@ -171,16 +193,19 @@ const SafeDrivingPage = () => {
 
                     <Link
                       href={
-                        filter == null || Number(filter) != severity_count.level
+                        statusFilter == null ||
+                        Number(statusFilter) != severity_count.level
                           ? "/monitor/safedriving/details/?" +
                             createQueryString(
-                              "filter",
+                              "status",
                               String(severity_count.level)
                             )
-                          : "/monitor/safedriving/details"
+                          : "/monitor/safedriving/details/?" +
+                            removeQueryParam("status")
                       }
                       className={`${
-                        severity_count.level == Number(filter) || filter == null
+                        severity_count.level == Number(statusFilter) ||
+                        statusFilter == null
                           ? "opacity-100"
                           : "opacity-30"
                       } inline-flex px-2.5 pt-1 pb-0.5 text-s font-semibold border-2 ${
@@ -216,8 +241,8 @@ const SafeDrivingPage = () => {
       <div className="flex flex-row gap-4 flex-wrap">
         {unitsData?.map((unit) =>
           unit.unit.startsWith(value) &&
-          (unit.client == clientValue || clientValue == null) &&
-          (filter == null || unit.severity == Number(filter)) ? (
+          (clientFilter == null || unit.client == clientFilter) &&
+          (statusFilter == null || unit.severity == Number(statusFilter)) ? (
             <UnitCard key={unit.unit} unit={unit} />
           ) : null
         )}
