@@ -8,7 +8,7 @@ import { cookies } from "next/headers";
 import { Metadata, Viewport } from "next";
 import clsx from "clsx";
 import Script from "next/script";
-import type { ReactNode } from "react";
+import { type ReactNode } from "react";
 
 import { Providers } from "./Providers";
 import { colorSchemeCookieName } from "@/ui/themes/cookieColorSchemeManager";
@@ -21,22 +21,20 @@ interface RootLayoutProps {
 export const metadata: Metadata = {
   title: "App Title",
   description: "Description",
-  icons: [ { rel: "icon", url: "/favicon.ico" } ]
-}
+  icons: [{ rel: "icon", url: "/favicon.ico" }],
+};
 
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-}
+};
 
-const RootLayout = ({ 
-  children 
-}: RootLayoutProps) => {
+const RootLayout = ({ children }: RootLayoutProps) => {
   const cookieStore = cookies();
-  let colorScheme = cookieStore.get(colorSchemeCookieName)?.value as MantineColorScheme | undefined;
-  colorScheme = colorScheme === "auto" 
-    ? undefined 
-    : colorScheme;
+  let colorScheme = cookieStore.get(colorSchemeCookieName)?.value as
+    | MantineColorScheme
+    | undefined;
+  colorScheme = colorScheme === "auto" ? undefined : colorScheme;
 
   return (
     // Set TailwindCSS color scheme based on cookie managed by Mantine ColorSchemeManager
@@ -49,13 +47,17 @@ const RootLayout = ({
         <ColorSchemeScript defaultColorScheme={colorScheme} />
         <title>Monitor</title>
       </head>
-      <body className={clsx(fonts.roboto.className, "bg-[#f0f0f0] dark:bg-dark-800")} suppressHydrationWarning>
-        <Providers>
-          {children}
-        </Providers>
+      <body
+        className={clsx(
+          fonts.roboto.className,
+          "bg-[#f0f0f0] dark:bg-dark-800"
+        )}
+        suppressHydrationWarning
+      >
+        <Providers>{children}</Providers>
       </body>
     </html>
   );
-}
+};
 
 export default RootLayout;

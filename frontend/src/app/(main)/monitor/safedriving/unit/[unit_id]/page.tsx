@@ -18,8 +18,6 @@ import { es } from "date-fns/locale";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 //import { BarChart } from "@mantine/charts";
 import {
-  BarChart,
-  Bar,
   Cell,
   XAxis,
   YAxis,
@@ -189,6 +187,7 @@ const UnitPage = ({ params }: { params: { unit_id: string } }) => {
   return (
     <section className="relative mb-20">
       <Link
+        scroll={false}
         href={"/monitor/safedriving/details"}
         className="absolute hidden lg:block right-full mr-5 mt-2 opacity-40"
       >
@@ -307,10 +306,6 @@ const UnitPage = ({ params }: { params: { unit_id: string } }) => {
       )}
     </section>
   );
-};
-
-const RenderTooltip = ({ data: num }: { data: number }) => {
-  return <div>{num}</div>;
 };
 
 //export default UnitPage;

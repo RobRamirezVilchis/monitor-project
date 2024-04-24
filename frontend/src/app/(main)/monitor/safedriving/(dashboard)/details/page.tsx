@@ -1,31 +1,13 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { Checkbox, SegmentedControl, Tabs, rem } from "@mantine/core";
-import { AreaChart, AreaChartType } from "@mantine/charts";
-import {
-  IconPhoto,
-  IconMessageCircle,
-  IconSettings,
-} from "@tabler/icons-react";
-
-import {
-  TextInput,
-  MultiSelect,
-  Input,
-  InputBase,
-  Combobox,
-  useCombobox,
-  Select,
-  ComboboxItem,
-} from "@mantine/core";
+import { TextInput, useCombobox, Select } from "@mantine/core";
 import { PieChart } from "@mantine/charts";
 
 import {
   useUnitsQuery,
   useDrivingSeverityCount,
   useSafeDrivingClientsQuery,
-  useSafeDrivingAreaPlotData,
   useDrivingLastUpdateQuery,
 } from "@/api/queries/monitor";
 
@@ -34,8 +16,6 @@ import UnitCard from "../../../(components)/UnitCard";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useRouter } from "next/navigation";
-import { ColorSchemeSwitchToggle } from "@/components/shared";
-import { DatePickerInput } from "@mantine/dates";
 import { formatDistanceToNow } from "date-fns";
 import { es } from "date-fns/locale";
 
@@ -66,26 +46,14 @@ const statusColors: { [key in StatusKey]: string } = {
 };
 
 const SafeDrivingPage = () => {
-  const router = useRouter();
   const combobox = useCombobox({
     onDropdownClose: () => combobox.resetSelectedOption(),
   });
   const [clientValue, setClientValue] = useState<string | null>(null);
-  const [graphMode, setGraphMode] = useState<string>("percent");
-  const [showInactive, setShowInactive] = useState<boolean>(false);
+
   const [value, setValue] = useState("");
   const searchParams = useSearchParams();
-  const tab = searchParams.get("tab");
   const filter = searchParams.get("filter");
-
-  const currentDate = new Date();
-  let yesterday = new Date();
-  yesterday.setDate(yesterday.getDate() - 1);
-
-  const [dateValue, setDateValue] = useState<[Date | null, Date | null]>([
-    yesterday,
-    currentDate,
-  ]);
 
   // Get a new searchParams string by merging the current
   // searchParams with a provided key/value pair
@@ -162,16 +130,6 @@ const SafeDrivingPage = () => {
       });
     }
   }
-
-  const areaPlotData: {
-    fecha: Date;
-    Crítico: number;
-    Fallando: number;
-    Alerta: number;
-    Normal: number;
-    Funcionando: number;
-    Inactivo: number;
-  }[] = [];
 
   return (
     <section className="mb-20">

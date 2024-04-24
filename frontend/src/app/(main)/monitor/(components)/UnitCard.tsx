@@ -58,6 +58,7 @@ const UnitCard = ({ unit: unit_status }: GxCardProps) => {
 
   return (
     <Link
+      scroll={false}
       className={`group relative pb-6 w-[18rem] md:w-52 lg:w-[18rem] rounded-lg p-6 border-2 
       transition duration-300 shadow-md dark:border-gray-700 hover:shadow-lg ${
         priority ? "border-red-300 dark:border-red-300" : ""

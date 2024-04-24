@@ -114,7 +114,9 @@ const MainLayout = ({ children }: MainLayoutProps) => {
       </AppShell.Header>
 
       <AppShell.Main>
-        <div className="mx-8 lg:mx-32 pb-2 md:pb-6 pt-14">{children}</div>
+        <div className="mx-8 lg:mx-32 pb-2 md:pb-6 pt-14 overflow-auto">
+          {children}
+        </div>
       </AppShell.Main>
     </AppShell>
   );

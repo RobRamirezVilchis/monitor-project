@@ -1,40 +1,23 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
-import {
-  Checkbox,
-  Paper,
-  Text,
-  SegmentedControl,
-  Tabs,
-  rem,
-} from "@mantine/core";
+import { useState } from "react";
+import { Checkbox, Paper, Text, SegmentedControl, Select } from "@mantine/core";
 import {
   AreaChart,
   AreaChartType,
   ChartTooltipProps,
   getFilteredChartTooltipPayload,
 } from "@mantine/charts";
-import { TextInput, useCombobox, Select } from "@mantine/core";
-import { PieChart } from "@mantine/charts";
 
 import {
-  useUnitsQuery,
-  useDrivingSeverityCount,
   useSafeDrivingClientsQuery,
   useSafeDrivingAreaPlotData,
   useDrivingLastUpdateQuery,
 } from "@/api/queries/monitor";
 
-import UnitCard from "../../../(components)/UnitCard";
-
-import Link from "next/link";
-import { useSearchParams } from "next/navigation";
-import { useRouter } from "next/navigation";
 import { DatePickerInput } from "@mantine/dates";
 import { formatDistanceToNow } from "date-fns";
 import { es } from "date-fns/locale";
-import { ConstructionOutlined, Pause } from "@mui/icons-material";
 
 type StatusKey = 0 | 1 | 2 | 3 | 4 | 5;
 const statusStyles: { [key in StatusKey]: string } = {
@@ -63,15 +46,9 @@ const statusColors: { [key in StatusKey]: string } = {
 };
 
 const SafeDrivingPage = () => {
-  const router = useRouter();
-  const combobox = useCombobox({
-    onDropdownClose: () => combobox.resetSelectedOption(),
-  });
   const [clientValue, setClientValue] = useState<string | null>(null);
-  const [graphMode, setGraphMode] = useState<string>("percent");
+  const [graphMode, setGraphMode] = useState<string>("stacked");
   const [showInactive, setShowInactive] = useState<boolean>(false);
-  const searchParams = useSearchParams();
-  const filter = searchParams.get("filter");
 
   const currentDate = new Date();
   let yesterday = new Date();
@@ -82,26 +59,6 @@ const SafeDrivingPage = () => {
     currentDate,
   ]);
 
-  // Get a new searchParams string by merging the current
-  // searchParams with a provided key/value pair
-  const createQueryString = useCallback(
-    (name: string, value: string) => {
-      const params = new URLSearchParams(searchParams.toString());
-      params.set(name, value);
-
-      return params.toString();
-    },
-    [searchParams]
-  );
-
-  const unitsStatusQuery = useUnitsQuery({
-    refetchOnWindowFocus: false,
-  });
-  const unitsData = unitsStatusQuery.data;
-
-  const countQuery = useDrivingSeverityCount({
-    refetchOnWindowFocus: false,
-  });
   const lastUpdateQuery = useDrivingLastUpdateQuery({
     refetchOnWindowFocus: false,
   });
@@ -129,42 +86,6 @@ const SafeDrivingPage = () => {
     });
   } else {
     timeAgo = "-";
-  }
-
-  const severityCountDict: { [key in StatusKey]: number } = {
-    5: 0,
-    4: 0,
-    3: 0,
-    2: 0,
-    1: 0,
-    0: 0,
-  };
-
-  const severityCount: {
-    level: number;
-    name: string;
-    value: number;
-    color: string;
-  }[] = [];
-
-  if (unitsData) {
-    for (const unitData of unitsData) {
-      if (clientValue) {
-        if (clientValue == unitData.client) {
-          severityCountDict[unitData.severity as StatusKey]++;
-        }
-      } else {
-        severityCountDict[unitData.severity as StatusKey]++;
-      }
-    }
-    for (let i = 5; i >= 0; i--) {
-      severityCount.push({
-        level: i,
-        name: statusNames[i as StatusKey],
-        value: severityCountDict[i as StatusKey],
-        color: statusColors[i as StatusKey],
-      });
-    }
   }
 
   const areaPlotData: {

@@ -54,11 +54,8 @@ const statusColors: { [key in StatusKey]: string } = {
 };
 
 const IndustryStatisticsPage = () => {
-  const router = useRouter();
   const [clientValue, setClientValue] = useState<string | null>(null);
   const [graphMode, setGraphMode] = useState<string>("stacked");
-  const [showInactive, setShowInactive] = useState<boolean>(false);
-  const searchParams = useSearchParams();
 
   const currentDate = new Date();
   let yesterday = new Date();
@@ -68,18 +65,6 @@ const IndustryStatisticsPage = () => {
     yesterday,
     currentDate,
   ]);
-
-  // Get a new searchParams string by merging the current
-  // searchParams with a provided key/value pair
-  const createQueryString = useCallback(
-    (name: string, value: string) => {
-      const params = new URLSearchParams(searchParams.toString());
-      params.set(name, value);
-
-      return params.toString();
-    },
-    [searchParams]
-  );
 
   const clientsQuery = useIndustryClientsQuery({
     refetchOnWindowFocus: false,
@@ -94,23 +79,6 @@ const IndustryStatisticsPage = () => {
     },
   });
   const areaPlotQueryData = areaPlotDataQuery?.data;
-
-  const countQuery = useIndustrySeverityCount({
-    refetchOnWindowFocus: false,
-  });
-
-  const data = [];
-  if (countQuery.data) {
-    for (const level of countQuery?.data) {
-      if (level["severity"] != 0) {
-        data.push({
-          name: statusNames[level["severity"] as StatusKey],
-          value: level["count"],
-          color: statusColors[level["severity"] as StatusKey],
-        });
-      }
-    }
-  }
 
   const areaPlotData: {
     fecha: Date;
@@ -190,19 +158,11 @@ const IndustryStatisticsPage = () => {
             tooltipAnimationDuration={200}
             type={graphMode as AreaChartType}
             dotProps={{ r: 0 }}
-            series={
-              showInactive
-                ? [
-                    { name: "Funcionando", color: "blue" },
-                    { name: "Alerta", color: "yellow.5" },
-                    { name: "Crítico", color: "red" },
-                  ]
-                : [
-                    { name: "Funcionando", color: "blue" },
-                    { name: "Alerta", color: "yellow.5" },
-                    { name: "Crítico", color: "red" },
-                  ]
-            }
+            series={[
+              { name: "Funcionando", color: "blue" },
+              { name: "Alerta", color: "yellow.5" },
+              { name: "Crítico", color: "red" },
+            ]}
             curveType="monotone"
           />
         </div>

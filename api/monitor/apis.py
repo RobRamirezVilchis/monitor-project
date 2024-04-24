@@ -621,11 +621,11 @@ class SafeDrivingAreaPlotAPI(APIView):
 
             for register in registers:
                 register["timestamp"] = register["timestamp"].astimezone(pytz.timezone("America/Mexico_City")).replace(
-                    tzinfo=None).isoformat() + "h"
+                    tzinfo=None).isoformat(timespec="hours", sep=' ') + "h"
         else:
             for register in registers:
                 register.timestamp = register.timestamp.astimezone(pytz.timezone("America/Mexico_City")).replace(
-                    tzinfo=None).isoformat() + "h"
+                    tzinfo=None).isoformat(timespec="hours", sep=' ') + "h"
 
         data = self.OutputSerializer(registers, many=True).data
 
@@ -684,11 +684,11 @@ class IndustryAreaPlotAPI(APIView):
 
             for register in registers:
                 register["timestamp"] = register["timestamp"].astimezone(pytz.timezone("America/Mexico_City")).replace(
-                    tzinfo=None).isoformat() + "h"
+                    tzinfo=None).isoformat(timespec="hours", sep=' ') + "h"
         else:
             for register in registers:
                 register.timestamp = register.timestamp.astimezone(pytz.timezone("America/Mexico_City")).replace(
-                    tzinfo=None).isoformat() + "h"
+                    tzinfo=None).isoformat(timespec="hours", sep=' ') + "h"
 
         data = self.OutputSerializer(registers, many=True).data
 
