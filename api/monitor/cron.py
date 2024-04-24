@@ -728,9 +728,11 @@ def process_industry_data(response):
                 for interval in intervals:
                     output_cameras[device][interval]["connected"] = False
 
+    max_cam_disc_time = max([camera_data["ten_minutes"]["disconnection_time"]
+                            for name, camera_data in output_cameras.items()])
     alert_conditions = {
         "Reinicios de pipeline": (output_gx["hour"]["restart"] > 0),
-        "Desconexión de cámara": (output_gx["hour"]["camera_connection"] > timedelta(0)),
+        "Desconexión de cámara": (max_cam_disc_time > timedelta(minutes=2)),
         "Batch dropping": (output_gx["hour"]["batch_dropping"] > 0),
         "Sin conexión reciente": (output_gx["hour"]["delayed"])
     }
@@ -773,7 +775,7 @@ def update_industry_status():
         }
         client = get_or_create_client(client_args)
 
-        # TO DO: Obtener nombre de device
+        # TO DO: Get device name programmatically
         device_args = {
             'client': client,
             'name': "GX_01"
