@@ -59,7 +59,7 @@ const UnitCard = ({ unit: unit_status }: GxCardProps) => {
   return (
     <Link
       scroll={false}
-      className={`group relative pb-6 w-[18rem] md:w-52 lg:w-[18rem] rounded-lg p-6 border-2 
+      className={`group relative pb-6 w-72 md:max-lg:w-52 h-60 md:max-lg:h-72 rounded-lg p-6 border-2 
       transition duration-300 shadow-md dark:border-gray-700 hover:shadow-lg ${
         priority ? "border-red-300 dark:border-red-300" : ""
       }`}
@@ -76,11 +76,9 @@ const UnitCard = ({ unit: unit_status }: GxCardProps) => {
         {statusNames[severity as StatusKey]}
       </div>
 
-      <div className="flex gap-3 mb-2 items-center">
-        <h3 className="ml-1 text-2xl font-bold">Unidad {unit}</h3>
-      </div>
+      <h3 className="ml-1 text-2xl font-bold">Unidad {unit}</h3>
 
-      <div className="flex items-center my-2">
+      <div className="flex items-center my-2.5">
         <svg
           xmlns="http://www.w3.org/2000/svg"
           fill="none"

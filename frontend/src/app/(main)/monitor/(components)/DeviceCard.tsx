@@ -45,7 +45,7 @@ const DeviceCard = ({ device: device_obj }: GxCardProps) => {
 
   return (
     <Link
-      className="relative pb-6 w-52 lg:w-[18rem] rounded-lg p-6 border-2
+      className="relative pb-6 w-72 h-60 rounded-lg p-6 border-2 
       transition duration-300 shadow-md dark:border-gray-700 hover:shadow-lg"
       href={`/monitor/industry/device/${device_id}`}
     >
@@ -60,7 +60,7 @@ const DeviceCard = ({ device: device_obj }: GxCardProps) => {
         <h3 className="ml-1 text-2xl font-bold">{device_name}</h3>
       </div>
 
-      <div className="flex items-center my-2">
+      <div className="flex items-center my-3">
         <svg
           xmlns="http://www.w3.org/2000/svg"
           fill="none"

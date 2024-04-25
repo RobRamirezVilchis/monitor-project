@@ -61,7 +61,7 @@ export const defaultConfig: HttpClientConfig = {
   //     // url.search = query.toString();
   //     window.location.assign(url.toString());
   //   }
-    console.log(error);
+    //console.log(error);
   //   throw error;
   },
   retry: 0,
