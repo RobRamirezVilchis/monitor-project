@@ -40,12 +40,18 @@ import {
   Scatter,
   ScatterChart,
   Tooltip,
+  TooltipProps,
   XAxis,
   YAxis,
+  ZAxis,
 } from "recharts";
 import { DatePickerInput } from "@mantine/dates";
 import { Button } from "@mantine/core";
 import { useRouter } from "next/navigation";
+import {
+  NameType,
+  ValueType,
+} from "recharts/types/component/DefaultTooltipContent";
 
 type StatusKey = 0 | 1 | 2 | 3 | 4 | 5;
 const statusStyles: { [key in StatusKey]: string } = {
@@ -366,8 +372,9 @@ const DevicePage = ({ params }: { params: { device_id: string } }) => {
               interval={0}
               ticks={[0, 1, 2, 3, 4, 5]}
             />
+            <ZAxis dataKey="descripcion" />
 
-            <Tooltip />
+            <Tooltip content={<CustomTooltip />} />
             <Scatter data={plotData} dataKey="severidad" fill="#8884d8">
               {plotData.map((entry, index) => (
                 <Cell
@@ -387,6 +394,26 @@ const DevicePage = ({ params }: { params: { device_id: string } }) => {
 export default DevicePage;
 
 const ConvertBool = (condition: boolean) => (condition ? "Sí" : "No");
+
+const CustomTooltip = ({
+  active,
+  payload,
+  label,
+}: TooltipProps<ValueType, NameType>) => {
+  if (active && payload && payload.length) {
+    return (
+      <div className="custom-tooltip bg-white p-4 border-2 rounded-lg">
+        <p className="label">{`Hora: ${payload[0].value}`}</p>
+        <p className="label">{`Estátus: ${
+          statusNames[Number(payload[1].value) as StatusKey]
+        }`}</p>
+        <p className="label">{payload[2].value}</p>
+      </div>
+    );
+  }
+
+  return null;
+};
 
 const cols: ColumnDef<DeviceHistory>[] = [
   {

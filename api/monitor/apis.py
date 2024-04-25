@@ -473,6 +473,7 @@ class UnitScatterPlotAPI(APIView):
     class OutputSerializer(serializers.Serializer):
         hora = serializers.DateTimeField()
         severidad = serializers.IntegerField()
+        descripcion = serializers.CharField()
 
     def get(self, request, unit_id, *args, **kwargs):
         import datetime
@@ -499,18 +500,31 @@ class UnitScatterPlotAPI(APIView):
 
         grouped_by_hour = {}
 
+        descriptions = {}
         for register in registers:
             hour = (register.register_datetime -
                     timedelta(hours=6)).replace(tzinfo=None).isoformat(timespec="hours", sep=' ') + "h"
             severity = register.status.severity
+            description = register.status.description
 
             if hour not in grouped_by_hour:
                 grouped_by_hour[hour] = [severity]
             else:
                 grouped_by_hour[hour].append(severity)
 
-        output = [{"hora": date, "severidad": max(set(severities), key=severities.count)}
-                  for date, severities in grouped_by_hour.items()]
+            if severity in descriptions:
+                descriptions[severity].append(description)
+            else:
+                descriptions[severity] = [description]
+
+        output = []
+        for date, severities in grouped_by_hour.items():
+            most_common_severity = max(set(severities), key=severities.count)
+            most_common_description = max(
+                set(descriptions[most_common_severity]), key=descriptions[most_common_severity].count)
+            output.append({"hora": date,
+                           "severidad": most_common_severity,
+                           "descripcion": most_common_description})
 
         data = self.OutputSerializer(output, many=True).data
 
@@ -525,6 +539,7 @@ class DeviceScatterPlotAPI(APIView):
     class OutputSerializer(serializers.Serializer):
         hora = serializers.DateTimeField()
         severidad = serializers.IntegerField()
+        descripcion = serializers.CharField()
 
     def get(self, request, device_id, *args, **kwargs):
         import datetime
@@ -551,18 +566,31 @@ class DeviceScatterPlotAPI(APIView):
 
         grouped_by_hour = {}
 
+        descriptions = {}
         for register in registers:
             hour = (register.register_datetime -
                     timedelta(hours=6)).replace(tzinfo=None).isoformat(timespec="hours", sep=' ') + "h"
             severity = register.status.severity
+            description = register.status.description
 
             if hour not in grouped_by_hour:
                 grouped_by_hour[hour] = [severity]
             else:
                 grouped_by_hour[hour].append(severity)
 
-        output = [{"hora": date, "severidad": max(set(severities), key=severities.count)}
-                  for date, severities in grouped_by_hour.items()]
+            if severity in descriptions:
+                descriptions[severity].append(description)
+            else:
+                descriptions[severity] = [description]
+
+        output = []
+        for date, severities in grouped_by_hour.items():
+            most_common_severity = max(set(severities), key=severities.count)
+            most_common_description = max(
+                set(descriptions[most_common_severity]), key=descriptions[most_common_severity].count)
+            output.append({"hora": date,
+                           "severidad": most_common_severity,
+                           "descripcion": most_common_description})
 
         data = self.OutputSerializer(output, many=True).data
 

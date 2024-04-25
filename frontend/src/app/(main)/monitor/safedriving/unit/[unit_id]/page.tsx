@@ -24,9 +24,16 @@ import {
   CartesianGrid,
   ResponsiveContainer,
   Tooltip,
+  TooltipProps,
   ScatterChart,
   Scatter,
+  ZAxis,
 } from "recharts";
+// for recharts v2.1 and above
+import {
+  ValueType,
+  NameType,
+} from "recharts/types/component/DefaultTooltipContent";
 
 import Link from "next/link";
 import { useState } from "react";
@@ -293,8 +300,9 @@ const UnitPage = ({ params }: { params: { unit_id: string } }) => {
               interval={0}
               ticks={[0, 1, 2, 3, 4, 5]}
             />
+            <ZAxis dataKey="descripcion" />
 
-            <Tooltip />
+            <Tooltip content={<CustomTooltip />} />
             <Scatter data={plotData} dataKey="severidad" fill="#8884d8">
               {plotData.map((entry, index) => (
                 <Cell
@@ -313,12 +321,28 @@ const UnitPage = ({ params }: { params: { unit_id: string } }) => {
 //export default UnitPage;
 export default UnitPage;
 
-const ConvertBool = (row: UnitHistory) => {
-  if (row.on_trip) {
-    return "Sí";
-  } else {
-    return "No";
+const ConvertBool = (condition: boolean) => (condition ? "Sí" : "No");
+
+const CustomTooltip = ({
+  active,
+  payload,
+  label,
+}: TooltipProps<ValueType, NameType>) => {
+  if (active && payload && payload.length) {
+    return (
+      <div className="custom-tooltip bg-white p-4 border-2 rounded-lg">
+        <p className="label">{`Hora: ${payload[0].value}`}</p>
+        <p className="label">{`Estátus: ${
+          statusNames[Number(payload[1].value) as StatusKey]
+        }`}</p>
+        {payload[2].value != "Inactivo" && (
+          <p className="label">{payload[2].value}</p>
+        )}
+      </div>
+    );
   }
+
+  return null;
 };
 
 const cols: ColumnDef<UnitHistory>[] = [
@@ -366,7 +390,7 @@ const cols: ColumnDef<UnitHistory>[] = [
   },
   {
     accessorKey: "on_trip",
-    accessorFn: ConvertBool,
+    accessorFn: (row) => ConvertBool(row.on_trip),
     header: "En viaje",
     columnTitle: "En viaje",
     size: 100,

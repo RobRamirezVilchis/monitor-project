@@ -125,6 +125,7 @@ export interface AreaPlotFilters {
 export interface SeverityHistory {
   hora: string,
   severidad: number,
+  description: string,
 }
 
 export interface UnitSeverityHistoryFilters {
