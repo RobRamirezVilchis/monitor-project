@@ -14,8 +14,10 @@ import Link from "next/link";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { Checkbox } from "@mantine/core";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 const DeviceLogsPage = ({ params }: { params: { device_id: string } }) => {
+  const router = useRouter();
   const [showEmpty, setShowEmpty] = useState(true);
 
   const { dataGridState, queryVariables, dataGridConfig } = useSsrDataGrid<{
@@ -86,12 +88,18 @@ const DeviceLogsPage = ({ params }: { params: { device_id: string } }) => {
 
   return (
     <section className="relative">
-      <Link
+      {/* <Link
         href={`/monitor/industry/device/${params.device_id}`}
         className="absolute right-full mr-5 mt-2 opacity-40"
       >
         <ArrowBackIcon />
-      </Link>
+      </Link> */}
+      <button
+        className="absolute hidden lg:block right-full mr-5 mt-2 opacity-40"
+        onClick={() => router.back()}
+      >
+        <ArrowBackIcon />
+      </button>
 
       <div className="md:flex text-5xl gap-4 mb-6 items-center">
         <h1 className="font-bold">{deviceStatus?.device}</h1>

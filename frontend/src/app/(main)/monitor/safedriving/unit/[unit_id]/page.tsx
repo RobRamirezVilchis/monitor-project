@@ -188,12 +188,12 @@ const UnitPage = ({ params }: { params: { unit_id: string } }) => {
 
   return (
     <section className="relative mb-20">
-      <div
+      <button
         className="absolute hidden lg:block right-full mr-5 mt-2 opacity-40"
         onClick={() => router.back()}
       >
         <ArrowBackIcon />
-      </div>
+      </button>
 
       <div className="relative flex mb-4 justify-between items-center">
         <div className="xl:flex xl:gap-6">

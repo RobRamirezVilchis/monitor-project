@@ -225,12 +225,12 @@ const DevicePage = ({ params }: { params: { device_id: string } }) => {
 
   return (
     <section className="relative mb-20">
-      <div
+      <button
         className="absolute hidden lg:block right-full mr-5 mt-2 opacity-40"
         onClick={() => router.back()}
       >
         <ArrowBackIcon />
-      </div>
+      </button>
       <div className="flex mb-4 justify-between items-center">
         <div className="xl:flex xl:gap-6">
           <h1 className="text-5xl font-bold">{deviceStatus?.device}</h1>

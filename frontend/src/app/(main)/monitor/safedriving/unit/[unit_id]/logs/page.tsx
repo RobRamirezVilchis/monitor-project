@@ -9,8 +9,11 @@ import { ColumnDef } from "@/ui/data-grid/types";
 import { format, parseISO } from "date-fns";
 import Link from "next/link";
 import DataGrid from "@/ui/data-grid/DataGrid";
+import { useRouter } from "next/navigation";
 
 const UnitLogsPage = ({ params }: { params: { unit_id: string } }) => {
+  const router = useRouter();
+
   const { dataGridState, queryVariables, dataGridConfig } = useSsrDataGrid<{
     name: string;
     timestamp: [Date | null, Date | null];
@@ -77,12 +80,12 @@ const UnitLogsPage = ({ params }: { params: { unit_id: string } }) => {
   });
   return (
     <section className="relative">
-      <Link
-        href={`/monitor/safedriving/unit/${params.unit_id}`}
-        className="absolute right-full mr-5 mt-2 opacity-40"
+      <button
+        className="absolute hidden lg:block right-full mr-5 mt-2 opacity-40"
+        onClick={() => router.back()}
       >
         <ArrowBackIcon />
-      </Link>
+      </button>
       <div className="flex text-5xl gap-4 mb-6">
         <h1 className="font-bold">Unidad {unitStatus?.unit}</h1>
         <h1 className="opacity-40">-</h1>
