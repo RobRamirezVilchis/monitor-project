@@ -544,6 +544,7 @@ def update_driving_status():
 
 # Industry
 
+
 def get_industry_data(client):
     global login_url
     global request_url
@@ -728,8 +729,13 @@ def process_industry_data(response):
                 for interval in intervals:
                     output_cameras[device][interval]["connected"] = False
 
-    max_cam_disc_time = max([camera_data["ten_minutes"]["disconnection_time"]
-                            for name, camera_data in output_cameras.items()])
+    # Prevent an error in case there were no logs and the list is empty
+    try:
+        max_cam_disc_time = max([camera_data["ten_minutes"]["disconnection_time"]
+                                for name, camera_data in output_cameras.items()])
+    except ValueError:
+        max_cam_disc_time = timedelta(0)
+
     alert_conditions = {
         "Reinicios de pipeline": (output_gx["hour"]["restart"] > 0),
         "Desconexión de cámara": (max_cam_disc_time > timedelta(minutes=2)),
