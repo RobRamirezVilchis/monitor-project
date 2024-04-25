@@ -105,7 +105,7 @@ const IndustryStatisticsPage = () => {
   }
 
   return (
-    <section>
+    <section className="mb-28">
       <h2 className="text-2xl mb-2 md:mb-4 opacity-50">
         Estátus general en el tiempo
       </h2>
@@ -163,7 +163,7 @@ const IndustryStatisticsPage = () => {
               { name: "Alerta", color: "yellow.5" },
               { name: "Crítico", color: "red" },
             ]}
-            curveType="monotone"
+            curveType="step"
           />
         </div>
       )}

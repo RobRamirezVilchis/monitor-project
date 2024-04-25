@@ -220,14 +220,14 @@ const UnitPage = ({ params }: { params: { unit_id: string } }) => {
           </div>
         </div>
         {unitStatus?.on_trip && (
-          <div className="absolute right-4 bottom-6 md:static flex items-center top-0">
+          <div className="absolute right-4 bottom-3 md:static flex items-center top-0">
             <span className="animate-ping inline-flex h-3 w-3 rounded-full bg-blue-400 opacity-100"></span>
             <div className="text-2xl font-semibold ml-6">En viaje</div>
           </div>
         )}
       </div>
 
-      <div className="flex justify-between items-end">
+      <div className="sm:flex justify-between items-end">
         <div>
           {inactive && unitLastActiveStatus.data && (
             <p className="text-xl text-gray-500">
@@ -259,7 +259,7 @@ const UnitPage = ({ params }: { params: { unit_id: string } }) => {
             </div>
           )}
         </div>
-        <div>
+        <div className="mt-2 sm:mt-0">
           <Link href={`${params.unit_id}/logs`}>
             <Button size="md">Consultar logs</Button>
           </Link>
@@ -272,7 +272,7 @@ const UnitPage = ({ params }: { params: { unit_id: string } }) => {
 
       <div className="md:flex items-center gap-8">
         <p className="text-2xl opacity-60">Gráfica de estátus: </p>
-        <div className="w-80">
+        <div className="w-80 mt-1 sm:mt-0">
           <DatePickerInput
             type="range"
             placeholder="Pick date"
@@ -288,7 +288,7 @@ const UnitPage = ({ params }: { params: { unit_id: string } }) => {
               top: 20,
               right: 20,
               bottom: 120,
-              left: 20,
+              left: 0,
             }}
           >
             <CartesianGrid strokeDasharray={"3 3"} />

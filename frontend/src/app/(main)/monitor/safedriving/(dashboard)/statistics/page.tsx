@@ -113,7 +113,7 @@ const SafeDrivingPage = () => {
   }
 
   return (
-    <section className="mb-20">
+    <section className="mb-28">
       <h2 className="text-2xl mb-2 md:mb-4 opacity-50">
         Estátus general en el tiempo
       </h2>

@@ -262,7 +262,7 @@ const DevicePage = ({ params }: { params: { device_id: string } }) => {
         )}
       </div>
 
-      <div className="flex justify-between items-end mb-12 md:mb-0">
+      <div className="sm:flex justify-between items-end">
         {deviceStatus && (
           <div>
             {deviceStatus.delayed && (
@@ -327,17 +327,17 @@ const DevicePage = ({ params }: { params: { device_id: string } }) => {
             </div>
           </div>
         )}
-      </div>
-
-      <div className="relative h-[70vh]">
-        <div className="absolute right-0 -top-10">
+        <div className="mt-2 sm:mt-0">
           <Link href={`${params.device_id}/logs`}>
             <Button size="md">Consultar logs</Button>
           </Link>
         </div>
+      </div>
+
+      <div className="h-[70vh] mb-10">
         <DataGrid instance={grid} />
       </div>
-      <h3 className="text-2xl opacity-60 mt-10">Desconexiones de cámaras:</h3>
+      <h3 className="text-2xl opacity-60">Desconexiones de cámaras:</h3>
       <div className="h-[70vh]">
         <DataGrid instance={camerasGrid} />
       </div>
