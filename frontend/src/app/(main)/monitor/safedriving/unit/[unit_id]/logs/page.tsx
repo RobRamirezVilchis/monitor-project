@@ -86,10 +86,12 @@ const UnitLogsPage = ({ params }: { params: { unit_id: string } }) => {
       >
         <ArrowBackIcon />
       </button>
-      <div className="flex text-5xl gap-4 mb-6">
-        <h1 className="font-bold">Unidad {unitStatus?.unit}</h1>
-        <h1 className="opacity-40">-</h1>
-        <h1 className="opacity-40">Logs</h1>
+
+      <div className="text-5xl mb-6">
+        <h1>
+          <span className="font-bold">Unidad {unitStatus?.unit}</span>
+          <span className="opacity-40"> - Logs</span>
+        </h1>
       </div>
       <div className="h-[42rem]">
         <DataGrid instance={grid} />
