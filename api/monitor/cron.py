@@ -21,14 +21,9 @@ def send_telegram(chat: str, message: str):
         f"curl -X POST -H 'Content-Type: application/json' -d '{{\"chat_id\": \"{TELEGRAM_CHAT}\", \"text\": \"{message}\"}}\' https://api.telegram.org/bot{TELEGRAM_BOT}/sendMessage",
         shell=True)
 
-    print("Message sent")
-
 
 def send_alerts(chat, alerts):
-    now = datetime.now(tz=pytz.timezone('UTC')).astimezone(pytz.timezone(
-        'America/Mexico_City')).replace(tzinfo=pytz.utc)
-
-    message = f"Hora: {now.time().isoformat(timespec='seconds')}\n\n"
+    message = ""
     for unit, descriptions in alerts.items():
         for description in descriptions:
             message += f'- Unidad {unit}: {description}\n'
