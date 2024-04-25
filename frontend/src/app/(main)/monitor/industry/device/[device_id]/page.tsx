@@ -402,7 +402,7 @@ const CustomTooltip = ({
 }: TooltipProps<ValueType, NameType>) => {
   if (active && payload && payload.length) {
     return (
-      <div className="custom-tooltip bg-white p-4 border-2 rounded-lg">
+      <div className="custom-tooltip bg-white dark:bg-gray-800 p-4 border-2 rounded-lg">
         <p className="label">{`Hora: ${payload[0].value}`}</p>
         <p className="label">{`Estátus: ${
           statusNames[Number(payload[1].value) as StatusKey]
