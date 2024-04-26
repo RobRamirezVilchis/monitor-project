@@ -152,28 +152,7 @@ def bulk_create_unithistory(units):
     history_objs = []
     for unit_data in units:
         history_objs.append(UnitHistory(
-            unit=unit_data['unit'],
-            register_date=unit_data['register_date'],
-            register_datetime=unit_data['register_datetime'],
-            total=unit_data['total'],
-            restart=unit_data['restart'],
-            reboot=unit_data['reboot'],
-            start=unit_data['start'],
-            data_validation=unit_data['data_validation'],
-            source_missing=unit_data['source_missing'],
-            camera_connection=unit_data['camera_connection'],
-            storage_devices=unit_data['storage_devices'],
-            forced_reboot=unit_data['forced_reboot'],
-            read_only_ssd=unit_data['read_only_ssd'],
-            ignition=unit_data['ignition'],
-            aux=unit_data['aux'],
-            others=unit_data['others'],
-            last_connection=unit_data['last_connection'],
-            pending_events=unit_data['pending_events'],
-            pending_status=unit_data['pending_status'],
-            restarting_loop=unit_data['restarting_loop'],
-            on_trip=unit_data['on_trip'],
-            status=unit_data['status'],
+            **unit_data
         ))
     UnitHistory.objects.bulk_create(history_objs, batch_size=1000)
 

@@ -61,9 +61,13 @@ def get_unithistory(args, filters=None):
 
 
 def get_unitstatus(unit_id):
-    return UnitStatus.objects.get(
-        unit_id=unit_id
-    )
+    try:
+        unit_status = UnitStatus.objects.get(
+            unit_id=unit_id
+        )
+    except:
+        unit_status = None
+    return unit_status
 
 
 def get_devicestatus(device_id):
@@ -72,8 +76,8 @@ def get_devicestatus(device_id):
     )
 
 
-def get_deployment(name):
-    deployment = Deployment.objects.get(
+def get_or_create_deployment(name):
+    deployment, created = Deployment.objects.get_or_create(
         name=name,
     )
     return deployment

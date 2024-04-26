@@ -12,6 +12,34 @@ import pytz
 import os
 import subprocess
 
+sd_clients = {"tp": "Transpais",
+              "cemex": "Cemex Concretos",
+              "ternium": "Ternium"}
+ind_clients = {
+    "rgs": "Ragasa",
+    "cmxrgn": "Cemex Regenera",
+    "mxlt": "Mexalit",
+    "cmxsoc": "Cemex Soc"
+}
+
+
+def generate_testing_data(client_alias, response, processed_data):
+    import json
+
+    now = datetime.now(tz=pytz.timezone('UTC')).astimezone(pytz.timezone(
+        'America/Mexico_City')).replace(tzinfo=pytz.utc)
+
+    def set_default(obj):
+        if isinstance(obj, set):
+            return list(obj)
+        raise TypeError
+
+    with open(f'/home/spare/Documents/monitor/monitor-project/api/monitor/{client_alias}_driving_process_input_{now.isoformat()}.json', "w") as f:
+        json.dump(response, f, ensure_ascii=False)
+    with open(f'/home/spare/Documents/monitor/monitor-project/api/monitor/{client_alias}_driving_process_output_{now.isoformat()}.json', "w") as f:
+        json.dump(processed_data, f, ensure_ascii=False,
+                  default=set_default)
+
 
 def send_telegram(chat: str, message: str):
     TELEGRAM_CHAT = os.environ.get(chat)
@@ -40,14 +68,7 @@ def get_credentials(client):
     return credentials
 
 
-def login(client, credentials):
-
-    if client == "tp":
-        login_url = 'https://tp.introid.com/login/'
-    elif client == "cemex":
-        login_url = 'https://cmx.safe-d.aivat.io/login/'
-    else:
-        login_url = f'https://{client}.industry.aivat.io/login/'
+def login(login_url, credentials):
 
     r = requests.post(login_url, data=credentials)
 
@@ -71,28 +92,38 @@ def make_request(request_url, data, token):
 # Safe Driving
 
 def get_driving_data(client):
-    global login_url
-    global request_url
+
     now = datetime.now(tz=pytz.timezone('UTC')).astimezone(pytz.timezone(
         'America/Mexico_City')).replace(tzinfo=pytz.utc)
 
-    credentials = get_credentials(client)
+    credentials = get_credentials("sd")
 
-    if client == "tp":
-        request_url = 'https://tp.introid.com/logs/'
-
-    elif client == "cemex":
-        request_url = 'https://cmx.safe-d.aivat.io/cemex/logs/'
+    urls = {
+        "tp": {
+            "login": 'https://tp.introid.com/login/',
+            "logs": 'https://tp.introid.com/logs/'
+        },
+        "cemex": {
+            "login": 'https://cmx.safe-d.aivat.io/login/',
+            "logs": 'https://cmx.safe-d.aivat.io/cemex/logs/'
+        },
+        "ternium": {
+            "login": 'https://trm.safe-d.aivat.io/login/',
+            "logs": 'https://trm.safe-d.aivat.io/ternium/logs/'
+        }
+    }
+    login_url = urls[client]["login"]
+    request_url = urls[client]["logs"]
 
     try:
-        token = login(client, credentials)
+        token = login(login_url, credentials)
     except requests.exceptions.ConnectionError:
         print("Connection error")
         return
 
     response, status = make_request(request_url, {"minutes": 60}, token=token)
     if status == 401:
-        token = login(client, credentials)
+        token = login(login_url, credentials)
         response, status = make_request(
             request_url, {"minutes": 60}, token=token)
 
@@ -311,12 +342,10 @@ def process_driving_data(response, now=None):
 
 
 def update_driving_status():
-    clients = {"tp": "Transpais",
-               "cemex": "Cemex Concretos"}
 
-    deployment = get_deployment('Safe Driving')
+    deployment = get_or_create_deployment('Safe Driving')
 
-    for client_alias, client_name in clients.items():
+    for client_alias, client_name in sd_clients.items():
 
         response = get_driving_data(client_alias)
         if response is not None:
@@ -324,17 +353,7 @@ def update_driving_status():
                 'America/Mexico_City')).replace(tzinfo=pytz.utc)
             processed_data = process_driving_data(response)
 
-            def set_default(obj):
-                if isinstance(obj, set):
-                    return list(obj)
-                raise TypeError
-
-            '''import json
-            with open(f'/home/spare/Documents/monitor/monitor-project/api/monitor/{client_alias}_driving_process_input_{now.isoformat()}.json', "w") as f:
-                json.dump(response, f, ensure_ascii=False)
-            with open(f'/home/spare/Documents/monitor/monitor-project/api/monitor/{client_alias}_driving_process_output_{now.isoformat()}.json', "w") as f:
-                json.dump(processed_data, f, ensure_ascii=False,
-                          default=set_default)'''
+            # generate_testing_data(client_alias, response, processed_data)
 
             data = processed_data["gx"]
             camera_data = processed_data["cameras"]
@@ -370,10 +389,15 @@ def update_driving_status():
             }
             unit_obj = get_or_create_unit(unit_args)
 
+            # Returns None if the unit is new
             current_unit_status = get_unitstatus(unit_id=unit_obj.id)
-            was_unit_active = not (current_unit_status.status.description.startswith("Sin comunicación") or
-                                   current_unit_status.status.description.endswith("logs pendientes") or
-                                   current_unit_status.status.description == "Inactivo")
+
+            if current_unit_status:
+                was_unit_active = not (current_unit_status.status.description.startswith("Sin comunicación") or
+                                       current_unit_status.status.description.endswith("logs pendientes") or
+                                       current_unit_status.status.description == "Inactivo")
+            else:  # In case the unit is new
+                was_unit_active = False
 
             unit_status = all_units_status[unit]
 
@@ -401,7 +425,7 @@ def update_driving_status():
                                 alerts[unit] = [message]
                 else:
                     # If the unit was inactive before, copy previous priority
-                    priority = current_unit_status.status.priority
+                    priority = current_unit_status.status.priority if current_unit_status else False
                     severity = 5 if priority else severity
 
             # Obtener objeto GxStatus
@@ -450,7 +474,10 @@ def update_driving_status():
             last_connection = (datetime.fromisoformat(unit_logs['Ultima_actualizacion']) + timedelta(hours=6)).replace(tzinfo=pytz.UTC) \
                 if unit_logs['Ultima_actualizacion'] != 'null' else None
 
-            last_alert = current_unit_status.last_alert
+            if current_unit_status:
+                last_alert = current_unit_status.last_alert
+            else:  # In case the unit is new
+                last_alert = date_now
 
             alert_interval = 55
             if unit in alerts and (last_alert == None or date_now - last_alert > timedelta(minutes=alert_interval)):
@@ -487,10 +514,12 @@ def update_driving_status():
                     'pending_events': unit_logs['Jsons_eventos_pendientes'],
                     'pending_status': unit_logs['Jsons_status_pendientes'],
                     'restarting_loop': unit_logs["restarting_loop"],
-                    'on_trip': unit_logs["En_viaje"],
                     'status': status_obj
                 }
             }
+            if "En_viaje" in unit_logs:
+                unit_status_args["defaults"]["on_trip"] = unit_logs["En_viaje"]
+
             unitstatus = update_or_create_unitstatus(unit_status_args)
 
             # Last 10 minutes
@@ -506,7 +535,7 @@ def update_driving_status():
             last_connection = (datetime.fromisoformat(unit_logs['Ultima_actualizacion']) + timedelta(hours=6)).replace(tzinfo=pytz.UTC) \
                 if unit_logs['Ultima_actualizacion'] != 'null' else None
 
-            history_logs.append({
+            unit_history = {
                 'unit': unit_obj,
                 'register_date': date_now.date(),
                 'register_datetime': date_now,
@@ -527,9 +556,12 @@ def update_driving_status():
                 'pending_events': recent_unit_logs['Jsons_eventos_pendientes'],
                 'pending_status': recent_unit_logs['Jsons_status_pendientes'],
                 'restarting_loop': recent_unit_logs["restarting_loop"],
-                'on_trip': recent_unit_logs["En_viaje"],
                 'status': status_obj
-            })
+            }
+            if "En_viaje" in recent_unit_logs:
+                unit_history['on_trip'] = recent_unit_logs["En_viaje"]
+
+            history_logs.append(unit_history)
 
         bulk_create_unithistory(history_logs)
 
@@ -541,8 +573,6 @@ def update_driving_status():
 
 
 def get_industry_data(client):
-    global login_url
-    global request_url
 
     login_url = f'https://{client}.industry.aivat.io/login/'
     request_url = f'https://{client}.industry.aivat.io/stats_json/'
@@ -550,7 +580,7 @@ def get_industry_data(client):
     credentials = get_credentials(client)
 
     try:
-        token = login(client, credentials)
+        token = login(login_url, credentials)
     except requests.exceptions.ConnectionError:
         print("Connection error")
         return
@@ -563,7 +593,7 @@ def get_industry_data(client):
 
     response, status = make_request(request_url, time_interval, token)
     if not (status == 200 or status == 201):
-        token = login(client, credentials)
+        token = login(login_url, credentials)
         response, status = make_request(request_url, time_interval, token)
 
     if status == 200 or status == 201:
@@ -745,16 +775,10 @@ def process_industry_data(response):
 
 
 def update_industry_status():
-    clients = {
-        "rgs": "Ragasa",
-        "cmxrgn": "Cemex Regenera",
-        "mxlt": "Mexalit",
-        "cmxsoc": "Cemex Soc"
-    }
 
-    deployment = get_deployment('Industry')
+    deployment = get_or_create_deployment('Industry')
 
-    for client_alias, client_name in clients.items():
+    for client_alias, client_name in ind_clients.items():
         response = get_industry_data(client_alias)
 
         if response is not None:
@@ -1070,7 +1094,7 @@ def register_severity_counts():
 
     for deployment_name in ("Safe Driving", "Industry"):
         dep_clients = get_clients(deployment_name)
-        deployment = get_deployment(deployment_name)
+        deployment = get_or_create_deployment(deployment_name)
 
         for client in dep_clients:
             severity_counts = get_severity_counts[deployment_name](client)

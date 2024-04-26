@@ -130,7 +130,7 @@ class UnitStatus(models.Model):
     pending_events = models.IntegerField('Pending events', null=True)
     pending_status = models.IntegerField('Pending status', null=True)
     restarting_loop = models.BooleanField(default=False)
-    on_trip = models.BooleanField("On trip", null=True)
+    on_trip = models.BooleanField("On trip", null=True, blank=True)
     status = models.ForeignKey(GxStatus, on_delete=models.CASCADE, null=True)
     active = models.BooleanField(default=True)
 
@@ -162,7 +162,7 @@ class UnitHistory(models.Model):
     pending_events = models.IntegerField('Pending events', null=True)
     pending_status = models.IntegerField('Pending status', null=True)
     restarting_loop = models.BooleanField(default=False)
-    on_trip = models.BooleanField("On trip", null=True)
+    on_trip = models.BooleanField("On trip", null=True, blank=True)
     status = models.ForeignKey(GxStatus, on_delete=models.CASCADE, null=True)
 
     class Meta:

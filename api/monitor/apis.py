@@ -761,18 +761,28 @@ class SafeDrivingLogsAPI(APIView):
         client_name = unit.client.name
         client_keys = {
             "Transpais": "tp",
-            "Cemex Concretos": "cemex"
+            "Cemex Concretos": "cemex",
+            "Ternium": "ternium"
         }
 
-        credentials = get_credentials(client_keys[client_name])
-        token = login(client=client_keys[client_name], credentials=credentials)
+        credentials = get_credentials("sd")
 
-        if client_name == "Transpais":
-            request_url = 'https://tp.introid.com/range_logs/'
-        else:
-            request_url = "https://cmx.safe-d.aivat.io/cemex/range_logs/"
-
-        sent_interval = False
+        urls = {
+            "tp": {
+                "login": 'https://tp.introid.com/login/',
+                "logs": 'https://tp.introid.com/logs/'
+            },
+            "cemex": {
+                "login": 'https://cmx.safe-d.aivat.io/login/',
+                "logs": 'https://cmx.safe-d.aivat.io/cemex/range_logs/'
+            },
+            "ternium": {
+                "login": 'https://trm.safe-d.aivat.io/login/',
+                "logs": 'https://trm.safe-d.aivat.io/ternium/range_logs/'
+            }
+        }
+        login_url = urls[client_keys[client_name]]["login"]
+        request_url = urls[client_keys[client_name]]["logs"]
 
         now = datetime.now(tz=pytz.timezone('UTC'))
         params = {
@@ -782,17 +792,17 @@ class SafeDrivingLogsAPI(APIView):
 
         if 'timestamp_after' in request.query_params:
             params["start"] = request.query_params['timestamp_after'][:-5]
-            sent_interval = True
 
         if 'timestamp_before' in request.query_params:
             params["end"] = request.query_params['timestamp_before'][:-5]
-            sent_interval = True
 
         params["unit"] = unit.name
 
+        token = login(login_url, credentials=credentials)
         response, status = make_request(
             request_url, data=params, token=token)
         response = response.json()
+        print(response)
 
         if "tipo" in request.query_params:
             query_log_type = request.query_params["tipo"]
