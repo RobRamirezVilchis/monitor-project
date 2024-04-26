@@ -34,6 +34,7 @@ const UnitCard = ({ unit: unit_status }: GxCardProps) => {
   const {
     unit_id,
     unit,
+    client,
     description,
     priority,
     on_trip,
@@ -76,7 +77,9 @@ const UnitCard = ({ unit: unit_status }: GxCardProps) => {
         {statusNames[severity as StatusKey]}
       </div>
 
-      <h3 className="ml-1 text-2xl font-bold">Unidad {unit}</h3>
+      <h3 className="ml-1 text-2xl font-bold">
+        {client == "Transpais" ? "Unidad" : ""} {unit}
+      </h3>
 
       <div className="flex items-center my-2.5">
         <svg

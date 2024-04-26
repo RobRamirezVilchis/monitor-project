@@ -204,7 +204,10 @@ const UnitPage = ({ params }: { params: { unit_id: string } }) => {
 
       <div className="relative flex mb-4 justify-between items-center">
         <div className="xl:flex xl:gap-6">
-          <h1 className="text-5xl font-bold">Unidad {unitStatus?.unit}</h1>
+          <h1 className="text-5xl font-bold">
+            {unitStatus?.client == "Transpais" ? "Unidad" : ""}{" "}
+            {unitStatus?.unit}
+          </h1>
           <div className="md:flex justify-start items-center gap-4 mt-4 xl:mt-0">
             <div
               className={`inline-flex h-fit px-4 pt-1 pb-0.5 text-3xl font-semibold mb-2 md:mb-0
