@@ -12,16 +12,6 @@ import pytz
 import os
 import subprocess
 
-sd_clients = {"tp": "Transpais",
-              "cemex": "Cemex Concretos",
-              "ternium": "Ternium"}
-ind_clients = {
-    "rgs": "Ragasa",
-    "cmxrgn": "Cemex Regenera",
-    "mxlt": "Mexalit",
-    "cmxsoc": "Cemex Soc"
-}
-
 
 def generate_testing_data(client_alias, response, processed_data):
     import json
