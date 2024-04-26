@@ -12,6 +12,8 @@ class Deployment(models.Model):
 
 class Client(models.Model):
     name = models.CharField("Nombre", max_length=50)
+    keyname = models.CharField("Clave", null=True)
+    active = models.BooleanField("Activo", default=True)
     deployment = models.ForeignKey(
         Deployment, on_delete=models.CASCADE, null=True)
 
