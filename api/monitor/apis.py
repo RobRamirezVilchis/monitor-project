@@ -758,31 +758,27 @@ class SafeDrivingLogsAPI(APIView):
 
     def get(self, request, unit_id, *args, **kwargs):
         unit = Unit.objects.get(id=unit_id)
-        client_name = unit.client.name
-        client_keys = {
-            "Transpais": "tp",
-            "Cemex Concretos": "cemex",
-            "Ternium": "ternium"
-        }
+        client_key = unit.client.keyname
 
         credentials = get_credentials("sd")
 
+        # Hardcoded
         urls = {
             "tp": {
                 "login": 'https://tp.introid.com/login/',
-                "logs": 'https://tp.introid.com/logs/'
+                "logs": 'https://tp.introid.com/range_logs/'
             },
-            "cemex": {
+            "cmx": {
                 "login": 'https://cmx.safe-d.aivat.io/login/',
                 "logs": 'https://cmx.safe-d.aivat.io/cemex/range_logs/'
             },
-            "ternium": {
+            "trm": {
                 "login": 'https://trm.safe-d.aivat.io/login/',
                 "logs": 'https://trm.safe-d.aivat.io/ternium/range_logs/'
             }
         }
-        login_url = urls[client_keys[client_name]]["login"]
-        request_url = urls[client_keys[client_name]]["logs"]
+        login_url = urls[client_key]["login"]
+        request_url = urls[client_key]["logs"]
 
         now = datetime.now(tz=pytz.timezone('UTC'))
         params = {
@@ -802,7 +798,6 @@ class SafeDrivingLogsAPI(APIView):
         response, status = make_request(
             request_url, data=params, token=token)
         response = response.json()
-        print(response)
 
         if "tipo" in request.query_params:
             query_log_type = request.query_params["tipo"]
@@ -828,21 +823,15 @@ class IndustryLogsAPI(APIView):
     def get(self, request, device_id, *args, **kwargs):
         global request_url
 
-        client_keys = {
-            "Ragasa": "rgs",
-            "Cemex Regenera": "cmxrgn",
-            "Mexalit": "mxlt",
-            "Cemex Soc": "cmxsoc"
-        }
-
         device = Device.objects.get(id=device_id)
-        client_name = device.client.name
-        client_key = client_keys[client_name]
+        client_key = device.client.keyname
+
+        login_url = f'https://{client_key}.industry.aivat.io/login/'
+        request_url = f'https://{client_key}.industry.aivat.io/stats_json/'
 
         credentials = get_credentials(client_key)
-        token = login(client=client_key, credentials=credentials)
+        token = login(login_url=login_url, credentials=credentials)
 
-        request_url = f'https://{client_key}.industry.aivat.io/stats_json/'
         sent_interval = False
 
         time_interval = {}
