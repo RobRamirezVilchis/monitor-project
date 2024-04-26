@@ -106,8 +106,8 @@ const cols: ColumnDef<UnitLogs>[] = [
   {
     accessorKey: "fecha_subida",
     accessorFn: (row) => format(parseISO(row.fecha_subida), "Pp"),
-    header: "Fecha",
-    columnTitle: "Fecha",
+    header: "Fecha de subida",
+    columnTitle: "Fecha de subida",
     minSize: 200,
     //enableSorting: true,
     filterVariant: "datetime-range",
@@ -116,8 +116,8 @@ const cols: ColumnDef<UnitLogs>[] = [
   {
     accessorKey: "timestamp",
     accessorFn: (row) => format(parseISO(row.timestamp), "Pp"),
-    header: "Fecha",
-    columnTitle: "Fecha",
+    header: "Fecha de generación",
+    columnTitle: "Timestamp",
     minSize: 200,
     //enableSorting: true,
     filterVariant: "datetime-range",
