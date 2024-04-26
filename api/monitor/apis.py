@@ -332,6 +332,7 @@ class UnitStatusAPI(APIView):
     class OutputSerializer(serializers.Serializer):
         unit_id = serializers.IntegerField()
         unit = serializers.CharField()
+        client = serializers.CharField(source="unit.client.name")
         on_trip = serializers.BooleanField()
         severity = serializers.IntegerField(source='status.severity')
         description = serializers.CharField(source='status.description')

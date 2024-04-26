@@ -78,6 +78,7 @@ const UnitLogsPage = ({ params }: { params: { unit_id: string } }) => {
     pageCount: unitLogsQuery.data?.pagination?.pages ?? 0,
     rowCount: unitLogsQuery.data?.pagination?.count ?? 0,
   });
+
   return (
     <section className="relative">
       <button
@@ -89,7 +90,10 @@ const UnitLogsPage = ({ params }: { params: { unit_id: string } }) => {
 
       <div className="text-5xl mb-6">
         <h1>
-          <span className="font-bold">Unidad {unitStatus?.unit}</span>
+          <span className="font-bold">
+            {unitStatus?.client == "Transpais" ? "Unidad" : ""}{" "}
+            {unitStatus?.unit}
+          </span>
           <span className="opacity-40"> - Logs</span>
         </h1>
       </div>
