@@ -124,6 +124,8 @@ class DevicesHistoryAdmin(admin.ModelAdmin):
 class ClientAdmin(admin.ModelAdmin):
     list_display = (
         'name',
+        'keyname',
+        'active',
         'deployment',
     )
 

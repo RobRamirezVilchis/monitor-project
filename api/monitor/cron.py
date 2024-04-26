@@ -98,16 +98,17 @@ def get_driving_data(client):
 
     credentials = get_credentials("sd")
 
+    # Hardcoded
     urls = {
         "tp": {
             "login": 'https://tp.introid.com/login/',
             "logs": 'https://tp.introid.com/logs/'
         },
-        "cemex": {
+        "cmx": {
             "login": 'https://cmx.safe-d.aivat.io/login/',
             "logs": 'https://cmx.safe-d.aivat.io/cemex/logs/'
         },
-        "ternium": {
+        "trm": {
             "login": 'https://trm.safe-d.aivat.io/login/',
             "logs": 'https://trm.safe-d.aivat.io/ternium/logs/'
         }
@@ -344,8 +345,11 @@ def process_driving_data(response, now=None):
 def update_driving_status():
 
     deployment = get_or_create_deployment('Safe Driving')
+    clients = get_deployment_clients(deployment=deployment)
 
-    for client_alias, client_name in sd_clients.items():
+    for client in clients:
+        client_name = client.name
+        client_alias = client.keyname
 
         response = get_driving_data(client_alias)
         if response is not None:
@@ -378,7 +382,7 @@ def update_driving_status():
         history_logs = []
         alerts_to_send = {}
         for unit, unit_logs in hour_data.items():
-            if client_alias == "cemex":
+            if client_alias != "tp":  # Hardcoded
                 unit_logs["En_viaje"] = None
                 unit_logs["Estatus"] = None
 
@@ -509,7 +513,6 @@ def update_driving_status():
                     'ignition': unit_logs["Ignición"],
                     'aux': unit_logs["Aux"],
                     'others': unit_logs["others"],
-
                     'last_connection': last_connection,
                     'pending_events': unit_logs['Jsons_eventos_pendientes'],
                     'pending_status': unit_logs['Jsons_status_pendientes'],
@@ -525,7 +528,7 @@ def update_driving_status():
             # Last 10 minutes
 
             recent_unit_logs = recent_data[unit]
-            if client_alias == "cemex":
+            if client_alias != "tp":  # Hardcoded
                 recent_unit_logs["En_viaje"] = None
                 recent_unit_logs["Estatus"] = None
 
@@ -777,8 +780,12 @@ def process_industry_data(response):
 def update_industry_status():
 
     deployment = get_or_create_deployment('Industry')
+    clients = get_deployment_clients(deployment)
 
-    for client_alias, client_name in ind_clients.items():
+    for client in clients:
+        client_alias = client.keyname
+        client_name = client.name
+
         response = get_industry_data(client_alias)
 
         if response is not None:

@@ -83,6 +83,10 @@ def get_or_create_deployment(name):
     return deployment
 
 
+def get_deployment_clients(deployment):
+    return Client.objects.filter(deployment=deployment, active=True)
+
+
 def get_or_create_client(args):
     client, created = Client.objects.get_or_create(
         name=args['name'],
