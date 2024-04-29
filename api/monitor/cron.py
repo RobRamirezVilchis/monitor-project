@@ -77,7 +77,7 @@ def get_driving_data(client):
         'America/Mexico_City')).replace(tzinfo=pytz.utc)
 
     print(client)
-    credentials = get_api_credentials(client)
+    credentials = get_api_credentials("Safe Driving", client)
 
     # Hardcoded
     urls = {
@@ -561,7 +561,7 @@ def get_industry_data(client_keyname):
     login_url = f'https://{client_keyname}.industry.aivat.io/login/'
     request_url = f'https://{client_keyname}.industry.aivat.io/stats_json/'
 
-    credentials = get_api_credentials(client_keyname)
+    credentials = get_api_credentials("Industry", client_keyname)
 
     try:
         token = api_login(login_url, credentials)

@@ -479,8 +479,9 @@ def check_wifi_alerts(device_id):
     return alerts
 
 
-def get_api_credentials(keyname):
-    client = Client.objects.get(keyname=keyname)
+def get_api_credentials(deployment_name, keyname):
+    client = Client.objects.get(
+        deployment__name=deployment_name, keyname=keyname)
     encrypt = EncryptionService()
 
     username = client.api_username
