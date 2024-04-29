@@ -48,7 +48,7 @@ def send_alerts(chat, alerts):
     send_telegram(chat=chat, message=message)
 
 
-def get_credentials(client):
+def get_api_credentials(client):
     load_dotenv()
     credentials = {
         "username": os.environ.get(f'{client.upper()}_USERNAME'),
@@ -58,7 +58,7 @@ def get_credentials(client):
     return credentials
 
 
-def login(login_url, credentials):
+def api_login(login_url, credentials):
 
     r = requests.post(login_url, data=credentials)
 
@@ -86,7 +86,7 @@ def get_driving_data(client):
     now = datetime.now(tz=pytz.timezone('UTC')).astimezone(pytz.timezone(
         'America/Mexico_City')).replace(tzinfo=pytz.utc)
 
-    credentials = get_credentials("sd")
+    credentials = get_api_credentials("sd")
 
     # Hardcoded
     urls = {
@@ -107,14 +107,14 @@ def get_driving_data(client):
     request_url = urls[client]["logs"]
 
     try:
-        token = login(login_url, credentials)
+        token = api_login(login_url, credentials)
     except requests.exceptions.ConnectionError:
         print("Connection error")
         return
 
     response, status = make_request(request_url, {"minutes": 60}, token=token)
     if status == 401:
-        token = login(login_url, credentials)
+        token = api_login(login_url, credentials)
         response, status = make_request(
             request_url, {"minutes": 60}, token=token)
 
@@ -565,15 +565,15 @@ def update_driving_status():
 # Industry
 
 
-def get_industry_data(client):
+def get_industry_data(client_keyname):
 
-    login_url = f'https://{client}.industry.aivat.io/login/'
-    request_url = f'https://{client}.industry.aivat.io/stats_json/'
+    login_url = f'https://{client_keyname}.industry.aivat.io/login/'
+    request_url = f'https://{client_keyname}.industry.aivat.io/stats_json/'
 
-    credentials = get_credentials(client)
+    credentials = get_api_credentials(client_keyname)
 
     try:
-        token = login(login_url, credentials)
+        token = api_login(login_url, credentials)
     except requests.exceptions.ConnectionError:
         print("Connection error")
         return
@@ -586,7 +586,7 @@ def get_industry_data(client):
 
     response, status = make_request(request_url, time_interval, token)
     if not (status == 200 or status == 201):
-        token = login(login_url, credentials)
+        token = api_login(login_url, credentials)
         response, status = make_request(request_url, time_interval, token)
 
     if status == 200 or status == 201:
@@ -1022,6 +1022,7 @@ def update_industry_status():
         create_device_history(devicehistory_args)
 
 
+# Generate daily Telegram Safe Driving Report
 def send_daily_sd_report():
     load_dotenv()
     if os.environ.get("ALERTS") != "true":
@@ -1081,6 +1082,7 @@ def send_daily_sd_report():
     send_telegram(chat="SAFEDRIVING_CHAT", message=message)
 
 
+# Generate data for area plots, runs hourly
 def register_severity_counts():
     now = datetime.now(tz=pytz.timezone('UTC'))
 

@@ -1,6 +1,6 @@
 
 from django.test import TestCase
-from monitor.cron import get_credentials, login, process_driving_data
+from monitor.cron import get_api_credentials, api_login, process_driving_data
 from monitor.models import *
 
 
@@ -10,8 +10,8 @@ class LoginTests(TestCase):
 
     def test_login_is_successful(self):
         client = "tp"
-        credentials = get_credentials(client)
-        token = login(client=client, credentials=credentials)
+        credentials = get_api_credentials(client)
+        token = api_login(client=client, credentials=credentials)
 
         self.assertIsNotNone(token)
 

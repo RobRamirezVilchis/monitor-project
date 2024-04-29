@@ -16,7 +16,7 @@ from .selectors import *
 from .services import device_create_or_update
 from api.pagination import get_paginated_response, LimitOffsetPagination
 from .models import UnitStatus
-from .cron import get_credentials, login, make_request
+from .cron import get_api_credentials, api_login, make_request
 
 
 # All gx status list
@@ -761,7 +761,7 @@ class SafeDrivingLogsAPI(APIView):
         unit = Unit.objects.get(id=unit_id)
         client_key = unit.client.keyname
 
-        credentials = get_credentials("sd")
+        credentials = get_api_credentials("sd")
 
         # Hardcoded
         urls = {
@@ -795,7 +795,7 @@ class SafeDrivingLogsAPI(APIView):
 
         params["unit"] = unit.name
 
-        token = login(login_url, credentials=credentials)
+        token = api_login(login_url, credentials=credentials)
         response, status = make_request(
             request_url, data=params, token=token)
         response = response.json()
@@ -830,8 +830,8 @@ class IndustryLogsAPI(APIView):
         login_url = f'https://{client_key}.industry.aivat.io/login/'
         request_url = f'https://{client_key}.industry.aivat.io/stats_json/'
 
-        credentials = get_credentials(client_key)
-        token = login(login_url=login_url, credentials=credentials)
+        credentials = get_api_credentials(client_key)
+        token = api_login(login_url=login_url, credentials=credentials)
 
         sent_interval = False
 
