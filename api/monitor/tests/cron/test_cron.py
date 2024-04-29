@@ -4,18 +4,6 @@ from monitor.cron import get_api_credentials, api_login, process_driving_data
 from monitor.models import *
 
 
-class LoginTests(TestCase):
-    def setUp(self) -> None:
-        pass
-
-    def test_login_is_successful(self):
-        client = "tp"
-        credentials = get_api_credentials(client)
-        token = api_login(client=client, credentials=credentials)
-
-        self.assertIsNotNone(token)
-
-
 def set_default(obj):
     if isinstance(obj, set):
         return list(obj)

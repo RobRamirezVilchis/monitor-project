@@ -411,9 +411,16 @@ def update_driving_status():
                 else:
                     # If the unit was inactive before, copy previous priority
                     priority = current_unit_status.status.priority if current_unit_status else False
-                    severity = 5 if priority else severity
 
-            # Obtener objeto GxStatus
+                    if priority:
+                        severity = 5
+                        message = "Sin comunicación reciente, último mensaje fue Read only SSD"
+                        if unit in alerts:
+                            alerts[unit].append(message)
+                        else:
+                            alerts[unit] = [message]
+
+            # Get GxStatus object
             status_args = {
                 'severity': severity,
                 'description': description,
