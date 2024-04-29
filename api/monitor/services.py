@@ -1,6 +1,67 @@
+from config.env import env
 from .models import *
+from cryptography.fernet import Fernet, MultiFernet
+
 from django.db import OperationalError, transaction
 import time
+
+
+class EncryptionService:
+
+    def __init__(self):
+        keys = env.list("ENCRYPT_KEYS")
+        keys = [Fernet(key) for key in keys]
+        self.f = MultiFernet(keys)
+
+    def encrypt(self, data: bytes) -> bytes:
+        return self.f.encrypt(data)
+
+    def decrypt(self, data: bytes) -> bytes:
+        return self.f.decrypt(data)
+
+    def generate_new_key(self) -> bytes:
+        return Fernet.generate_key()
+
+
+def set_api_credentials_in_db():
+
+    def get_api_credentials(client):
+        from dotenv import load_dotenv
+        import os
+
+        load_dotenv()
+        credentials = {
+            "username": os.environ.get(f'{client.upper()}_USERNAME'),
+            "password": os.environ.get(f'{client.upper()}_PASSWORD')
+        }
+
+        return credentials
+
+    encryption = EncryptionService()
+
+    sd_credentials = get_api_credentials("sd")
+    sd_clients = Client.objects.filter(deployment__name="Safe Driving")
+    for client in sd_clients:
+        key = client.keyname
+        credentials = get_api_credentials(key)
+
+        client.api_username = sd_credentials["username"]
+        client.api_password = encryption.encrypt(
+            bytes(sd_credentials["password"], 'utf-16'))
+
+        client.save()
+
+    ind_clients = Client.objects.filter(deployment__name="Industry")
+    for client in ind_clients:
+        key = client.keyname
+        credentials = get_api_credentials(key)
+
+        client.api_username = credentials["username"]
+        client.api_password = encryption.encrypt(
+            bytes(credentials["password"], 'utf-16'))
+
+        client.save()
+
 
 # Devices
 
@@ -166,3 +227,11 @@ def create_alert(args):
 def create_severity_count(args):
     severity_count = SeverityCount.objects.create(**args)
     return severity_count
+
+
+def get_or_create_client(name, keyname, deployment_name):
+    deployment = Deployment.objects.get(name=deployment_name)
+    client = Client.objects.get_or_create(
+        name=name, keyname=keyname, deployment=deployment, active=True)
+
+    return client

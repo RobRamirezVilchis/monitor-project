@@ -1,4 +1,4 @@
-from .services import create_severity_count
+from .services import EncryptionService
 from .models import *
 from django_filters import rest_framework as rf_filters
 from django.db.models import Q, F, Count, Max, Min
@@ -87,8 +87,8 @@ def get_deployment_clients(deployment):
     return Client.objects.filter(deployment=deployment, active=True)
 
 
-def get_or_create_client(args):
-    client, created = Client.objects.get_or_create(
+def get_client(args):
+    client = Client.objects.get(
         name=args['name'],
         deployment=args['deployment']
     )
@@ -477,3 +477,13 @@ def check_wifi_alerts(device_id):
                                   alert_type__description="Problemas de conexión (mensajes atrasados)")
 
     return alerts
+
+
+def get_api_credentials(keyname):
+    client = Client.objects.get(keyname=keyname)
+    encrypt = EncryptionService()
+
+    username = client.api_username
+    password = encrypt.decrypt(bytes(client.api_password)).decode('utf-16')
+
+    return {"username": username, "password": password}

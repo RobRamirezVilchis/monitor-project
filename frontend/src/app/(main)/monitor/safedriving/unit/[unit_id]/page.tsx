@@ -321,7 +321,6 @@ const UnitPage = ({ params }: { params: { unit_id: string } }) => {
   );
 };
 
-//export default UnitPage;
 export default UnitPage;
 
 const ConvertBool = (condition: boolean) => (condition ? "Sí" : "No");

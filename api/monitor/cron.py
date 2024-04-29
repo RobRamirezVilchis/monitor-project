@@ -48,16 +48,6 @@ def send_alerts(chat, alerts):
     send_telegram(chat=chat, message=message)
 
 
-def get_api_credentials(client):
-    load_dotenv()
-    credentials = {
-        "username": os.environ.get(f'{client.upper()}_USERNAME'),
-        "password": os.environ.get(f'{client.upper()}_PASSWORD')
-    }
-
-    return credentials
-
-
 def api_login(login_url, credentials):
 
     r = requests.post(login_url, data=credentials)
@@ -86,7 +76,8 @@ def get_driving_data(client):
     now = datetime.now(tz=pytz.timezone('UTC')).astimezone(pytz.timezone(
         'America/Mexico_City')).replace(tzinfo=pytz.utc)
 
-    credentials = get_api_credentials("sd")
+    print(client)
+    credentials = get_api_credentials(client)
 
     # Hardcoded
     urls = {
@@ -367,7 +358,7 @@ def update_driving_status():
             'name': client_name,
             'deployment': deployment
         }
-        client = get_or_create_client(client_args)
+        client = get_client(client_args)
 
         history_logs = []
         alerts_to_send = {}
@@ -795,7 +786,7 @@ def update_industry_status():
             'name': client_name,
             'deployment': deployment
         }
-        client = get_or_create_client(client_args)
+        client = get_client(client_args)
 
         # TO DO: Get device name programmatically
         device_args = {

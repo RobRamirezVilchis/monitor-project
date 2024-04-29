@@ -16,6 +16,8 @@ class Client(models.Model):
     active = models.BooleanField("Activo", default=True)
     deployment = models.ForeignKey(
         Deployment, on_delete=models.CASCADE, null=True)
+    api_username = models.CharField(null=True)
+    api_password = models.BinaryField(null=True)
 
     def __str__(self):
         return self.name

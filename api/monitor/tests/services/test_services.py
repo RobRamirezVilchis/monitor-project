@@ -1,6 +1,6 @@
 from django.test import TestCase
 from monitor.services import update_or_create_unitstatus
-from monitor.selectors import get_or_create_client
+from monitor.selectors import get_client
 from monitor.models import *
 from datetime import datetime
 
@@ -13,7 +13,7 @@ class MonitorTest(TestCase):
     def test_update_or_create_unitstatus(self):
         deployment = Deployment(name="Safe Driving")
         deployment.save()
-        client = get_or_create_client(
+        client = get_client(
             {"name": "Transpais", "deployment": deployment})
 
         unit = Unit(name="0000", client=client)

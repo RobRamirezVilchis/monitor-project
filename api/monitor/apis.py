@@ -13,10 +13,10 @@ from rest_framework.response import Response
 from rest_framework import status, filters
 
 from .selectors import *
-from .services import device_create_or_update
+from .services import device_create_or_update, get_or_create_client
 from api.pagination import get_paginated_response, LimitOffsetPagination
 from .models import UnitStatus
-from .cron import get_api_credentials, api_login, make_request
+from .cron import api_login, make_request
 
 
 # All gx status list
@@ -896,3 +896,45 @@ class DeviceWifiProblemsAPI(APIView):
         output = self.OutputSerializer(
             {"connection_problems": has_wifi_problems}).data
         return Response(output)
+
+
+class SDClientCreateAPI(APIView):
+    class InputSerializer(serializers.Serializer):
+        name = serializers.CharField()
+        keyname = serializers.CharField()
+
+    def post(self, request, *args, **kwargs):
+        serializer = self.InputSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        client, created = get_or_create_client(
+            **serializer.validated_data, deployment_name="Safe Driving")
+
+        if created:
+            return Response(status=status.HTTP_201_CREATED)
+        else:
+            return Response("Client already exists")
+
+
+class IndClientCreateAPI(APIView):
+    class InputSerializer(serializers.Serializer):
+        name = serializers.CharField()
+        keyname = serializers.CharField()
+
+    def post(self, request, *args, **kwargs):
+        import requests
+
+        serializer = self.InputSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        keyname = serializer.validated_data["keyname"]
+
+        response = requests.get(f'https://{keyname}.industry.aivat.io/login/')
+
+        client, created = get_or_create_client(
+            **serializer.validated_data, deployment_name="Industry")
+
+        if created:
+            return Response(status=status.HTTP_201_CREATED)
+        else:
+            return Response("Client already exists")

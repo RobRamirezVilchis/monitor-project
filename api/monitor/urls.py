@@ -8,11 +8,14 @@ urlpatterns = [
          include(([
              path("status/", apis.UnitStatusList.as_view(), name="status"),
              path("clients/", apis.SafeDrivingClientList.as_view(), name="clients"),
+             path("clients/create/",
+                  apis.SDClientCreateAPI.as_view(), name="client_create"),
              path("last-update/", apis.SafeDrivingLastUpdateAPI.as_view(),
                  name="last-update"),
              path("status-count/", apis.UnitSeverityCount.as_view(), name="list"),
              path("area-plot-data/", apis.SafeDrivingAreaPlotAPI.as_view(),
                   name="units-area-plot"),
+
 
              path("units/<int:unit_id>/",
                   include(([
@@ -37,6 +40,8 @@ urlpatterns = [
          include(([
              path("status/", apis.DeviceStatusList.as_view(), name="status"),
              path("clients/", apis.IndustryClientList.as_view(), name="clients"),
+             path("clients/create/",
+                  apis.IndClientCreateAPI.as_view(), name="client_create"),
              path("last-update/", apis.IndustryLastUpdateAPI.as_view(),
                  name="last-update"),
              path("status-count/", apis.DeviceSeverityCount.as_view(), name="list"),
