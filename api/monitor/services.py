@@ -229,9 +229,9 @@ def create_severity_count(args):
     return severity_count
 
 
-def get_or_create_client(name, keyname, deployment_name):
+def get_or_create_client(name, keyname, deployment_name, defaults):
     deployment = Deployment.objects.get(name=deployment_name)
     client = Client.objects.get_or_create(
-        name=name, keyname=keyname, deployment=deployment, active=True)
+        name=name, keyname=keyname, deployment=deployment, defaults={**defaults, "active": True})
 
     return client

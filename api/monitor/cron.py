@@ -76,7 +76,6 @@ def get_driving_data(client):
     now = datetime.now(tz=pytz.timezone('UTC')).astimezone(pytz.timezone(
         'America/Mexico_City')).replace(tzinfo=pytz.utc)
 
-    print(client)
     credentials = get_api_credentials("Safe Driving", client)
 
     # Hardcoded

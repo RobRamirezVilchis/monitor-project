@@ -761,7 +761,7 @@ class SafeDrivingLogsAPI(APIView):
         unit = Unit.objects.get(id=unit_id)
         client_key = unit.client.keyname
 
-        credentials = get_api_credentials("sd")
+        credentials = get_api_credentials("Safe Driving", client_key)
 
         # Hardcoded
         urls = {
@@ -830,7 +830,7 @@ class IndustryLogsAPI(APIView):
         login_url = f'https://{client_key}.industry.aivat.io/login/'
         request_url = f'https://{client_key}.industry.aivat.io/stats_json/'
 
-        credentials = get_api_credentials(client_key)
+        credentials = get_api_credentials("Industry", client_key)
         token = api_login(login_url=login_url, credentials=credentials)
 
         sent_interval = False
@@ -902,13 +902,27 @@ class SDClientCreateAPI(APIView):
     class InputSerializer(serializers.Serializer):
         name = serializers.CharField()
         keyname = serializers.CharField()
+        username = serializers.CharField()
+        password = serializers.CharField()
 
     def post(self, request, *args, **kwargs):
         serializer = self.InputSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
+        password = serializer.validated_data["password"]
+
+        encryption = EncryptionService()
+        enc_password = encryption.encrypt(bytes(password, "utf-16"))
+
         client, created = get_or_create_client(
-            **serializer.validated_data, deployment_name="Safe Driving")
+            name=serializer.validated_data["name"],
+            keyname=serializer.validated_data["keyname"],
+            deployment_name="Safe Driving",
+            defaults={
+                "api_username": serializer.validated_data["username"],
+                "api_password": enc_password
+            }
+        )
 
         if created:
             return Response(status=status.HTTP_201_CREATED)
@@ -920,6 +934,8 @@ class IndClientCreateAPI(APIView):
     class InputSerializer(serializers.Serializer):
         name = serializers.CharField()
         keyname = serializers.CharField()
+        username = serializers.CharField()
+        password = serializers.CharField()
 
     def post(self, request, *args, **kwargs):
         import requests
@@ -929,10 +945,30 @@ class IndClientCreateAPI(APIView):
 
         keyname = serializer.validated_data["keyname"]
 
-        response = requests.get(f'https://{keyname}.industry.aivat.io/login/')
+        try:
+            response = requests.post(f'https://{keyname}.industry.aivat.io/login/',
+                                     data={"username": serializer.validated_data["username"],
+                                           "password": serializer.validated_data["password"]})
+        except requests.exceptions.ConnectionError:
+            return Response("Invalid keyname")
+
+        if response.status_code != 200:
+            return Response("Invalid credentials")
+
+        password = serializer.validated_data["password"]
+
+        encryption = EncryptionService()
+        enc_password = encryption.encrypt(bytes(password, "utf-16"))
 
         client, created = get_or_create_client(
-            **serializer.validated_data, deployment_name="Industry")
+            name=serializer.validated_data["name"],
+            keyname=serializer.validated_data["keyname"],
+            deployment_name="Industry",
+            defaults={
+                "api_username": serializer.validated_data["username"],
+                "api_password": enc_password
+            }
+        )
 
         if created:
             return Response(status=status.HTTP_201_CREATED)
