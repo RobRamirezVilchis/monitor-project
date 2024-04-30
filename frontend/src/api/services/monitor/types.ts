@@ -8,6 +8,13 @@ export interface Device{
   device_id: number;
 }
 
+export interface NewClientData{
+  name: string,
+  keyname: string,
+  api_username: string,
+  api_password: string,
+}
+
 export interface UnitStatus {
   unit_id: number;
   unit: string;

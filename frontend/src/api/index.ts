@@ -50,6 +50,7 @@ const api = {
     monitor: {
       driving: {
         clients: "api/v1/monitor/driving/clients/",
+        addClient: "api/v1/monitor/driving/clients/create/",
         status: "api/v1/monitor/driving/status/",
         lastUpdate: "api/v1/monitor/driving/last-update/",
         severityCount: "api/v1/monitor/driving/status-count/",
@@ -63,6 +64,7 @@ const api = {
       },
       industry: {
         clients: "api/v1/monitor/industry/clients/",
+        addClient: "api/v1/monitor/industry/clients/create/",
         status: "api/v1/monitor/industry/status/",
         lastUpdate: "api/v1/monitor/industry/last-update",
         severityCount: "api/v1/monitor/industry/status-count/",

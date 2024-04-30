@@ -2,7 +2,7 @@
 
 import { ReactNode, useState } from "react";
 import "@mantine/charts/styles.css";
-import { Tabs } from "@mantine/core";
+import { Button, Tabs } from "@mantine/core";
 import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
 import path from "path";
@@ -33,25 +33,31 @@ const SafeDrivingDashboardLayout = ({ children }: { children: ReactNode }) => {
   return (
     <section>
       <Tabs value={currentTab}>
-        <div className="md:flex md:items-center pb-2 mb-3 md:mb-6">
-          <h1 className="mb-4 md:mb-0 text-5xl font-bold pr-10 ">
-            Safe Driving
-          </h1>
-          <Tabs.List>
-            <Link href="/monitor/safedriving/details">
-              <Tabs.Tab className="text-lg" value="details">
-                Detalles
-              </Tabs.Tab>
-            </Link>
-            <Link href="/monitor/safedriving/statistics">
-              <Tabs.Tab className="text-lg" value="statistics">
-                Estadísticas
-              </Tabs.Tab>
-            </Link>
-          </Tabs.List>
-          <p className="hidden lg:block ml-8 w-72 text-md opacity-40">
-            Última actualización {timeSinceLastUpdate}
-          </p>
+        <div className="md:flex md:items-center pb-2 mb-3 md:mb-6  justify-between">
+          <div className="md:flex md:items-center">
+            <h1 className="mb-4 md:mb-0 text-5xl font-bold pr-10 ">
+              Safe Driving
+            </h1>
+            <Tabs.List>
+              <Link href="/monitor/safedriving/details">
+                <Tabs.Tab className="text-lg" value="details">
+                  Detalles
+                </Tabs.Tab>
+              </Link>
+              <Link href="/monitor/safedriving/statistics">
+                <Tabs.Tab className="text-lg" value="statistics">
+                  Estadísticas
+                </Tabs.Tab>
+              </Link>
+            </Tabs.List>
+            <p className="hidden lg:block ml-8 w-72 text-md opacity-40">
+              Última actualización {timeSinceLastUpdate}
+            </p>
+          </div>
+
+          <Link href={"/monitor/safedriving/add_client"}>
+            <Button color="gray.5">Agregar cliente</Button>
+          </Link>
         </div>
         <div>{children}</div>
       </Tabs>

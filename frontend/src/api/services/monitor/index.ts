@@ -1,4 +1,4 @@
-import { UnitStatus, SeverityCount, UnitHistory, DeviceStatus, UnitFilters, LastStatusChange, DeviceFilters, DeviceHistory, Client, CameraDisconnection, LastActiveStatus, SeverityHistory, AreaPlotData, AreaPlotFilters, LastUpdate, DeviceLogsFilters, DeviceLogs, DeviceWifiStatus, UnitLogsFilters, UnitLogs } from "./types";
+import { UnitStatus, SeverityCount, UnitHistory, DeviceStatus, UnitFilters, LastStatusChange, DeviceFilters, DeviceHistory, Client, CameraDisconnection, LastActiveStatus, SeverityHistory, AreaPlotData, AreaPlotFilters, LastUpdate, DeviceLogsFilters, DeviceLogs, DeviceWifiStatus, UnitLogsFilters, UnitLogs, NewClientData } from "./types";
 import { Id, Paginated } from "@/api/types";
 import { Role, User } from "../auth/types";
 import api from "../..";
@@ -33,6 +33,24 @@ export async function getSafeDrivingClients(config?: Parameters<typeof http.get>
     throw error;
   }
 }
+
+export async function addSafeDrivingClient(
+  data: NewClientData,
+  config?: Parameters<typeof http.post>[2]
+) {
+  try {
+    const resp = await http.post<NewClientData>(
+      api.endpoints.monitor.driving.addClient,
+      data,
+      config
+    );
+    return resp.data;
+  } catch (error) {
+    throw error;
+  }
+}
+
+
 
 export async function getDrivingSeverityCount(config?: Parameters<typeof http.get>[1]) {
   try {
@@ -222,6 +240,20 @@ export async function getIndustryClients(config?: Parameters<typeof http.get>[1]
   } catch (error) {
     throw error;
   }
+}
+
+export async function addIndustryClient(
+  data: NewClientData,
+  config?: Parameters<typeof http.post>[2]
+) {
+  
+    const resp = await http.post<NewClientData>(
+      api.endpoints.monitor.industry.addClient,
+      data,
+      config
+    );
+    return resp.data;
+
 }
 
 export async function getDeviceStatus(

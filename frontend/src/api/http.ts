@@ -36,9 +36,9 @@ export type HttpClientConfig = AxiosRequestConfigBase<ExtraAxiosConfig<HttpClien
 export const defaultConfig: HttpClientConfig = {
   ...defaultExtraConfig,
   baseURL: api.baseURL,
-  withCredentials: true,
+  withCredentials: false,
   useCSRF: true,
-  useJWT: true,
+  useJWT: false,
   // rejectRequest: (config) => {
   //   if (!hasCSRFToken(config)) {
   //     return {
@@ -52,18 +52,7 @@ export const defaultConfig: HttpClientConfig = {
 
   //   return false;
   // },
-  onError: (error) => {
-  //   if (error?.response?.status === 401 || error?.response?.status === 403) {
-  //     const url = new URL("/auth/login", window.location.origin);
-  //     // const query = new URLSearchParams({
-  //     //   callbackUrl: window.location.href,
-  //     // });
-  //     // url.search = query.toString();
-  //     window.location.assign(url.toString());
-  //   }
-    //console.log(error);
-  //   throw error;
-  },
+
   retry: 0,
 };
 

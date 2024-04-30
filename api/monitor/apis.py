@@ -902,14 +902,14 @@ class SDClientCreateAPI(APIView):
     class InputSerializer(serializers.Serializer):
         name = serializers.CharField()
         keyname = serializers.CharField()
-        username = serializers.CharField()
-        password = serializers.CharField()
+        api_username = serializers.CharField()
+        api_password = serializers.CharField()
 
     def post(self, request, *args, **kwargs):
         serializer = self.InputSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
-        password = serializer.validated_data["password"]
+        password = serializer.validated_data["api_password"]
 
         encryption = EncryptionService()
         enc_password = encryption.encrypt(bytes(password, "utf-16"))
@@ -919,7 +919,7 @@ class SDClientCreateAPI(APIView):
             keyname=serializer.validated_data["keyname"],
             deployment_name="Safe Driving",
             defaults={
-                "api_username": serializer.validated_data["username"],
+                "api_username": serializer.validated_data["api_username"],
                 "api_password": enc_password
             }
         )
@@ -934,8 +934,8 @@ class IndClientCreateAPI(APIView):
     class InputSerializer(serializers.Serializer):
         name = serializers.CharField()
         keyname = serializers.CharField()
-        username = serializers.CharField()
-        password = serializers.CharField()
+        api_username = serializers.CharField()
+        api_password = serializers.CharField()
 
     def post(self, request, *args, **kwargs):
         import requests
@@ -947,15 +947,15 @@ class IndClientCreateAPI(APIView):
 
         try:
             response = requests.post(f'https://{keyname}.industry.aivat.io/login/',
-                                     data={"username": serializer.validated_data["username"],
-                                           "password": serializer.validated_data["password"]})
+                                     data={"username": serializer.validated_data["api_username"],
+                                           "password": serializer.validated_data["api_password"]})
         except requests.exceptions.ConnectionError:
-            return Response("Invalid keyname")
+            return Response({"error": "No existe endpoint para cliente"}, status=status.HTTP_400_BAD_REQUEST)
 
         if response.status_code != 200:
-            return Response("Invalid credentials")
+            return Response({"error": "Credenciales inválidas"}, status=status.HTTP_400_BAD_REQUEST)
 
-        password = serializer.validated_data["password"]
+        password = serializer.validated_data["api_password"]
 
         encryption = EncryptionService()
         enc_password = encryption.encrypt(bytes(password, "utf-16"))
@@ -965,7 +965,7 @@ class IndClientCreateAPI(APIView):
             keyname=serializer.validated_data["keyname"],
             deployment_name="Industry",
             defaults={
-                "api_username": serializer.validated_data["username"],
+                "api_username": serializer.validated_data["api_username"],
                 "api_password": enc_password
             }
         )
@@ -973,4 +973,4 @@ class IndClientCreateAPI(APIView):
         if created:
             return Response(status=status.HTTP_201_CREATED)
         else:
-            return Response("Client already exists")
+            return Response({"error": "Cliente ya existe"}, status=status.HTTP_400_BAD_REQUEST)
