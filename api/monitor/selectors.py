@@ -488,3 +488,30 @@ def get_api_credentials(deployment_name, keyname):
     password = encrypt.decrypt(bytes(client.api_password)).decode('utf-16')
 
     return {"username": username, "password": password}
+
+
+def get_or_create_server(server_id, defaults):
+    server, created = Server.objects.get_or_create(
+        server_id=server_id,
+        defaults=defaults
+    )
+    return server
+
+
+def update_or_create_serverstatus(server_id: str, defaults: dict):
+    server_status, created = ServerStatus.objects.update_or_create(
+        server__server_id=server_id,
+        defaults=defaults
+    )
+    return server_status
+
+
+def create_serverhistory(args):
+    server_history = ServerHistory.objects.create(
+        **args
+    )
+    return server_history
+
+
+def get_servermetrics():
+    return ServerMetric.objects.all()

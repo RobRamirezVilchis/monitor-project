@@ -231,3 +231,49 @@ class SeverityCount(models.Model):
 
     def __str__(self):
         return f'{self.deployment} | {self.client} - {self.timestamp}'
+
+
+class Server(models.Model):
+    name = models.CharField(max_length=50)
+    server_type = models.CharField(max_length=50)
+    server_id = models.CharField(max_length=50)
+
+    def __str__(self):
+        return self.name
+
+
+class ServerMetric(models.Model):
+    name = models.CharField(max_length=50)
+    key = models.CharField(max_length=50)
+
+    def __str__(self):
+        return self.name
+
+
+class ServerStatus(models.Model):
+    server = models.OneToOneField(Server, on_delete=models.CASCADE)
+    last_launch = models.DateTimeField(auto_now=False, auto_now_add=False)
+    last_activity = models.DateTimeField(auto_now=False, auto_now_add=False)
+    state = models.CharField(max_length=50)
+    activity_data = models.JSONField(blank=True, null=True)
+
+    def __str__(self):
+        return self.server.name
+
+    class Meta:
+        verbose_name_plural = "Server status"
+
+
+class ServerHistory(models.Model):
+    server = models.ForeignKey(Server, on_delete=models.CASCADE)
+    last_launch = models.DateTimeField(auto_now=False, auto_now_add=False)
+    register_datetime = models.DateTimeField(
+        auto_now=False, auto_now_add=False)
+    register_date = models.DateField(
+        db_index=True, auto_now=False, auto_now_add=False)
+    state = models.CharField(max_length=50)
+    metric_type = models.ForeignKey(ServerMetric, on_delete=models.CASCADE)
+    metric_value = models.FloatField()
+
+    class Meta:
+        verbose_name_plural = "Server histories"

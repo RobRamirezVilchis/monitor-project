@@ -1,3 +1,4 @@
+from .aws_metrics import AWSUtils
 from .models import *
 from .selectors import *
 from .services import *
@@ -565,7 +566,6 @@ def update_driving_status():
 
 # Industry
 
-
 def get_industry_data(client_keyname):
 
     login_url = f'https://{client_keyname}.industry.aivat.io/login/'
@@ -1023,7 +1023,70 @@ def update_industry_status():
         create_device_history(devicehistory_args)
 
 
+# Servers
+
+def update_servers_status():
+    now = datetime.now(tz=pytz.timezone("UTC"))
+
+    utils = AWSUtils()
+    instances = utils.list_instances()
+    metrics_to_get = get_servermetrics()
+
+    all_metrics_data = {}
+    for metric in metrics_to_get:
+        metric_data = utils.get_metrics(instances, metric.name)
+        all_metrics_data[metric.name] = metric_data
+
+    for i in range(len(instances)):
+        instance = instances[i]
+
+        name = instance["name"]
+        server_type = instance["type"]
+        server_id = instance["id"]
+        state = instance["state"]
+        launch_time = instance["launch_time"]
+
+        server = get_or_create_server(server_id, defaults={
+            "name": name, "server_type": server_type})
+
+        activity_data = {}
+        activity = False
+        for metric in metrics_to_get:
+
+            server_metric_values = all_metrics_data[metric.name]['MetricDataResults'][i]['Values']
+            server_metric_dates = all_metrics_data[metric.name]['MetricDataResults'][i]['Timestamps']
+
+            if server_metric_values:
+                activity = True
+                activity_data[metric.name] = server_metric_values[0]
+            else:
+                break
+
+            for j in range(len(server_metric_values)):
+                metric_date = server_metric_dates[j]
+                serverhistory_args = {
+                    "server": server,
+                    "last_launch": launch_time,
+                    "register_datetime": metric_date,
+                    "register_date": metric_date.date(),
+                    "state": state,
+                    "metric_type": metric,
+                    "metric_value": server_metric_values[j],
+                }
+                create_serverhistory(serverhistory_args)
+
+        if activity:
+            server_status = update_or_create_serverstatus(server_id, defaults={
+                "server": server,
+                "state": state,
+                "last_launch": launch_time,
+                "last_activity": now,
+                "activity_data": activity_data
+            })
+
+
 # Generate daily Telegram Safe Driving Report
+
 def send_daily_sd_report():
     load_dotenv()
     if os.environ.get("ALERTS") != "true":
