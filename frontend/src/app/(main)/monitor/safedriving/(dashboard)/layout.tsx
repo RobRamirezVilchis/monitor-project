@@ -33,7 +33,7 @@ const SafeDrivingDashboardLayout = ({ children }: { children: ReactNode }) => {
   return (
     <section>
       <Tabs value={currentTab}>
-        <div className="md:flex md:items-center pb-2 mb-3 md:mb-6  justify-between">
+        <div className="md:flex md:items-center pb-2 mb-3 md:mb-6 justify-between">
           <div className="md:flex md:items-center">
             <h1 className="mb-4 md:mb-0 text-5xl font-bold pr-10 ">
               Safe Driving
@@ -54,10 +54,11 @@ const SafeDrivingDashboardLayout = ({ children }: { children: ReactNode }) => {
               Última actualización {timeSinceLastUpdate}
             </p>
           </div>
-
-          <Link href={"/monitor/safedriving/add-client"}>
-            <Button color="gray.5">Agregar cliente</Button>
-          </Link>
+          <div className="mt-2 md:mt-0 mr-0 2xl:mr-16">
+            <Link href={"/monitor/safedriving/add-client"}>
+              <Button color="gray.5">Agregar cliente</Button>
+            </Link>
+          </div>
         </div>
         <div>{children}</div>
       </Tabs>
