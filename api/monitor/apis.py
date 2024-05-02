@@ -906,8 +906,22 @@ class SDClientCreateAPI(APIView):
         api_password = serializers.CharField()
 
     def post(self, request, *args, **kwargs):
+        import requests
+
         serializer = self.InputSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
+
+        keyname = serializer.validated_data["keyname"]
+
+        try:
+            response = requests.post(f'https://{keyname}.safe-d.aivat.io/login/',
+                                     data={"username": serializer.validated_data["api_username"],
+                                           "password": serializer.validated_data["api_password"]})
+        except requests.exceptions.ConnectionError:
+            return Response({"error": "No existe endpoint para cliente"}, status=status.HTTP_400_BAD_REQUEST)
+
+        if response.status_code != 200:
+            return Response({"error": "Credenciales inválidas"}, status=status.HTTP_400_BAD_REQUEST)
 
         password = serializer.validated_data["api_password"]
 
@@ -927,7 +941,7 @@ class SDClientCreateAPI(APIView):
         if created:
             return Response(status=status.HTTP_201_CREATED)
         else:
-            return Response("Client already exists")
+            return Response({"error": "Cliente ya existe"}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class IndClientCreateAPI(APIView):
@@ -962,7 +976,7 @@ class IndClientCreateAPI(APIView):
 
         client, created = get_or_create_client(
             name=serializer.validated_data["name"],
-            keyname=serializer.validated_data["keyname"],
+            keyname=keyname,
             deployment_name="Industry",
             defaults={
                 "api_username": serializer.validated_data["api_username"],

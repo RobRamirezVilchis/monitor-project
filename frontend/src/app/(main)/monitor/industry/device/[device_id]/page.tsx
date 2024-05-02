@@ -31,7 +31,6 @@ import { es } from "date-fns/locale";
 import Link from "next/link";
 import Image from "next/image";
 import wifiError from "@/media/error-de-conexion.png";
-import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { useState } from "react";
 import {
   CartesianGrid,
@@ -47,11 +46,11 @@ import {
 } from "recharts";
 import { DatePickerInput } from "@mantine/dates";
 import { Button } from "@mantine/core";
-import { useRouter } from "next/navigation";
 import {
   NameType,
   ValueType,
 } from "recharts/types/component/DefaultTooltipContent";
+import BackArrow from "../../../(components)/BackArrow";
 
 type StatusKey = 0 | 1 | 2 | 3 | 4 | 5;
 const statusStyles: { [key in StatusKey]: string } = {
@@ -82,8 +81,6 @@ const barColors: { [key in StatusKey]: string } = {
 };
 
 const DevicePage = ({ params }: { params: { device_id: string } }) => {
-  const router = useRouter();
-
   const currentDate = new Date();
   let yesterday = new Date();
   yesterday.setDate(yesterday.getDate() - 1);
@@ -231,12 +228,7 @@ const DevicePage = ({ params }: { params: { device_id: string } }) => {
 
   return (
     <section className="relative mb-20">
-      <button
-        className="absolute hidden lg:block right-full mr-5 mt-2 opacity-40"
-        onClick={() => router.back()}
-      >
-        <ArrowBackIcon />
-      </button>
+      <BackArrow />
       <div className="flex mb-4 justify-between items-center">
         <div className="xl:flex xl:gap-6">
           <h1 className="text-5xl font-bold">{deviceStatus?.device}</h1>

@@ -93,8 +93,12 @@ def get_driving_data(client):
             "logs": 'https://trm.safe-d.aivat.io/ternium/logs/'
         }
     }
-    login_url = urls[client]["login"]
-    request_url = urls[client]["logs"]
+    if client in urls:
+        login_url = urls[client]["login"]
+        request_url = urls[client]["logs"]
+    else:
+        login_url = f'https://{client}.safe-d.aivat.io/login/'
+        request_url = f'https://{client}.safe-d.aivat.io/logs/'
 
     try:
         token = api_login(login_url, credentials)

@@ -52,7 +52,7 @@ const IndustryDashboardLayout = ({ children }: { children: ReactNode }) => {
               Última actualización {timeSinceLastUpdate}
             </p>
           </div>
-          <Link href={"/monitor/industry/add_client"}>
+          <Link href={"/monitor/industry/add-client"}>
             <Button color="gray.5">Agregar cliente</Button>
           </Link>
         </div>

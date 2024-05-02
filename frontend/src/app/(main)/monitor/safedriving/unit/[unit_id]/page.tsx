@@ -40,6 +40,7 @@ import { useState } from "react";
 import { DatePickerInput } from "@mantine/dates";
 import { Button } from "@mantine/core";
 import { useRouter } from "next/navigation";
+import BackArrow from "../../../(components)/BackArrow";
 
 type StatusKey = 0 | 1 | 2 | 3 | 4 | 5;
 const statusStyles: { [key in StatusKey]: string } = {
@@ -195,12 +196,7 @@ const UnitPage = ({ params }: { params: { unit_id: string } }) => {
 
   return (
     <section className="relative mb-20">
-      <button
-        className="absolute hidden lg:block right-full mr-5 mt-2 opacity-40"
-        onClick={() => router.back()}
-      >
-        <ArrowBackIcon />
-      </button>
+      <BackArrow />
 
       <div className="relative flex mb-4 justify-between items-center">
         <div className="xl:flex xl:gap-6">

@@ -55,7 +55,7 @@ const SafeDrivingDashboardLayout = ({ children }: { children: ReactNode }) => {
             </p>
           </div>
 
-          <Link href={"/monitor/safedriving/add_client"}>
+          <Link href={"/monitor/safedriving/add-client"}>
             <Button color="gray.5">Agregar cliente</Button>
           </Link>
         </div>
