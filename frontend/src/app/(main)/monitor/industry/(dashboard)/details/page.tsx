@@ -168,7 +168,7 @@ const IndustryDetailsPage = () => {
             )}
           </div>
 
-          <div className="absolute -right-96 bottom-0 hidden md:block">
+          <div className="absolute -right-96 bottom-0 hidden xl:block">
             <PieChart
               data={data}
               mt={0}
