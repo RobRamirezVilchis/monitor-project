@@ -236,7 +236,7 @@ class SeverityCount(models.Model):
 class Server(models.Model):
     name = models.CharField(max_length=50)
     server_type = models.CharField(max_length=50)
-    server_id = models.CharField(max_length=50)
+    aws_id = models.CharField(max_length=50)
 
     def __str__(self):
         return self.name
@@ -253,7 +253,8 @@ class ServerMetric(models.Model):
 class ServerStatus(models.Model):
     server = models.OneToOneField(Server, on_delete=models.CASCADE)
     last_launch = models.DateTimeField(auto_now=False, auto_now_add=False)
-    last_activity = models.DateTimeField(auto_now=False, auto_now_add=False)
+    last_activity = models.DateTimeField(
+        auto_now=False, auto_now_add=False, blank=True)
     state = models.CharField(max_length=50)
     activity_data = models.JSONField(blank=True, null=True)
 

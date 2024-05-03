@@ -1,4 +1,4 @@
-import { UnitStatus, SeverityCount, UnitHistory, DeviceStatus, UnitFilters, LastStatusChange, DeviceFilters, DeviceHistory, Client, CameraDisconnection, LastActiveStatus, SeverityHistory, AreaPlotData, AreaPlotFilters, LastUpdate, DeviceLogsFilters, DeviceLogs, DeviceWifiStatus, UnitLogsFilters, UnitLogs, NewClientData } from "./types";
+import { UnitStatus, SeverityCount, UnitHistory, DeviceStatus, UnitFilters, LastStatusChange, DeviceFilters, DeviceHistory, Client, CameraDisconnection, LastActiveStatus, SeverityHistory, AreaPlotData, AreaPlotFilters, LastUpdate, DeviceLogsFilters, DeviceLogs, DeviceWifiStatus, UnitLogsFilters, UnitLogs, NewClientData, ServerStatus, ServerFilters, ServerHistory } from "./types";
 import { Id, Paginated } from "@/api/types";
 import { Role, User } from "../auth/types";
 import api from "../..";
@@ -428,4 +428,52 @@ export async function getDeviceLogs(
   } catch (error) {
     throw error;
   }
+}
+
+
+// Servers
+export async function getServersStatus(
+  config?: Parameters<typeof http.get>[1]
+) {
+
+    const resp = await http.get<ServerStatus[]>(
+      api.endpoints.monitor.servers.status,
+      {
+        ...config,
+      }
+    );
+    return resp.data;
+
+}
+
+export async function getServerStatus(
+  filters: ServerFilters,
+  config?: Parameters<typeof http.get>[1]
+) {
+
+    const resp = await http.get<ServerStatus>(
+      api.endpoints.monitor.servers.serverStatus(filters.server_id),
+      {
+        params: filters,
+        ...config,
+      }
+    );
+    return resp.data;
+
+}
+
+export async function getServerHistory(
+  filters: ServerFilters,
+  config?: Parameters<typeof http.get>[1]
+) {
+ 
+    const resp = await http.get<Paginated<ServerHistory>>(
+      api.endpoints.monitor.servers.serverHistory(filters.server_id),
+      {
+        params: filters,
+        ...config,
+      }
+    );
+    return resp.data;
+
 }

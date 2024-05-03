@@ -1,6 +1,6 @@
 import { createQuery } from "../helpers/createQuery";
-import { getUnits, getDevices, getUnitHistory, getDrivingSeverityCount, getUnitLastStatusChange, getDeviceHistory, getIndustrySeverityCount, getUnitStatus, getDeviceStatus, getSafeDrivingClients, getIndustryClients, getDeviceLastStatusChange, getIndustryCameraDisconnections, getUnitLastActiveStatus, getUnitSeverityHistory, getSafeDrivingAreaPlotData, getIndustryAreaPlotData, getDrivingLastUpdate, getIndustryLastUpdate, getDeviceSeverityHistory, getDeviceLogs, getDeviceWifiStatus, getUnitLogs } from "../services/monitor";
-import { AreaPlotFilters, DeviceFilters, UnitSeverityHistoryFilters, UnitFilters, DeviceSeverityHistoryFilters, DeviceLogsFilters, UnitLogsFilters } from "../services/monitor/types";
+import { getUnits, getDevices, getUnitHistory, getDrivingSeverityCount, getUnitLastStatusChange, getDeviceHistory, getIndustrySeverityCount, getUnitStatus, getDeviceStatus, getSafeDrivingClients, getIndustryClients, getDeviceLastStatusChange, getIndustryCameraDisconnections, getUnitLastActiveStatus, getUnitSeverityHistory, getSafeDrivingAreaPlotData, getIndustryAreaPlotData, getDrivingLastUpdate, getIndustryLastUpdate, getDeviceSeverityHistory, getDeviceLogs, getDeviceWifiStatus, getUnitLogs, getServersStatus, getServerStatus, getServerHistory } from "../services/monitor";
+import { AreaPlotFilters, DeviceFilters, UnitSeverityHistoryFilters, UnitFilters, DeviceSeverityHistoryFilters, DeviceLogsFilters, UnitLogsFilters, ServerFilters } from "../services/monitor/types";
 import defaultQueryClient from "../clients/defaultQueryClient";
 
 // Safe Driving API ----------------------------------------------------------
@@ -265,3 +265,38 @@ export const useDeviceLogsQuery = createQuery({
   queryClient: defaultQueryClient,
 });
 
+// Servers
+export const useServersStatusQuery = createQuery({
+  queryPrimaryKey: "servers_status",
+  //queryKeyVariables: (vars: DeviceLogsFilters) => vars ? [vars] : [],
+  queryFn: (ctx) => getServersStatus({ signal: ctx.signal }),
+  cacheTime: 1000 * 60 * 5,  // 5 minutes
+  staleTime: 1000 * 60 * 3,  // 3 minutes
+  keepPreviousData: true,
+  queryClient: defaultQueryClient,
+  refetchInterval: 60000,
+  refetchIntervalInBackground: true
+});
+
+export const useServerStatusQuery = createQuery({
+  queryPrimaryKey: "server_status",
+  queryKeyVariables: (vars: ServerFilters) => vars ? [vars] : [],
+  queryFn: (ctx, vars) => getServerStatus(vars, { signal: ctx.signal }),
+  cacheTime: 1000 * 60 * 5,  // 5 minutes
+  staleTime: 1000 * 60 * 3,  // 3 minutes
+  keepPreviousData: true,
+  queryClient: defaultQueryClient,
+  refetchInterval: 60000,
+  refetchIntervalInBackground: true
+});
+
+
+export const useServerHistoryQuery = createQuery({
+  queryPrimaryKey: "server_history",
+  queryKeyVariables: (vars: ServerFilters) => vars ? [vars] : [],
+  queryFn: (ctx, vars) => getServerHistory(vars, { signal: ctx.signal }),
+  cacheTime: 1000 * 60 * 5,  // 5 minutes
+  staleTime: 1000 * 60 * 3,  // 3 minutes
+  keepPreviousData: true,
+  queryClient: defaultQueryClient,
+});

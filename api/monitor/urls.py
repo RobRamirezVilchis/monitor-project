@@ -69,5 +69,17 @@ urlpatterns = [
 
          ], "industry"))
          ),
+    path("servers/",
+         include(([
+             path("status/", apis.ServerStatusListAPI.as_view(), name="status"),
+             path("server/<int:server_id>/",
+                 include(([
+                     path("", apis.ServerStatusAPI.as_view(),
+                          name="server-status"),
+                     path("history/", apis.ServerHistoryList.as_view(),
+                          name="server-history"),
+                 ], "server")
+                 )),
+         ], "servers")))
 
 ]

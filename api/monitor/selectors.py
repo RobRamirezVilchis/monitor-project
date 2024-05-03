@@ -490,17 +490,44 @@ def get_api_credentials(deployment_name, keyname):
     return {"username": username, "password": password}
 
 
-def get_or_create_server(server_id, defaults):
+def get_or_create_server(aws_id: str, defaults: dict):
     server, created = Server.objects.get_or_create(
-        server_id=server_id,
+        aws_id=aws_id,
         defaults=defaults
     )
     return server
 
 
-def update_or_create_serverstatus(server_id: str, defaults: dict):
+def get_serverstatus_by_awsid(aws_id: str):
+    try:
+        server_status = ServerStatus.objects.get(
+            server__aws_id=aws_id,
+        )
+    except ServerStatus.DoesNotExist:
+        return None
+
+    return server_status
+
+
+def get_serverstatus(server_id: int):
+    try:
+        server_status = ServerStatus.objects.get(
+            server_id=server_id,
+        )
+    except ServerStatus.DoesNotExist:
+        return None
+
+    return server_status
+
+
+def get_serverstatus_list():
+    all_server_status = ServerStatus.objects.all()
+    return all_server_status
+
+
+def update_or_create_serverstatus(aws_id: str, defaults: dict):
     server_status, created = ServerStatus.objects.update_or_create(
-        server__server_id=server_id,
+        server__aws_id=aws_id,
         defaults=defaults
     )
     return server_status
@@ -515,3 +542,28 @@ def create_serverhistory(args):
 
 def get_servermetrics():
     return ServerMetric.objects.all()
+
+
+class ServerHistoryFilter(rf_filters.FilterSet):
+    register_datetime = rf_filters.DateTimeFromToRangeFilter()
+    metric_type = rf_filters.CharFilter(
+        field_name='metric_type__key', lookup_expr="icontains")
+    sort = rf_filters.OrderingFilter(
+        fields=(
+            'register_datetime',
+        )
+    )
+
+    class Meta:
+        model = ServerHistory
+        fields = ['register_datetime',
+                  'server',
+                  'metric_type'
+                  ]
+
+
+def get_serverhistory(args, filters=None):
+    logs = ServerHistory.objects.filter(
+        server_id=args["server_id"]).order_by('register_datetime')
+
+    return ServerHistoryFilter(filters, logs).qs

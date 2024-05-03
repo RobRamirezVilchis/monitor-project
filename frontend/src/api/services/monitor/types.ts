@@ -156,6 +156,10 @@ export interface DeviceFilters extends Partial<PageNumberPaginationParams>{
   device_id: string;
 }
 
+export interface ServerFilters extends Partial<PageNumberPaginationParams>{
+  server_id: string;
+}
+
 
 export interface DeviceLogsFilters extends Partial<PageNumberPaginationParams>{
   device_id: string;
@@ -184,4 +188,25 @@ export interface UnitLogs {
   timestamp: string;
   tipo: string;
   log: string;
+}
+
+
+// Servers
+
+export interface ServerStatus {
+  server_id: number;
+  server_name: string;
+  last_launch: Date;
+  last_activity: Date;
+  state: string;
+  activity_data: {[metric: string]: number};
+}
+
+export interface ServerHistory extends Partial<PageNumberPaginationParams> {
+  server: string,
+  last_launch: Date,
+  register_datetime: Date,
+  state: string,
+  metric_type: string,
+  metric_value: number,
 }

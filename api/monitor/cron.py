@@ -1046,6 +1046,8 @@ def update_servers_status():
         state = instance["state"]
         launch_time = instance["launch_time"]
 
+        current_server_status = get_serverstatus_by_awsid(server_id)
+
         server = get_or_create_server(server_id, defaults={
             "name": name, "server_type": server_type})
 
@@ -1058,7 +1060,7 @@ def update_servers_status():
 
             if server_metric_values:
                 activity = True
-                activity_data[metric.name] = server_metric_values[0]
+                activity_data[metric.key] = server_metric_values[0]
             else:
                 break
 
@@ -1082,6 +1084,12 @@ def update_servers_status():
                 "last_launch": launch_time,
                 "last_activity": now,
                 "activity_data": activity_data
+            })
+        elif state == "stopped" and current_server_status.state == "running":
+            server_status = update_or_create_serverstatus(server_id, defaults={
+                "server": server,
+                "state": state,
+                "activity_data": {}
             })
 
 

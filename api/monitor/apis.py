@@ -1,7 +1,8 @@
 from datetime import datetime
 from django.shortcuts import render
 from django.db.models import Count, F, Window, Q, Sum
-from django.db.models.functions import Lead
+from django.db.models.functions import Lead, Cast
+from django.db.models.fields.json import KT
 from django.utils.timezone import make_aware
 from django_filters.rest_framework import DjangoFilterBackend
 
@@ -988,3 +989,88 @@ class IndClientCreateAPI(APIView):
             return Response(status=status.HTTP_201_CREATED)
         else:
             return Response({"error": "Cliente ya existe"}, status=status.HTTP_400_BAD_REQUEST)
+
+
+# Servers
+class ServerStatusListAPI(APIView):
+    class OutputSerializer(serializers.Serializer):
+        server_id = serializers.IntegerField()
+        server_name = serializers.CharField(source="server")
+        last_launch = serializers.DateTimeField()
+        last_activity = serializers.DateTimeField()
+        state = serializers.CharField()
+        activity_data = serializers.JSONField()
+
+    def get(self, request, *args, **kwargs):
+        all_server_status = get_serverstatus_list()
+
+        all_server_status = all_server_status.annotate(
+            cpu_utilization=Cast(
+                KT("activity_data__Uso de CPU"), output_field=models.FloatField()))
+
+        all_server_status = sorted(
+            all_server_status, key=lambda x: x.activity_data.get("Uso de CPU", 0), reverse=True)
+
+        output = self.OutputSerializer(all_server_status, many=True).data
+
+        return Response(output)
+
+
+class ServerStatusAPI(APIView):
+    class OutputSerializer(serializers.Serializer):
+        server_id = serializers.IntegerField()
+        server_name = serializers.CharField(source="server")
+        last_launch = serializers.DateTimeField()
+        last_activity = serializers.DateTimeField()
+        state = serializers.CharField()
+        activity_data = serializers.JSONField()
+
+    def get(self, request, server_id, *args, **kwargs):
+        server_status = get_serverstatus(server_id)
+        output = self.OutputSerializer(server_status).data
+
+        return Response(output)
+
+
+class ServerHistoryList(APIView):
+    class FiltersSerializer(serializers.Serializer):
+        register_datetime_after = serializers.DateTimeField(required=False)
+        register_datetime_before = serializers.DateTimeField(required=False)
+        sort = serializers.CharField(required=False)
+        metric_type = serializers.CharField(required=False)
+
+    class OutputSerializer(serializers.Serializer):
+        server = serializers.CharField()
+        last_launch = serializers.DateTimeField()
+        register_datetime = serializers.DateTimeField()
+        state = serializers.CharField()
+        metric_type = serializers.CharField()
+        metric_value = serializers.FloatField()
+
+    def get(self, request, server_id, *args, **kwargs):
+
+        filters_serializer = self.FiltersSerializer(data=request.query_params)
+        filters_serializer.is_valid(raise_exception=True)
+
+        # Si no se especificó rango de fechas, regresar registros del último día
+        if not (filters_serializer.validated_data.get("register_datetime_after") or filters_serializer.validated_data.get("register_datetime_before")):
+            import datetime
+            import pytz
+
+            date_now = datetime.datetime.now()
+            end_date = date_now.astimezone(pytz.timezone("America/Mexico_City")).replace(
+                tzinfo=pytz.utc) + datetime.timedelta(hours=6)
+            start_date = end_date - timedelta(hours=24)
+
+            filters_serializer.validated_data["register_datetime_before"] = end_date
+            filters_serializer.validated_data["register_datetime_after"] = start_date
+
+        data = {'server_id': server_id}
+        logs = get_serverhistory(
+            data, filters=filters_serializer.validated_data)[::-1]
+
+        return get_paginated_response(
+            serializer_class=self.OutputSerializer,
+            queryset=logs,
+            request=request,
+        )

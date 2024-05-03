@@ -105,7 +105,7 @@ const UnitCard = ({ unit: unit_status }: GxCardProps) => {
 
       <div
         className="absolute invisible opacity-0 bottom-full mb-2 px-4 py-2 bg-gray-600 text-white rounded shadow-lg 
-      transition-opacity ease-in-out duration-300 delay-200 ease-in-out group-hover:visible group-hover:opacity-100"
+      transition-opacity duration-300 delay-200 ease-in-out group-hover:visible group-hover:opacity-100"
       >
         {pending_events == 1 ? (
           <p>{pending_events} evento pendiente</p>
