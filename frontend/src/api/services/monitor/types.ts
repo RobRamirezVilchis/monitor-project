@@ -210,3 +210,7 @@ export interface ServerHistory extends Partial<PageNumberPaginationParams> {
   metric_type: string,
   metric_value: number,
 }
+
+export interface MetricsKeys {
+  metrics: {[metricName: string]: string}
+}

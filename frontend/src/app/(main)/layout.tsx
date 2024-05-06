@@ -148,7 +148,7 @@ const DesktopNavLink = ({ item, onClick }: DesktopNavLinkProps) => {
       className="text-center"
       classNames={{
         root: clsx("px-2 py-2.5 w-24", {}),
-        body: "overflow-visible",
+        body: `overflow-visible ${active ? "text-gray-500" : "text-gray-300"}`,
       }}
       styles={{
         root: {

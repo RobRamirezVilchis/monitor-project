@@ -551,6 +551,8 @@ class ServerHistoryFilter(rf_filters.FilterSet):
     sort = rf_filters.OrderingFilter(
         fields=(
             'register_datetime',
+            'metric_type',
+            'metric_value'
         )
     )
 
@@ -558,7 +560,8 @@ class ServerHistoryFilter(rf_filters.FilterSet):
         model = ServerHistory
         fields = ['register_datetime',
                   'server',
-                  'metric_type'
+                  'metric_type',
+                  'metric_value'
                   ]
 
 

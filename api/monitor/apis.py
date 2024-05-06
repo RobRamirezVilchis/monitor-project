@@ -638,7 +638,7 @@ class SafeDrivingAreaPlotAPI(APIView):
 
         if not client_name:
             for register in registers:
-                # Agrupar registros, de diferentes clientes, por hora
+                # Agrupar registros de diferentes clientes, por hora
                 if register.timestamp in hourly_counts:
                     hourly_counts[register.timestamp] = {
                         k: hourly_counts[register.timestamp][k] + v
@@ -1074,3 +1074,16 @@ class ServerHistoryList(APIView):
             queryset=logs,
             request=request,
         )
+
+
+class ServerMetricsAPI(APIView):
+    class OutputSerializer(serializers.Serializer):
+        metrics = serializers.JSONField()
+
+    def get(self, request, *args, **kwargs):
+        metrics = get_servermetrics()
+
+        metrics_dict = {metric.name: metric.key for metric in metrics}
+        output = {"metrics": metrics_dict}
+
+        return Response(self.OutputSerializer(output).data)

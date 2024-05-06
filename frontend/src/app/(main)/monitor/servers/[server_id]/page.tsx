@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  useMetricsKeysQuery,
   useServerHistoryQuery,
   useServerStatusQuery,
 } from "@/api/queries/monitor";
@@ -47,6 +48,9 @@ const ServerPage = ({ params }: { params: { server_id: string } }) => {
   const serverStatus = serverStatusQuery.data;
   const activity_data = serverStatus?.activity_data;
 
+  const metricsKeysQuery = useMetricsKeysQuery({});
+  const metricsKeys = metricsKeysQuery.data?.metrics;
+
   const serverHistoryQuery = useServerHistoryQuery({
     variables: {
       server_id: params.server_id,
@@ -54,9 +58,19 @@ const ServerPage = ({ params }: { params: { server_id: string } }) => {
     },
   });
 
+  const modifiedCols = cols.map((col) => {
+    if (col.accessorKey === "metric_type" && metricsKeys) {
+      return {
+        ...col,
+        accessorFn: (row: ServerHistory) => metricsKeys[row.metric_type],
+      };
+    }
+    return col;
+  });
+
   const grid = useDataGrid<ServerHistory>({
     data: serverHistoryQuery.data?.data || [],
-    columns: cols,
+    columns: modifiedCols,
     rowNumberingMode: "static",
     enableRowNumbering: true,
     disableCellSelectionOnClick: true,
@@ -70,6 +84,7 @@ const ServerPage = ({ params }: { params: { server_id: string } }) => {
     enableColumnResizing: true,
     hideColumnFooters: true,
     enableColumnActions: true,
+    enableMultiSort: true,
 
     ...(dataGridConfig as any),
     pageCount: serverHistoryQuery.data?.pagination?.pages ?? 0,
@@ -82,11 +97,14 @@ const ServerPage = ({ params }: { params: { server_id: string } }) => {
   } else {
     progressValue = 0;
   }
+
   return (
-    <section className="relative mb-20">
+    <section className="relative">
       <BackArrow />
       <h1 className="mb-6 text-5xl font-bold pr-10">
-        <span className="text-gray-400">Servidores / </span>
+        <span className="hidden md:inline text-gray-400 dark:text-gray-600">
+          Servidores /{" "}
+        </span>
         {serverStatus && (
           <span>{serverStatus.server_name.split("_").join(" ")}</span>
         )}
@@ -99,7 +117,7 @@ const ServerPage = ({ params }: { params: { server_id: string } }) => {
           </p>
           {activity_data && (
             <div>
-              <div className="flex gap-4 items-center">
+              <div className="sm:flex gap-4 items-center">
                 <p>
                   <span>Uso de CPU: </span>
                   {activity_data["Uso de CPU"] ? (
@@ -111,7 +129,9 @@ const ServerPage = ({ params }: { params: { server_id: string } }) => {
 
                 <Progress
                   size={"xl"}
-                  classNames={{ root: "w-36 bg-gray-300" }}
+                  classNames={{
+                    root: "w-48 bg-gray-300 dark:bg-gray-700 mb-2 sm:mb-0",
+                  }}
                   value={progressValue}
                   color="green"
                 ></Progress>
@@ -125,7 +145,7 @@ const ServerPage = ({ params }: { params: { server_id: string } }) => {
           )}
         </div>
       )}
-      <div className="h-[70vh] mb-10">
+      <div className="h-[62vh] mb-10">
         <DataGrid instance={grid} />
       </div>
     </section>

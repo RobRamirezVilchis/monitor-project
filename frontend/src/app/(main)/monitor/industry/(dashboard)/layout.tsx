@@ -54,7 +54,12 @@ const IndustryDashboardLayout = ({ children }: { children: ReactNode }) => {
           </div>
           <div className="mt-2 md:mt-0 ml-0 md:ml-4 mr-0 2xl:mr-16">
             <Link href={"/monitor/industry/add-client"}>
-              <Button color="gray.5">Agregar cliente</Button>
+              <Button
+                color="gray.5"
+                classNames={{ root: "dark:bg-gray-800 dark:hover:bg-gray-700" }}
+              >
+                Agregar cliente
+              </Button>
             </Link>
           </div>
         </div>

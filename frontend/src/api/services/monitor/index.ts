@@ -1,4 +1,4 @@
-import { UnitStatus, SeverityCount, UnitHistory, DeviceStatus, UnitFilters, LastStatusChange, DeviceFilters, DeviceHistory, Client, CameraDisconnection, LastActiveStatus, SeverityHistory, AreaPlotData, AreaPlotFilters, LastUpdate, DeviceLogsFilters, DeviceLogs, DeviceWifiStatus, UnitLogsFilters, UnitLogs, NewClientData, ServerStatus, ServerFilters, ServerHistory } from "./types";
+import { UnitStatus, SeverityCount, UnitHistory, DeviceStatus, UnitFilters, LastStatusChange, DeviceFilters, DeviceHistory, Client, CameraDisconnection, LastActiveStatus, SeverityHistory, AreaPlotData, AreaPlotFilters, LastUpdate, DeviceLogsFilters, DeviceLogs, DeviceWifiStatus, UnitLogsFilters, UnitLogs, NewClientData, ServerStatus, ServerFilters, ServerHistory, MetricsKeys } from "./types";
 import { Id, Paginated } from "@/api/types";
 import { Role, User } from "../auth/types";
 import api from "../..";
@@ -416,7 +416,6 @@ export async function getDeviceLogs(
   filters: DeviceLogsFilters,
   config?: Parameters<typeof http.get>[1]
 ) {
-  try {
     const resp = await http.get<Paginated<DeviceLogs>>(
       api.endpoints.monitor.industry.deviceLogs(filters.device_id),
       {
@@ -425,9 +424,6 @@ export async function getDeviceLogs(
       }
     );
     return resp.data;
-  } catch (error) {
-    throw error;
-  }
 }
 
 
@@ -435,7 +431,6 @@ export async function getDeviceLogs(
 export async function getServersStatus(
   config?: Parameters<typeof http.get>[1]
 ) {
-
     const resp = await http.get<ServerStatus[]>(
       api.endpoints.monitor.servers.status,
       {
@@ -443,14 +438,12 @@ export async function getServersStatus(
       }
     );
     return resp.data;
-
 }
 
 export async function getServerStatus(
   filters: ServerFilters,
   config?: Parameters<typeof http.get>[1]
 ) {
-
     const resp = await http.get<ServerStatus>(
       api.endpoints.monitor.servers.serverStatus(filters.server_id),
       {
@@ -459,14 +452,12 @@ export async function getServerStatus(
       }
     );
     return resp.data;
-
 }
 
 export async function getServerHistory(
   filters: ServerFilters,
   config?: Parameters<typeof http.get>[1]
 ) {
- 
     const resp = await http.get<Paginated<ServerHistory>>(
       api.endpoints.monitor.servers.serverHistory(filters.server_id),
       {
@@ -475,5 +466,18 @@ export async function getServerHistory(
       }
     );
     return resp.data;
+}
 
+
+
+export async function getMetricsKeys(
+  config?: Parameters<typeof http.get>[1]
+) {
+    const resp = await http.get<MetricsKeys>(
+      api.endpoints.monitor.servers.metricsKeys,
+      {
+        ...config,
+      }
+    );
+    return resp.data;
 }

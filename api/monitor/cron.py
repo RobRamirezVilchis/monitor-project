@@ -1085,7 +1085,7 @@ def update_servers_status():
                 "last_activity": now,
                 "activity_data": activity_data
             })
-            
+
         elif current_server_status == None:
             server_status = update_or_create_serverstatus(server_id, defaults={
                 "server": server,
@@ -1183,6 +1183,8 @@ def register_severity_counts():
             for count in severity_counts:
                 counts_json[count['severity']] = count['count']
 
+            # FIX: Safe Driving has status 0, Industry doesn't
+            # So this range can produce errors if counts_json is empty (no data from a SD client)
             for n in range(1, 6):
                 if n not in counts_json:
                     counts_json[n] = 0
