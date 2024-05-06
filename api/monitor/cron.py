@@ -1085,6 +1085,15 @@ def update_servers_status():
                 "last_activity": now,
                 "activity_data": activity_data
             })
+            
+        elif current_server_status == None:
+            server_status = update_or_create_serverstatus(server_id, defaults={
+                "server": server,
+                "state": state,
+                "last_launch": launch_time,
+                "last_activity": now,
+                "activity_data": {}
+            })
         elif state == "stopped" and current_server_status.state == "running":
             server_status = update_or_create_serverstatus(server_id, defaults={
                 "server": server,
