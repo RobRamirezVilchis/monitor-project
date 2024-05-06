@@ -123,16 +123,17 @@ const MainLayout = ({ children }: MainLayoutProps) => {
 
         {/* <ProfileFloatingMenu /> */}
       </AppShell.Header>
+
       <AppShell.Navbar>
         <div className="mx-8">
           <div className="flex flex-col mt-4 gap-2 md:hidden">
             {visibleLinks.map((item) => (
-              <MobileNavLink key={item.href} item={item} />
+              <MobileNavLink key={item.href} item={item} onClick={toggle} />
             ))}
           </div>
           <div className="border-b my-4 border-neutral-300" />
           <div className="flex items-center">
-            <MobileNavLink item={serverLink} />
+            <MobileNavLink item={serverLink} onClick={toggle} />
           </div>
         </div>
       </AppShell.Navbar>
