@@ -40,11 +40,12 @@ interface MainLayoutProps {
 const MainLayout = ({ children }: MainLayoutProps) => {
   const [isOpen, { toggle, close }] = useDisclosure(false);
 
+  const serverLink = {
+    label: "Servidores",
+    href: "/monitor/servers",
+  };
+
   const [links, setLinks] = useState<NavMenuItem[]>([
-    {
-      label: "Servidores",
-      href: "/monitor/servers",
-    },
     {
       label: "Safe Driving",
       href: "/monitor/safedriving",
@@ -79,7 +80,13 @@ const MainLayout = ({ children }: MainLayoutProps) => {
       }}
     >
       <AppShell.Header>
-        <Burger opened={isOpen} onClick={toggle} hiddenFrom="sm" size="sm" />
+        <Burger
+          classNames={{ root: "bg-gray-500 rounded-md" }}
+          opened={isOpen}
+          onClick={toggle}
+          hiddenFrom="sm"
+          size="sm"
+        />
 
         {/* Desktop */}
         <div className="flex-1 hidden md:flex justify-between items-center gap-1">
@@ -94,8 +101,12 @@ const MainLayout = ({ children }: MainLayoutProps) => {
             <span className="ml-2 mt-1 text-lg font-bold">Monitor</span>
           </Link>
           <div className="flex items-center">
-            <ColorSchemeSwitchToggle />
-            <div className="flex gap-2 items-center pl-10 mx-4">
+            <div className="mr-8">
+              <ColorSchemeSwitchToggle />
+            </div>
+            <DesktopNavLink item={serverLink} />
+            <div className="border-l ml-4 h-6 border-neutral-600" />
+            <div className="flex gap-2 items-center mx-4">
               {visibleLinks.map((item) => (
                 <DesktopNavLink key={item.href} item={item} />
               ))}
@@ -109,13 +120,22 @@ const MainLayout = ({ children }: MainLayoutProps) => {
             <span className="h-6 text-lg font-bold">Monitor</span>
           </Link>
         </div>
-        <div className="flex gap-2 md:hidden items-center mx-4">
-          {visibleLinks.map((item) => (
-            <MobileNavLink key={item.href} item={item} />
-          ))}
-        </div>
+
         {/* <ProfileFloatingMenu /> */}
       </AppShell.Header>
+      <AppShell.Navbar>
+        <div className="mx-8">
+          <div className="flex flex-col mt-4 gap-2 md:hidden">
+            {visibleLinks.map((item) => (
+              <MobileNavLink key={item.href} item={item} />
+            ))}
+          </div>
+          <div className="border-b my-4 border-neutral-300" />
+          <div className="flex items-center">
+            <MobileNavLink item={serverLink} />
+          </div>
+        </div>
+      </AppShell.Navbar>
 
       <AppShell.Main>
         <div className="mx-8 lg:mx-32 pb-2 md:pb-6 pt-14">{children}</div>
@@ -195,7 +215,7 @@ const MobileNavLink = ({ item, onClick }: MobileNavLinkProps) => {
       classNames={{
         root: "px-2 py-2.5 min-w-24",
         body: "overflow-visible",
-        label: "flex justify-center",
+        label: "flex text-xl",
       }}
       active={active}
       label={
