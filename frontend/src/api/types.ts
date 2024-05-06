@@ -18,7 +18,7 @@ export type Paginated<T> = {
     page_size: number;
     count: number;
     pages: number;
-  }
+  } 
 }
 
 export type OptionallyPaginated<T> = Paginated<T> | T[];

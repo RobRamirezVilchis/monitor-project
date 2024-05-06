@@ -3,18 +3,38 @@
 import {
   useMetricsKeysQuery,
   useServerHistoryQuery,
+  useServerPlotQuery,
   useServerStatusQuery,
 } from "@/api/queries/monitor";
 import BackArrow from "../../(components)/BackArrow";
 import { format, parseISO } from "date-fns";
 import { Spa } from "@mui/icons-material";
-import { Progress } from "@mantine/core";
+import { Progress, SegmentedControl } from "@mantine/core";
 import { useDataGrid, useSsrDataGrid } from "@/hooks/data-grid";
-import { ServerHistory } from "@/api/services/monitor/types";
+import {
+  ServerHistory,
+  ServerHistoryFilters,
+  SeverityHistory,
+} from "@/api/services/monitor/types";
 import { ColumnDef } from "@/ui/data-grid/types";
 import DataGrid from "@/ui/data-grid/DataGrid";
+import { LineChart } from "@mantine/charts";
+import { useMergedRef } from "@mantine/hooks";
+import { useState } from "react";
+import { DatePickerInput } from "@mantine/dates";
 
 const ServerPage = ({ params }: { params: { server_id: string } }) => {
+  const [plotMetric, setPlotMetric] = useState("Uso de CPU");
+
+  const currentDate = new Date();
+  let yesterday = new Date();
+  yesterday.setDate(yesterday.getDate() - 1);
+
+  const [dateValue, setDateValue] = useState<[Date | null, Date | null]>([
+    yesterday,
+    currentDate,
+  ]);
+
   const { dataGridState, queryVariables, dataGridConfig } = useSsrDataGrid<{
     register_datetime: [Date | null, Date | null];
   }>({
@@ -58,6 +78,24 @@ const ServerPage = ({ params }: { params: { server_id: string } }) => {
     },
   });
 
+  const plotDataQuery = useServerPlotQuery({
+    variables: {
+      server_id: params.server_id,
+      metric_type: plotMetric,
+      sort: "-register_datetime",
+      register_datetime_after: dateValue[0],
+      register_datetime_before: dateValue[1],
+    },
+  });
+  let plotData = plotDataQuery.data;
+
+  if (plotMetric == "Datos de salida" && plotData) {
+    plotData = plotData.map((x) => ({
+      ...x,
+      metric_value: x.metric_value / 300 / 1024,
+    }));
+  }
+
   const modifiedCols = cols.map((col) => {
     if (col.accessorKey === "metric_type" && metricsKeys) {
       return {
@@ -96,6 +134,11 @@ const ServerPage = ({ params }: { params: { server_id: string } }) => {
     progressValue = activity_data["Uso de CPU"];
   } else {
     progressValue = 0;
+  }
+
+  let metrics: string[] = [];
+  if (metricsKeys) {
+    metrics = Object.values(metricsKeys);
   }
 
   return (
@@ -148,6 +191,34 @@ const ServerPage = ({ params }: { params: { server_id: string } }) => {
       <div className="h-[62vh] mb-10">
         <DataGrid instance={grid} />
       </div>
+      <p className="text-2xl opacity-60 mb-2">Gráfica de métricas</p>
+      <div className="md:flex items-center gap-8 mb-4">
+        <div className="mt-1 sm:mt-0">
+          <SegmentedControl
+            value={plotMetric}
+            onChange={setPlotMetric}
+            data={metrics}
+          ></SegmentedControl>
+        </div>
+        <div className="w-80 mt-1 sm:mt-0">
+          <DatePickerInput
+            type="range"
+            placeholder="Pick date"
+            value={dateValue}
+            onChange={setDateValue}
+          />
+        </div>
+      </div>
+      {plotData && (
+        <LineChart
+          h={300}
+          data={plotData as Record<string, any>[]}
+          dataKey="register_datetime"
+          series={[{ name: "metric_value", color: "green.6" }]}
+          curveType="linear"
+          withDots={false}
+        ></LineChart>
+      )}
     </section>
   );
 };

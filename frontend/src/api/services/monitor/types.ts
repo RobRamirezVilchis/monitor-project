@@ -156,8 +156,12 @@ export interface DeviceFilters extends Partial<PageNumberPaginationParams>{
   device_id: string;
 }
 
-export interface ServerFilters extends Partial<PageNumberPaginationParams>{
+export interface ServerHistoryFilters extends Partial<PageNumberPaginationParams>{
   server_id: string;
+  metric_type?: string;
+  sort?: string;
+  register_datetime_before?: Date | null;
+  register_datetime_after?: Date | null;
 }
 
 
