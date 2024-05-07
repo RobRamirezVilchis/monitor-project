@@ -8,6 +8,13 @@ def active_unitstatus_list():
     return UnitStatus.objects.filter(active=True)
 
 
+def get_inactive_units():
+    from datetime import datetime, timedelta
+    date_now = datetime.now()
+
+    return UnitStatus.objects.filter(active=True, last_update__lte=(date_now-timedelta(minutes=30)))
+
+
 def devicestatus_list():
     return DeviceStatus.objects.all().order_by("-status__severity")
 

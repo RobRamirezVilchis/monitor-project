@@ -15,6 +15,7 @@ class UnitStatusAdmin(admin.ModelAdmin):
         'unit',
         'last_update',
         # 'get_client',
+        'active',
         'total',
         'restart',
         'start',

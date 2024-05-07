@@ -509,7 +509,8 @@ def update_driving_status():
                     'pending_events': unit_logs['Jsons_eventos_pendientes'],
                     'pending_status': unit_logs['Jsons_status_pendientes'],
                     'restarting_loop': unit_logs["restarting_loop"],
-                    'status': status_obj
+                    'status': status_obj,
+                    'active': True
                 }
             }
             if "En_viaje" in unit_logs:
@@ -1023,7 +1024,17 @@ def update_industry_status():
         create_device_history(devicehistory_args)
 
 
+def check_inactive_units():
+    inactive_units = get_inactive_units()
+
+    if inactive_units:
+        print("Units to set inactive:")
+        print([unitstatus.unit.name for unitstatus in inactive_units])
+
+    inactive_units.update(active=False)
+
 # Servers
+
 
 def update_servers_status():
     now = datetime.now(tz=pytz.timezone("UTC"))

@@ -142,7 +142,7 @@ const ServerPage = ({ params }: { params: { server_id: string } }) => {
   }
 
   return (
-    <section className="relative">
+    <section className="relative mb-28">
       <BackArrow />
       <h1 className="mb-6 text-5xl font-bold pr-10">
         <span className="hidden md:inline text-gray-400 dark:text-gray-600">
@@ -191,7 +191,7 @@ const ServerPage = ({ params }: { params: { server_id: string } }) => {
       <div className="h-[62vh] mb-10">
         <DataGrid instance={grid} />
       </div>
-      <p className="text-2xl opacity-60 mb-2">Gráfica de métricas</p>
+      <p className="text-2xl opacity-60 mb-2 pt-10">Gráfica de métricas</p>
       <div className="md:flex items-center gap-8 mb-4">
         <div className="mt-1 sm:mt-0">
           <SegmentedControl
