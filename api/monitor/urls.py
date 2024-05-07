@@ -66,6 +66,8 @@ urlpatterns = [
                            name="device-logs"),
                       path("check-wifi-connection/", apis.DeviceWifiProblemsAPI.as_view(),
                            name="device-connection"),
+                      path("set-inactive/", apis.SetDeviceClientAsInactiveAPI.as_view(),
+                           name="set-inactive"),
                   ], "device")
                   )),
 

@@ -1,5 +1,5 @@
 import { createMutation } from "../helpers/createMutation";
-import { addIndustryClient, addSafeDrivingClient, setUnitAsInactive } from "../services/monitor";
+import { addIndustryClient, addSafeDrivingClient, setDeviceAsInactive, setUnitAsInactive } from "../services/monitor";
 
 
 export const useAddSDClientMutation = createMutation({
@@ -15,9 +15,15 @@ export const useAddIndClientMutation = createMutation({
 });
 
 
-export const useSetInactiveUnitMutation = createMutation({
+export const useSetUnitInactiveMutation = createMutation({
   mutationKey: ["set-unit-inactive"],
   mutationFn: (data: Parameters<typeof setUnitAsInactive>[0]) => setUnitAsInactive(data),
+
+});
+
+export const useSetDeviceInactiveMutation = createMutation({
+  mutationKey: ["set-device-inactive"],
+  mutationFn: (data: Parameters<typeof setDeviceAsInactive>[0]) => setDeviceAsInactive(data),
 
 });
 

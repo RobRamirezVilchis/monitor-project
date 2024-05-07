@@ -77,6 +77,7 @@ const api = {
         deviceLogs: (device_id: DeviceId) => `api/v1/monitor/industry/devices/${device_id}/logs/`,
         cameraDisconnections: (device_id: DeviceId) => `api/v1/monitor/industry/devices/${device_id}/camera-disconnections/`,
         checkWifi: (device_id: DeviceId) => `api/v1/monitor/industry/devices/${device_id}/check-wifi-connection/`,
+        setAsInactive: (device_id: DeviceId) => `api/v1/monitor/industry/devices/${device_id}/set-inactive/`,
       },
       servers: {
         status: "api/v1/monitor/servers/status/",

@@ -42,7 +42,7 @@ import { Button, Modal } from "@mantine/core";
 import { useRouter } from "next/navigation";
 import BackArrow from "../../../(components)/BackArrow";
 import { useDisclosure } from "@mantine/hooks";
-import { useSetInactiveUnitMutation } from "@/api/mutations/monitor";
+import { useSetUnitInactiveMutation } from "@/api/mutations/monitor";
 
 type StatusKey = 0 | 1 | 2 | 3 | 4 | 5;
 const statusStyles: { [key in StatusKey]: string } = {
@@ -74,7 +74,6 @@ const barColors: { [key in StatusKey]: string } = {
 const UnitPage = ({ params }: { params: { unit_id: string } }) => {
   const router = useRouter();
   const [error, setError] = useState("");
-  const [success, setSuccess] = useState(false);
   const [opened, { open, close }] = useDisclosure(false);
 
   const unit: Unit = {
@@ -200,7 +199,7 @@ const UnitPage = ({ params }: { params: { unit_id: string } }) => {
     rowCount: historyQuery.data?.pagination?.count ?? 0,
   });
 
-  const setUnitInactiveMutation = useSetInactiveUnitMutation({
+  const setUnitInactiveMutation = useSetUnitInactiveMutation({
     onSuccess: () => {
       router.push("/monitor/safedriving/");
     },
@@ -288,15 +287,18 @@ const UnitPage = ({ params }: { params: { unit_id: string } }) => {
         <DataGrid instance={grid} />
       </div>
 
-      <div className=" items-center gap-8 mb-6">
+      <div className=" items-center gap-8 mb-6 mt-8">
         <p className="text-2xl opacity-60 mb-2">Gráfica de estátus </p>
-        <div className="w-80 mt-1 sm:mt-0">
-          <DatePickerInput
-            type="range"
-            placeholder="Pick date"
-            value={dateValue}
-            onChange={setDateValue}
-          />
+        <div className="flex">
+          <p>Rango de fechas:</p>
+          <div className="w-80 mt-1 sm:mt-0">
+            <DatePickerInput
+              type="range"
+              placeholder="Pick date"
+              value={dateValue}
+              onChange={setDateValue}
+            />
+          </div>
         </div>
       </div>
       {plotData && (
@@ -306,7 +308,6 @@ const UnitPage = ({ params }: { params: { unit_id: string } }) => {
               top: 20,
               right: 20,
               bottom: 120,
-              left: 0,
             }}
           >
             <CartesianGrid strokeDasharray={"3 3"} />
@@ -336,7 +337,7 @@ const UnitPage = ({ params }: { params: { unit_id: string } }) => {
         Marcar como inactiva
       </Button>
       <Modal opened={opened} onClose={close} title="¿Estás seguro?" centered>
-        <p className="mb-4">
+        <p className="mb-4 text-lg">
           La unidad ya no aparecerá en la plataforma, a menos que se reciba
           información de esta
         </p>

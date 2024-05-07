@@ -338,6 +338,21 @@ export async function getIndustryCameraDisconnections(
     return resp.data;
 }
 
+export async function setDeviceAsInactive(
+  filters: DeviceFilters,
+  config?: Parameters<typeof http.post>[2]
+) {
+ 
+    const resp = await http.post(
+      api.endpoints.monitor.industry.setAsInactive(filters.device_id),
+      {
+        ...config,
+      }
+    );
+    return resp.data;
+
+}
+
 export async function getDeviceSeverityHistory(
   filters: DeviceFilters,
   config?: Parameters<typeof http.get>[1]

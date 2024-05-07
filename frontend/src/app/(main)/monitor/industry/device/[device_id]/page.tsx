@@ -12,6 +12,7 @@ import {
 import {
   CameraDisconnection,
   Device,
+  DeviceFilters,
   DeviceHistory,
   Unit,
   UnitHistory,
@@ -45,12 +46,15 @@ import {
   ZAxis,
 } from "recharts";
 import { DatePickerInput } from "@mantine/dates";
-import { Button } from "@mantine/core";
+import { Button, Modal } from "@mantine/core";
 import {
   NameType,
   ValueType,
 } from "recharts/types/component/DefaultTooltipContent";
 import BackArrow from "../../../(components)/BackArrow";
+import { useDisclosure } from "@mantine/hooks";
+import { useSetDeviceInactiveMutation } from "@/api/mutations/monitor";
+import { useRouter } from "next/navigation";
 
 type StatusKey = 0 | 1 | 2 | 3 | 4 | 5;
 const statusStyles: { [key in StatusKey]: string } = {
@@ -81,6 +85,10 @@ const barColors: { [key in StatusKey]: string } = {
 };
 
 const DevicePage = ({ params }: { params: { device_id: string } }) => {
+  const router = useRouter();
+  const [error, setError] = useState("");
+  const [opened, { open, close }] = useDisclosure(false);
+
   const currentDate = new Date();
   let yesterday = new Date();
   yesterday.setDate(yesterday.getDate() - 1);
@@ -226,6 +234,19 @@ const DevicePage = ({ params }: { params: { device_id: string } }) => {
 
   const plotData = deviceSeverityHistory.data;
 
+  const setUnitInactiveMutation = useSetDeviceInactiveMutation({
+    onSuccess: () => {
+      router.push("/monitor/industry/");
+    },
+    onError: (error: any, variables, context) => {
+      setError(error.response.data["error"]);
+    },
+  });
+
+  const onConfirmation = async (deviceFilters: DeviceFilters) => {
+    setUnitInactiveMutation.mutate(deviceFilters);
+  };
+
   return (
     <section className="relative mb-20">
       <BackArrow />
@@ -334,15 +355,18 @@ const DevicePage = ({ params }: { params: { device_id: string } }) => {
         <DataGrid instance={camerasGrid} />
       </div>
 
-      <div className="md:flex items-center gap-8 mt-10 mb-4">
-        <p className="text-2xl opacity-60">Gráfica de estátus: </p>
-        <div className="w-80">
-          <DatePickerInput
-            type="range"
-            placeholder="Pick date"
-            value={dateValue}
-            onChange={setDateValue}
-          />
+      <div className=" items-center gap-8 mb-6 mt-8">
+        <p className="text-2xl opacity-60 mb-2">Gráfica de estátus </p>
+        <div className="flex items-center">
+          <p className="hidden sm:block mr-2">Rango de fechas:</p>
+          <div className="w-80 mt-1 sm:mt-0">
+            <DatePickerInput
+              type="range"
+              placeholder="Pick date"
+              value={dateValue}
+              onChange={setDateValue}
+            />
+          </div>
         </div>
       </div>
       {plotData && (
@@ -352,7 +376,6 @@ const DevicePage = ({ params }: { params: { device_id: string } }) => {
               top: 20,
               right: 20,
               bottom: 120,
-              left: 20,
             }}
           >
             <CartesianGrid strokeDasharray={"3 3"} />
@@ -378,6 +401,21 @@ const DevicePage = ({ params }: { params: { device_id: string } }) => {
           </ScatterChart>
         </ResponsiveContainer>
       )}
+      <Button onClick={open} color="red.9" size="md">
+        Detener monitoreo
+      </Button>
+      <Modal opened={opened} onClose={close} title="¿Estás seguro?" centered>
+        <p className="mb-4 text-lg">
+          Este dispositivo ya no aparecerá en la plataforma, ni se buscará
+          información de él.
+        </p>
+        <Button
+          color="red.9"
+          onClick={() => onConfirmation({ device_id: params.device_id })}
+        >
+          Sí
+        </Button>
+      </Modal>
     </section>
   );
 };

@@ -16,7 +16,7 @@ def get_inactive_units():
 
 
 def devicestatus_list():
-    return DeviceStatus.objects.all().order_by("-status__severity")
+    return DeviceStatus.objects.filter(device__client__active=True).order_by("-status__severity")
 
 
 def camerastatus_list():
@@ -79,7 +79,7 @@ def get_unitstatus(unit_id):
 
 def get_devicestatus(device_id):
     return DeviceStatus.objects.get(
-        device_id=device_id
+        device_id=device_id,
     )
 
 
@@ -123,6 +123,10 @@ def get_or_create_camera(args):
         gx=args['gx']
     )
     return camera_obj
+
+
+def get_device_by_id(device_id):
+    return Device.objects.get(id=device_id)
 
 
 def get_or_create_device(args):

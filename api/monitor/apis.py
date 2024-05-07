@@ -1099,4 +1099,17 @@ class SetUnitAsInactiveAPI(APIView):
         except:
             return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-        return Response(status=status.HTTP_202_ACCEPTED)
+        return Response(status=status.HTTP_200_OK)
+
+
+class SetDeviceClientAsInactiveAPI(APIView):
+    def post(self, request, device_id, *args, **kwargs):
+        try:
+            device = get_device_by_id(device_id)
+            client = device.client
+            client.active = False
+            client.save()
+        except Exception as e:
+            return Response(data={"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+        return Response(status=status.HTTP_200_OK)
