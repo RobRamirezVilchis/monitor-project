@@ -129,9 +129,6 @@ export const useUnitLogsQuery = createQuery({
   queryClient: defaultQueryClient,
 });
 
-
-
-
 // Industry API ----------------------------------------------------------
 
 export const useDevicesQuery = createQuery({

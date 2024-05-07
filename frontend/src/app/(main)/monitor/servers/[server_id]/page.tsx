@@ -8,7 +8,7 @@ import {
 } from "@/api/queries/monitor";
 import BackArrow from "../../(components)/BackArrow";
 import { format, parseISO } from "date-fns";
-import { Spa } from "@mui/icons-material";
+import { PaymentOutlined, Spa } from "@mui/icons-material";
 import { Progress, SegmentedControl } from "@mantine/core";
 import { useDataGrid, useSsrDataGrid } from "@/hooks/data-grid";
 import {
@@ -18,7 +18,7 @@ import {
 } from "@/api/services/monitor/types";
 import { ColumnDef } from "@/ui/data-grid/types";
 import DataGrid from "@/ui/data-grid/DataGrid";
-import { LineChart } from "@mantine/charts";
+import { ChartTooltipProps, LineChart } from "@mantine/charts";
 import { useMergedRef } from "@mantine/hooks";
 import { useState } from "react";
 import { DatePickerInput } from "@mantine/dates";
@@ -211,6 +211,11 @@ const ServerPage = ({ params }: { params: { server_id: string } }) => {
       </div>
       {plotData && (
         <LineChart
+          tooltipProps={{
+            content: ({ label, payload }) => (
+              <ChartTooltip label={label} payload={payload} />
+            ),
+          }}
           h={300}
           data={plotData as Record<string, any>[]}
           dataKey="register_datetime"
@@ -224,6 +229,34 @@ const ServerPage = ({ params }: { params: { server_id: string } }) => {
 };
 
 export default ServerPage;
+
+function ChartTooltip({ label, payload }: ChartTooltipProps) {
+  if (!payload) return null;
+  let metric_date, metric_value, metric_name;
+  if (payload.length) {
+    console.log(payload);
+    console.log(payload[0].payload);
+    metric_date = format(parseISO(payload[0].payload.register_datetime), "Pp");
+    metric_name = payload[0].payload.metric_type;
+    if (metric_name == "CPUUtilization") {
+      metric_value = payload[0].payload.metric_value.toFixed(2) + "%";
+    } else if (metric_name == "NetworkOut") {
+      metric_value = payload[0].payload.metric_value.toFixed(2) + " MB/s";
+    }
+  }
+
+  return (
+    <div>
+      {payload.length && (
+        <div className="bg-white p-4 rounded-md shadow-md">
+          <p className="font-bold">{metric_date}</p>
+          <span>{metric_name}: </span>
+          <span>{metric_value}</span>
+        </div>
+      )}
+    </div>
+  );
+}
 
 const cols: ColumnDef<ServerHistory>[] = [
   {

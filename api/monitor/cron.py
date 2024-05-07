@@ -1034,6 +1034,55 @@ def update_industry_status():
         create_device_history(devicehistory_args)
 
 
+# Smart Retail
+def get_retail_data(client_keyname):
+    login_url = f'https://{client_keyname}.retail.aivat.io/login/'
+    request_url = f'https://{client_keyname}.retail.aivat.io/stats_json/'
+
+    credentials = get_api_credentials("Smart Retail", client_keyname)
+
+    try:
+        token = api_login(login_url, credentials)
+    except requests.exceptions.ConnectionError:
+        print("Connection error")
+        return
+
+    now = datetime.now(tz=pytz.timezone('UTC')).replace(tzinfo=None)
+    time_interval = {
+        "initial_datetime": (now - timedelta(hours=1, minutes=10)).isoformat(timespec="seconds"),
+        "final_datetime": now.isoformat(timespec='seconds')
+    }
+
+    response, status = make_request(request_url, time_interval, token)
+    if not (status == 200 or status == 201):
+        token = api_login(login_url, credentials)
+        response, status = make_request(request_url, time_interval, token)
+
+    if status == 200 or status == 201:
+        response = response.json()
+    else:
+        print(f"Status code: {status}")
+        return
+
+    return response
+
+
+def process_retail_data(response):
+    pass
+
+
+def update_retail_status():
+    deployment = get_or_create_deployment('Smart Retail')
+    clients = get_deployment_clients(deployment)
+
+    for client in clients:
+        client_alias = client.keyname
+        client_name = client.name
+
+        response = get_retail_data(client_alias)
+        print(response)
+
+
 # Servers
 
 def update_servers_status():

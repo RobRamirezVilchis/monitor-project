@@ -288,8 +288,8 @@ const UnitPage = ({ params }: { params: { unit_id: string } }) => {
         <DataGrid instance={grid} />
       </div>
 
-      <div className="md:flex items-center gap-8">
-        <p className="text-2xl opacity-60">Gráfica de estátus: </p>
+      <div className=" items-center gap-8 mb-6">
+        <p className="text-2xl opacity-60 mb-2">Gráfica de estátus </p>
         <div className="w-80 mt-1 sm:mt-0">
           <DatePickerInput
             type="range"
