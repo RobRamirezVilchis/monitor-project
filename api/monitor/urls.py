@@ -30,6 +30,8 @@ urlpatterns = [
                            name="scatter-plot"),
                       path("logs/", apis.SafeDrivingLogsAPI.as_view(),
                            name="device-logs"),
+                      path("set-inactive/", apis.SetUnitAsInactiveAPI.as_view(),
+                           name="set-inactive"),
                   ], "unit")
                   )),
 

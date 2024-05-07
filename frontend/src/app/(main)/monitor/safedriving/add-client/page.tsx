@@ -32,7 +32,6 @@ const AddSDClientPage = () => {
 
   const addClientMutation = useAddSDClientMutation({
     onSuccess: () => {
-      console.log("Success");
       setSuccess(true);
     },
     onError: (error: any, variables, context) => {

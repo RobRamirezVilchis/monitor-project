@@ -565,6 +565,16 @@ def update_driving_status():
             send_alerts(chat="SAFEDRIVING_CHAT", alerts=alerts_to_send)
 
 
+def check_inactive_units():
+    inactive_units = get_inactive_units()
+
+    if inactive_units:
+        print("Units to set inactive:")
+        print([unitstatus.unit.name for unitstatus in inactive_units])
+
+    inactive_units.update(active=False)
+
+
 # Industry
 
 def get_industry_data(client_keyname):
@@ -1024,17 +1034,7 @@ def update_industry_status():
         create_device_history(devicehistory_args)
 
 
-def check_inactive_units():
-    inactive_units = get_inactive_units()
-
-    if inactive_units:
-        print("Units to set inactive:")
-        print([unitstatus.unit.name for unitstatus in inactive_units])
-
-    inactive_units.update(active=False)
-
 # Servers
-
 
 def update_servers_status():
     now = datetime.now(tz=pytz.timezone("UTC"))

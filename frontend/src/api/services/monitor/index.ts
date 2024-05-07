@@ -165,6 +165,22 @@ export async function getUnitLastActiveStatus(
 }
 
 
+export async function setUnitAsInactive(
+  filters: UnitFilters,
+  config?: Parameters<typeof http.post>[2]
+) {
+ 
+    const resp = await http.post(
+      api.endpoints.monitor.driving.setAsInactive(filters.unit_id),
+      {
+        ...config,
+      }
+    );
+    return resp.data;
+
+}
+
+
 export async function getUnitSeverityHistory(
   filters: UnitFilters,
   config?: Parameters<typeof http.get>[1]

@@ -61,6 +61,7 @@ const api = {
         lastActiveStatus: (unit_id: UnitId) => `api/v1/monitor/driving/units/${unit_id}/last-active-status/`,
         severityHistory: (unit_id: UnitId) => `api/v1/monitor/driving/units/${unit_id}/severity-history/`,
         unitLogs: (unit_id: UnitId) => `api/v1/monitor/driving/units/${unit_id}/logs/`,
+        setAsInactive: (unit_id: UnitId) => `api/v1/monitor/driving/units/${unit_id}/set-inactive/`,
       },
       industry: {
         clients: "api/v1/monitor/industry/clients/",

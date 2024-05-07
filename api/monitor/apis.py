@@ -1087,3 +1087,16 @@ class ServerMetricsAPI(APIView):
         output = {"metrics": metrics_dict}
 
         return Response(self.OutputSerializer(output).data)
+
+
+class SetUnitAsInactiveAPI(APIView):
+
+    def post(self, request, unit_id, *args, **kwargs):
+        try:
+            unit_status = get_unitstatus(unit_id)
+            unit_status.active = False
+            unit_status.save()
+        except:
+            return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+        return Response(status=status.HTTP_202_ACCEPTED)

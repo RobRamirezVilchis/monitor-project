@@ -7,7 +7,7 @@ import {
   useUnitSeverityHistory,
   useUnitStatusQuery,
 } from "@/api/queries/monitor";
-import { Unit, UnitHistory } from "@/api/services/monitor/types";
+import { Unit, UnitFilters, UnitHistory } from "@/api/services/monitor/types";
 
 import { useDataGrid, useSsrDataGrid } from "@/hooks/data-grid";
 import DataGrid from "@/ui/data-grid/DataGrid";
@@ -38,9 +38,11 @@ import {
 import Link from "next/link";
 import { useState } from "react";
 import { DatePickerInput } from "@mantine/dates";
-import { Button } from "@mantine/core";
+import { Button, Modal } from "@mantine/core";
 import { useRouter } from "next/navigation";
 import BackArrow from "../../../(components)/BackArrow";
+import { useDisclosure } from "@mantine/hooks";
+import { useSetInactiveUnitMutation } from "@/api/mutations/monitor";
 
 type StatusKey = 0 | 1 | 2 | 3 | 4 | 5;
 const statusStyles: { [key in StatusKey]: string } = {
@@ -71,6 +73,10 @@ const barColors: { [key in StatusKey]: string } = {
 
 const UnitPage = ({ params }: { params: { unit_id: string } }) => {
   const router = useRouter();
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState(false);
+  const [opened, { open, close }] = useDisclosure(false);
+
   const unit: Unit = {
     name: params.unit_id,
   };
@@ -194,6 +200,19 @@ const UnitPage = ({ params }: { params: { unit_id: string } }) => {
     rowCount: historyQuery.data?.pagination?.count ?? 0,
   });
 
+  const setUnitInactiveMutation = useSetInactiveUnitMutation({
+    onSuccess: () => {
+      router.push("/monitor/safedriving/");
+    },
+    onError: (error: any, variables, context) => {
+      setError(error.response.data["error"]);
+    },
+  });
+
+  const onConfirmation = async (unitFilters: UnitFilters) => {
+    setUnitInactiveMutation.mutate(unitFilters);
+  };
+
   return (
     <section className="relative mb-20">
       <BackArrow />
@@ -313,6 +332,21 @@ const UnitPage = ({ params }: { params: { unit_id: string } }) => {
           </ScatterChart>
         </ResponsiveContainer>
       )}
+      <Button onClick={open} color="red.9" size="md">
+        Marcar como inactiva
+      </Button>
+      <Modal opened={opened} onClose={close} title="¿Estás seguro?" centered>
+        <p className="mb-4">
+          La unidad ya no aparecerá en la plataforma, a menos que se reciba
+          información de esta
+        </p>
+        <Button
+          color="red.9"
+          onClick={() => onConfirmation({ unit_id: unit.name })}
+        >
+          Sí
+        </Button>
+      </Modal>
     </section>
   );
 };
