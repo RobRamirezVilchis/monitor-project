@@ -1152,6 +1152,10 @@ def update_servers_status():
             server = get_or_create_server(server_id, defaults={
                 "name": name, "server_type": server_type})
 
+            if not server.region:
+                server.region = region
+                server.save()
+
             activity_data = {}
             activity = False
             for metric in metrics_to_get:
