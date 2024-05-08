@@ -33,8 +33,13 @@ def generate_testing_data(client_alias, response, processed_data):
 
 
 def send_telegram(chat: str, message: str):
+    load_dotenv()
+    if os.environ.get("ALERTS") != "true":
+        print("Alerts are disabled")
+        return
     TELEGRAM_CHAT = os.environ.get(chat)
     TELEGRAM_BOT = os.environ.get("TELEGRAM_BOT")
+    print(TELEGRAM_CHAT, TELEGRAM_BOT)
 
     subprocess.run(
         f"curl -X POST -H 'Content-Type: application/json' -d '{{\"chat_id\": \"{TELEGRAM_CHAT}\", \"text\": \"{message}\"}}\' https://api.telegram.org/bot{TELEGRAM_BOT}/sendMessage",
@@ -594,7 +599,7 @@ def check_severity_ratios():
     }
     # Thresholds for each problematic severity level, to send an alert if exceeded
     status_thresholds = {
-        3: 0.3,
+        3: 0.25,
         4: 0.3,
         5: 0.3,
     }
@@ -605,7 +610,7 @@ def check_severity_ratios():
                 status__severity=level).order_by('-count')[0]["status__description"]
 
             msg = f'ALERTA: {counts_dict[level] / total_active_units:.2%} de dispositivos en estado {status_names[level]}\nProblema prevalente: {most_common_problem}'
-            send_telegram("SAFEDRIVING_CHAT", msg)
+            send_telegram(chat="SAFEDRIVING_CHAT", message=msg)
 
 
 # Industry
