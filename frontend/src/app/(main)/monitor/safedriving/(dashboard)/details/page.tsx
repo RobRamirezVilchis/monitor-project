@@ -240,8 +240,8 @@ const SafeDrivingPage = () => {
                           Cantidad de dispositivos por categoría:
                         </p>
                         {statusTooltipText[severity_count.level].map(
-                          (statusProblems) => (
-                            <p>
+                          (statusProblems, i) => (
+                            <p key={`${severity_count.level}_${i}`}>
                               <span>{statusProblems[0]}</span>
                               <span> - </span>
                               <span>{statusProblems[1]}</span>
