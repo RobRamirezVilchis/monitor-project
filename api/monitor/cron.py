@@ -605,7 +605,7 @@ def check_severity_ratios():
                 status__severity=level).order_by('-count')[0]["status__description"]
 
             msg = f'ALERTA: {counts_dict[level] / total_active_units:.2%} de dispositivos en estado {status_names[level]}\nProblema prevalente: {most_common_problem}'
-            send_telegram(msg)
+            send_telegram("SAFEDRIVING_CHAT", msg)
 
 
 # Industry
