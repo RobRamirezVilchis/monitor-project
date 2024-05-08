@@ -575,7 +575,41 @@ def check_inactive_units():
     inactive_units.update(active=False)
 
 
+def check_severity_ratios():
+    counts = get_units_severity_counts()
+    problem_counts = get_units_problem_counts()
+
+    counts_dict = {count["severity"]: count["count"] for count in counts}
+
+    total_active_units = sum(counts_dict.values()) - counts_dict[0]
+
+    # Hardcoded
+    status_names = {
+        0: "Inactivo",
+        1: "Funcionando",
+        2: "Normal",
+        3: "Alerta",
+        4: "Fallando",
+        5: "Crítico",
+    }
+    # Thresholds for each problematic severity level, to send an alert if exceeded
+    status_thresholds = {
+        3: 0.3,
+        4: 0.3,
+        5: 0.3,
+    }
+
+    for level, threshold in status_thresholds.items():
+        if counts_dict[level] / total_active_units >= threshold:
+            most_common_problem = problem_counts.filter(
+                status__severity=level).order_by('-count')[0]["status__description"]
+
+            msg = f'ALERTA: {counts_dict[level] / total_active_units:.2%} de dispositivos en estado {status_names[level]}\nProblema prevalente: {most_common_problem}'
+            send_telegram(msg)
+
+
 # Industry
+
 
 def get_industry_data(client_keyname):
 

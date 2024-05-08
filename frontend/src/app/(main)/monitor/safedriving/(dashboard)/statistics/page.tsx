@@ -222,6 +222,7 @@ const ChartTooltip = ({ label, payload }: ChartTooltipProps) => {
       {getFilteredChartTooltipPayload(payload).map((item: any) => (
         <Text key={item.name} fz="sm">
           {item.name}: {item.value}
+          {"  "}({((item.value / totalUnits) * 100).toFixed(0)}%)
         </Text>
       ))}
     </Paper>

@@ -329,6 +329,18 @@ def get_units_severity_counts(client=None):
     return counts
 
 
+def get_units_problem_counts(client=None):
+    client_query = Q()
+    if client:
+        client_query = Q(unit__client=client)
+    counts = UnitStatus.objects.filter(client_query).values('status__description') \
+        .annotate(severity=F('status__severity')) \
+        .annotate(count=Count('status__description')) \
+        .order_by('-severity')
+
+    return counts
+
+
 def get_devices_severity_counts(client):
     client_query = Q()
     if client:
