@@ -93,6 +93,8 @@ export interface CameraDisconnection {
 export interface SeverityCount {
   severity: number;
   count: number;
+  breakdown: {description: string,
+              count:string}[]
 }
 
 export interface LastUpdate {

@@ -81,13 +81,21 @@ class UnitSeverityCount(APIView):
     class SeverityCountSerializer(serializers.Serializer):
         severity = serializers.IntegerField()
         count = serializers.IntegerField()
+        breakdown = serializers.JSONField()
 
     def get(self, request, *args, **kwargs):
 
         counts = get_units_severity_counts()
+        problem_counts = get_units_problem_counts()
+
+        output = counts.values("severity", "count")
+
+        for level in output:
+            level["breakdown"] = problem_counts.filter(
+                severity=level["severity"]).values('description', 'count')
 
         # Serialize the result
-        serializer = self.SeverityCountSerializer(counts, many=True)
+        serializer = self.SeverityCountSerializer(output, many=True)
         return Response(serializer.data)
 
 

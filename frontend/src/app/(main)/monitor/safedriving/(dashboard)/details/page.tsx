@@ -1,7 +1,13 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { TextInput, useCombobox, Select } from "@mantine/core";
+import {
+  TextInput,
+  useCombobox,
+  Select,
+  Tooltip,
+  HoverCard,
+} from "@mantine/core";
 import { PieChart } from "@mantine/charts";
 
 import {
@@ -19,6 +25,7 @@ import { useRouter } from "next/navigation";
 import { formatDistanceToNow } from "date-fns";
 import { es } from "date-fns/locale";
 import router from "next/router";
+import { Space_Mono } from "next/font/google";
 
 type StatusKey = 0 | 1 | 2 | 3 | 4 | 5;
 const statusStyles: { [key in StatusKey]: string } = {
@@ -143,6 +150,18 @@ const SafeDrivingPage = () => {
     }
   }
 
+  let statusTooltipText: { [key: number]: [string, string][] } = {};
+  if (countQuery.data) {
+    for (const sevCount of countQuery.data) {
+      let problemsList: [string, string][] = [];
+      for (const reason of sevCount.breakdown) {
+        problemsList.push([reason.description, reason.count]);
+      }
+      statusTooltipText[sevCount.severity] = problemsList;
+    }
+  }
+  console.log(statusTooltipText);
+
   return (
     <section className="mb-20">
       <div className="flex items-center">
@@ -190,30 +209,47 @@ const SafeDrivingPage = () => {
                   >
                     <p>{severity_count.value}</p>
                     <p>-</p>
-
-                    <Link
-                      href={
-                        statusFilter == null ||
-                        Number(statusFilter) != severity_count.level
-                          ? "/monitor/safedriving/details/?" +
-                            createQueryString(
-                              "status",
-                              String(severity_count.level)
-                            )
-                          : "/monitor/safedriving/details/?" +
-                            removeQueryParam("status")
-                      }
-                      className={`${
-                        severity_count.level == Number(statusFilter) ||
-                        statusFilter == null
-                          ? "opacity-100"
-                          : "opacity-30"
-                      } inline-flex px-2.5 pt-1 pb-0.5 text-s font-semibold border-2 ${
-                        statusStyles[severity_count.level as StatusKey]
-                      } rounded-full`}
-                    >
-                      {statusNames[severity_count.level as StatusKey]}
-                    </Link>
+                    <HoverCard openDelay={500}>
+                      <HoverCard.Target>
+                        <Link
+                          href={
+                            statusFilter == null ||
+                            Number(statusFilter) != severity_count.level
+                              ? "/monitor/safedriving/details/?" +
+                                createQueryString(
+                                  "status",
+                                  String(severity_count.level)
+                                )
+                              : "/monitor/safedriving/details/?" +
+                                removeQueryParam("status")
+                          }
+                          className={`${
+                            severity_count.level == Number(statusFilter) ||
+                            statusFilter == null
+                              ? "opacity-100"
+                              : "opacity-30"
+                          } inline-flex px-2.5 pt-1 pb-0.5 text-s font-semibold border-2 ${
+                            statusStyles[severity_count.level as StatusKey]
+                          } rounded-full`}
+                        >
+                          {statusNames[severity_count.level as StatusKey]}
+                        </Link>
+                      </HoverCard.Target>
+                      <HoverCard.Dropdown>
+                        <p className="font-bold">
+                          Cantidad de dispositivos por categoría:
+                        </p>
+                        {statusTooltipText[severity_count.level].map(
+                          (statusProblems) => (
+                            <p>
+                              <span>{statusProblems[0]}</span>
+                              <span> - </span>
+                              <span>{statusProblems[1]}</span>
+                            </p>
+                          )
+                        )}
+                      </HoverCard.Dropdown>
+                    </HoverCard>
                   </div>
                 ))}
               </div>
@@ -223,9 +259,6 @@ const SafeDrivingPage = () => {
           <div className="absolute -right-40 bottom-0 hidden lg:block">
             <PieChart
               data={severityCount.slice(0, 5)}
-              mt={0}
-              mb={0}
-              py={0}
               size={150}
               withLabels
               withLabelsLine

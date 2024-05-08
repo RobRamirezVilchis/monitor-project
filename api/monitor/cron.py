@@ -607,7 +607,7 @@ def check_severity_ratios():
     for level, threshold in status_thresholds.items():
         if counts_dict[level] / total_active_units >= threshold:
             most_common_problem = problem_counts.filter(
-                status__severity=level).order_by('-count')[0]["status__description"]
+                status__severity=level).order_by('-count')[0]["description"]
 
             msg = f'ALERTA: {counts_dict[level] / total_active_units:.2%} de dispositivos en estado {status_names[level]}\nProblema prevalente: {most_common_problem}'
             send_telegram(chat="SAFEDRIVING_CHAT", message=msg)

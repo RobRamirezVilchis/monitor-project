@@ -335,7 +335,9 @@ def get_units_problem_counts(client=None):
         client_query = Q(unit__client=client)
     counts = UnitStatus.objects.filter(client_query).values('status__description') \
         .annotate(severity=F('status__severity')) \
-        .annotate(count=Count('status__description')) \
+        .annotate(description=F('status__description')) \
+        .values('description', 'severity') \
+        .annotate(count=Count('description')) \
         .order_by('-severity')
 
     return counts
