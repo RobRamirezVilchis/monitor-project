@@ -320,7 +320,7 @@ def get_units_severity_counts(client=None):
     client_query = Q()
     if client:
         client_query = Q(unit__client=client)
-    counts = UnitStatus.objects.filter(client_query).values('status__severity') \
+    counts = UnitStatus.objects.filter(client_query).filter(active=True).values('status__severity') \
         .annotate(severity=F('status__severity')) \
         .values('severity') \
         .annotate(count=Count('id')) \
@@ -333,7 +333,7 @@ def get_units_problem_counts(client=None):
     client_query = Q()
     if client:
         client_query = Q(unit__client=client)
-    counts = UnitStatus.objects.filter(client_query).values('status__description') \
+    counts = UnitStatus.objects.filter(client_query).filter(active=True).values('status__description') \
         .annotate(severity=F('status__severity')) \
         .annotate(description=F('status__description')) \
         .values('description', 'severity') \

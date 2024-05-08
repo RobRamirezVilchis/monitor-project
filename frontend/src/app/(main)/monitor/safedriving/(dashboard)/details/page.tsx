@@ -160,7 +160,6 @@ const SafeDrivingPage = () => {
       statusTooltipText[sevCount.severity] = problemsList;
     }
   }
-  console.log(statusTooltipText);
 
   return (
     <section className="mb-20">
