@@ -1003,6 +1003,7 @@ class IndClientCreateAPI(APIView):
 class ServerStatusListAPI(APIView):
     class OutputSerializer(serializers.Serializer):
         server_id = serializers.IntegerField()
+        aws_id = serializers.CharField(source="server.aws_id")
         server_name = serializers.CharField(source="server")
         last_launch = serializers.DateTimeField()
         last_activity = serializers.DateTimeField()
@@ -1027,6 +1028,7 @@ class ServerStatusListAPI(APIView):
 class ServerStatusAPI(APIView):
     class OutputSerializer(serializers.Serializer):
         server_id = serializers.IntegerField()
+        aws_id = serializers.CharField(source="server.aws_id")
         server_name = serializers.CharField(source="server")
         last_launch = serializers.DateTimeField()
         last_activity = serializers.DateTimeField()

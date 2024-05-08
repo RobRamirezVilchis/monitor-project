@@ -595,3 +595,7 @@ def get_serverhistory(args, filters=None):
         server_id=args["server_id"]).order_by('register_datetime')
 
     return ServerHistoryFilter(filters, logs).qs
+
+
+def get_serverregions():
+    return ServerRegion.objects.all()

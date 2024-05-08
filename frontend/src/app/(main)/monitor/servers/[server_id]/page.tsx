@@ -144,14 +144,17 @@ const ServerPage = ({ params }: { params: { server_id: string } }) => {
   return (
     <section className="relative mb-28">
       <BackArrow />
-      <h1 className="mb-6 text-5xl font-bold pr-10">
-        <span className="hidden md:inline text-gray-400 dark:text-gray-600">
-          Servidores /{" "}
-        </span>
-        {serverStatus && (
-          <span>{serverStatus.server_name.split("_").join(" ")}</span>
-        )}
-      </h1>
+      <div className="flex justify-between items-center">
+        <h1 className="mb-6 text-5xl font-bold pr-10">
+          <span className="hidden md:inline text-gray-400 dark:text-gray-600">
+            Servidores /{" "}
+          </span>
+          {serverStatus && (
+            <span>{serverStatus.server_name.split("_").join(" ")}</span>
+          )}
+        </h1>
+        <p className="opacity-40 text-xl">ID: {serverStatus?.aws_id}</p>
+      </div>
       {serverStatus && (
         <div className="text-2xl text-gray-500">
           <p>

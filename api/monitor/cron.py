@@ -1126,79 +1126,81 @@ def update_retail_status():
 
 def update_servers_status():
     now = datetime.now(tz=pytz.timezone("UTC"))
+    server_regions = get_serverregions()
 
-    utils = AWSUtils()
-    instances = utils.list_instances()
-    metrics_to_get = get_servermetrics()
+    for region in server_regions:
+        utils = AWSUtils(region.name)
+        instances = utils.list_instances()
+        metrics_to_get = get_servermetrics()
 
-    all_metrics_data = {}
-    for metric in metrics_to_get:
-        metric_data = utils.get_metrics(instances, metric.name)
-        all_metrics_data[metric.name] = metric_data
-
-    for i in range(len(instances)):
-        instance = instances[i]
-
-        name = instance["name"]
-        server_type = instance["type"]
-        server_id = instance["id"]
-        state = instance["state"]
-        launch_time = instance["launch_time"]
-
-        current_server_status = get_serverstatus_by_awsid(server_id)
-
-        server = get_or_create_server(server_id, defaults={
-            "name": name, "server_type": server_type})
-
-        activity_data = {}
-        activity = False
+        all_metrics_data = {}
         for metric in metrics_to_get:
+            metric_data = utils.get_metrics(instances, metric.name)
+            all_metrics_data[metric.name] = metric_data
 
-            server_metric_values = all_metrics_data[metric.name]['MetricDataResults'][i]['Values']
-            server_metric_dates = all_metrics_data[metric.name]['MetricDataResults'][i]['Timestamps']
+        for i in range(len(instances)):
+            instance = instances[i]
 
-            if server_metric_values:
-                activity = True
-                activity_data[metric.key] = server_metric_values[0]
-            else:
-                break
+            name = instance["name"]
+            server_type = instance["type"]
+            server_id = instance["id"]
+            state = instance["state"]
+            launch_time = instance["launch_time"]
 
-            for j in range(len(server_metric_values)):
-                metric_date = server_metric_dates[j]
-                serverhistory_args = {
+            current_server_status = get_serverstatus_by_awsid(server_id)
+
+            server = get_or_create_server(server_id, defaults={
+                "name": name, "server_type": server_type})
+
+            activity_data = {}
+            activity = False
+            for metric in metrics_to_get:
+
+                server_metric_values = all_metrics_data[metric.name]['MetricDataResults'][i]['Values']
+                server_metric_dates = all_metrics_data[metric.name]['MetricDataResults'][i]['Timestamps']
+
+                if server_metric_values:
+                    activity = True
+                    activity_data[metric.key] = server_metric_values[0]
+                else:
+                    break
+
+                for j in range(len(server_metric_values)):
+                    metric_date = server_metric_dates[j]
+                    serverhistory_args = {
+                        "server": server,
+                        "last_launch": launch_time,
+                        "register_datetime": metric_date,
+                        "register_date": metric_date.date(),
+                        "state": state,
+                        "metric_type": metric,
+                        "metric_value": server_metric_values[j],
+                    }
+                    create_serverhistory(serverhistory_args)
+
+            if activity:
+                server_status = update_or_create_serverstatus(server_id, defaults={
                     "server": server,
-                    "last_launch": launch_time,
-                    "register_datetime": metric_date,
-                    "register_date": metric_date.date(),
                     "state": state,
-                    "metric_type": metric,
-                    "metric_value": server_metric_values[j],
-                }
-                create_serverhistory(serverhistory_args)
+                    "last_launch": launch_time,
+                    "last_activity": now,
+                    "activity_data": activity_data
+                })
 
-        if activity:
-            server_status = update_or_create_serverstatus(server_id, defaults={
-                "server": server,
-                "state": state,
-                "last_launch": launch_time,
-                "last_activity": now,
-                "activity_data": activity_data
-            })
-
-        elif current_server_status == None:
-            server_status = update_or_create_serverstatus(server_id, defaults={
-                "server": server,
-                "state": state,
-                "last_launch": launch_time,
-                "last_activity": now,
-                "activity_data": {}
-            })
-        elif state == "stopped" and current_server_status.state == "running":
-            server_status = update_or_create_serverstatus(server_id, defaults={
-                "server": server,
-                "state": state,
-                "activity_data": {}
-            })
+            elif current_server_status == None:
+                server_status = update_or_create_serverstatus(server_id, defaults={
+                    "server": server,
+                    "state": state,
+                    "last_launch": launch_time,
+                    "last_activity": now,
+                    "activity_data": {}
+                })
+            elif state == "stopped" and current_server_status.state == "running":
+                server_status = update_or_create_serverstatus(server_id, defaults={
+                    "server": server,
+                    "state": state,
+                    "activity_data": {}
+                })
 
 
 # Generate daily Telegram Safe Driving Report

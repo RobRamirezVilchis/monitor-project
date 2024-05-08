@@ -233,10 +233,16 @@ class SeverityCount(models.Model):
         return f'{self.deployment} | {self.client} - {self.timestamp}'
 
 
+class ServerRegion(models.Model):
+    name = models.CharField(max_length=50)
+
+
 class Server(models.Model):
     name = models.CharField(max_length=50)
     server_type = models.CharField(max_length=50)
     aws_id = models.CharField(max_length=50)
+    region = models.ForeignKey(
+        ServerRegion, on_delete=models.CASCADE, null=True, blank=True)
 
     def __str__(self):
         return self.name

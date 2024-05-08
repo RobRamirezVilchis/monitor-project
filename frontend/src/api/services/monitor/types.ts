@@ -158,13 +158,6 @@ export interface DeviceFilters extends Partial<PageNumberPaginationParams>{
   device_id: string;
 }
 
-export interface ServerHistoryFilters extends Partial<PageNumberPaginationParams>{
-  server_id: string;
-  metric_type?: string;
-  sort?: string;
-  register_datetime_before?: Date | null;
-  register_datetime_after?: Date | null;
-}
 
 
 export interface DeviceLogsFilters extends Partial<PageNumberPaginationParams>{
@@ -201,6 +194,7 @@ export interface UnitLogs {
 
 export interface ServerStatus {
   server_id: number;
+  aws_id: string;
   server_name: string;
   last_launch: Date;
   last_activity: Date;
@@ -216,6 +210,15 @@ export interface ServerHistory extends Partial<PageNumberPaginationParams> {
   metric_type: string,
   metric_value: number,
 }
+
+export interface ServerHistoryFilters extends Partial<PageNumberPaginationParams>{
+  server_id: string;
+  metric_type?: string;
+  sort?: string;
+  register_datetime_before?: Date | null;
+  register_datetime_after?: Date | null;
+}
+
 
 export interface MetricsKeys {
   metrics: {[metricName: string]: string}

@@ -12,6 +12,7 @@ const ServerCard = (serverStatus: ServerStatus) => {
   const {
     server_id,
     server_name,
+    aws_id,
     last_launch,
     last_activity,
     state,
@@ -35,10 +36,11 @@ const ServerCard = (serverStatus: ServerStatus) => {
         <span className="absolute right-6 animate-ping inline-flex h-2 w-2 rounded-full bg-green-600 opacity-100"></span>
       )}
       <div className="flex flex-col gap-2">
-        <div className="flex h-16 items-center">
+        <div className="flex flex-col h-20 justify-center">
           <h3 className="text-2xl font-bold">
             {server_name.split("_").join(" ")}
           </h3>
+          <p className="opacity-40">{aws_id}</p>
         </div>
         <div className="flex items-center">
           <svg

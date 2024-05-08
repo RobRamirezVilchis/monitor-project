@@ -10,11 +10,11 @@ import pytz
 
 
 class AWSUtils:
-    def __init__(self):
+    def __init__(self, region_name):
         self.logger = logging.getLogger(__name__)
         # self.logger.debug('Creating AWSUtils object')
         self.session = boto3.Session(
-            region_name='us-east-1',
+            region_name=region_name,
         )
         self.ec2_client = self.session.client('ec2')
         self.cloudwatch_client = self.session.client('cloudwatch')
