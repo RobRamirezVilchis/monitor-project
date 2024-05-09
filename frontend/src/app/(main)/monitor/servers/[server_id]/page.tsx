@@ -237,8 +237,6 @@ function ChartTooltip({ label, payload }: ChartTooltipProps) {
   if (!payload) return null;
   let metric_date, metric_value, metric_name;
   if (payload.length) {
-    console.log(payload);
-    console.log(payload[0].payload);
     metric_date = format(parseISO(payload[0].payload.register_datetime), "Pp");
     metric_name = payload[0].payload.metric_type;
     if (metric_name == "CPUUtilization") {
@@ -294,10 +292,7 @@ const cols: ColumnDef<ServerHistory>[] = [
   },
   {
     accessorKey: "metric_value",
-    accessorFn: (row) =>
-      row.metric_type == "CPUUtilization"
-        ? row.metric_value.toFixed(2) + " %"
-        : (row.metric_value / 300 / 1024).toFixed(2) + " MB/s",
+    accessorFn: (row) => parseMetric(row.metric_type, row.metric_value),
     header: "Valor",
     columnTitle: "Valor",
     minSize: 200,
@@ -305,3 +300,14 @@ const cols: ColumnDef<ServerHistory>[] = [
     //filterVariant: "datetime-range",
   },
 ];
+
+const parseMetric = (metricType: string, metricValue: number) => {
+  switch (metricType) {
+    case "CPUUtilization":
+      return metricValue.toFixed(2) + " %";
+    case "NetworkOut":
+      return (metricValue / 300 / 1024).toFixed(2) + " MB/s";
+    default:
+      return metricValue;
+  }
+};

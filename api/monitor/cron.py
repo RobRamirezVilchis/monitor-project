@@ -1075,10 +1075,19 @@ def update_industry_status():
 
 # Smart Retail
 def get_retail_data(client_keyname):
-    login_url = f'https://{client_keyname}.retail.aivat.io/login/'
-    request_url = f'https://{client_keyname}.retail.aivat.io/stats_json/'
+    # Hardcoded
+    urls = {
+        "enbl": {
+            "login": 'https://enbl.retail.aivat.io/login/',
+            "logs": 'https://enbl.retail.aivat.io/itw_logs/'
+        },
+    }
+    login_url = urls[client_keyname]["login"]
+    request_url = urls[client_keyname]["logs"]
 
     credentials = get_api_credentials("Smart Retail", client_keyname)
+    if not credentials:
+        return None
 
     try:
         token = api_login(login_url, credentials)
@@ -1199,7 +1208,9 @@ def update_servers_status():
                     "last_activity": now,
                     "activity_data": {}
                 })
-            elif state == "stopped" and current_server_status.state == "running":
+            # If the server just stopped or terminated, update the status one last time
+            # with empty activity_data and the new state
+            elif state != "running" and current_server_status.state == "running":
                 server_status = update_or_create_serverstatus(server_id, defaults={
                     "server": server,
                     "state": state,

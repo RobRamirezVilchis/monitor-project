@@ -57,7 +57,7 @@ const ServersDetailPage = () => {
 
   return (
     <section>
-      <div className="md:flex flex-wrap gap-6 mb-4">
+      <div className="md:flex flex-wrap space-y-2 sm:space-y-0 gap-6 mb-4">
         <TextInput
           className="md:flex gap-3 items-center "
           styles={{
@@ -111,7 +111,7 @@ const ServersDetailPage = () => {
           (serverStatus) =>
             serverStatus.server_name
               .toLowerCase()
-              .includes(nameInput.toLowerCase()) && (
+              .includes(nameInput.toLowerCase().replace(" ", "_")) && (
               <ServerCard
                 key={serverStatus.server_id}
                 {...serverStatus}
