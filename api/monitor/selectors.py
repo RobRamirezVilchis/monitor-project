@@ -545,9 +545,19 @@ def get_serverstatus(server_id: int):
     return server_status
 
 
-def get_serverstatus_list():
+class ServerStatusFilter(rf_filters.FilterSet):
+    server_type = rf_filters.CharFilter(field_name="server__server_type")
+    region = rf_filters.CharFilter(field_name="server__region__name")
+
+    class Meta:
+        model = ServerStatus
+        fields = ['server__server_type', 'server__region']
+
+
+def get_serverstatus_list(filters=None):
+    print(filters)
     all_server_status = ServerStatus.objects.all()
-    return all_server_status
+    return ServerStatusFilter(filters, all_server_status).qs
 
 
 def update_or_create_serverstatus(aws_id: str, defaults: dict):
@@ -599,3 +609,9 @@ def get_serverhistory(args, filters=None):
 
 def get_serverregions():
     return ServerRegion.objects.all()
+
+
+def get_servertypes():
+    types = Server.objects.order_by(
+        "server_type").values("server_type").distinct()
+    return types

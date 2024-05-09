@@ -77,6 +77,8 @@ urlpatterns = [
          include(([
              path("status/", apis.ServerStatusListAPI.as_view(), name="status"),
              path("metric-keys/", apis.ServerMetricsAPI.as_view(), name="metrics"),
+             path("regions/", apis.ServerRegionsAPI.as_view(), name="regions"),
+             path("types/", apis.ServerTypesAPI.as_view(), name="types"),
              path("server/<int:server_id>/",
                  include(([
                      path("", apis.ServerStatusAPI.as_view(),

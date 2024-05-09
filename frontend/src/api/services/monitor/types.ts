@@ -202,6 +202,11 @@ export interface ServerStatus {
   activity_data: {[metric: string]: number};
 }
 
+export interface ServerStatusFilters {
+  region: string | null,
+  server_type: string | null
+}
+
 export interface ServerHistory extends Partial<PageNumberPaginationParams> {
   server: string,
   last_launch: Date,
@@ -222,4 +227,12 @@ export interface ServerHistoryFilters extends Partial<PageNumberPaginationParams
 
 export interface MetricsKeys {
   metrics: {[metricName: string]: string}
+}
+
+export interface ServerType {
+  server_type: string
+}
+
+export interface ServerRegion {
+  name: string
 }

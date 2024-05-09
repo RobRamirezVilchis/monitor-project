@@ -82,6 +82,8 @@ const api = {
       servers: {
         status: "api/v1/monitor/servers/status/",
         metricsKeys: "api/v1/monitor/servers/metric-keys/",
+        serverTypes: "api/v1/monitor/servers/types/",
+        regions: "api/v1/monitor/servers/regions/",
         serverStatus: (server_id: string) => `api/v1/monitor/servers/server/${server_id}/`,
         serverHistory: (device_id: DeviceId) => `api/v1/monitor/servers/server/${device_id}/history/`,
 

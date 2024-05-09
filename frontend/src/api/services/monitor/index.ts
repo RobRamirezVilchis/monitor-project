@@ -1,4 +1,4 @@
-import { UnitStatus, SeverityCount, UnitHistory, DeviceStatus, UnitFilters, LastStatusChange, DeviceFilters, DeviceHistory, Client, CameraDisconnection, LastActiveStatus, SeverityHistory, AreaPlotData, AreaPlotFilters, LastUpdate, DeviceLogsFilters, DeviceLogs, DeviceWifiStatus, UnitLogsFilters, UnitLogs, NewClientData, ServerStatus, ServerHistoryFilters, ServerHistory, MetricsKeys } from "./types";
+import { UnitStatus, SeverityCount, UnitHistory, DeviceStatus, UnitFilters, LastStatusChange, DeviceFilters, DeviceHistory, Client, CameraDisconnection, LastActiveStatus, SeverityHistory, AreaPlotData, AreaPlotFilters, LastUpdate, DeviceLogsFilters, DeviceLogs, DeviceWifiStatus, UnitLogsFilters, UnitLogs, NewClientData, ServerStatus, ServerHistoryFilters, ServerHistory, MetricsKeys, ServerRegion, ServerType, ServerStatusFilters } from "./types";
 import { Id, OptionallyPaginated, Paginated } from "@/api/types";
 import { Role, User } from "../auth/types";
 import api from "../..";
@@ -398,11 +398,13 @@ export async function getDeviceLogs(
 
 // Servers
 export async function getServersStatus(
+  filters: ServerStatusFilters,
   config?: Parameters<typeof http.get>[1]
 ) {
     const resp = await http.get<ServerStatus[]>(
       api.endpoints.monitor.servers.status,
       {
+        params: filters,
         ...config,
       }
     );
@@ -453,6 +455,30 @@ export async function getServerMetricPlotData(
 }
 
 
+
+export async function getServerRegions(
+  config?: Parameters<typeof http.get>[1]
+) {
+    const resp = await http.get<ServerRegion[]>(
+      api.endpoints.monitor.servers.regions,
+      {
+        ...config,
+      }
+    );
+    return resp.data;
+}
+
+export async function getServerTypes(
+  config?: Parameters<typeof http.get>[1]
+) {
+    const resp = await http.get<ServerType[]>(
+      api.endpoints.monitor.servers.serverTypes,
+      {
+        ...config,
+      }
+    );
+    return resp.data;
+}
 
 export async function getMetricsKeys(
   config?: Parameters<typeof http.get>[1]

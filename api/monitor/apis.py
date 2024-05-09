@@ -999,8 +999,38 @@ class IndClientCreateAPI(APIView):
             return Response({"error": "Cliente ya existe"}, status=status.HTTP_400_BAD_REQUEST)
 
 
-# Servers
+class SetUnitAsInactiveAPI(APIView):
+
+    def post(self, request, unit_id, *args, **kwargs):
+        try:
+            unit_status = get_unitstatus(unit_id)
+            unit_status.active = False
+            unit_status.save()
+        except:
+            return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+        return Response(status=status.HTTP_200_OK)
+
+
+class SetDeviceClientAsInactiveAPI(APIView):
+    def post(self, request, device_id, *args, **kwargs):
+        try:
+            device = get_device_by_id(device_id)
+            client = device.client
+            client.active = False
+            client.save()
+        except Exception as e:
+            return Response(data={"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+        return Response(status=status.HTTP_200_OK)
+
+
+# Servers ----------------------------------------------------------------------
 class ServerStatusListAPI(APIView):
+    class FiltersSerializer(serializers.Serializer):
+        region = serializers.CharField(required=False)
+        server_type = serializers.CharField(required=False)
+
     class OutputSerializer(serializers.Serializer):
         server_id = serializers.IntegerField()
         aws_id = serializers.CharField(source="server.aws_id")
@@ -1011,7 +1041,11 @@ class ServerStatusListAPI(APIView):
         activity_data = serializers.JSONField()
 
     def get(self, request, *args, **kwargs):
-        all_server_status = get_serverstatus_list()
+        filters_serializer = self.FiltersSerializer(data=request.query_params)
+        filters_serializer.is_valid(raise_exception=True)
+
+        all_server_status = get_serverstatus_list(
+            filters=filters_serializer.validated_data)
 
         all_server_status = all_server_status.annotate(
             cpu_utilization=Cast(
@@ -1099,27 +1133,24 @@ class ServerMetricsAPI(APIView):
         return Response(self.OutputSerializer(output).data)
 
 
-class SetUnitAsInactiveAPI(APIView):
+class ServerRegionsAPI(APIView):
+    class OutputSerializer(serializers.Serializer):
+        name = serializers.CharField()
 
-    def post(self, request, unit_id, *args, **kwargs):
-        try:
-            unit_status = get_unitstatus(unit_id)
-            unit_status.active = False
-            unit_status.save()
-        except:
-            return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    def get(self, request, *args, **kwargs):
+        regions = get_serverregions()
+        output = self.OutputSerializer(regions, many=True).data
 
-        return Response(status=status.HTTP_200_OK)
+        return Response(output)
 
 
-class SetDeviceClientAsInactiveAPI(APIView):
-    def post(self, request, device_id, *args, **kwargs):
-        try:
-            device = get_device_by_id(device_id)
-            client = device.client
-            client.active = False
-            client.save()
-        except Exception as e:
-            return Response(data={"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+class ServerTypesAPI(APIView):
+    class OutputSerializer(serializers.Serializer):
+        server_type = serializers.CharField()
 
-        return Response(status=status.HTTP_200_OK)
+    def get(self, request, *args, **kwargs):
+        server_types = get_servertypes()
+
+        output = self.OutputSerializer(server_types, many=True).data
+
+        return Response(output)
