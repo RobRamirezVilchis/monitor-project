@@ -339,7 +339,7 @@ const UnitPage = ({ params }: { params: { unit_id: string } }) => {
       <Modal opened={opened} onClose={close} title="¿Estás seguro?" centered>
         <p className="mb-4 text-lg">
           La unidad ya no aparecerá en la plataforma, a menos que se reciba
-          información de esta
+          información de esta.
         </p>
         <Button
           color="red.9"
