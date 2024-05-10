@@ -234,20 +234,23 @@ const SafeDrivingPage = () => {
                           {statusNames[severity_count.level as StatusKey]}
                         </Link>
                       </HoverCard.Target>
-                      <HoverCard.Dropdown>
-                        <p className="font-bold">
-                          Cantidad de dispositivos por categoría:
-                        </p>
-                        {statusTooltipText[severity_count.level].map(
-                          (statusProblems, i) => (
-                            <p key={`${severity_count.level}_${i}`}>
-                              <span>{statusProblems[0]}</span>
-                              <span> - </span>
-                              <span>{statusProblems[1]}</span>
+                      {clientFilter == null &&
+                        statusTooltipText[severity_count.level] && (
+                          <HoverCard.Dropdown>
+                            <p className="font-bold">
+                              Cantidad de dispositivos por categoría:
                             </p>
-                          )
+                            {statusTooltipText[severity_count.level].map(
+                              (statusProblems, i) => (
+                                <p key={`${severity_count.level}_${i}`}>
+                                  <span>{statusProblems[0]}</span>
+                                  <span> - </span>
+                                  <span>{statusProblems[1]}</span>
+                                </p>
+                              )
+                            )}
+                          </HoverCard.Dropdown>
                         )}
-                      </HoverCard.Dropdown>
                     </HoverCard>
                   </div>
                 ))}

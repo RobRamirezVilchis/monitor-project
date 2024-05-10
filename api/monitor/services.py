@@ -25,7 +25,7 @@ class EncryptionService:
 
 def set_api_credentials_in_db():
 
-    def get_api_credentials(client):
+    def get_credentials_from_file(client):
         from dotenv import load_dotenv
         import os
 
@@ -39,11 +39,11 @@ def set_api_credentials_in_db():
 
     encryption = EncryptionService()
 
-    sd_credentials = get_api_credentials("sd")
+    sd_credentials = get_credentials_from_file("sd")
     sd_clients = Client.objects.filter(deployment__name="Safe Driving")
     for client in sd_clients:
         key = client.keyname
-        credentials = get_api_credentials(key)
+        credentials = get_credentials_from_file(key)
 
         client.api_username = sd_credentials["username"]
         client.api_password = encryption.encrypt(
@@ -54,13 +54,24 @@ def set_api_credentials_in_db():
     ind_clients = Client.objects.filter(deployment__name="Industry")
     for client in ind_clients:
         key = client.keyname
-        credentials = get_api_credentials(key)
+        credentials = get_credentials_from_file(key)
 
         client.api_username = credentials["username"]
         client.api_password = encryption.encrypt(
             bytes(credentials["password"], 'utf-16'))
 
         client.save()
+
+
+def set_client_credentials_in_db(keyname, username, password):
+    client = Client.objects.get(keyname=keyname)
+
+    client.api_username = username
+
+    encryption = EncryptionService()
+    client.api_password = encryption.encrypt(bytes(password, 'utf-16'))
+
+    client.save()
 
 
 # Devices

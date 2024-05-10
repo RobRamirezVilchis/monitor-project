@@ -1116,7 +1116,43 @@ def get_retail_data(client_keyname):
 
 
 def process_retail_data(response):
-    pass
+    now = datetime.now(tz=pytz.timezone('UTC')).astimezone(pytz.timezone(
+        'America/Mexico_City')).replace(tzinfo=pytz.utc)
+
+    all_gx_data = {}
+    alerts = set()
+    for device_name, data in response.items():
+        device_logs = data["logs"]
+        cameras_data = data["cameras"]
+
+        gx_data = {}
+        last_log = device_logs[0]
+        last_log_date = datetime.fromisoformat(last_log["register_time"][:-1]).astimezone(
+            pytz.timezone('America/Mexico_City')).replace(tzinfo=pytz.utc)
+        gx_data["last_connection"] = last_log_date
+
+        for log in device_logs:
+            register_time = datetime.fromisoformat(log["register_time"][:-1]).astimezone(
+                pytz.timezone('America/Mexico_City')).replace(tzinfo=pytz.utc)
+            log_time = datetime.fromisoformat(f'{log["log_date"]}T{log["log_time"]}').replace(
+                tzinfo=pytz.utc)
+
+            alert_conditions = {}
+            for description, cond in alert_conditions.items():
+                if cond:
+                    alerts.add(description)
+
+            # Check if the log arrived at the server within the last 10 minutes
+            if register_time > now - timedelta(minutes=10):
+                intervals = ["hour", "ten_minutes"]
+
+                first_log_time = datetime.fromisoformat(log["register_time"][:-1]).astimezone(
+                    pytz.timezone('America/Mexico_City')).replace(tzinfo=pytz.utc)
+                gx_data["first_log_time"] = first_log_time
+
+        for camera_name, camera_logs in cameras_data.items():
+            for log in camera_logs:
+                print(log)
 
 
 def update_retail_status():
@@ -1128,7 +1164,16 @@ def update_retail_status():
         client_name = client.name
 
         response = get_retail_data(client_alias)
-        print(response)
+        if response is not None:
+            processed_data = process_retail_data(response)
+        else:
+            print(f"No data for {client_name}")
+            continue
+
+        gx_data, camera_data, days_remaining, license_end, alerts = processed_data
+
+        hour_data = gx_data["hour"]
+        recent_data = gx_data["ten_minutes"]
 
 
 # Servers
