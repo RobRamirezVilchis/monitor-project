@@ -73,6 +73,11 @@ urlpatterns = [
 
          ], "industry"))
          ),
+    path("retail/",
+         include(([
+             path("status/", apis.RetailDeviceStatusList.as_view(), name="status")
+         ]))
+         ),
     path("servers/",
          include(([
              path("status/", apis.ServerStatusListAPI.as_view(), name="status"),

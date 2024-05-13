@@ -79,6 +79,9 @@ const api = {
         checkWifi: (device_id: DeviceId) => `api/v1/monitor/industry/devices/${device_id}/check-wifi-connection/`,
         setAsInactive: (device_id: DeviceId) => `api/v1/monitor/industry/devices/${device_id}/set-inactive/`,
       },
+      retail: {
+        status: "api/v1/monitor/retail/status/",
+      },
       servers: {
         status: "api/v1/monitor/servers/status/",
         metricsKeys: "api/v1/monitor/servers/metric-keys/",

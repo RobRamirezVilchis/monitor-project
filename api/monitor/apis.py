@@ -14,7 +14,7 @@ from rest_framework.response import Response
 from rest_framework import status, filters
 
 from .selectors import *
-from .services import device_create_or_update, get_or_create_client
+from .services import get_or_create_client
 from api.pagination import get_paginated_response, LimitOffsetPagination
 from .models import UnitStatus
 from .cron import api_login, make_request
@@ -1154,3 +1154,24 @@ class ServerTypesAPI(APIView):
         output = self.OutputSerializer(server_types, many=True).data
 
         return Response(output)
+
+
+# Retail -----------------------------------------------
+class RetailDeviceStatusList(APIView):
+    class OutputSerializer(serializers.Serializer):
+        device = serializers.CharField(source="device.name")
+        last_update = serializers.DateTimeField()
+        last_connection = serializers.DateTimeField()
+        last_alert = serializers.DateTimeField()
+        delayed = serializers.CharField()
+        delay_time = serializers.DurationField()
+        severity = serializers.IntegerField(source='status.severity')
+        description = serializers.CharField(source='status.description')
+        log_counts = serializers.JSONField()
+
+    def get(self, request, *args, **kwargs):
+        devices = retail_device_status_list()
+
+        data = self.OutputSerializer(devices, many=True).data
+
+        return Response(data)

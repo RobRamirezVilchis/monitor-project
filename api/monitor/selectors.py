@@ -19,6 +19,10 @@ def devicestatus_list():
     return DeviceStatus.objects.filter(device__client__active=True).order_by("-status__severity")
 
 
+def retail_device_status_list():
+    return RetailDeviceStatus.objects.filter(active=True)
+
+
 def camerastatus_list():
     return CameraStatus.objects.all()
 
@@ -480,7 +484,7 @@ def register_ind_area_plot_historicals():
 
 
 def get_last_sd_update():
-    status = UnitStatus.objects.filter(active=True).order_by('-last_update')[0]
+    status = UnitStatus.objects.all().order_by('last_update')[0]
 
     return status
 
@@ -618,3 +622,10 @@ def get_servertypes():
     types = Server.objects.order_by(
         "server_type").values("server_type").distinct()
     return types
+
+
+# Retail --------------------------------------
+def get_retail_device_status(device_id):
+    return RetailDeviceStatus.objects.get(
+        device_id=device_id,
+    )

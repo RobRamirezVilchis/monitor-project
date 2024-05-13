@@ -76,26 +76,6 @@ def set_client_credentials_in_db(keyname, username, password):
 
 # Devices
 
-
-def device_create_or_update(*args, **kwargs):
-    device, created = UnitStatus.objects.update_or_create(
-        unit=kwargs["unidad"],
-        defaults={
-            'total': kwargs["total"],
-            'restarts': kwargs["restarts"],
-            'reboots': kwargs["reboots"],
-            'validations': kwargs["validations"],
-            'source_id': kwargs["source_id"],
-            'connection': kwargs["connection"],
-            'memory': kwargs["memory"],
-            'forced': kwargs["forced"],
-            'read_only': kwargs["read_only"],
-            'others': kwargs["others"]
-        }
-    )
-    return created
-
-
 def update_or_create_devicestatus(args, retries=3, delay=1):
     try:
         with transaction.atomic():
@@ -227,6 +207,21 @@ def bulk_create_unithistory(units):
             **unit_data
         ))
     UnitHistory.objects.bulk_create(history_objs, batch_size=1000)
+
+
+# Retail Devices -------------------------------------
+def update_or_create_retail_device_status(device, defaults):
+    retail_device_status, created = RetailDeviceStatus.objects.update_or_create(
+        device=device,
+        defaults={**defaults}
+    )
+    return retail_device_status
+
+
+def create_retail_device_history(args):
+    retail_device_history = RetailDeviceHistory.objects.create(
+        **args
+    )
 
 
 def create_alert(args):

@@ -13,6 +13,8 @@ import pytz
 import os
 import subprocess
 
+from typing import Optional
+
 
 def generate_testing_data(client_alias, response, processed_data):
     import json
@@ -39,7 +41,6 @@ def send_telegram(chat: str, message: str):
         return
     TELEGRAM_CHAT = os.environ.get(chat)
     TELEGRAM_BOT = os.environ.get("TELEGRAM_BOT")
-    print(TELEGRAM_CHAT, TELEGRAM_BOT)
 
     subprocess.run(
         f"curl -X POST -H 'Content-Type: application/json' -d '{{\"chat_id\": \"{TELEGRAM_CHAT}\", \"text\": \"{message}\"}}\' https://api.telegram.org/bot{TELEGRAM_BOT}/sendMessage",
@@ -209,7 +210,10 @@ def process_driving_data(response, now=None):
                 cameras_num = log["Log"][:-2].split(":")[2].split()
                 if log["Log"].split()[1] == "'DISCONNECTED":
                     for camera in cameras_num:
-                        output_cameras[interval][unit][int(camera)] += 5
+                        if int(camera) in output_cameras[interval][unit]:
+                            output_cameras[interval][unit][int(camera)] += 5
+                        else:
+                            output_cameras[interval][unit][int(camera)] = 5
 
             # Ignore Ignition or Aux in total log count
             if log_type not in {"Ignición", "Aux"}:
@@ -260,7 +264,7 @@ def process_driving_data(response, now=None):
                 else:
                     alerts[device].add(description)
 
-        conditions = [
+        status_conditions = [
             # (Condition, Status, Severity Key, Description)
             (output_gx["hour"][device]["read_only_ssd"]
              > 0, 5, 4, "Read only SSD"),
@@ -297,7 +301,7 @@ def process_driving_data(response, now=None):
              and output_gx["hour"][device]["total"] < 5, 1, 1, "Comunicación reciente"),
         ]
 
-        for condition, level, rule, rule_des in conditions:
+        for condition, level, rule, rule_des in status_conditions:
             if condition:
                 new_status = {"severity": level, "description": rule_des}
                 if device not in severities:
@@ -712,7 +716,6 @@ def process_industry_data(response):
                     first_log_time = datetime.fromisoformat(log["register_time"][:-1]).astimezone(
                         pytz.timezone('America/Mexico_City')).replace(tzinfo=pytz.utc)
                     output_gx["first_log_time"] = first_log_time
-
                 else:
                     intervals = ["hour"]
 
@@ -818,6 +821,69 @@ def process_industry_data(response):
     return output_gx, output_cameras, days_remaining, license_end, alerts
 
 
+def calculate_logs_delay(first_log_time: Optional[datetime], data_last_connection: Optional[datetime], db_last_connection: Optional[datetime], db_register_time: Optional[datetime], db_delay_time: Optional[timedelta]):
+    date_now = datetime.now(tz=pytz.timezone('UTC'))
+
+    last_connection = db_last_connection
+
+    if data_last_connection:
+        # Asignar nueva última conexión
+        # Hardcoded
+        last_connection = data_last_connection + timedelta(hours=6)
+        time_since_last_log = date_now - last_connection
+
+        if first_log_time:
+            first_log_time += timedelta(hours=6)
+
+        # Si existe ese dato, ver si tiene más de 10 minutos. En ese caso, ponerlo como atrasado
+        if db_last_connection:
+
+            # Revisar si hubo retraso entre el primer log en los últimos 10 minutos y la última conexión según la DB
+            # Se verifica que hayan registros recientes (con db_register_time) para no tomar un falla en el ćodigo
+            # como retraso
+
+            # Arreglar caso en el que se missea el log reciente por poquito, produciendo un retraso falso
+            if first_log_time and first_log_time - db_last_connection > timedelta(minutes=11) and \
+                    not (db_register_time == None or last_connection - db_register_time > timedelta(minutes=11)):
+                delayed = True
+
+                # Redondear a segundos
+                delay_time = first_log_time - \
+                    db_last_connection - timedelta(minutes=10)
+                delay_time -= timedelta(microseconds=delay_time.microseconds)
+                delay_time = delay_time
+
+            # Si hay un retraso actualmente
+            elif time_since_last_log > timedelta(minutes=11):
+                delayed = True
+                delay_time = time_since_last_log - \
+                    timedelta(minutes=10)
+            else:
+                delayed = False
+                delay_time = timedelta(0)
+
+        else:  # En caso de que haya un nuevo dispositivo
+            delayed = False
+            delay_time = timedelta(0)
+
+    # Si no ha llegado nada en una hora, marcarlo directamente como retraso
+    else:
+        delayed = True
+
+        if db_last_connection:  # Si hay última conexión en BD, usarla para calcular retraso
+            delay_from_last_connection = date_now - \
+                db_last_connection - timedelta(minutes=10)
+            delay_from_last_connection -= timedelta(
+                microseconds=delay_from_last_connection.microseconds)
+            delay_time = delay_from_last_connection
+
+        else:  # Si no, sumar 10 minutos a tiempo de retraso en BD
+            delay_time = db_delay_time + \
+                timedelta(minutes=10)
+
+    return delayed, delay_time
+
+
 def update_industry_status():
 
     deployment = get_or_create_deployment('Industry')
@@ -895,8 +961,6 @@ def update_industry_status():
         bulk_update_camerastatus(camerastatus_data)
         bulk_create_camerahistory(camerahistory_data)
 
-        current_device_status = get_devicestatus(device_id=device.id)
-
         # Fields in the DeviceStatus entry to update
         update_values = {
             'last_update': date_now,
@@ -911,18 +975,22 @@ def update_industry_status():
         # Get last connection from DeviceStatus entry
         db_delay_time = timedelta(0)
         try:
-            device_status = DeviceStatus.objects.get(device_id=device.id)
-            db_register_time = device_status.last_update
-            db_last_connection = device_status.last_connection
-            db_delay_time = device_status.delay_time
+            current_device_status = get_devicestatus(device_id=device.id)
+            db_register_time = current_device_status.last_update
+            db_last_connection = current_device_status.last_connection
+            db_delay_time = current_device_status.delay_time
         except:
+            current_device_status = None
             db_last_connection = None
+            db_register_time = None
+            db_delay_time = timedelta(0)
 
         # Initialize last connection with database value
         last_connection = db_last_connection
 
         if gx_data["last_connection"]:
             # Asignar nueva última conexión
+            # Hardcoded
             last_connection = gx_data["last_connection"] + timedelta(hours=6)
             time_since_last_log = date_now - last_connection
 
@@ -942,7 +1010,7 @@ def update_industry_status():
 
                 # Arreglar caso en el que se missea el log reciente por poquito, produciendo un retraso falso
                 if first_log_time and first_log_time - db_last_connection > timedelta(minutes=11) and \
-                        not last_connection - db_register_time > timedelta(minutes=11):
+                        not (db_register_time == None or last_connection - db_register_time > timedelta(minutes=11)):
                     update_values['delayed'] = True
 
                     # Redondear a segundos
@@ -964,6 +1032,7 @@ def update_industry_status():
                 update_values['delayed'] = False
                 update_values['delay_time'] = timedelta(0)
 
+        # Si no ha llegado nada en una hora, marcarlo directamente como retraso
         else:
             update_values['delayed'] = True
 
@@ -978,7 +1047,7 @@ def update_industry_status():
                 update_values['delay_time'] = db_delay_time + \
                     timedelta(minutes=10)
 
-        last_alert = current_device_status.last_alert
+        last_alert = current_device_status.last_alert if current_device_status else None
         alert_interval = 55
 
         if update_values['delayed']:
@@ -1011,7 +1080,8 @@ def update_industry_status():
                 last_alert = date_now
 
         update_values["last_alert"] = last_alert
-        restarted_recently = current_device_status.status.description == "Restarts"
+        restarted_recently = current_device_status.status.description == "Restarts" \
+            if current_device_status else False
 
         status_conditions = [
             (recent_data['restart'] >
@@ -1119,43 +1189,115 @@ def process_retail_data(response):
     now = datetime.now(tz=pytz.timezone('UTC')).astimezone(pytz.timezone(
         'America/Mexico_City')).replace(tzinfo=pytz.utc)
 
-    all_gx_data = {}
+    recent_threshold = 40  # Minutes
+
+    hourly_log_counts = {}
+    recent_log_counts = {}
+    last_connections = {}
+    # First log received within the threshold time window, for each device
+    first_log_times = {}
+
     alerts = set()
+
     for device_name, data in response.items():
+
+        last_connections[device_name] = None
+        first_log_times[device_name] = None
+
         device_logs = data["logs"]
         cameras_data = data["cameras"]
 
-        gx_data = {}
-        last_log = device_logs[0]
-        last_log_date = datetime.fromisoformat(last_log["register_time"][:-1]).astimezone(
-            pytz.timezone('America/Mexico_City')).replace(tzinfo=pytz.utc)
-        gx_data["last_connection"] = last_log_date
+        hourly_log_counts[device_name] = {"counts": {}, "cameras": {}}
+        recent_log_counts[device_name] = {"counts": {}, "cameras": {}}
 
-        for log in device_logs:
-            register_time = datetime.fromisoformat(log["register_time"][:-1]).astimezone(
+        if device_logs:
+            last_log = device_logs[0]
+            last_log_date = datetime.fromisoformat(last_log["register_time"]).astimezone(
                 pytz.timezone('America/Mexico_City')).replace(tzinfo=pytz.utc)
+
+            last_connections[device_name] = last_log_date
+
+        device_hour_counts = {}
+        device_recent_counts = {}
+        for log in device_logs:
+
+            """ register_time = datetime.fromisoformat(log["register_time"]).astimezone(
+                pytz.timezone('America/Mexico_City')).replace(tzinfo=pytz.utc) """
+            register_time = datetime.fromisoformat(
+                log["register_time"]).replace(tzinfo=pytz.utc)
+
             log_time = datetime.fromisoformat(f'{log["log_date"]}T{log["log_time"]}').replace(
                 tzinfo=pytz.utc)
+
+            # Check if the log arrived at the server within the last 10 minutes
+
+            if register_time > now - timedelta(minutes=recent_threshold):
+                intervals = [device_hour_counts, device_recent_counts]
+
+                first_log_times[device_name] = register_time
+            else:
+                intervals = [device_hour_counts]
+
+            log_msg = log["log"]
+            log_type = log_msg.split("]")[0][1:]
+
+            if log_type:  # If log isn't empty
+                for interval_count in intervals:
+                    if log_type not in interval_count:
+                        interval_count[log_type] = 1
+                    else:
+                        interval_count[log_type] += 1
 
             alert_conditions = {}
             for description, cond in alert_conditions.items():
                 if cond:
                     alerts.add(description)
 
-            # Check if the log arrived at the server within the last 10 minutes
-            if register_time > now - timedelta(minutes=10):
-                intervals = ["hour", "ten_minutes"]
+        hourly_log_counts[device_name]["counts"] = device_hour_counts
+        recent_log_counts[device_name]["counts"] = device_recent_counts
 
-                first_log_time = datetime.fromisoformat(log["register_time"][:-1]).astimezone(
-                    pytz.timezone('America/Mexico_City')).replace(tzinfo=pytz.utc)
-                gx_data["first_log_time"] = first_log_time
-
+        cam_hour_counts = {}
+        cam_recent_counts = {}
         for camera_name, camera_logs in cameras_data.items():
+
             for log in camera_logs:
-                print(log)
+                register_time = datetime.fromisoformat(log["register_time"]).astimezone(
+                    pytz.timezone('America/Mexico_City')).replace(tzinfo=pytz.utc)
+                log_time = datetime.fromisoformat(f'{log["log_date"]}T{log["log_time"]}').replace(
+                    tzinfo=pytz.utc)
+
+                # Check if the log arrived at the server within the last 10 minutes
+
+                if register_time > now - timedelta(minutes=recent_threshold):
+                    intervals = [cam_hour_counts, cam_recent_counts]
+
+                    first_log_time = register_time
+                    first_log_times[device_name] = first_log_time
+                else:
+                    intervals = [cam_hour_counts]
+
+                log_msg = log["log"]
+                log_type = log_msg.split("]")[0][1:]
+
+                if log_type:  # If log isn't empty
+                    for interval_count in intervals:
+                        if log_type not in interval_count:
+                            interval_count[log_type] = 1
+                        else:
+                            interval_count[log_type] += 1
+
+            hourly_log_counts[device_name]["cameras"][camera_name] = cam_hour_counts
+            hourly_log_counts[device_name]["cameras"][camera_name] = cam_recent_counts
+
+    log_counts = {"hour": hourly_log_counts, "recent": recent_log_counts}
+    license = 0  # Placeholder
+    print(last_connections, first_log_times)
+    return log_counts, last_connections, first_log_times, alerts, license
 
 
 def update_retail_status():
+    now = datetime.now(tz=pytz.timezone("UTC"))
+
     deployment = get_or_create_deployment('Smart Retail')
     clients = get_deployment_clients(deployment)
 
@@ -1164,16 +1306,85 @@ def update_retail_status():
         client_name = client.name
 
         response = get_retail_data(client_alias)
+
         if response is not None:
             processed_data = process_retail_data(response)
         else:
             print(f"No data for {client_name}")
             continue
+        print(response, processed_data)
+        log_counts, last_connections, first_log_times, alerts, license = processed_data
 
-        gx_data, camera_data, days_remaining, license_end, alerts = processed_data
+        device_names = last_connections.keys()
 
-        hour_data = gx_data["hour"]
-        recent_data = gx_data["ten_minutes"]
+        for device_name in device_names:
+            device_args = {
+                "client": client,
+                "name": device_name,
+            }
+            device = get_or_create_device(device_args)
+
+            # TO DO: Make a function to calculate delays
+
+            # Get last connection from DeviceStatus entry
+            try:
+                current_device_status = get_retail_device_status(
+                    device_id=device.id)
+                db_register_time = current_device_status.last_update
+                db_last_connection = current_device_status.last_connection
+                db_delay_time = current_device_status.delay_time
+            except:
+                current_device_status = None
+                db_last_connection = None
+                db_register_time = None
+                db_delay_time = timedelta(0)
+
+            last_connection = last_connections[device_name]
+            delayed, delay_time = calculate_logs_delay(
+                first_log_times[device_name], last_connection, db_last_connection, db_register_time, db_delay_time)
+
+            last_alert_time = current_device_status.last_alert if current_device_status else None
+            alert_interval = 55
+
+            status_conditions = []
+            severity = 1
+            rule = "Comunicación reciente"
+            for condition, status, description in status_conditions:
+                if condition:
+                    severity = status
+                    rule = description
+
+            gxstatus_args = {
+                'severity': severity,
+                'description': rule,
+                'deployment': deployment
+            }
+            status = get_or_create_gxstatus(gxstatus_args)
+
+            defaults = {
+                "last_update": now,
+                "last_connection": last_connection,
+                "last_alert": last_alert_time,
+                "delayed": delayed,
+                "delay_time": delay_time,
+                "status": status,
+                "log_counts": log_counts["hour"][device_name]["counts"]
+            }
+            device_status = update_or_create_retail_device_status(
+                device=device, defaults=defaults)
+
+            devicehistory_args = {
+                "device": device,
+                "register_datetime": now,
+                "register_date": now.date(),
+                "last_connection": last_connection,
+                "last_alert": last_alert_time,
+                "delayed": delayed,
+                "delay_time": delay_time,
+                "status": status,
+                "log_counts": log_counts["recent"][device_name]["counts"]
+            }
+            create_retail_device_history(devicehistory_args)
 
 
 # Servers

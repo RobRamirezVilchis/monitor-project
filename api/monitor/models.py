@@ -221,6 +221,43 @@ class DeviceHistory(models.Model):
         return self.register_date.strftime("%Y-%m-%d %H:%M:%S") + ' - ' + str(self.device.name)
 
 
+class RetailDeviceStatus(models.Model):
+    device = models.OneToOneField(Device, on_delete=models.CASCADE)
+    last_update = models.DateTimeField("Last update", null=True)
+    last_connection = models.DateTimeField(
+        "Last connection", null=True, blank=True)
+    last_alert = models.DateTimeField(null=True, blank=True)
+    delayed = models.BooleanField(default=False)
+    delay_time = models.DurationField(default=timedelta(0))
+    status = models.ForeignKey(GxStatus, on_delete=models.CASCADE)
+    log_counts = models.JSONField(blank=True)
+    active = models.BooleanField(default=True)
+
+    class Meta:
+        verbose_name_plural = "Retail device status"
+
+    def __str__(self):
+        return self.device.name
+
+
+class RetailDeviceHistory(models.Model):
+    device = models.ForeignKey(Device, on_delete=models.CASCADE)
+    register_date = models.DateField("Dia registro", db_index=True)
+    register_datetime = models.DateTimeField("Fecha registro")
+    last_connection = models.DateTimeField("Last connection", null=True)
+    last_alert = models.DateTimeField(null=True, blank=True)
+    delayed = models.BooleanField(default=False)
+    delay_time = models.DurationField(default=timedelta(0))
+    status = models.ForeignKey(GxStatus, on_delete=models.CASCADE)
+    log_counts = models.JSONField()
+
+    class Meta:
+        verbose_name_plural = "Retail device histories"
+
+    def __str__(self):
+        return self.device.name
+
+
 class SeverityCount(models.Model):
     deployment = models.ForeignKey(Deployment, on_delete=models.CASCADE)
     client = models.ForeignKey(Client, null=True, on_delete=models.CASCADE)
