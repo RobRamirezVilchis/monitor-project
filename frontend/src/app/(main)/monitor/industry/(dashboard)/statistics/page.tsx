@@ -53,7 +53,7 @@ const statusColors: { [key in StatusKey]: string } = {
   5: "red",
 };
 
-const IndustryStatisticsPage = () => {
+const SmartRetailStatisticsPage = () => {
   const [clientValue, setClientValue] = useState<string | null>(null);
   const [graphMode, setGraphMode] = useState<string>("stacked");
 
@@ -199,4 +199,4 @@ const ChartTooltip = ({ label, payload }: ChartTooltipProps) => {
   );
 };
 
-export default IndustryStatisticsPage;
+export default SmartRetailStatisticsPage;

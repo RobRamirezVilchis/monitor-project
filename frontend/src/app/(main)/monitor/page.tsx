@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 
 const MonitorPage = () => {
-  redirect("/monitor/safedriving");
+  redirect("/monitor/safe-driving");
 };
 
 export default MonitorPage;

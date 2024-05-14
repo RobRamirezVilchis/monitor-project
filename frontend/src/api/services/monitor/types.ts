@@ -236,3 +236,33 @@ export interface ServerType {
 export interface ServerRegion {
   name: string
 }
+
+// Smart Retail
+export interface RetailDeviceStatus {
+  device_id: number,
+  name: string,
+  client: string,
+  last_update: string | null,
+  last_connection: string | null,
+  last_alert: string | null,
+  delayed: boolean,
+  delay_time: string,
+  severity: number,
+  description: string, 
+  log_counts: {[logType: string]: number},
+  license_end: string | null,
+}
+
+export interface RetailDeviceHistory extends Partial<PageNumberPaginationParams> {
+  device_id: number,
+  name: string,
+  client: string,
+  register_datetime: string | null,
+  last_connection: string | null,
+  last_alert: string | null,
+  delayed: boolean,
+  delay_time: string,
+  severity: number,
+  description: string, 
+  log_counts: {[logType: string]: number},
+}

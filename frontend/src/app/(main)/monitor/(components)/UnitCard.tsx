@@ -64,7 +64,7 @@ const UnitCard = ({ unit: unit_status }: GxCardProps) => {
       transition duration-300 shadow-md dark:border-gray-700 hover:shadow-lg ${
         priority ? "border-red-300 dark:border-red-300" : ""
       }`}
-      href={`/monitor/safedriving/unit/${unit_id}`}
+      href={`/monitor/safe-driving/unit/${unit_id}`}
     >
       {on_trip && (
         <span className="absolute right-6 animate-ping inline-flex h-2 w-2 rounded-full bg-blue-400 opacity-100"></span>

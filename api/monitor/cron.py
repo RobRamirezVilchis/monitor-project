@@ -197,9 +197,10 @@ def process_driving_data(response, now=None):
         else:
             intervals = ["hour"]
 
+        if unit not in output_gx["hour"]:
+            continue
+
         for interval in intervals:
-            if unit not in output_gx[interval]:
-                output_gx[interval][unit] = {t: 0 for t in log_types}
 
             if log_type in output_gx[interval][unit]:
                 output_gx[interval][unit][log_type] += 1
@@ -1186,10 +1187,9 @@ def get_retail_data(client_keyname):
 
 
 def process_retail_data(response):
-    now = datetime.now(tz=pytz.timezone('UTC')).astimezone(pytz.timezone(
-        'America/Mexico_City')).replace(tzinfo=pytz.utc)
+    now = datetime.now(tz=pytz.timezone('UTC'))
 
-    recent_threshold = 40  # Minutes
+    recent_threshold = 10  # Minutes
 
     hourly_log_counts = {}
     recent_log_counts = {}
@@ -1212,20 +1212,17 @@ def process_retail_data(response):
 
         if device_logs:
             last_log = device_logs[0]
-            last_log_date = datetime.fromisoformat(last_log["register_time"]).astimezone(
-                pytz.timezone('America/Mexico_City')).replace(tzinfo=pytz.utc)
+            last_log_date = datetime.fromisoformat(
+                last_log["register_time"][:-1]).replace(tzinfo=pytz.utc)
 
             last_connections[device_name] = last_log_date
 
         device_hour_counts = {}
         device_recent_counts = {}
         for log in device_logs:
-
-            """ register_time = datetime.fromisoformat(log["register_time"]).astimezone(
-                pytz.timezone('America/Mexico_City')).replace(tzinfo=pytz.utc) """
             register_time = datetime.fromisoformat(
-                log["register_time"]).replace(tzinfo=pytz.utc)
-
+                log["register_time"][:-1]).replace(tzinfo=pytz.utc)
+            print(register_time, now)
             log_time = datetime.fromisoformat(f'{log["log_date"]}T{log["log_time"]}').replace(
                 tzinfo=pytz.utc)
 
@@ -1261,8 +1258,8 @@ def process_retail_data(response):
         for camera_name, camera_logs in cameras_data.items():
 
             for log in camera_logs:
-                register_time = datetime.fromisoformat(log["register_time"]).astimezone(
-                    pytz.timezone('America/Mexico_City')).replace(tzinfo=pytz.utc)
+                register_time = datetime.fromisoformat(
+                    log["register_time"][:-1]).replace(tzinfo=pytz.utc)
                 log_time = datetime.fromisoformat(f'{log["log_date"]}T{log["log_time"]}').replace(
                     tzinfo=pytz.utc)
 
@@ -1312,7 +1309,7 @@ def update_retail_status():
         else:
             print(f"No data for {client_name}")
             continue
-        print(response, processed_data)
+
         log_counts, last_connections, first_log_times, alerts, license = processed_data
 
         device_names = last_connections.keys()

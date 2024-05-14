@@ -48,11 +48,15 @@ const MainLayout = ({ children }: MainLayoutProps) => {
   const [links, setLinks] = useState<NavMenuItem[]>([
     {
       label: "Safe Driving",
-      href: "/monitor/safedriving",
+      href: "/monitor/safe-driving",
     },
     {
       label: "Industry",
       href: "/monitor/industry",
+    },
+    {
+      label: "Smart Retail",
+      href: "/monitor/smart-retail",
     },
   ]);
 
@@ -90,7 +94,7 @@ const MainLayout = ({ children }: MainLayoutProps) => {
 
         {/* Desktop */}
         <div className="flex-1 hidden md:flex justify-between items-center gap-1">
-          <Link className="flex items-center" href="/monitor/safedriving">
+          <Link className="flex items-center" href="/monitor/safe-driving">
             <Image
               className="pr-1 border-r border-neutral-600"
               src={Introid}

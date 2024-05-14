@@ -19,10 +19,6 @@ def devicestatus_list():
     return DeviceStatus.objects.filter(device__client__active=True).order_by("-status__severity")
 
 
-def retail_device_status_list():
-    return RetailDeviceStatus.objects.filter(active=True)
-
-
 def camerastatus_list():
     return CameraStatus.objects.all()
 
@@ -484,7 +480,11 @@ def register_ind_area_plot_historicals():
 
 
 def get_last_sd_update():
-    status = UnitStatus.objects.all().order_by('last_update')[0]
+    try:
+        status = UnitStatus.objects.filter(
+            active=True).order_by('-last_update')[0]
+    except IndexError:
+        status = None
 
     return status
 
@@ -625,7 +625,39 @@ def get_servertypes():
 
 
 # Retail --------------------------------------
+def retail_device_status_list():
+    return RetailDeviceStatus.objects.filter(active=True)
+
+
 def get_retail_device_status(device_id):
     return RetailDeviceStatus.objects.get(
         device_id=device_id,
     )
+
+
+class RetailDeviceHistoryFilter(rf_filters.FilterSet):
+    register_datetime = rf_filters.DateTimeFromToRangeFilter()
+    description = rf_filters.CharFilter(
+        field_name='status__description', lookup_expr="icontains")
+    sort = rf_filters.OrderingFilter(
+        fields=(
+            'register_datetime',
+            ('status__severity', 'severity'),
+            'last_connection',
+            'delayed',
+            'delay_time',
+            'status',
+        )
+    )
+
+    class Meta:
+        model = RetailDeviceHistory
+        fields = ['register_datetime', 'status']
+
+
+def get_retail_device_history(args, filters=None):
+
+    logs = RetailDeviceHistory.objects.filter(
+        device__id=args['device_id'],
+    )
+    return RetailDeviceHistoryFilter(filters, logs).qs

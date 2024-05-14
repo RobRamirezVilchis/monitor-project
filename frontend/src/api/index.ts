@@ -81,6 +81,13 @@ const api = {
       },
       retail: {
         status: "api/v1/monitor/retail/status/",
+        addClient: "api/v1/monitor/retail/clients/create/",
+        severityCount: "api/v1/monitor/retail/status-count/",
+        deviceStatus: (device_id: DeviceId) => `api/v1/monitor/retail/devices/${device_id}/`,
+        lastStatusChange: (device_id: DeviceId) => `api/v1/monitor/retail/devices/${device_id}/last-status-change/`,
+        deviceLogs: (device_id: DeviceId) => `api/v1/monitor/retail/devices/${device_id}/logs/`,
+        deviceHistory: (device_id: DeviceId) => `api/v1/monitor/retail/devices/${device_id}/history/`,
+
       },
       servers: {
         status: "api/v1/monitor/servers/status/",

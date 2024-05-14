@@ -78,7 +78,7 @@ class DeviceStatusList(APIView):
 
 class UnitSeverityCount(APIView):
 
-    class SeverityCountSerializer(serializers.Serializer):
+    class OutputSerializer(serializers.Serializer):
         severity = serializers.IntegerField()
         count = serializers.IntegerField()
         breakdown = serializers.JSONField()
@@ -95,13 +95,13 @@ class UnitSeverityCount(APIView):
                 severity=level["severity"]).values('description', 'count')
 
         # Serialize the result
-        serializer = self.SeverityCountSerializer(output, many=True)
+        serializer = self.OutputSerializer(output, many=True)
         return Response(serializer.data)
 
 
 class DeviceSeverityCount(APIView):
 
-    class SeverityCountSerializer(serializers.Serializer):
+    class OutputSerializer(serializers.Serializer):
         severity = serializers.IntegerField()
         count = serializers.IntegerField()
 
@@ -114,7 +114,7 @@ class DeviceSeverityCount(APIView):
             .order_by('-severity')
 
         # Serialize the result
-        serializer = self.SeverityCountSerializer(counts, many=True)
+        serializer = self.OutputSerializer(counts, many=True)
         return Response(serializer.data)
 
 
@@ -301,8 +301,6 @@ class DeviceStatusTime(APIView):
                 order_by=F('register_datetime').desc()
             )
         )
-        print("device status time")
-        print(device_histories_with_next_severity)
 
         severity_changes = device_histories_with_next_severity.filter(
             # Excludes the last record for each unit, as it has no "next" record
@@ -741,6 +739,7 @@ class SafeDrivingLastUpdateAPI(APIView):
 
     def get(self, request, *args, **kwargs):
         last_update_sd = get_last_sd_update()
+        last_update_sd = None
         output = self.OutputSerializer(last_update_sd).data
 
         return Response(output)
@@ -1159,11 +1158,13 @@ class ServerTypesAPI(APIView):
 # Retail -----------------------------------------------
 class RetailDeviceStatusList(APIView):
     class OutputSerializer(serializers.Serializer):
-        device = serializers.CharField(source="device.name")
+        device_id = serializers.IntegerField()
+        name = serializers.CharField(source="device.name")
+        client = serializers.CharField(source="device.client.name")
         last_update = serializers.DateTimeField()
         last_connection = serializers.DateTimeField()
         last_alert = serializers.DateTimeField()
-        delayed = serializers.CharField()
+        delayed = serializers.BooleanField()
         delay_time = serializers.DurationField()
         severity = serializers.IntegerField(source='status.severity')
         description = serializers.CharField(source='status.description')
@@ -1175,3 +1176,208 @@ class RetailDeviceStatusList(APIView):
         data = self.OutputSerializer(devices, many=True).data
 
         return Response(data)
+
+
+class RetailDeviceSeverityCount(APIView):
+
+    class OutputSerializer(serializers.Serializer):
+        severity = serializers.IntegerField()
+        count = serializers.IntegerField()
+
+    def get(self, request, *args, **kwargs):
+
+        counts = RetailDeviceStatus.objects.filter(active=True).values('status__severity') \
+            .annotate(severity=F('status__severity')) \
+            .values('severity') \
+            .annotate(count=Count('id')) \
+            .order_by('-severity')
+
+        # Serialize the result
+        serializer = self.OutputSerializer(counts, many=True)
+        return Response(serializer.data)
+
+
+class RetailDeviceStatusAPI(APIView):
+    class OutputSerializer(serializers.Serializer):
+        device_id = serializers.IntegerField()
+        name = serializers.CharField(source="device.name")
+        client = serializers.CharField(source="device.client.name")
+        last_update = serializers.DateTimeField()
+        last_connection = serializers.DateTimeField()
+        last_alert = serializers.DateTimeField()
+        delayed = serializers.BooleanField()
+        delay_time = serializers.DurationField()
+        severity = serializers.IntegerField(source='status.severity')
+        description = serializers.CharField(source='status.description')
+        license_end = serializers.DateField(source='device.license_end')
+
+    def get(self, request, device_id, *args, **kwargs):
+        device_status = get_retail_device_status(device_id)
+
+        output = self.OutputSerializer(device_status).data
+        return Response(output)
+
+
+class RetailDeviceStatusTime(APIView):
+    class OutputSerializer(serializers.Serializer):
+        register_datetime = serializers.DateTimeField()
+
+    def get(self, request, device_id, *args, **kwargs):
+        device_histories_with_next_severity = RetailDeviceHistory.objects.filter(
+            device_id=device_id,
+        ).annotate(
+            next_severity=Window(
+                expression=Lead('status__severity'),
+                partition_by=[F('device_id')],
+                order_by=F('register_datetime').desc()
+            )
+        )
+
+        severity_changes = device_histories_with_next_severity.filter(
+            # Excludes the last record for each unit, as it has no "next" record
+            next_severity__isnull=False,
+            # Optional: Exclude records with no severity to avoid comparing None values
+            status__severity__isnull=False
+        ).exclude(
+            status__severity=F('next_severity')
+        )
+
+        if not severity_changes:
+            first_register = device_histories_with_next_severity[len(
+                device_histories_with_next_severity)-1]
+            output = self.OutputSerializer(first_register).data
+            return Response(output)
+        else:
+            last_change = severity_changes[0]
+            output = self.OutputSerializer(last_change).data
+            return Response(output)
+
+
+class RetailLogsAPI(APIView):
+    class OutputSerializer(serializers.Serializer):
+        device = serializers.CharField(max_length=50)
+        log_time = serializers.CharField(max_length=50)
+        log = serializers.CharField(max_length=50)
+        register_time = serializers.CharField(max_length=50)
+
+    def get(self, request, device_id, *args, **kwargs):
+        global request_url
+        import json
+
+        device = Device.objects.get(id=device_id)
+        client_key = device.client.keyname
+
+        login_url = f'https://{client_key}.retail.aivat.io/login/'
+        request_url = f'https://{client_key}.retail.aivat.io/itw_logs/'
+
+        credentials = get_api_credentials("Smart Retail", client_key)
+        token = api_login(login_url=login_url, credentials=credentials)
+
+        sent_interval = False
+
+        time_interval = {}
+        if 'register_time_after' in request.query_params:
+            time_interval["initial_datetime"] = request.query_params['register_time_after'][:-5]
+            sent_interval = True
+
+        if 'register_time_before' in request.query_params:
+            time_interval["final_datetime"] = request.query_params['register_time_before'][:-5]
+            sent_interval = True
+
+        if not sent_interval:
+            now = datetime.now(tz=pytz.timezone('UTC')).replace(tzinfo=None)
+            time_interval = {
+                "initial_datetime": (now - timedelta(hours=5)).isoformat(timespec="seconds"),
+                "final_datetime": now.isoformat(timespec='seconds')
+            }
+
+        response, status = make_request(
+            request_url, data=time_interval, token=token)
+        response = json.loads(response.content)
+
+        show_empty = request.query_params["show_empty"]
+
+        output = []
+
+        device_data = response[device.name]
+
+        if "device" not in request.query_params or ("device" in request.query_params and request.query_params["device"] in device.name.lower()):
+            device_logs = device_data["logs"]
+            for log in device_logs:
+                if show_empty == "false" and log["log"] == "":
+                    continue
+                output.append({"device": device.name,
+                               "register_time": log["register_time"],
+                               "log": log["log"],
+                               "log_time": f"{log['log_date']}T{log['log_time']}"})
+
+        cameras = device_data["cameras"]
+        for camera_name, logs in cameras.items():
+            if "device" in request.query_params:
+                if request.query_params["device"] not in camera_name.lower():
+                    break
+            for log in logs:
+                if show_empty == "false" and log["log"] == "":
+                    continue
+                output.append({"device": camera_name,
+                               "register_time": log["register_time"],
+                               "log": log["log"],
+                               "log_time": f"{log['log_date']}T{log['log_time']}"})
+
+        if request.query_params.get("sort") == "-register_time":
+            output.reverse()
+
+        return get_paginated_response(
+            output,
+            self.OutputSerializer,
+            request
+        )
+
+
+class RetailDeviceHistoryList(APIView):
+    class FiltersSerializer(serializers.Serializer):
+        register_datetime_after = serializers.DateTimeField(required=False)
+        register_datetime_before = serializers.DateTimeField(required=False)
+        sort = serializers.CharField(required=False)
+        description = serializers.CharField(required=False)
+
+    class OutputSerializer(serializers.Serializer):
+        device_id = serializers.IntegerField()
+        device = serializers.CharField()
+        register_date = serializers.DateField()
+        register_datetime = serializers.DateTimeField()
+        last_connection = serializers.DateTimeField()
+        delayed = serializers.BooleanField()
+        delay_time = serializers.DurationField()
+        log_counts = serializers.JSONField()
+        severity = serializers.IntegerField(source='status.severity')
+        description = serializers.CharField(source='status.description')
+
+    def get(self, request, device_id, *args, **kwargs):
+
+        filters_serializer = self.FiltersSerializer(data=request.query_params)
+        filters_serializer.is_valid(raise_exception=True)
+
+        # Si no se especificó rango de fechas, regresar registros del último día
+        if not (filters_serializer.validated_data.get("register_datetime_after") or filters_serializer.validated_data.get("register_datetime_before")):
+            import datetime
+            import pytz
+
+            date_now = datetime.datetime.now()
+            end_date = date_now.astimezone(pytz.timezone("America/Mexico_City")).replace(
+                tzinfo=pytz.utc) + datetime.timedelta(hours=6)
+            start_date = end_date - timedelta(hours=24)
+
+            filters_serializer.validated_data["register_datetime_before"] = end_date
+            filters_serializer.validated_data["register_datetime_after"] = start_date
+
+        data = {'device_id': device_id}
+
+        logs = get_retail_device_history(
+            data, filters=filters_serializer.validated_data)[::-1]
+
+        return get_paginated_response(
+            serializer_class=self.OutputSerializer,
+            queryset=logs,
+            request=request,
+        )

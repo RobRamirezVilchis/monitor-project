@@ -1,5 +1,5 @@
 import { createQuery } from "../helpers/createQuery";
-import { getUnits, getDevices, getUnitHistory, getDrivingSeverityCount, getUnitLastStatusChange, getDeviceHistory, getIndustrySeverityCount, getUnitStatus, getDeviceStatus, getSafeDrivingClients, getIndustryClients, getDeviceLastStatusChange, getIndustryCameraDisconnections, getUnitLastActiveStatus, getUnitSeverityHistory, getSafeDrivingAreaPlotData, getIndustryAreaPlotData, getDrivingLastUpdate, getIndustryLastUpdate, getDeviceSeverityHistory, getDeviceLogs, getDeviceWifiStatus, getUnitLogs, getServersStatus, getServerStatus, getServerHistory, getMetricsKeys, getServerMetricPlotData, getServerRegions, getServerTypes } from "../services/monitor";
+import { getUnits, getDevices, getUnitHistory, getDrivingSeverityCount, getUnitLastStatusChange, getDeviceHistory, getIndustrySeverityCount, getUnitStatus, getDeviceStatus, getSafeDrivingClients, getIndustryClients, getDeviceLastStatusChange, getIndustryCameraDisconnections, getUnitLastActiveStatus, getUnitSeverityHistory, getSafeDrivingAreaPlotData, getIndustryAreaPlotData, getDrivingLastUpdate, getIndustryLastUpdate, getDeviceSeverityHistory, getDeviceLogs, getDeviceWifiStatus, getUnitLogs, getServersStatus, getServerStatus, getServerHistory, getMetricsKeys, getServerMetricPlotData, getServerRegions, getServerTypes, getRetailDeviceStatus, getSmartRetailSeverityCount, getRetailStatus, getRetailDeviceLastStatusChange, getRetailDeviceLogs, getRetailDeviceHistory } from "../services/monitor";
 import { AreaPlotFilters, DeviceFilters, UnitSeverityHistoryFilters, UnitFilters, DeviceSeverityHistoryFilters, DeviceLogsFilters, UnitLogsFilters, ServerHistoryFilters, ServerStatusFilters } from "../services/monitor/types";
 import defaultQueryClient from "../clients/defaultQueryClient";
 
@@ -332,6 +332,74 @@ export const useServerRegionsQuery = createQuery({
 export const useServerTypesQuery = createQuery({
   queryPrimaryKey: "server_types",
   queryFn: (ctx) => getServerTypes({ signal: ctx.signal }),
+  cacheTime: 1000 * 60 * 5,  // 5 minutes
+  staleTime: 1000 * 60 * 3,  // 3 minutes
+  keepPreviousData: true,
+  queryClient: defaultQueryClient,
+});
+
+// Smart Retail API ----------------------------------------
+export const useRetailStatusQuery = createQuery({
+  queryPrimaryKey: "retail-devices",
+  queryFn: (ctx, vars) => getRetailStatus({ signal: ctx.signal }),
+  cacheTime: 1000 * 60 * 5,  // 5 minutes
+  staleTime: 1000 * 60 * 3,  // 3 minutes
+  keepPreviousData: true,
+  queryClient: defaultQueryClient,
+  refetchInterval: 60000,
+  refetchIntervalInBackground: true
+});
+
+
+export const useRetailDeviceStatusQuery = createQuery({
+  queryPrimaryKey: "retail-device",
+  queryKeyVariables: (vars: DeviceFilters) => vars ? [vars] : [],
+  queryFn: (ctx, vars) => getRetailDeviceStatus(vars, { signal: ctx.signal }),
+  cacheTime: 1000 * 60 * 5,  // 5 minutes
+  staleTime: 1000 * 60 * 3,  // 3 minutes
+  keepPreviousData: true,
+  queryClient: defaultQueryClient,
+  refetchInterval: 60000,
+  refetchIntervalInBackground: true
+});
+
+export const useRetailSeverityCount = createQuery({
+  queryPrimaryKey: "retail_severity_count",
+  queryFn: (ctx, vars) => getSmartRetailSeverityCount({ signal: ctx.signal }),
+  cacheTime: 1000 * 60 * 5,  // 5 minutes
+  staleTime: 1000 * 60 * 3,  // 3 minutes
+  keepPreviousData: true,
+  queryClient: defaultQueryClient,
+  refetchInterval: 60000,
+  refetchIntervalInBackground: true
+});
+
+
+export const useRetailDeviceLastStatusChange = createQuery({
+  queryPrimaryKey: "retail-last-status-change",
+  queryKeyVariables: (vars: DeviceFilters) => vars ? [vars] : [],
+  queryFn: (ctx, vars) => getRetailDeviceLastStatusChange(vars, { signal: ctx.signal }),
+  cacheTime: 1000 * 60 * 5,  // 5 minutes
+  staleTime: 1000 * 60 * 3,  // 3 minutes
+  keepPreviousData: true,
+  queryClient: defaultQueryClient,
+});
+
+export const useRetailDeviceLogsQuery = createQuery({
+  queryPrimaryKey: "retail-logs",
+  queryKeyVariables: (vars: DeviceLogsFilters) => vars ? [vars] : [],
+  queryFn: (ctx, vars) => getRetailDeviceLogs(vars, { signal: ctx.signal }),
+  cacheTime: 1000 * 60 * 5,  // 5 minutes
+  staleTime: 1000 * 60 * 3,  // 3 minutes
+  keepPreviousData: true,
+  queryClient: defaultQueryClient,
+});
+
+
+export const useRetailDeviceHistoryQuery = createQuery({
+  queryPrimaryKey: "retail-device-history",
+  queryKeyVariables: (vars: DeviceFilters) => vars ? [vars] : [],
+  queryFn: (ctx, vars) => getRetailDeviceHistory(vars, { signal: ctx.signal }),
   cacheTime: 1000 * 60 * 5,  // 5 minutes
   staleTime: 1000 * 60 * 3,  // 3 minutes
   keepPreviousData: true,

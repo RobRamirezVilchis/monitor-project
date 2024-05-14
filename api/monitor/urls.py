@@ -75,7 +75,24 @@ urlpatterns = [
          ),
     path("retail/",
          include(([
-             path("status/", apis.RetailDeviceStatusList.as_view(), name="status")
+             path("status/", apis.RetailDeviceStatusList.as_view(), name="status"),
+             path("status-count/",
+                  apis.RetailDeviceSeverityCount.as_view(), name="status-count"),
+             path("devices/<int:device_id>/",
+                  include(([
+                      path("", apis.RetailDeviceStatusAPI.as_view(),
+                           name="unit-status"),
+                      path("history/", apis.DeviceHistoryList.as_view(),
+                           name="history"),
+                      path("last-status-change/", apis.RetailDeviceStatusTime.as_view(),
+                           name="last-active-status"),
+                      path("logs/", apis.RetailLogsAPI.as_view(),
+                           name="device-logs"),
+                      path("history/", apis.RetailDeviceHistoryList.as_view(),
+                           name="history"),
+
+                  ], "device")
+                  )),
          ]))
          ),
     path("servers/",

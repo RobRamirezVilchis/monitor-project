@@ -1,4 +1,4 @@
-import { UnitStatus, SeverityCount, UnitHistory, DeviceStatus, UnitFilters, LastStatusChange, DeviceFilters, DeviceHistory, Client, CameraDisconnection, LastActiveStatus, SeverityHistory, AreaPlotData, AreaPlotFilters, LastUpdate, DeviceLogsFilters, DeviceLogs, DeviceWifiStatus, UnitLogsFilters, UnitLogs, NewClientData, ServerStatus, ServerHistoryFilters, ServerHistory, MetricsKeys, ServerRegion, ServerType, ServerStatusFilters } from "./types";
+import { UnitStatus, SeverityCount, UnitHistory, DeviceStatus, UnitFilters, LastStatusChange, DeviceFilters, DeviceHistory, Client, CameraDisconnection, LastActiveStatus, SeverityHistory, AreaPlotData, AreaPlotFilters, LastUpdate, DeviceLogsFilters, DeviceLogs, DeviceWifiStatus, UnitLogsFilters, UnitLogs, NewClientData, ServerStatus, ServerHistoryFilters, ServerHistory, MetricsKeys, ServerRegion, ServerType, ServerStatusFilters, RetailDeviceStatus, RetailDeviceHistory } from "./types";
 import { Id, OptionallyPaginated, Paginated } from "@/api/types";
 import { Role, User } from "../auth/types";
 import api from "../..";
@@ -490,4 +490,101 @@ export async function getMetricsKeys(
       }
     );
     return resp.data;
+}
+
+// Smart Retail
+export async function getRetailStatus(config?: Parameters<typeof http.get>[1]) {
+
+  const resp = await http.get<RetailDeviceStatus[]>(
+    api.endpoints.monitor.retail.status,
+    {
+      ...config,
+    }
+  );
+  return resp.data;
+
+}
+
+
+export async function getRetailDeviceStatus(filters: DeviceFilters, config?: Parameters<typeof http.get>[1]) {
+
+  const resp = await http.get<RetailDeviceStatus>(
+    api.endpoints.monitor.retail.deviceStatus(filters.device_id),
+    {
+      params: filters,
+      ...config,
+    }
+  );
+  return resp.data;
+
+}
+
+export async function addSmartRetailClient(
+  data: NewClientData,
+  config?: Parameters<typeof http.post>[2]
+) {
+  
+    const resp = await http.post<NewClientData>(
+      api.endpoints.monitor.retail.addClient,
+      data,
+      config
+    );
+    return resp.data;
+
+}
+
+export async function getSmartRetailSeverityCount(config?: Parameters<typeof http.get>[1]) {
+  
+  const resp = await http.get<SeverityCount[]>(
+    api.endpoints.monitor.retail.severityCount,
+    {
+      ...config,
+    }
+  );
+  return resp.data;
+
+}
+
+export async function getRetailDeviceLastStatusChange(
+  filters: DeviceFilters,
+  config?: Parameters<typeof http.get>[1]
+) {
+    const resp = await http.get<LastStatusChange>(
+      api.endpoints.monitor.retail.lastStatusChange(filters.device_id),
+      {
+        params: filters,
+        ...config,
+      }
+    );
+    return resp.data;
+}
+
+export async function getRetailDeviceLogs(
+  filters: DeviceLogsFilters,
+  config?: Parameters<typeof http.get>[1]
+) {
+    const resp = await http.get<Paginated<DeviceLogs>>(
+      api.endpoints.monitor.retail.deviceLogs(filters.device_id),
+      {
+        params: filters,
+        ...config,
+      }
+    );
+    return resp.data;
+}
+
+export async function getRetailDeviceHistory(
+  filters: DeviceFilters,
+  config?: Parameters<typeof http.get>[1]
+) {
+ 
+    const resp = await http.get<Paginated<RetailDeviceHistory>>(
+      api.endpoints.monitor.retail.deviceHistory(filters.device_id),
+      {
+        params: filters,
+        ...config,
+      }
+    );
+    return resp.data;
+
 }

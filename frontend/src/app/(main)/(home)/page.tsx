@@ -17,7 +17,6 @@ import { sleep } from "@/utils/utils";
 import jwt from "@/api/jwt";
 import { redirect } from "next/navigation";
 
-
 // const Home = () => {
 //   const { user, loading, login, logout, isAuthorized } = useAuth({
 //     skipAll: false,
@@ -270,8 +269,6 @@ import { redirect } from "next/navigation";
 //   )
 // }
 
-
-
 // const HomeWrapper = () => {
 //   return (
 //     <ConfirmDialogProvider
@@ -293,7 +290,7 @@ import { redirect } from "next/navigation";
 // }
 
 const Home = () => {
-  redirect("/monitor/safedriving");
-}
+  redirect("/monitor/safe-driving");
+};
 
 export default Home;

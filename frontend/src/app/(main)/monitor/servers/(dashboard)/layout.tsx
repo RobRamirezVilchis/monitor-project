@@ -15,21 +15,6 @@ const ServersDashboardLayout = ({ children }: { children: ReactNode }) => {
   const pathname = usePathname();
   const currentTab = pathname.split("/").slice(-1)[0];
 
-  const lastUpdateQuery = useDrivingLastUpdateQuery({
-    refetchOnWindowFocus: false,
-  });
-  const last_update = lastUpdateQuery.data;
-
-  let timeSinceLastUpdate: string;
-  if (last_update != null) {
-    timeSinceLastUpdate = formatDistanceToNow(last_update.last_update, {
-      addSuffix: true,
-      locale: es,
-    });
-  } else {
-    timeSinceLastUpdate = "-";
-  }
-
   return (
     <section>
       <Tabs value={currentTab}>
@@ -50,9 +35,6 @@ const ServersDashboardLayout = ({ children }: { children: ReactNode }) => {
                 </Tabs.Tab>
               </Link>
             </Tabs.List> */}
-            <p className="hidden 2xl:block ml-8 w-72 text-md opacity-40">
-              Última actualización {timeSinceLastUpdate}
-            </p>
           </div>
         </div>
         <div>{children}</div>
