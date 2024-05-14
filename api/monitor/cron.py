@@ -277,7 +277,7 @@ def process_driving_data(response, now=None):
              > 1, 5, 5, "forced reboot (>1)"),
             (datos.get("Estatus") == "red", 5, 1, "Sin comunicación reciente"),
             (datos.get("Jsons_eventos_pendientes") > 100 or datos.get(
-                "Jsons_status_pendientes") > 1000, 5, 6, "Logs pendientes (>1000)"),
+                "Jsons_status_pendientes") > 1000, 5, 6, "Logs pendientes (>100)"),
             (datos.get("En_viaje") and disc_cameras in {
              1, 2}, 4, 1, "1-2 cámaras fallando"),
             (output_gx["ten_minutes"][device]["restarting_loop"]
