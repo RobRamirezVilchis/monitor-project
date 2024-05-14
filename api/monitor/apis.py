@@ -1381,3 +1381,39 @@ class RetailDeviceHistoryList(APIView):
             queryset=logs,
             request=request,
         )
+
+
+class RetailClientCreateAPI(APIView):
+    class InputSerializer(serializers.Serializer):
+        name = serializers.CharField()
+        keyname = serializers.CharField()
+        api_username = serializers.CharField()
+        api_password = serializers.CharField()
+
+    def post(self, request, *args, **kwargs):
+        import requests
+
+        serializer = self.InputSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        keyname = serializer.validated_data["keyname"]
+
+        password = serializer.validated_data["api_password"]
+
+        encryption = EncryptionService()
+        enc_password = encryption.encrypt(bytes(password, "utf-16"))
+
+        client, created = get_or_create_client(
+            name=serializer.validated_data["name"],
+            keyname=keyname,
+            deployment_name="Smart Retail",
+            defaults={
+                "api_username": serializer.validated_data["api_username"],
+                "api_password": enc_password
+            }
+        )
+
+        if created:
+            return Response(status=status.HTTP_201_CREATED)
+        else:
+            return Response({"error": "Cliente ya existe"}, status=status.HTTP_400_BAD_REQUEST)
