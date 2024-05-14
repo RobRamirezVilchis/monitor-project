@@ -26,7 +26,7 @@ class Client(models.Model):
 class GxStatus(models.Model):
     description = models.CharField(max_length=100, null=True, blank=True)
     severity = models.IntegerField("Severidad", null=True)
-    reason = models.IntegerField("Razón", null=True)
+    reason = models.IntegerField("Razón", null=True, blank=True)
     priority = models.BooleanField(default=False)
     deployment = models.ForeignKey(
         Deployment, on_delete=models.CASCADE, null=True)

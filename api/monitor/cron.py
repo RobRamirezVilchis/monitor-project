@@ -277,7 +277,7 @@ def process_driving_data(response, now=None):
              > 1, 5, 5, "forced reboot (>1)"),
             (datos.get("Estatus") == "red", 5, 1, "Sin comunicación reciente"),
             (datos.get("Jsons_eventos_pendientes") > 100 or datos.get(
-                "Jsons_status_pendientes") > 1000, 5, 6, "Demasiados logs pendientes"),
+                "Jsons_status_pendientes") > 1000, 5, 6, "Logs pendientes (>1000)"),
             (datos.get("En_viaje") and disc_cameras in {
              1, 2}, 4, 1, "1-2 cámaras fallando"),
             (output_gx["ten_minutes"][device]["restarting_loop"]
@@ -289,7 +289,7 @@ def process_driving_data(response, now=None):
             (output_gx["hour"][device]["storage_devices"]
              > 0, 3, 1, "Errores de memoria"),
             (100 > datos.get("Jsons_eventos_pendientes") >
-             20 or datos.get("Jsons_status_pendientes") > 100, 3, 2, "Muchos logs pendientes"),
+             20 or datos.get("Jsons_status_pendientes") > 100, 3, 2, "Logs pendientes (>20)"),
             (output_gx["hour"][device]["total"]
              > 10, 3, 3, "Más de 10 mensajes"),
             (datos.get("Estatus") == "green" and (
@@ -393,7 +393,7 @@ def update_driving_status():
 
             if current_unit_status:
                 was_unit_active = not (current_unit_status.status.description.startswith("Sin comunicación") or
-                                       current_unit_status.status.description.endswith("logs pendientes") or
+                                       current_unit_status.status.description.startswith("Logs pendientes") or
                                        current_unit_status.status.description == "Inactivo")
             else:  # In case the unit is new
                 was_unit_active = False
@@ -408,7 +408,7 @@ def update_driving_status():
             priority = False
             if description == "Read only SSD" or description == "forced reboot (>1)" or description == "Tres cámaras fallando":
                 priority = True
-            elif description.startswith("Sin comunicación") or description == "Inactivo" or description.endswith("logs pendientes"):
+            elif description.startswith("Sin comunicación") or description == "Inactivo" or description.startswith("Logs pendientes"):
                 # If the unit just turned inactive, check last active status
                 # If the last status was read only ssd, override severity to 5 and priority to True
                 if was_unit_active:
@@ -1496,7 +1496,7 @@ def send_daily_sd_report():
 
         # Verify if the unit is inactive, and its last active status was read only ssd
         if priority and (description.startswith("Sin comunicación") or description == "Inactivo" or
-                         description.endswith("logs pendientes")):
+                         description.startswith("Logs pendientes")):
             description_out = critical_last_message
 
         if description_out not in unit_problems:
