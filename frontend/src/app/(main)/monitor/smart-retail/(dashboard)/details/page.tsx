@@ -103,7 +103,7 @@ const IndustryDetailsPage = () => {
     <section>
       <div className="flex items-center">
         <div className="relative mr-10">
-          <div className="pr-0 lg:pr-52">
+          <div className="mr-0 lg:mr-60">
             <TextInput
               className="flex gap-3 items-center w-100 mb-4"
               styles={{

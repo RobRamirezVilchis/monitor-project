@@ -661,3 +661,20 @@ def get_retail_device_history(args, filters=None):
         device__id=args['device_id'],
     )
     return RetailDeviceHistoryFilter(filters, logs).qs
+
+
+class RetailScatterplotDataFilter(rf_filters.FilterSet):
+    register_datetime = rf_filters.DateFromToRangeFilter()
+
+    class Meta:
+        model = RetailDeviceHistory
+        fields = ['register_datetime']
+
+
+def get_retail_scatterplot_data(args, filters=None):
+
+    logs = RetailDeviceHistory.objects.filter(
+        device_id=args['device_id'],
+    )
+
+    return RetailScatterplotDataFilter(filters, logs).qs

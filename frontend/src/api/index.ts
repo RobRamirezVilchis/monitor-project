@@ -87,6 +87,7 @@ const api = {
         lastStatusChange: (device_id: DeviceId) => `api/v1/monitor/retail/devices/${device_id}/last-status-change/`,
         deviceLogs: (device_id: DeviceId) => `api/v1/monitor/retail/devices/${device_id}/logs/`,
         deviceHistory: (device_id: DeviceId) => `api/v1/monitor/retail/devices/${device_id}/history/`,
+        severityHistory: (device_id: DeviceId) => `api/v1/monitor/retail/devices/${device_id}/severity-history/`,
 
       },
       servers: {

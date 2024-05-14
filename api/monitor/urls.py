@@ -84,18 +84,17 @@ urlpatterns = [
                   include(([
                       path("", apis.RetailDeviceStatusAPI.as_view(),
                            name="unit-status"),
-                      path("history/", apis.DeviceHistoryList.as_view(),
+                      path("history/", apis.RetailDeviceHistoryList.as_view(),
                            name="history"),
                       path("last-status-change/", apis.RetailDeviceStatusTime.as_view(),
                            name="last-active-status"),
                       path("logs/", apis.RetailLogsAPI.as_view(),
                            name="device-logs"),
-                      path("history/", apis.RetailDeviceHistoryList.as_view(),
-                           name="history"),
-
+                      path("severity-history/", apis.RetailDeviceScatterPlotAPI.as_view(),
+                           name="scatter-plot"),
                   ], "device")
                   )),
-         ]))
+         ], "retail"))
          ),
     path("servers/",
          include(([

@@ -266,3 +266,9 @@ export interface RetailDeviceHistory extends Partial<PageNumberPaginationParams>
   description: string, 
   log_counts: {[logType: string]: number},
 }
+
+export interface RetailDeviceSeverityHistoryFilters {
+  device_id: string,
+  register_datetime_after: Date | null,
+  register_datetime_before: Date | null,
+}

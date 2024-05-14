@@ -11,12 +11,14 @@ import {
   useRetailDeviceStatusQuery,
   useRetailDeviceLastStatusChange,
   useRetailDeviceHistoryQuery,
+  useRetailDeviceSeverityHistory,
 } from "@/api/queries/monitor";
 import {
   CameraDisconnection,
   Device,
   DeviceFilters,
   DeviceHistory,
+  RetailDeviceHistory,
   Unit,
   UnitHistory,
 } from "@/api/services/monitor/types";
@@ -182,7 +184,7 @@ const RetailDevicePage = ({ params }: { params: { device_id: string } }) => {
     timeAgo = "-";
   }
 
-  const grid = useDataGrid<DeviceHistory>({
+  const grid = useDataGrid<RetailDeviceHistory>({
     data: historyQuery.data?.data || [],
     columns: cols,
     rowNumberingMode: "static",
@@ -227,7 +229,7 @@ const RetailDevicePage = ({ params }: { params: { device_id: string } }) => {
     rowCount: disconnectionsQuery.data?.pagination?.count ?? 0,
   });
 
-  const deviceSeverityHistory = useDeviceSeverityHistory({
+  const deviceSeverityHistory = useRetailDeviceSeverityHistory({
     variables: {
       device_id: params.device_id,
       register_datetime_after: dateValue[0],
@@ -249,10 +251,7 @@ const RetailDevicePage = ({ params }: { params: { device_id: string } }) => {
   const onConfirmation = async (deviceFilters: DeviceFilters) => {
     setUnitInactiveMutation.mutate(deviceFilters);
   };
-  console.log(deviceStatus);
-  if (deviceStatus) {
-    console.log(deviceStatus?.last_connection);
-  }
+
   return (
     <section className="relative mb-20">
       <BackArrow />
@@ -356,10 +355,10 @@ const RetailDevicePage = ({ params }: { params: { device_id: string } }) => {
       <div className="h-[70vh] mb-10">
         <DataGrid instance={grid} />
       </div>
-      <h3 className="text-2xl opacity-60">Desconexiones de cámaras:</h3>
+      {/* <h3 className="text-2xl opacity-60">Desconexiones de cámaras:</h3>
       <div className="h-[70vh]">
         <DataGrid instance={camerasGrid} />
-      </div>
+      </div> */}
 
       <div className=" items-center gap-8 mb-6 mt-8">
         <p className="text-2xl opacity-60 mb-2">Gráfica de estátus </p>
@@ -451,10 +450,13 @@ const CustomTooltip = ({
   return null;
 };
 
-const cols: ColumnDef<DeviceHistory>[] = [
+const cols: ColumnDef<RetailDeviceHistory>[] = [
   {
     accessorKey: "register_datetime",
-    accessorFn: (row) => format(parseISO(row.register_datetime), "Pp"),
+    accessorFn: (row) =>
+      row.register_datetime
+        ? format(parseISO(row.register_datetime), "Pp")
+        : "-",
     header: "Fecha",
     columnTitle: "Fecha",
     columnTitleCustom:
@@ -510,49 +512,12 @@ const cols: ColumnDef<DeviceHistory>[] = [
     enableSorting: true,
   },
   {
-    accessorKey: "camera_connection",
-    accessorFn: (row) => row.camera_connection,
-    header: "Desconexión de cámaras",
+    accessorKey: "log_counts",
+    accessorFn: (row) => JSON.stringify(row.log_counts),
+    header: "Logs enviados",
     columnTitle:
-      "Tiempo acumulado de desconexión de todas las cámaras en intervalo de 10 minutos",
-    size: 150,
-    enableSorting: true,
-  },
-  {
-    accessorKey: "restart",
-    accessorFn: (row) => row.restart,
-    header: "Restart",
-    columnTitle: "Restart",
-    columnTitleCustom: "Cantidad de logs recibidos de reinicios de pipeline",
-    size: 120,
-    enableSorting: true,
-  },
-
-  {
-    accessorKey: "license",
-    accessorFn: (row) => row.license,
-    header: "License",
-    columnTitle: "License",
-    columnTitleCustom: "Cantidad de logs recibidos de licencia",
-    size: 110,
-    enableSorting: true,
-  },
-  {
-    accessorKey: "shift_change",
-    accessorFn: (row) => row.shift_change,
-    header: "Turno",
-    columnTitle: "Turno",
-    columnTitleCustom: "Cantidad de logs recibidos de cambio de turno",
-    size: 100,
-    enableSorting: true,
-  },
-  {
-    accessorKey: "others",
-    accessorFn: (row) => row.others,
-    header: "Otros",
-    columnTitle: "Otros",
-    columnTitleCustom: "Cantidad de logs recibidos de otros casos",
-    size: 100,
+      "Cuentas cantidad de logs recibidos de cada categoría (no aplican logs vacíos)",
+    size: 400,
     enableSorting: true,
   },
 ];

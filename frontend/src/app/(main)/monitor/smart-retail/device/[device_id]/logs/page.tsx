@@ -90,12 +90,6 @@ const DeviceLogsPage = ({ params }: { params: { device_id: string } }) => {
 
   return (
     <section className="relative">
-      <Link
-        href={`/monitor/retail/device/${params.device_id}`}
-        className="absolute right-full mr-5 mt-2 opacity-40"
-      >
-        <ArrowBackIcon />
-      </Link>
       <button
         className="absolute hidden lg:block right-full mr-5 mt-2 opacity-40"
         onClick={() => router.back()}

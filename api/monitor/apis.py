@@ -184,8 +184,6 @@ class UnitHistoryList(APIView):
             filters_serializer.validated_data["register_datetime_before"] = end_date
             filters_serializer.validated_data["register_datetime_after"] = start_date
 
-        print("val data")
-        print(filters_serializer.validated_data)
         data = {'unit_id': unit_id}
         logs = get_unithistory(
             data, filters=filters_serializer.validated_data)[::-1]
@@ -1417,3 +1415,69 @@ class RetailClientCreateAPI(APIView):
             return Response(status=status.HTTP_201_CREATED)
         else:
             return Response({"error": "Cliente ya existe"}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class RetailDeviceScatterPlotAPI(APIView):
+    class FiltersSerializer(serializers.Serializer):
+        register_datetime_after = serializers.DateTimeField(required=False)
+        register_datetime_before = serializers.DateTimeField(required=False)
+
+    class OutputSerializer(serializers.Serializer):
+        hora = serializers.DateTimeField()
+        severidad = serializers.IntegerField()
+        descripcion = serializers.CharField()
+
+    def get(self, request, device_id, *args, **kwargs):
+        import datetime
+        import pytz
+
+        filters_serializer = self.FiltersSerializer(data=request.query_params)
+        filters_serializer.is_valid(raise_exception=True)
+
+        # Si no se especificó rango de fechas, regresar registros del último día
+        if not (filters_serializer.validated_data.get("register_datetime_after") or filters_serializer.validated_data.get("register_datetime_before")):
+            import datetime
+            import pytz
+
+            date_now = datetime.datetime.now()
+            end_date = date_now.astimezone(pytz.timezone("America/Mexico_City")).replace(
+                tzinfo=pytz.utc) + datetime.timedelta(hours=6)
+            start_date = end_date - timedelta(hours=24)
+
+            filters_serializer.validated_data["register_datetime_before"] = end_date
+            filters_serializer.validated_data["register_datetime_after"] = start_date
+
+        registers = get_retail_scatterplot_data(
+            {"device_id": device_id}, filters=filters_serializer.validated_data)
+
+        grouped_by_hour = {}
+
+        descriptions = {}
+        for register in registers:
+            hour = (register.register_datetime -
+                    timedelta(hours=6)).replace(tzinfo=None).isoformat(timespec="hours", sep=' ') + "h"
+            severity = register.status.severity
+            description = register.status.description
+
+            if hour not in grouped_by_hour:
+                grouped_by_hour[hour] = [severity]
+            else:
+                grouped_by_hour[hour].append(severity)
+
+            if severity in descriptions:
+                descriptions[severity].append(description)
+            else:
+                descriptions[severity] = [description]
+
+        output = []
+        for date, severities in grouped_by_hour.items():
+            most_common_severity = max(set(severities), key=severities.count)
+            most_common_description = max(
+                set(descriptions[most_common_severity]), key=descriptions[most_common_severity].count)
+            output.append({"hora": date,
+                           "severidad": most_common_severity,
+                           "descripcion": most_common_description})
+
+        data = self.OutputSerializer(output, many=True).data
+
+        return Response(data)

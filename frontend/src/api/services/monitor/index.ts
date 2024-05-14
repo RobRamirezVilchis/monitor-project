@@ -588,3 +588,17 @@ export async function getRetailDeviceHistory(
     return resp.data;
 
 }
+
+export async function getRetailDeviceSeverityHistory(
+  filters: DeviceFilters,
+  config?: Parameters<typeof http.get>[1]
+) {
+    const resp = await http.get<SeverityHistory[]>(
+      api.endpoints.monitor.retail.severityHistory(filters.device_id),
+      {
+        params: filters,
+        ...config,
+      }
+    );
+    return resp.data;
+}

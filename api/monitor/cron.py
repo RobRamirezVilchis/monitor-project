@@ -1220,9 +1220,9 @@ def process_retail_data(response):
         device_hour_counts = {}
         device_recent_counts = {}
         for log in device_logs:
+            print(log)
             register_time = datetime.fromisoformat(
                 log["register_time"][:-1]).replace(tzinfo=pytz.utc)
-            print(register_time, now)
             log_time = datetime.fromisoformat(f'{log["log_date"]}T{log["log_time"]}').replace(
                 tzinfo=pytz.utc)
 
