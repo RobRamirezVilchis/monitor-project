@@ -262,7 +262,7 @@ def get_unit_last_active_status(unit_id):
         Q(status__description="Inactivo") |
         Q(status__description="Sin comunicación reciente") |
         Q(status__description="Sin comunicación reciente (< 1 día)") |
-        Q(status__description="Logs pendientes (>1000)") |
+        Q(status__description="Logs pendientes (>100)") |
         Q(status__description="Logs pendientes (>20)")).order_by('-register_datetime').first()
 
     return last_status

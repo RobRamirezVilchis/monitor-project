@@ -641,12 +641,17 @@ class SafeDrivingAreaPlotAPI(APIView):
         hourly_counts = {}
 
         if not client_name:
+
             for register in registers:
+
                 # Agrupar registros de diferentes clientes, por hora
                 if register.timestamp in hourly_counts:
-                    hourly_counts[register.timestamp] = {
-                        k: hourly_counts[register.timestamp][k] + v
-                        for k, v in register.severity_counts.items()}
+                    for k, v in register.severity_counts.items():
+                        if k in hourly_counts[register.timestamp]:
+                            hourly_counts[register.timestamp][k] += v
+                        else:
+                            hourly_counts[register.timestamp][k] = v
+
                 else:
                     hourly_counts[register.timestamp] = register.severity_counts
 
@@ -737,7 +742,6 @@ class SafeDrivingLastUpdateAPI(APIView):
 
     def get(self, request, *args, **kwargs):
         last_update_sd = get_last_sd_update()
-        last_update_sd = None
         output = self.OutputSerializer(last_update_sd).data
 
         return Response(output)
