@@ -602,3 +602,29 @@ export async function getRetailDeviceSeverityHistory(
     );
     return resp.data;
 }
+
+export async function getSmartRetailAreaPlotData(
+  filters: AreaPlotFilters, 
+  config?: Parameters<typeof http.get>[1]
+  ) {
+  
+    const resp = await http.get<AreaPlotData[]>(
+      api.endpoints.monitor.retail.areaPlotData,
+      {
+        params: filters,
+        ...config,
+      }
+    );
+    return resp.data;
+
+}
+
+export async function getSmartRetailClients(config?: Parameters<typeof http.get>[1]) {
+  const resp = await http.get<Client[]>(
+    api.endpoints.monitor.retail.clients,
+    {
+      ...config,
+    }
+  );
+  return resp.data;
+}

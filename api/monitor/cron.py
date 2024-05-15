@@ -953,7 +953,7 @@ def update_industry_status():
 
             camerahistory_data.append({
                 'camera': camera,
-                'register_date': date_now,
+                'register_date': date_now.date(),
                 'register_datetime': date_now,
                 'connected': cameras_recent_data["connected"],
                 'disconnection_time': cameras_recent_data["disconnection_time"]
@@ -1168,7 +1168,7 @@ def get_retail_data(client_keyname):
 
     now = datetime.now(tz=pytz.timezone('UTC')).replace(tzinfo=None)
     time_interval = {
-        "initial_datetime": (now - timedelta(hours=1, minutes=10)).isoformat(timespec="seconds"),
+        "initial_datetime": (now - timedelta(hours=1, minutes=1)).isoformat(timespec="seconds"),
         "final_datetime": now.isoformat(timespec='seconds')
     }
 
@@ -1196,10 +1196,12 @@ def process_retail_data(response):
     last_connections = {}
     # First log received within the threshold time window, for each device
     first_log_times = {}
+    disconnection_times = {}
 
     alerts = set()
 
     for device_name, data in response.items():
+        disconnection_times[device_name] = {}
 
         last_connections[device_name] = None
         first_log_times[device_name] = None
@@ -1220,7 +1222,6 @@ def process_retail_data(response):
         device_hour_counts = {}
         device_recent_counts = {}
         for log in device_logs:
-            print(log)
             register_time = datetime.fromisoformat(
                 log["register_time"][:-1]).replace(tzinfo=pytz.utc)
             log_time = datetime.fromisoformat(f'{log["log_date"]}T{log["log_time"]}').replace(
@@ -1256,12 +1257,23 @@ def process_retail_data(response):
         cam_hour_counts = {}
         cam_recent_counts = {}
         for camera_name, camera_logs in cameras_data.items():
+            disconnection_times[device_name][camera_name] = {}
+            for interval in ["hour", "recent"]:
+                disconnection_times[device_name][camera_name][interval] = timedelta(
+                    0)
 
             for log in camera_logs:
                 register_time = datetime.fromisoformat(
                     log["register_time"][:-1]).replace(tzinfo=pytz.utc)
                 log_time = datetime.fromisoformat(f'{log["log_date"]}T{log["log_time"]}').replace(
                     tzinfo=pytz.utc)
+
+                log_msg = log["log"]
+                log_type = log_msg.split("]")[0][1:]
+
+                if log_type == "DISC_CAM":
+                    disconnection_times[device_name][camera_name]["hour"] += timedelta(
+                        minutes=2)
 
                 # Check if the log arrived at the server within the last 10 minutes
 
@@ -1270,11 +1282,12 @@ def process_retail_data(response):
 
                     first_log_time = register_time
                     first_log_times[device_name] = first_log_time
+
+                    if log_type == "DISC_CAM":
+                        disconnection_times[device_name][camera_name]["recent"] += timedelta(
+                            minutes=2)
                 else:
                     intervals = [cam_hour_counts]
-
-                log_msg = log["log"]
-                log_type = log_msg.split("]")[0][1:]
 
                 if log_type:  # If log isn't empty
                     for interval_count in intervals:
@@ -1288,8 +1301,10 @@ def process_retail_data(response):
 
     log_counts = {"hour": hourly_log_counts, "recent": recent_log_counts}
     license = 0  # Placeholder
-    print(last_connections, first_log_times)
-    return log_counts, last_connections, first_log_times, alerts, license
+
+    print("Disconnection times")
+    print(disconnection_times)
+    return log_counts, disconnection_times, last_connections, first_log_times, alerts, license
 
 
 def update_retail_status():
@@ -1310,7 +1325,50 @@ def update_retail_status():
             print(f"No data for {client_name}")
             continue
 
-        log_counts, last_connections, first_log_times, alerts, license = processed_data
+        log_counts, disconnection_times, last_connections, first_log_times, alerts, license = processed_data
+
+        camerastatus_data = []
+        camerahistory_data = []
+        max_cam_disc_times = {}
+        for device_name, cameras in disconnection_times.items():
+            device_args = {
+                "client": client,
+                "name": device_name,
+            }
+            device = get_or_create_device(device_args)
+
+            max_cam_disc_times[device_name] = timedelta(0)
+            for camera_name, intervals in cameras.items():
+                recent_disc_time = intervals["recent"]
+                hour_disc_time = intervals["hour"]
+
+                if recent_disc_time > max_cam_disc_times[device_name]:
+                    max_cam_disc_times[device_name] = recent_disc_time
+
+                camera_args = {
+                    'name': camera_name,
+                    'gx': device
+                }
+                camera = get_or_create_camera(camera_args)
+
+                camerastatus_data.append({
+                    'camera': camera,
+                    'connected': recent_disc_time == timedelta(0),
+                    'last_update': now,
+                    'disconnection_time': hour_disc_time
+                })
+
+                print(camerastatus_data)
+
+                camerahistory_data.append({
+                    'camera': camera,
+                    'register_datetime': now,
+                    'register_date': now.date(),
+                    'connected': recent_disc_time == timedelta(0),
+                    'disconnection_time': recent_disc_time
+                })
+        bulk_update_camerastatus(camerastatus_data)
+        bulk_create_camerahistory(camerahistory_data)
 
         device_names = last_connections.keys()
 
@@ -1320,8 +1378,6 @@ def update_retail_status():
                 "name": device_name,
             }
             device = get_or_create_device(device_args)
-
-            # TO DO: Make a function to calculate delays
 
             # Get last connection from DeviceStatus entry
             try:
@@ -1343,7 +1399,14 @@ def update_retail_status():
             last_alert_time = current_device_status.last_alert if current_device_status else None
             alert_interval = 55
 
-            status_conditions = []
+            status_conditions = [
+                (max_cam_disc_times[device_name] >
+                 timedelta(0), 5, "Cámara desconectada"),
+                (delay_time > timedelta(minutes=20),
+                 5, "Sin comunicación reciente"),
+                (timedelta(minutes=20) >= delay_time > timedelta(0), 3,
+                 "Sin comunicación reciente (<20 min)"),
+            ]
             severity = 1
             rule = "Comunicación reciente"
             for condition, status, description in status_conditions:
@@ -1404,15 +1467,23 @@ def update_servers_status():
             instance = instances[i]
 
             name = instance["name"]
+            keyname = instance["keyname"]
             server_type = instance["type"]
             server_id = instance["id"]
             state = instance["state"]
             launch_time = instance["launch_time"]
 
+            if not name:
+                name = keyname
+
             current_server_status = get_serverstatus_by_awsid(server_id)
 
             server = get_or_create_server(server_id, defaults={
                 "name": name, "server_type": server_type})
+
+            if server.name != name:
+                server.name = name
+                server.save()
 
             if not server.region:
                 server.region = region
@@ -1539,9 +1610,10 @@ def register_severity_counts():
     get_severity_counts = {
         "Safe Driving": get_units_severity_counts,
         "Industry": get_devices_severity_counts,
+        "Smart Retail": get_retail_devices_severity_counts,
     }
 
-    for deployment_name in ("Safe Driving", "Industry"):
+    for deployment_name in list(get_severity_counts.keys()):
         dep_clients = get_clients(deployment_name)
         deployment = get_or_create_deployment(deployment_name)
 
@@ -1552,9 +1624,8 @@ def register_severity_counts():
             for count in severity_counts:
                 counts_json[count['severity']] = count['count']
 
-            # FIX: Safe Driving has status 0, Industry doesn't
-            # So this range can produce errors if counts_json is empty (no data from a SD client)
-            for n in range(1, 6):
+            # FIX: Only SD has status level 0, but this doesn't cause a problem
+            for n in range(0, 6):
                 if n not in counts_json:
                     counts_json[n] = 0
 

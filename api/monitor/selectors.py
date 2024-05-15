@@ -320,7 +320,7 @@ def get_units_severity_counts(client=None):
     client_query = Q()
     if client:
         client_query = Q(unit__client=client)
-    counts = UnitStatus.objects.filter(client_query).filter(active=True).values('status__severity') \
+    counts = UnitStatus.objects.filter(client_query, active=True).filter(active=True).values('status__severity') \
         .annotate(severity=F('status__severity')) \
         .values('severity') \
         .annotate(count=Count('id')) \
@@ -678,3 +678,23 @@ def get_retail_scatterplot_data(args, filters=None):
     )
 
     return RetailScatterplotDataFilter(filters, logs).qs
+
+
+def get_retail_devices_severity_counts(client):
+    client_query = Q()
+    if client:
+        client_query = Q(device__client=client)
+    counts = RetailDeviceStatus.objects.filter(client_query, active=True).values('status__severity') \
+        .annotate(severity=F('status__severity')) \
+        .values('severity') \
+        .annotate(count=Count('id')) \
+        .order_by('-severity')
+
+    return counts
+
+
+def get_retail_clients():
+    clients = Client.objects.filter(
+        deployment=Deployment.objects.get(name="Smart Retail"))
+
+    return clients

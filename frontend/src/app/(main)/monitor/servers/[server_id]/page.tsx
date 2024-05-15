@@ -141,6 +141,8 @@ const ServerPage = ({ params }: { params: { server_id: string } }) => {
     metrics = Object.values(metricsKeys);
   }
 
+  let splitter = new RegExp("_|-", "g");
+
   return (
     <section className="relative mb-28">
       <BackArrow />
@@ -150,7 +152,7 @@ const ServerPage = ({ params }: { params: { server_id: string } }) => {
             Servidores /{" "}
           </span>
           {serverStatus && (
-            <span>{serverStatus.server_name.split("_").join(" ")}</span>
+            <span>{serverStatus.server_name.split(splitter).join(" ")}</span>
           )}
         </h1>
         <p className="opacity-40 text-xl">ID: {serverStatus?.aws_id}</p>

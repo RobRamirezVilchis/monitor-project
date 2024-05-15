@@ -24,9 +24,16 @@ class AWSUtils:
         instances = []
         for reservation in response['Reservations']:
             for instance in reservation['Instances']:
+
+                name = None
+                for tag in instance.get('Tags', []):
+                    if tag['Key'] == 'Name':
+                        name = tag['Value']
+
                 instances.append({
                     'id': instance['InstanceId'],
-                    'name': instance.get('KeyName', ''),
+                    'name': name,
+                    'keyname': instance.get('KeyName', ''),
                     'type': instance['InstanceType'],
                     'state': instance['State']['Name'],
                     'launch_time': instance['LaunchTime'],

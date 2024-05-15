@@ -103,6 +103,23 @@ class DeviceStatusAdmin(admin.ModelAdmin):
     search_fields = ('device__name',)
 
 
+class RetailDeviceStatusAdmin(admin.ModelAdmin):
+    list_display = (
+        'id',
+        'device',
+        'last_update',
+        'status',
+        'last_connection',
+        'delayed',
+        'delay_time',
+        'log_counts',
+
+
+    )
+
+    search_fields = ('device__name',)
+
+
 class DevicesHistoryAdmin(admin.ModelAdmin):
     list_display = (
         'device',
@@ -247,5 +264,5 @@ admin.site.register(ServerMetric)
 admin.site.register(ServerStatus, ServerStatusAdmin)
 admin.site.register(ServerHistory, ServerHistoryAdmin)
 admin.site.register(ServerRegion)
-admin.site.register(RetailDeviceStatus)
+admin.site.register(RetailDeviceStatus, RetailDeviceStatusAdmin)
 admin.site.register(RetailDeviceHistory)

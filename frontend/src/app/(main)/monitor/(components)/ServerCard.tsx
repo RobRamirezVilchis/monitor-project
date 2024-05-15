@@ -26,6 +26,8 @@ const ServerCard = (serverStatus: ServerStatus) => {
     addSuffix: true,
     locale: es,
   });
+
+  let splitter = new RegExp("_|-", "g");
   return (
     <Link
       className="relative pb-6 w-72 md:max-lg:w-52 h-60 md:max-lg:h-72 rounded-lg p-6 border-2 
@@ -38,7 +40,7 @@ const ServerCard = (serverStatus: ServerStatus) => {
       <div className="flex flex-col gap-2">
         <div className="flex flex-col h-20 justify-center mb-2">
           <h3 className="text-2xl font-bold">
-            {server_name.split("_").join(" ")}
+            {server_name.split(splitter).join(" ")}
           </h3>
           <p className="text-gray-500 ">{aws_id}</p>
         </div>

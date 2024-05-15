@@ -1485,3 +1485,84 @@ class RetailDeviceScatterPlotAPI(APIView):
         data = self.OutputSerializer(output, many=True).data
 
         return Response(data)
+
+
+class SmartRetailAreaPlotAPI(APIView):
+    class FiltersSerializer(serializers.Serializer):
+        timestamp_after = serializers.DateTimeField(required=False)
+        timestamp_before = serializers.DateTimeField(required=False)
+
+    class OutputSerializer(serializers.Serializer):
+        timestamp = serializers.DateTimeField()
+        severity_counts = serializers.JSONField()
+
+    def get(self, request, *args, **kwargs):
+        import datetime
+        import pytz
+
+        filters_serializer = self.FiltersSerializer(data=request.query_params)
+        filters_serializer.is_valid(raise_exception=True)
+
+        severity_keys = list(range(6))
+        timezone = pytz.timezone("America/Mexico_City")
+
+        # Si no se especificó rango de fechas, regresar registros del último día
+        if not (filters_serializer.validated_data.get("timestamp_after") or
+                filters_serializer.validated_data.get("timestamp_before")):
+
+            date_now = datetime.datetime.now()
+            end_date = date_now.astimezone(timezone).replace(
+                tzinfo=pytz.utc) + datetime.timedelta(hours=6)
+            start_date = end_date - timedelta(hours=24)
+
+            filters_serializer.validated_data["timestamp_before"] = end_date
+            filters_serializer.validated_data["timestamp_after"] = start_date
+
+        client_name = request.query_params.get("client")
+        registers = get_area_plot_data(
+            "Smart Retail", client_name=client_name, filters=filters_serializer.validated_data)
+
+        hourly_counts = {}
+
+        if not client_name:
+
+            for register in registers:
+
+                # Agrupar registros de diferentes clientes, por hora
+                if register.timestamp in hourly_counts:
+                    for k, v in register.severity_counts.items():
+                        if k in hourly_counts[register.timestamp]:
+                            hourly_counts[register.timestamp][k] += v
+                        else:
+                            hourly_counts[register.timestamp][k] = v
+
+                else:
+                    hourly_counts[register.timestamp] = register.severity_counts
+
+            registers = []
+            for timestamp, counts in hourly_counts.items():
+                registers.append(
+                    {"timestamp": timestamp, "severity_counts": counts})
+
+            for register in registers:
+                register["timestamp"] = register["timestamp"].astimezone(pytz.timezone("America/Mexico_City")).replace(
+                    tzinfo=None).isoformat(timespec="hours", sep=' ') + "h"
+        else:
+            for register in registers:
+                register.timestamp = register.timestamp.astimezone(pytz.timezone("America/Mexico_City")).replace(
+                    tzinfo=None).isoformat(timespec="hours", sep=' ') + "h"
+
+        data = self.OutputSerializer(registers, many=True).data
+
+        return Response(data)
+
+
+class SmartRetailClientList(APIView):
+    class OutputSerializer(serializers.Serializer):
+        name = serializers.CharField()
+
+    def get(self, request, *args, **kwargs):
+        clients = get_retail_clients().filter(active=True)
+
+        data = self.OutputSerializer(clients, many=True).data
+        return Response(data)

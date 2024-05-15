@@ -78,8 +78,12 @@ urlpatterns = [
              path("status/", apis.RetailDeviceStatusList.as_view(), name="status"),
              path("status-count/",
                   apis.RetailDeviceSeverityCount.as_view(), name="status-count"),
+             path("clients/", apis.SmartRetailClientList.as_view(), name="clients"),
              path("clients/create/",
                   apis.RetailClientCreateAPI.as_view(), name="client-create"),
+             path("area-plot-data/", apis.SmartRetailAreaPlotAPI.as_view(),
+                  name="devices-area-plot"),
+
              path("devices/<int:device_id>/",
                   include(([
                       path("", apis.RetailDeviceStatusAPI.as_view(),

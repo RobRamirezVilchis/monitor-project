@@ -89,7 +89,7 @@ const AddSDClientPage = () => {
         </div>
         <div>
           <p className="text-xl font-semibold mb-2">Credenciales de API</p>
-          <div className="flex flex-col gap-3 w-fit border-2 rounded-md border-gray-300 p-4">
+          <div className="flex flex-col gap-3 w-fit border-2 rounded-md border-gray-300 dark:border-gray-600 p-4">
             <div className="flex items-center gap-2">
               <p className="text-lg">Nombre de usuario:</p>
               <TextInput

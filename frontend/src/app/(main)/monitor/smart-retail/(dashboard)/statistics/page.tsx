@@ -8,6 +8,8 @@ import {
   useIndustryLastUpdateQuery,
   useIndustrySeverityCount,
   useSafeDrivingAreaPlotData,
+  useSmartRetailAreaPlotData,
+  useSmartRetailClientsQuery,
 } from "@/api/queries/monitor";
 
 import {
@@ -66,12 +68,12 @@ const SmartRetailStatisticsPage = () => {
     currentDate,
   ]);
 
-  const clientsQuery = useIndustryClientsQuery({
+  const clientsQuery = useSmartRetailClientsQuery({
     refetchOnWindowFocus: false,
   });
   const clients = clientsQuery.data?.map((data) => data.name);
 
-  const areaPlotDataQuery = useIndustryAreaPlotData({
+  const areaPlotDataQuery = useSmartRetailAreaPlotData({
     variables: {
       timestamp_after: dateValue[0],
       timestamp_before: dateValue[1],
