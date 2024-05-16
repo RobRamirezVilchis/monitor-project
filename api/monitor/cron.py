@@ -138,7 +138,6 @@ def process_driving_data(response, now=None):
 
     df_logs = pd.DataFrame(logs)
 
-    logs_no_dropping = []
     past_logs = pd.DataFrame([])
     if not df_logs.empty:
         df_logs["Timestamp"] = df_logs["Timestamp"].apply(
@@ -148,17 +147,17 @@ def process_driving_data(response, now=None):
 
         df_logs["Timestamp"] = df_logs["Timestamp"].dt.tz_localize('UTC')
 
-        logs_no_dropping = df_logs.loc[df_logs["Log"].str.contains(
-            "Batch dropping").apply(lambda x: not x)]
-
         # Arreglar timezone
-        past_logs = logs_no_dropping[logs_no_dropping["Timestamp"] < (
+        past_logs = df_logs[df_logs["Timestamp"] < (
             now - timedelta(hours=1))]
-        logs_last_hour = logs_no_dropping[logs_no_dropping["Timestamp"] > (
+        logs_last_hour = df_logs[df_logs["Timestamp"] > (
             now - timedelta(hours=1))]
 
-        aux = logs_last_hour.loc[logs_no_dropping["Tipo"] == "Aux"]
-        all_ignitions = logs_last_hour.loc[logs_no_dropping["Tipo"] == "Ignición"]
+        print("past logs")
+        print(past_logs)
+
+        aux = logs_last_hour.loc[df_logs["Tipo"] == "Aux"]
+        all_ignitions = logs_last_hour.loc[df_logs["Tipo"] == "Ignición"]
 
         # logs_last_hour = logs_last_hour.loc[(logs_last_hour["Tipo"] != "Aux") &
         #                                        (logs_last_hour["Tipo"] != "Ignición")]
@@ -314,27 +313,17 @@ def process_driving_data(response, now=None):
         if device not in severities:
             severities[device] = [{"severity": 0, "description": "Inactivo"}]
 
+    if not past_logs.empty:
+        past_log_times = past_logs.groupby(
+            "Unidad")['Timestamp'].apply(lambda x: list(x.dt.to_pydatetime())).to_dict()
+    else:
+        past_log_times = {}
+
     return {"gx": output_gx,
             "cameras": output_cameras,
             "severities": severities,
-            "alerts": alerts}
-
-    '''
-    for i in range(len(past_logs)):
-        log = past_logs.iloc[i]
-        row_idx = log.name
-
-        unit = log["Unidad"]
-        if unit not in unit_errors:
-            unit_errors[unit] = {t: [] for t in log_types}
-        unit_errors[unit]["total"].append(row_idx)
-
-        log_type = log["Tipo"]
-        if log_type not in unit_errors[unit]:
-            unit_errors[unit]["others"].append(row_idx)
-        else:
-            unit_errors[unit][log_type].append(row_idx)
-    '''
+            "alerts": alerts,
+            "past_log_times": past_log_times}
 
 
 def update_driving_status():
@@ -348,8 +337,6 @@ def update_driving_status():
 
         response = get_driving_data(client_alias)
         if response is not None:
-            now = datetime.now(tz=pytz.timezone('UTC')).astimezone(pytz.timezone(
-                'America/Mexico_City')).replace(tzinfo=pytz.utc)
             processed_data = process_driving_data(response)
 
             # generate_testing_data(client_alias, response, processed_data)
@@ -358,6 +345,7 @@ def update_driving_status():
             camera_data = processed_data["cameras"]
             all_units_status = processed_data["severities"]
             alerts = processed_data["alerts"]
+            past_log_times = processed_data["past_log_times"]
 
         else:
             print(f"No data for {client_name}")
@@ -376,14 +364,18 @@ def update_driving_status():
 
         history_logs = []
         alerts_to_send = {}
-        for unit, unit_logs in hour_data.items():
+        for unit_name, unit_logs in hour_data.items():
             if client_alias != "tp":  # Hardcoded
                 unit_logs["En_viaje"] = None
                 unit_logs["Estatus"] = None
 
+            if unit_name in past_log_times:
+                print(f'{unit_name} past logs:')
+                print(past_log_times)
+
             # Get Unit instance
             unit_args = {
-                'name': unit,
+                'name': unit_name,
                 'client': client
             }
             unit_obj = get_or_create_unit(unit_args)
@@ -395,15 +387,36 @@ def update_driving_status():
                 was_unit_active = not (current_unit_status.status.description.startswith("Sin comunicación") or
                                        current_unit_status.status.description.startswith("Logs pendientes") or
                                        current_unit_status.status.description == "Inactivo")
+
+                was_unit_on_trip = current_unit_status.on_trip
             else:  # In case the unit is new
                 was_unit_active = False
+                was_unit_on_trip = False
 
-            unit_status = all_units_status[unit]
+            trip = None
+
+            if was_unit_on_trip == False and unit_logs.get("En_viaje", False):
+                trip = create_unit_trip(unit=unit_obj, start_datetime=date_now)
+                print(f"Trip created {unit_obj.name}")
+            elif was_unit_on_trip:
+                trip, created = get_or_create_open_trip(
+                    unit_obj, start_datetime=date_now)
+
+                if not unit_logs.get("En_viaje", True):
+                    trip.end_datetime = date_now
+                    trip.end_date = date_now.date()
+                    trip.save()
+
+            unit_status = all_units_status[unit_name]
 
             # If the unit met the conditions for more than one severity level, take the most critical (max)
             most_severe = max(unit_status, key=lambda x: x["severity"])
             severity = most_severe["severity"]
             description = most_severe["description"]
+
+            if unit_logs.get("En_viaje", True) and not description.startswith("Sin comunicación") and trip is not None:
+                trip.connection = True
+                trip.save()
 
             priority = False
             if description == "Read only SSD" or description == "forced reboot (>1)" or description == "Tres cámaras fallando":
@@ -418,10 +431,10 @@ def update_driving_status():
                             severity = 5
                             priority = True
                             message = "Sin comunicación reciente, último mensaje fue Read only SSD"
-                            if unit in alerts:
-                                alerts[unit].append(message)
+                            if unit_name in alerts:
+                                alerts[unit_name].append(message)
                             else:
-                                alerts[unit] = [message]
+                                alerts[unit_name] = [message]
                 else:
                     # If the unit was inactive before, copy previous priority
                     priority = current_unit_status.status.priority if current_unit_status else False
@@ -429,10 +442,10 @@ def update_driving_status():
                     if priority:
                         severity = 5
                         message = "Sin comunicación reciente, último mensaje fue Read only SSD"
-                        if unit in alerts:
-                            alerts[unit].append(message)
+                        if unit_name in alerts:
+                            alerts[unit_name].append(message)
                         else:
-                            alerts[unit] = [message]
+                            alerts[unit_name] = [message]
 
             # Get GxStatus object
             status_args = {
@@ -446,14 +459,14 @@ def update_driving_status():
 
             camerastatus_list = []
             camerahistory_list = []
-            for cam_num, count in camera_data["hour"][unit].items():
+            for cam_num, count in camera_data["hour"][unit_name].items():
                 camera_args = {
-                    'name': f"cam_{unit}_{cam_num}",
+                    'name': f"cam_{unit_name}_{cam_num}",
                     'gx': unit_obj
                 }
                 camera_obj = get_or_create_camera(camera_args)
 
-                recent_disconnection_time = camera_data["ten_minutes"][unit][cam_num]
+                recent_disconnection_time = camera_data["ten_minutes"][unit_name][cam_num]
                 connected = recent_disconnection_time == 0
 
                 camera_status_args = {
@@ -485,16 +498,16 @@ def update_driving_status():
             else:  # In case the unit is new
                 last_alert = date_now
 
-            alert_interval = 55
-            if unit in alerts and (last_alert == None or date_now - last_alert > timedelta(minutes=alert_interval)):
-                for description in alerts[unit]:
+            alert_interval = 59
+            if unit_name in alerts and (last_alert == None or date_now - last_alert > timedelta(minutes=alert_interval)):
+                for description in alerts[unit_name]:
                     alert_type = get_or_create_alerttype(
                         {"description": description})
                     alert_args = {"alert_type": alert_type, "gx": unit_obj,
                                   "register_datetime": date_now, "register_date": date_now.date()}
                     alert = create_alert(alert_args)
 
-                alerts_to_send[unit] = alerts[unit]
+                alerts_to_send[unit_name] = alerts[unit_name]
                 last_alert = date_now
 
             unit_status_args = {
@@ -530,7 +543,7 @@ def update_driving_status():
 
             # Last 10 minutes
 
-            recent_unit_logs = recent_data[unit]
+            recent_unit_logs = recent_data[unit_name]
             if client_alias != "tp":  # Hardcoded
                 recent_unit_logs["En_viaje"] = None
                 recent_unit_logs["Estatus"] = None
@@ -636,7 +649,7 @@ def get_industry_data(client_keyname):
 
     now = datetime.now(tz=pytz.timezone('UTC')).replace(tzinfo=None)
     time_interval = {
-        "initial_datetime": (now - timedelta(hours=1, minutes=10)).isoformat(timespec="seconds"),
+        "initial_datetime": (now - timedelta(hours=1)).isoformat(timespec="seconds"),
         "final_datetime": now.isoformat(timespec='seconds')
     }
 
@@ -822,19 +835,24 @@ def process_industry_data(response):
     return output_gx, output_cameras, days_remaining, license_end, alerts
 
 
-def calculate_logs_delay(first_log_time: Optional[datetime], data_last_connection: Optional[datetime], db_last_connection: Optional[datetime], db_register_time: Optional[datetime], db_delay_time: Optional[timedelta]):
+def calculate_logs_delay(first_log_time: Optional[datetime], data_last_connection: Optional[datetime],
+                         db_last_connection: Optional[datetime], db_register_time: Optional[datetime],
+                         db_delay_time: Optional[timedelta]):
     date_now = datetime.now(tz=pytz.timezone('UTC'))
 
     last_connection = db_last_connection
+    print(f'last connection: {last_connection}')
 
     if data_last_connection:
         # Asignar nueva última conexión
         # Hardcoded
-        last_connection = data_last_connection + timedelta(hours=6)
+        last_connection = data_last_connection
         time_since_last_log = date_now - last_connection
 
-        if first_log_time:
-            first_log_time += timedelta(hours=6)
+        print(f'date: {date_now}')
+        print(f'last connection: {last_connection}')
+        print(f'first log time: {first_log_time}')
+        print(f'Time since last log: {time_since_last_log}')
 
         # Si existe ese dato, ver si tiene más de 10 minutos. En ese caso, ponerlo como atrasado
         if db_last_connection:
@@ -1049,7 +1067,7 @@ def update_industry_status():
                     timedelta(minutes=10)
 
         last_alert = current_device_status.last_alert if current_device_status else None
-        alert_interval = 55
+        alert_interval = 59
 
         if update_values['delayed']:
             alerts.add("Sin conexión reciente")
@@ -1168,7 +1186,7 @@ def get_retail_data(client_keyname):
 
     now = datetime.now(tz=pytz.timezone('UTC')).replace(tzinfo=None)
     time_interval = {
-        "initial_datetime": (now - timedelta(hours=1, minutes=1)).isoformat(timespec="seconds"),
+        "initial_datetime": (now - timedelta(hours=1)).isoformat(timespec="seconds"),
         "final_datetime": now.isoformat(timespec='seconds')
     }
 
@@ -1358,8 +1376,6 @@ def update_retail_status():
                     'disconnection_time': hour_disc_time
                 })
 
-                print(camerastatus_data)
-
                 camerahistory_data.append({
                     'camera': camera,
                     'register_datetime': now,
@@ -1392,12 +1408,16 @@ def update_retail_status():
                 db_register_time = None
                 db_delay_time = timedelta(0)
 
-            last_connection = last_connections[device_name]
             delayed, delay_time = calculate_logs_delay(
-                first_log_times[device_name], last_connection, db_last_connection, db_register_time, db_delay_time)
+                first_log_times[device_name], last_connections[device_name], db_last_connection, db_register_time, db_delay_time)
+
+            if last_connections[device_name]:
+                last_connection = last_connections[device_name]
+            else:
+                last_connection = db_last_connection
 
             last_alert_time = current_device_status.last_alert if current_device_status else None
-            alert_interval = 55
+            alert_interval = 59
 
             status_conditions = [
                 (max_cam_disc_times[device_name] >

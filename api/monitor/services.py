@@ -1,6 +1,7 @@
 from config.env import env
 from .models import *
 from cryptography.fernet import Fernet, MultiFernet
+from datetime import datetime
 
 from django.db import OperationalError, transaction
 import time
@@ -241,3 +242,13 @@ def get_or_create_client(name, keyname, deployment_name, defaults):
         name=name, keyname=keyname, deployment=deployment, defaults={**defaults, "active": True})
 
     return client
+
+
+def create_unit_trip(unit: Unit, start_datetime: datetime, success: bool = False):
+    unit_trip = UnitTrip.objects.create(
+        unit=unit,
+        start_datetime=start_datetime,
+        start_date=start_datetime.date(),
+        success=success
+    )
+    return unit_trip

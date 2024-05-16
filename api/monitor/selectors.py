@@ -1,3 +1,4 @@
+from datetime import datetime
 from .services import EncryptionService
 from .models import *
 from django_filters import rest_framework as rf_filters
@@ -698,3 +699,14 @@ def get_retail_clients():
         deployment=Deployment.objects.get(name="Smart Retail"))
 
     return clients
+
+
+def get_or_create_open_trip(unit: Unit, start_datetime: datetime):
+
+    trip, created = UnitTrip.objects.get_or_create(
+        unit=unit, end_datetime__isnull=True, defaults={'start_datetime': start_datetime, 'start_date': start_datetime.date()})
+    return trip, created
+
+
+def get_unit_failed_trips(unit: Unit):
+    trips = UnitTrip.objects.filter(unit=unit, connection=False)

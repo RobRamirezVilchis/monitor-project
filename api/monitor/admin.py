@@ -16,6 +16,7 @@ class UnitStatusAdmin(admin.ModelAdmin):
         'last_update',
         # 'get_client',
         'active',
+        'on_trip',
         'total',
         'restart',
         'start',
@@ -113,14 +114,12 @@ class RetailDeviceStatusAdmin(admin.ModelAdmin):
         'delayed',
         'delay_time',
         'log_counts',
-
-
     )
 
     search_fields = ('device__name',)
 
 
-class DevicesHistoryAdmin(admin.ModelAdmin):
+class DeviceHistoryAdmin(admin.ModelAdmin):
     list_display = (
         'device',
         'register_datetime',
@@ -135,6 +134,22 @@ class DevicesHistoryAdmin(admin.ModelAdmin):
         'shift_change',
         'others',
     )
+
+    search_fields = ('device__name',)
+
+
+class RetailDeviceHistoryAdmin(admin.ModelAdmin):
+    list_display = (
+        'get_device_name',
+        'register_datetime',
+        'last_connection',
+        'status',
+        'delayed',
+        'delay_time',
+    )
+
+    def get_device_name(self, obj):
+        return obj.device.name
 
     search_fields = ('device__name',)
 
@@ -243,13 +258,24 @@ class ServerHistoryAdmin(admin.ModelAdmin):
     )
 
 
+class UnitTripAdmin(admin.ModelAdmin):
+    list_display = (
+        'unit',
+        'start_datetime',
+        'end_datetime',
+        'connection'
+    )
+
+    search_fields = ('unit__name',)
+
+
 admin.site.register(UnitStatus, UnitStatusAdmin)
 admin.site.register(UnitHistory, UnitHistoryAdmin)
 admin.site.register(Unit, UnitAdmin)
 admin.site.register(Deployment)
 admin.site.register(Client, ClientAdmin)
 admin.site.register(DeviceStatus, DeviceStatusAdmin)
-admin.site.register(DeviceHistory, DevicesHistoryAdmin)
+admin.site.register(DeviceHistory, DeviceHistoryAdmin)
 admin.site.register(Device, DeviceAdmin)
 
 admin.site.register(Camera)
@@ -265,4 +291,5 @@ admin.site.register(ServerStatus, ServerStatusAdmin)
 admin.site.register(ServerHistory, ServerHistoryAdmin)
 admin.site.register(ServerRegion)
 admin.site.register(RetailDeviceStatus, RetailDeviceStatusAdmin)
-admin.site.register(RetailDeviceHistory)
+admin.site.register(RetailDeviceHistory, RetailDeviceHistoryAdmin)
+admin.site.register(UnitTrip, UnitTripAdmin)

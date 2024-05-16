@@ -281,7 +281,7 @@ const UnitPage = ({ params }: { params: { unit_id: string } }) => {
         </div>
       </div>
 
-      <div className="h-[70vh] mb-10">
+      <div className="h-[65vh] mb-20">
         <DataGrid instance={grid} />
       </div>
 

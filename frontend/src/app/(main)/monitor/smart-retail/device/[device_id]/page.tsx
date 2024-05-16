@@ -513,10 +513,10 @@ const cols: ColumnDef<RetailDeviceHistory>[] = [
   },
   {
     accessorKey: "log_counts",
-    accessorFn: (row) => JSON.stringify(row.log_counts),
-    header: "Logs enviados",
+    accessorFn: (row) => JSON.stringify(row.log_counts).slice(1, -1),
+    header: "Logs recibidos",
     columnTitle:
-      "Cuentas cantidad de logs recibidos de cada categoría (no aplican logs vacíos)",
+      "Cantidad de logs recibidos de cada categoría (no aplican logs vacíos)",
     size: 400,
     enableSorting: true,
   },

@@ -176,6 +176,24 @@ class UnitHistory(models.Model):
         return self.register_date.strftime("%Y-%m-%d %H:%M:%S") + ' - ' + str(self.unit.name)
 
 
+class UnitTrip(models.Model):
+    unit = models.ForeignKey(Unit, on_delete=models.CASCADE)
+    start_datetime = models.DateTimeField(
+        blank=True, auto_now=False, auto_now_add=False)
+    start_date = models.DateField(
+        db_index=True, blank=True, auto_now=False, auto_now_add=False)
+    end_datetime = models.DateTimeField(
+        null=True, blank=True, auto_now=False, auto_now_add=False)
+
+    end_date = models.DateField(
+        null=True, db_index=True, blank=True, auto_now=False, auto_now_add=False)
+    success = models.BooleanField(default=True)
+    connection = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f'{self.unit} - {self.start_datetime}'
+
+
 class DeviceStatus(models.Model):
     device = models.OneToOneField(Device, on_delete=models.CASCADE)
     last_update = models.DateTimeField("Last update", null=True)
