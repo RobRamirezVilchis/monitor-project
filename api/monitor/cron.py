@@ -1113,13 +1113,13 @@ def update_industry_status():
              timedelta(minutes=2), 3, "Cámara desconectada"),
             (update_values['batch_dropping'] > 0, 3, "Batch dropping"),
             (update_values['delayed'] and update_values['delay_time']
-             < timedelta(minutes=60), 3, "Sin conexión reciente (<1h)"),
+             < timedelta(minutes=60), 3, "Sin comunicación reciente (<1h)"),
             (max_cam_disc_time >= timedelta(
                 minutes=10), 5, "Cámara desconectada"),
             (recent_data['restart'] >
              0 and restarted_recently, 5, "Restarts"),
             (update_values['delay_time'] >= timedelta(
-                minutes=60), 5, "Sin conexión"),
+                minutes=60), 5, "Sin comunicación"),
         ]
 
         severity = 1
