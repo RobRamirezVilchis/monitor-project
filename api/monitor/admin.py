@@ -263,20 +263,23 @@ class UnitTripAdmin(admin.ModelAdmin):
         'unit',
         'start_datetime',
         'end_datetime',
-        'connection'
+        'active'
     )
 
     search_fields = ('unit__name',)
 
 
-admin.site.register(UnitStatus, UnitStatusAdmin)
-admin.site.register(UnitHistory, UnitHistoryAdmin)
 admin.site.register(Unit, UnitAdmin)
+admin.site.register(UnitStatus, UnitStatusAdmin)
+admin.site.register(UnitTrip, UnitTripAdmin)
+admin.site.register(UnitHistory, UnitHistoryAdmin)
+
 admin.site.register(Deployment)
 admin.site.register(Client, ClientAdmin)
+
+admin.site.register(Device, DeviceAdmin)
 admin.site.register(DeviceStatus, DeviceStatusAdmin)
 admin.site.register(DeviceHistory, DeviceHistoryAdmin)
-admin.site.register(Device, DeviceAdmin)
 
 admin.site.register(Camera)
 admin.site.register(CameraStatus, CameraStatusAdmin)
@@ -290,6 +293,6 @@ admin.site.register(ServerMetric)
 admin.site.register(ServerStatus, ServerStatusAdmin)
 admin.site.register(ServerHistory, ServerHistoryAdmin)
 admin.site.register(ServerRegion)
+
 admin.site.register(RetailDeviceStatus, RetailDeviceStatusAdmin)
 admin.site.register(RetailDeviceHistory, RetailDeviceHistoryAdmin)
-admin.site.register(UnitTrip, UnitTripAdmin)

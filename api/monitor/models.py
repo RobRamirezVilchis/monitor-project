@@ -188,7 +188,7 @@ class UnitTrip(models.Model):
     end_date = models.DateField(
         null=True, db_index=True, blank=True, auto_now=False, auto_now_add=False)
     success = models.BooleanField(default=True)
-    connection = models.BooleanField(default=False)
+    active = models.BooleanField(default=False)
 
     def __str__(self):
         return f'{self.unit} - {self.start_datetime}'

@@ -153,9 +153,6 @@ def process_driving_data(response, now=None):
         logs_last_hour = df_logs[df_logs["Timestamp"] > (
             now - timedelta(hours=1))]
 
-        print("past logs")
-        print(past_logs)
-
         aux = logs_last_hour.loc[df_logs["Tipo"] == "Aux"]
         all_ignitions = logs_last_hour.loc[df_logs["Tipo"] == "Ignición"]
 
@@ -369,16 +366,23 @@ def update_driving_status():
                 unit_logs["En_viaje"] = None
                 unit_logs["Estatus"] = None
 
-            if unit_name in past_log_times:
-                print(f'{unit_name} past logs:')
-                print(past_log_times)
-
             # Get Unit instance
             unit_args = {
                 'name': unit_name,
                 'client': client
             }
             unit_obj = get_or_create_unit(unit_args)
+
+            if unit_name in past_log_times:
+                trips_to_change = []
+                failed_trips = get_unit_failed_trips(unit_obj)
+
+                for log_time in past_log_times[unit_name]:
+                    for trip in failed_trips:
+                        if trip.end_datetime > log_time > trip.start_datetime:
+                            print(f"Setting {trip} to successful")
+                            trip.active = True
+                            trip.save()
 
             # Returns None if the unit is new
             current_unit_status = get_unitstatus(unit_id=unit_obj.id)
@@ -415,7 +419,7 @@ def update_driving_status():
             description = most_severe["description"]
 
             if unit_logs.get("En_viaje", True) and not description.startswith("Sin comunicación") and trip is not None:
-                trip.connection = True
+                trip.active = True
                 trip.save()
 
             priority = False
@@ -1109,13 +1113,13 @@ def update_industry_status():
              timedelta(minutes=2), 3, "Cámara desconectada"),
             (update_values['batch_dropping'] > 0, 3, "Batch dropping"),
             (update_values['delayed'] and update_values['delay_time']
-             < timedelta(minutes=60), 3, "Retraso menor a 1h"),
+             < timedelta(minutes=60), 3, "Sin conexión reciente (<1h)"),
             (max_cam_disc_time >= timedelta(
                 minutes=10), 5, "Cámara desconectada"),
             (recent_data['restart'] >
              0 and restarted_recently, 5, "Restarts"),
             (update_values['delay_time'] >= timedelta(
-                minutes=60), 5, "Retraso mayor a 1h"),
+                minutes=60), 5, "Sin conexión"),
         ]
 
         severity = 1
@@ -1424,6 +1428,8 @@ def update_retail_status():
                  timedelta(0), 5, "Cámara desconectada"),
                 (delay_time > timedelta(minutes=20),
                  5, "Sin comunicación reciente"),
+                (log_counts["hour"][device_name]["counts"].get(
+                    "MASTER_RESTART", 0) > 0, 5, "Reinicio de máster"),
                 (timedelta(minutes=20) >= delay_time > timedelta(0), 3,
                  "Sin comunicación reciente (<20 min)"),
             ]

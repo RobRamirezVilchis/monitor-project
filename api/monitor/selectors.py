@@ -709,4 +709,6 @@ def get_or_create_open_trip(unit: Unit, start_datetime: datetime):
 
 
 def get_unit_failed_trips(unit: Unit):
-    trips = UnitTrip.objects.filter(unit=unit, connection=False)
+    trips = UnitTrip.objects.filter(unit=unit, active=False)
+
+    return trips
