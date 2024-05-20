@@ -56,6 +56,7 @@ const api = {
         severityCount: "api/v1/monitor/driving/status-count/",
         areaPlotData: "api/v1/monitor/driving/area-plot-data/",
         unitStatus: (unit_id: UnitId) => `api/v1/monitor/driving/units/${unit_id}/`,
+        unitReport: (unit_id: UnitId) => `api/v1/monitor/driving/units/${unit_id}/report/`,
         unitHistory: (unit_id: UnitId) => `api/v1/monitor/driving/units/${unit_id}/history/`,
         lastStatusChange: (unit_id: UnitId) => `api/v1/monitor/driving/units/${unit_id}/last-status-change/`,
         lastActiveStatus: (unit_id: UnitId) => `api/v1/monitor/driving/units/${unit_id}/last-active-status/`,

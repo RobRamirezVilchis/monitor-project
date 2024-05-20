@@ -13,6 +13,8 @@ from rest_framework import serializers
 from rest_framework.response import Response
 from rest_framework import status, filters
 
+import humanize.locale
+
 from .selectors import *
 from .services import get_or_create_client
 from api.pagination import get_paginated_response, LimitOffsetPagination
@@ -248,6 +250,56 @@ class DeviceHistoryList(APIView):
             queryset=logs,
             request=request,
         )
+
+
+# Reports
+class UnitReportAPI(APIView):
+    class OutputSerializer(serializers.Serializer):
+        content = serializers.CharField()
+
+    def get(self, request, unit_id, *args, **kwargs):
+        import humanize
+        _t = humanize.i18n.activate("es")
+
+        now = datetime.now()
+
+        unit = get_unit(unit_id)
+        failed_trips = get_unit_failed_trips(unit)
+        unit_status = get_unitstatus(unit_id)
+
+        last_connection = unit_status.last_connection
+
+        text = f"Unidad {unit.name}\n"
+
+        history = get_unithistory({"unit_id": unit_id}, filters={
+                                  "register_datetime_after": (now - timedelta(weeks=1)).isoformat()})
+
+        if last_connection:
+            text += f"\nÚltima conexión {last_connection.strftime('%d/%m/%Y %H:%M')}\n"
+        else:
+            text += f"\nÚltima conexión desconocida\n"
+
+        if len(failed_trips) > 0:
+            text += f"\nViajes sin conexión: {len(failed_trips)}\n"
+
+        if unit_status.pending_events > 1 or unit_status.pending_status > 1:
+            text += "\nLogs pendientes:\n"
+            if unit_status.pending_events:
+                text += f" - Eventos ({unit_status.pending_events})\n"
+
+            if unit_status.pending_status:
+                text += f" - Status ({unit_status.pending_status})\n"
+
+        status_count = GxStatus.objects.filter(severity=5, deployment__name="Safe Driving").annotate(count=Count('unithistory', filter=(
+            Q(unithistory__unit_id=unit_id, unithistory__register_datetime__gte=now-timedelta(weeks=1))))).filter(count__gt=0).order_by("-count")
+
+        if status_count:
+            text += "\nProblemas en la última semana:\n"
+            for count in status_count:
+                text += f" - {count.description} ({humanize.naturaldelta(timedelta(minutes=count.count*10))})\n"
+        print(text)
+
+        return Response({"content": text}, status=status.HTTP_200_OK)
 
 
 class UnitStatusTime(APIView):
@@ -1566,3 +1618,16 @@ class SmartRetailClientList(APIView):
 
         data = self.OutputSerializer(clients, many=True).data
         return Response(data)
+
+
+class SetRetailDeviceAsInactiveAPI(APIView):
+
+    def post(self, request, device_id, *args, **kwargs):
+        try:
+            device_status = get_retail_device_status(device_id)
+            device_status.active = False
+            device_status.save()
+        except:
+            return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+        return Response(status=status.HTTP_200_OK)

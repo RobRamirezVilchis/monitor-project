@@ -4,6 +4,7 @@ import {
   useUnitHistoryQuery,
   useUnitLastActiveStatus,
   useUnitLastStatusChange,
+  useUnitReportQuery,
   useUnitSeverityHistory,
   useUnitStatusQuery,
 } from "@/api/queries/monitor";
@@ -69,6 +70,34 @@ const barColors: { [key in StatusKey]: string } = {
   3: "#ffd919",
   4: "#fca14c",
   5: "#f74a36",
+};
+
+const DownloadFile = (unitData: { unitId: string; unitName: string }) => {
+  const reportQuery = useUnitReportQuery({
+    variables: { unit_id: unitData.unitId },
+  });
+
+  let reportContent = "";
+  if (reportQuery.data) {
+    reportContent = reportQuery.data.content;
+  }
+  const handleDownload = () => {
+    const blob = new Blob([reportContent], { type: "text/plain" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `${unitData.unitName}.txt`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
+
+  return (
+    <Button color="green.7" size="md" onClick={handleDownload}>
+      Descargar reporte
+    </Button>
+  );
 };
 
 const UnitPage = ({ params }: { params: { unit_id: string } }) => {
@@ -274,7 +303,10 @@ const UnitPage = ({ params }: { params: { unit_id: string } }) => {
             </div>
           )}
         </div>
-        <div className="mt-2 sm:mt-0">
+        <div className="flex mt-2 sm:mt-0 gap-2">
+          {unitStatus && (
+            <DownloadFile unitName={unitStatus.unit} unitId={params.unit_id} />
+          )}
           <Link href={`${params.unit_id}/logs`}>
             <Button size="md">Consultar logs</Button>
           </Link>
@@ -331,6 +363,7 @@ const UnitPage = ({ params }: { params: { unit_id: string } }) => {
           </ScatterChart>
         </ResponsiveContainer>
       )}
+
       <Button onClick={open} color="red.9" size="md">
         Marcar como inactiva
       </Button>

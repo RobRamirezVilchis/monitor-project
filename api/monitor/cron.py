@@ -373,10 +373,10 @@ def update_driving_status():
             }
             unit_obj = get_or_create_unit(unit_args)
 
-            if unit_name in past_log_times:
-                trips_to_change = []
-                failed_trips = get_unit_failed_trips(unit_obj)
+            failed_trips = get_unit_failed_trips(unit_obj)
+            num_failed_trips = len(failed_trips)
 
+            if unit_name in past_log_times:
                 for log_time in past_log_times[unit_name]:
                     for trip in failed_trips:
                         if (trip.end_datetime and trip.end_datetime > log_time > trip.start_datetime) \
@@ -384,6 +384,7 @@ def update_driving_status():
                             print(f"Setting {trip} to successful")
                             trip.active = True
                             trip.save()
+                            num_failed_trips -= 1
 
             # Returns None if the unit is new
             current_unit_status = get_unitstatus(unit_id=unit_obj.id)
@@ -424,6 +425,11 @@ def update_driving_status():
                 trip.save()
 
             priority = False
+            if num_failed_trips >= 3:
+                description = "Sin comunicación (>2 viajes)"
+                severity = 5
+                priority = True
+
             if description == "Read only SSD" or description == "forced reboot (>1)" or description == "Tres cámaras fallando":
                 priority = True
             elif description.startswith("Sin comunicación") or description == "Inactivo" or description.startswith("Logs pendientes"):

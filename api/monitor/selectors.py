@@ -1,8 +1,12 @@
-from datetime import datetime
 from .services import EncryptionService
 from .models import *
 from django_filters import rest_framework as rf_filters
 from django.db.models import Q, F, Count, Max, Min
+from datetime import datetime, timedelta
+
+
+def get_unit(unit_id):
+    return Unit.objects.get(id=unit_id)
 
 
 def active_unitstatus_list():
@@ -10,7 +14,6 @@ def active_unitstatus_list():
 
 
 def get_inactive_units():
-    from datetime import datetime, timedelta
     date_now = datetime.now()
 
     return UnitStatus.objects.filter(active=True, last_update__lte=(date_now-timedelta(minutes=30)))
@@ -377,7 +380,6 @@ def get_area_plot_data(deployment_name, client_name=None, filters=None):
 
 
 def register_sd_area_plot_historicals():
-    from datetime import datetime
 
     safe_driving = Deployment.objects.get(name="Safe Driving")
     clients = get_clients(deployment_name="Safe Driving")
@@ -428,7 +430,6 @@ def register_sd_area_plot_historicals():
 
 
 def register_ind_area_plot_historicals():
-    from datetime import datetime
 
     industry = Deployment.objects.get(name="Industry")
     clients = get_clients("Industry")

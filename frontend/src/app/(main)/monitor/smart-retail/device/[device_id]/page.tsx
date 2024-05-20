@@ -241,7 +241,7 @@ const RetailDevicePage = ({ params }: { params: { device_id: string } }) => {
 
   const setUnitInactiveMutation = useSetDeviceInactiveMutation({
     onSuccess: () => {
-      router.push("/monitor/industry/");
+      router.push("/monitor/smart-retail/");
     },
     onError: (error: any, variables, context) => {
       setError(error.response.data["error"]);

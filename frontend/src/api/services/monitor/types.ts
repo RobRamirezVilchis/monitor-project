@@ -272,3 +272,7 @@ export interface RetailDeviceSeverityHistoryFilters {
   register_datetime_after: Date | null,
   register_datetime_before: Date | null,
 }
+
+export interface UnitReportContent {
+  content: string
+}

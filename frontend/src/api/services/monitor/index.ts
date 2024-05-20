@@ -1,4 +1,4 @@
-import { UnitStatus, SeverityCount, UnitHistory, DeviceStatus, UnitFilters, LastStatusChange, DeviceFilters, DeviceHistory, Client, CameraDisconnection, LastActiveStatus, SeverityHistory, AreaPlotData, AreaPlotFilters, LastUpdate, DeviceLogsFilters, DeviceLogs, DeviceWifiStatus, UnitLogsFilters, UnitLogs, NewClientData, ServerStatus, ServerHistoryFilters, ServerHistory, MetricsKeys, ServerRegion, ServerType, ServerStatusFilters, RetailDeviceStatus, RetailDeviceHistory } from "./types";
+import { UnitStatus, SeverityCount, UnitHistory, DeviceStatus, UnitFilters, LastStatusChange, DeviceFilters, DeviceHistory, Client, CameraDisconnection, LastActiveStatus, SeverityHistory, AreaPlotData, AreaPlotFilters, LastUpdate, DeviceLogsFilters, DeviceLogs, DeviceWifiStatus, UnitLogsFilters, UnitLogs, NewClientData, ServerStatus, ServerHistoryFilters, ServerHistory, MetricsKeys, ServerRegion, ServerType, ServerStatusFilters, RetailDeviceStatus, RetailDeviceHistory, UnitReportContent } from "./types";
 import { Id, OptionallyPaginated, Paginated } from "@/api/types";
 import { Role, User } from "../auth/types";
 import api from "../..";
@@ -111,6 +111,17 @@ export async function getUnitStatus(
     );
     return resp.data;
 
+}
+
+export async function getUnitReportContent(
+  filters: UnitFilters, 
+  config?: Parameters<typeof http.get>[1]
+) {
+  const resp = await http.get<UnitReportContent>(
+    api.endpoints.monitor.driving.unitReport(filters.unit_id),
+    {...config}
+  );
+  return resp.data;
 }
 
 
@@ -628,3 +639,5 @@ export async function getSmartRetailClients(config?: Parameters<typeof http.get>
   );
   return resp.data;
 }
+
+

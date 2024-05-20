@@ -20,6 +20,8 @@ urlpatterns = [
              path("units/<int:unit_id>/",
                   include(([
                       path("", apis.UnitStatusAPI.as_view(), name="unit-status"),
+                      path("report/", apis.UnitReportAPI.as_view(),
+                           name="unit-report"),
                       path("history/", apis.UnitHistoryList.as_view(),
                            name="history"),
                       path("last-status-change/", apis.UnitStatusTime.as_view(),

@@ -1,5 +1,5 @@
 import { createQuery } from "../helpers/createQuery";
-import { getUnits, getDevices, getUnitHistory, getDrivingSeverityCount, getUnitLastStatusChange, getDeviceHistory, getIndustrySeverityCount, getUnitStatus, getDeviceStatus, getSafeDrivingClients, getIndustryClients, getDeviceLastStatusChange, getIndustryCameraDisconnections, getUnitLastActiveStatus, getUnitSeverityHistory, getSafeDrivingAreaPlotData, getIndustryAreaPlotData, getDrivingLastUpdate, getIndustryLastUpdate, getDeviceSeverityHistory, getDeviceLogs, getDeviceWifiStatus, getUnitLogs, getServersStatus, getServerStatus, getServerHistory, getMetricsKeys, getServerMetricPlotData, getServerRegions, getServerTypes, getRetailDeviceStatus, getSmartRetailSeverityCount, getRetailStatus, getRetailDeviceLastStatusChange, getRetailDeviceLogs, getRetailDeviceHistory, getRetailDeviceSeverityHistory, getSmartRetailAreaPlotData, getSmartRetailClients } from "../services/monitor";
+import { getUnits, getDevices, getUnitHistory, getDrivingSeverityCount, getUnitLastStatusChange, getDeviceHistory, getIndustrySeverityCount, getUnitStatus, getDeviceStatus, getSafeDrivingClients, getIndustryClients, getDeviceLastStatusChange, getIndustryCameraDisconnections, getUnitLastActiveStatus, getUnitSeverityHistory, getSafeDrivingAreaPlotData, getIndustryAreaPlotData, getDrivingLastUpdate, getIndustryLastUpdate, getDeviceSeverityHistory, getDeviceLogs, getDeviceWifiStatus, getUnitLogs, getServersStatus, getServerStatus, getServerHistory, getMetricsKeys, getServerMetricPlotData, getServerRegions, getServerTypes, getRetailDeviceStatus, getSmartRetailSeverityCount, getRetailStatus, getRetailDeviceLastStatusChange, getRetailDeviceLogs, getRetailDeviceHistory, getRetailDeviceSeverityHistory, getSmartRetailAreaPlotData, getSmartRetailClients, getUnitReportContent } from "../services/monitor";
 import { AreaPlotFilters, DeviceFilters, UnitSeverityHistoryFilters, UnitFilters, DeviceSeverityHistoryFilters, DeviceLogsFilters, UnitLogsFilters, ServerHistoryFilters, ServerStatusFilters, RetailDeviceSeverityHistoryFilters } from "../services/monitor/types";
 import defaultQueryClient from "../clients/defaultQueryClient";
 
@@ -21,6 +21,18 @@ export const useUnitStatusQuery = createQuery({
   queryPrimaryKey: "unit_status",
   queryKeyVariables: (vars: UnitFilters) => vars ? [vars] : [],
   queryFn: (ctx, vars) => getUnitStatus(vars, { signal: ctx.signal }),
+  cacheTime: 1000 * 60 * 5,  // 5 minutes
+  staleTime: 1000 * 60 * 3,  // 3 minutes
+  keepPreviousData: true,
+  queryClient: defaultQueryClient,
+  refetchInterval: 60000,
+  refetchIntervalInBackground: true
+});
+
+export const useUnitReportQuery = createQuery({
+  queryPrimaryKey: "unit-report",
+  queryKeyVariables: (vars: UnitFilters) => vars ? [vars] : [],
+  queryFn: (ctx, vars) => getUnitReportContent(vars, { signal: ctx.signal }),
   cacheTime: 1000 * 60 * 5,  // 5 minutes
   staleTime: 1000 * 60 * 3,  // 3 minutes
   keepPreviousData: true,
