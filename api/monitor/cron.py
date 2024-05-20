@@ -379,7 +379,8 @@ def update_driving_status():
 
                 for log_time in past_log_times[unit_name]:
                     for trip in failed_trips:
-                        if trip.end_datetime > log_time > trip.start_datetime:
+                        if (trip.end_datetime and trip.end_datetime > log_time > trip.start_datetime) \
+                                or (trip.end_datetime is None and log_time > trip.start_datetime):
                             print(f"Setting {trip} to successful")
                             trip.active = True
                             trip.save()
