@@ -1613,7 +1613,7 @@ def send_daily_sd_report():
         filtered_units = unit_problems[critical_last_message].copy()
         units = unit_problems[critical_last_message]
         for u in units:
-            if u in unit_problems.get("Read only SSD"):
+            if unit_problems.get("Read only SSD") and u in unit_problems.get("Read only SSD"):
                 filtered_units.remove(u)
         unit_problems[critical_last_message] = filtered_units
 

@@ -70,7 +70,7 @@ CRONJOBS = [
      os.path.join(BASE_DIR, 'monitor/log/debug_ret.log' + ' 2>&1 ')),
     ('*/10 * * * *', 'monitor.cron.update_servers_status', '>> ' +
      os.path.join(BASE_DIR, 'monitor/log/debug_servers.log' + ' 2>&1 ')),
-    ('0 9 * * *', 'monitor.cron.send_daily_sd_report', '>> ' +
+    ('10 10 * * *', 'monitor.cron.send_daily_sd_report', '>> ' +
      os.path.join(BASE_DIR, 'monitor/log/debug_reports.log' + ' 2>&1 ')),
     ('0 * * * *', 'monitor.cron.register_severity_counts', '>> ' +
      os.path.join(BASE_DIR, 'monitor/log/debug_counts.log' + ' 2>&1 ')),
