@@ -432,7 +432,7 @@ def update_driving_status():
 
             if description == "Read only SSD" or description == "forced reboot (>1)" or description == "Tres cámaras fallando":
                 priority = True
-            elif description.startswith("Sin comunicación") or description == "Inactivo" or description.startswith("Logs pendientes"):
+            elif not description.endswith("viajes)") and (description.startswith("Sin comunicación") or description == "Inactivo" or description.startswith("Logs pendientes")):
                 # If the unit just turned inactive, check last active status
                 # If the last status was read only ssd, override severity to 5 and priority to True
                 if was_unit_active:
