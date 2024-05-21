@@ -399,7 +399,7 @@ const CustomTooltip = ({
         <p className="label">{`Estátus: ${
           statusNames[Number(payload[1].value) as StatusKey]
         }`}</p>
-        {payload[2].value != "Inactivo" && (
+        {payload[1].value != "Inactivo" && (
           <p className="label">{payload[2].value}</p>
         )}
       </div>
