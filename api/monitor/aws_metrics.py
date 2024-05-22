@@ -1,7 +1,7 @@
 import os
 import json
 from typing import List, Dict
-
+from dotenv import load_dotenv
 import boto3
 import logging
 import datetime
@@ -11,12 +11,18 @@ import pytz
 
 class AWSUtils:
     def __init__(self, region_name):
+        load_dotenv()
+        key_id = os.environ["AWS_DB_ACCESS_KEY_ID"]
+        access_key = os.environ["AWS_DB_SECRET_ACCESS_KEY"]
+
         self.logger = logging.getLogger(__name__)
         # self.logger.debug('Creating AWSUtils object')
         self.session = boto3.Session(
             region_name=region_name,
         )
         self.ec2_client = self.session.client('ec2')
+        self.rds_client = self.session.client(
+            'rds', aws_access_key_id=key_id, aws_secret_access_key=access_key)
         self.cloudwatch_client = self.session.client('cloudwatch')
 
     def list_instances(self):
@@ -39,6 +45,27 @@ class AWSUtils:
                     'launch_time': instance['LaunchTime'],
                 })
                 # instances.append(instance)
+        return instances
+
+    def list_db_instances(self):
+
+        response = self.rds_client.describe_db_instances()
+        instances = []
+        for instance in response['DBInstances']:
+
+            name = None
+            for tag in instance.get('Tags', []):
+                if tag['Key'] == 'Name':
+                    name = tag['Value']
+
+            instances.append({
+                'id': instance.get('InstanceId', ''),
+                'dbname': instance.get('DBInstanceIdentifier', ''),
+                'instance_status': instance.get('DBInstanceStatus', ''),
+                'instance_class': instance.get('DBInstanceClass', ''),
+
+            })
+            # instances.append(instance)
         return instances
 
     def get_metrics(self, instances: List[Dict], metric_name='CPUUtilization'):

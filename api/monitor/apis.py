@@ -843,8 +843,12 @@ class SafeDrivingLogsAPI(APIView):
                 "logs": 'https://trm.safe-d.aivat.io/ternium/range_logs/'
             }
         }
-        login_url = urls[client_key]["login"]
-        request_url = urls[client_key]["logs"]
+        if client_key in urls:
+            login_url = urls[client_key]["login"]
+            request_url = urls[client_key]["logs"]
+        else:
+            login_url = f'https://{client_key}.safe-d.aivat.io/login/'
+            request_url = f'https://{client_key}.safe-d.aivat.io/range_logs/'
 
         now = datetime.now(tz=pytz.timezone('UTC'))
         params = {

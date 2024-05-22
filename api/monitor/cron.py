@@ -153,8 +153,8 @@ def process_driving_data(response, now=None):
         logs_last_hour = df_logs[df_logs["Timestamp"] > (
             now - timedelta(hours=1))]
 
-        aux = logs_last_hour.loc[df_logs["Tipo"] == "Aux"]
-        all_ignitions = logs_last_hour.loc[df_logs["Tipo"] == "Ignición"]
+        aux = logs_last_hour.loc[logs_last_hour["Tipo"] == "Aux"]
+        all_ignitions = logs_last_hour.loc[logs_last_hour["Tipo"] == "Ignición"]
 
         # logs_last_hour = logs_last_hour.loc[(logs_last_hour["Tipo"] != "Aux") &
         #                                        (logs_last_hour["Tipo"] != "Ignición")]
@@ -1578,10 +1578,7 @@ def update_servers_status():
 # Generate daily Telegram Safe Driving Report
 
 def send_daily_sd_report():
-    load_dotenv()
-    if os.environ.get("ALERTS") != "true":
-        print("Alerts are disabled")
-        return
+    import time
 
     all_critical_registers = get_sd_critical_last_day()
 
@@ -1633,6 +1630,7 @@ def send_daily_sd_report():
     if unit_problems == {}:
         message += "\nNo hubieron unidades críticas"
 
+    print(message)
     send_telegram(chat="SAFEDRIVING_CHAT", message=message)
 
 
