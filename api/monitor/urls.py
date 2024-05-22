@@ -116,6 +116,21 @@ urlpatterns = [
                           name="server-history"),
                  ], "server")
                  )),
-         ], "servers")))
+         ], "servers"))),
+    path("rds/",
+         include(([
+             path("status/", apis.RDSStatusListAPI.as_view(), name="status"),
+             path("metric-keys/", apis.RDSMetricsAPI.as_view(), name="metrics"),
+             path("regions/", apis.ServerRegionsAPI.as_view(), name="regions"),
+             path("types/", apis.RDSTypesAPI.as_view(), name="types"),
+             path("server/<int:server_id>/",
+                  include(([
+                      path("", apis.RDSStatusAPI.as_view(),
+                          name="rds-status"),
+                      path("history/", apis.RDSHistoryList.as_view(),
+                          name="history"),
+                  ], "rds")
+                  )),
+         ], "rds")))
 
 ]

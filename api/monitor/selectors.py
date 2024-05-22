@@ -564,7 +564,6 @@ class ServerStatusFilter(rf_filters.FilterSet):
 
 
 def get_serverstatus_list(filters=None):
-    print(filters)
     all_server_status = ServerStatus.objects.all()
     return ServerStatusFilter(filters, all_server_status).qs
 
@@ -584,8 +583,8 @@ def create_serverhistory(args):
     return server_history
 
 
-def get_servermetrics():
-    return ServerMetric.objects.all()
+def get_servermetrics(service: str):
+    return ServerMetric.objects.filter(service=service)
 
 
 class ServerHistoryFilter(rf_filters.FilterSet):
@@ -626,7 +625,106 @@ def get_servertypes():
     return types
 
 
+def get_or_create_rds(name: str, defaults: dict):
+    server, created = RDS.objects.get_or_create(
+        name=name,
+        defaults=defaults
+    )
+    return server
+
+
+def update_or_create_rdsstatus(name: str, defaults: dict):
+    rds_status, created = RDSStatus.objects.update_or_create(
+        rds__name=name,
+        defaults=defaults
+    )
+    return rds_status
+
+
+def create_rdshistory(args):
+    rds_history = RDSHistory.objects.create(
+        **args
+    )
+    return rds_history
+
+
+def get_rdsstatus_by_name(name: str):
+    try:
+        rds_status = RDSStatus.objects.get(
+            rds__name=name,
+        )
+    except RDSStatus.DoesNotExist:
+        return None
+
+    return rds_status
+
+
+def get_rdsstatus(rds_id: str):
+    try:
+        rds_status = RDSStatus.objects.get(
+            rds_id=rds_id,
+        )
+    except RDSStatus.DoesNotExist:
+        return None
+
+    return rds_status
+
+
+class RDSStatusFilter(rf_filters.FilterSet):
+    instance_class = rf_filters.CharFilter(field_name="rds_instance_class")
+    region = rf_filters.CharFilter(field_name="server__region__name")
+
+    class Meta:
+        model = RDSStatus
+        fields = ['rds__instance_class', 'rds__region']
+
+
+def get_rdsstatus_list(filters=None):
+    all_rds_status = RDSStatus.objects.all()
+    return RDSStatusFilter(filters, all_rds_status).qs
+
+
+def get_servermetrics(service: str):
+    return ServerMetric.objects.filter(service=service)
+
+
+class RDSHistoryFilter(rf_filters.FilterSet):
+    register_datetime = rf_filters.DateTimeFromToRangeFilter()
+    metric_type = rf_filters.CharFilter(
+        field_name='metric_type__key', lookup_expr="icontains")
+    sort = rf_filters.OrderingFilter(
+        fields=(
+            'register_datetime',
+            'metric_type',
+            'metric_value'
+        )
+    )
+
+    class Meta:
+        model = RDSHistory
+        fields = ['register_datetime',
+                  'rds',
+                  'metric_type',
+                  'metric_value'
+                  ]
+
+
+def get_rdshistory(args, filters=None):
+    logs = RDSHistory.objects.filter(
+        rds_id=args["rds_id"]).order_by('register_datetime')
+
+    return RDSHistoryFilter(filters, logs).qs
+
+
+def get_rdstypes():
+    types = RDS.objects.order_by(
+        "instance_class").values("instance_class").distinct()
+    return types
+
+
 # Retail --------------------------------------
+
+
 def retail_device_status_list():
     return RetailDeviceStatus.objects.filter(active=True)
 

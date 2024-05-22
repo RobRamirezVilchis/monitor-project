@@ -1185,7 +1185,7 @@ class ServerMetricsAPI(APIView):
         metrics = serializers.JSONField()
 
     def get(self, request, *args, **kwargs):
-        metrics = get_servermetrics()
+        metrics = get_servermetrics("ec2")
 
         metrics_dict = {metric.name: metric.key for metric in metrics}
         output = {"metrics": metrics_dict}
@@ -1212,6 +1212,120 @@ class ServerTypesAPI(APIView):
         server_types = get_servertypes()
 
         output = self.OutputSerializer(server_types, many=True).data
+
+        return Response(output)
+
+
+class RDSStatusListAPI(APIView):
+    class FiltersSerializer(serializers.Serializer):
+        region = serializers.CharField(required=False)
+        server_type = serializers.CharField(required=False)
+
+    class OutputSerializer(serializers.Serializer):
+        rds_id = serializers.IntegerField()
+        name = serializers.CharField(source="rds.name")
+        last_activity = serializers.DateTimeField()
+        status = serializers.CharField()
+        activity_data = serializers.JSONField()
+
+    def get(self, request, *args, **kwargs):
+        filters_serializer = self.FiltersSerializer(data=request.query_params)
+        filters_serializer.is_valid(raise_exception=True)
+
+        all_server_status = get_rdsstatus_list(
+            filters=filters_serializer.validated_data)
+
+        all_server_status = all_server_status.annotate(
+            cpu_utilization=Cast(
+                KT("activity_data__Uso de CPU"), output_field=models.FloatField()))
+
+        all_server_status = sorted(
+            all_server_status, key=lambda x: x.activity_data.get("Uso de CPU", 0), reverse=True)
+
+        output = self.OutputSerializer(all_server_status, many=True).data
+
+        return Response(output)
+
+
+class RDSStatusAPI(APIView):
+    class OutputSerializer(serializers.Serializer):
+        rds_id = serializers.IntegerField()
+        name = serializers.CharField(source="rds.name")
+        last_activity = serializers.DateTimeField()
+        status = serializers.CharField()
+        activity_data = serializers.JSONField()
+
+    def get(self, request, rds_id, *args, **kwargs):
+        server_status = get_rdsstatus(rds_id)
+        output = self.OutputSerializer(server_status).data
+
+        return Response(output)
+
+
+class RDSHistoryList(APIView):
+    class FiltersSerializer(serializers.Serializer):
+        register_datetime_after = serializers.DateTimeField(required=False)
+        register_datetime_before = serializers.DateTimeField(required=False)
+        sort = serializers.CharField(required=False)
+        metric_type = serializers.CharField(required=False)
+
+    class OutputSerializer(serializers.Serializer):
+        rds = serializers.CharField()
+        register_datetime = serializers.DateTimeField()
+        state = serializers.CharField()
+        metric_type = serializers.CharField()
+        metric_value = serializers.FloatField()
+
+    def get(self, request, rds_id, *args, **kwargs):
+
+        filters_serializer = self.FiltersSerializer(data=request.query_params)
+        filters_serializer.is_valid(raise_exception=True)
+
+        # Si no se especificó rango de fechas, regresar registros del último día
+        if not (filters_serializer.validated_data.get("register_datetime_after") or filters_serializer.validated_data.get("register_datetime_before")):
+            import datetime
+            import pytz
+
+            date_now = datetime.datetime.now()
+            end_date = date_now.astimezone(pytz.timezone("America/Mexico_City")).replace(
+                tzinfo=pytz.utc) + datetime.timedelta(hours=6)
+            start_date = end_date - timedelta(hours=24)
+
+            filters_serializer.validated_data["register_datetime_before"] = end_date
+            filters_serializer.validated_data["register_datetime_after"] = start_date
+
+        data = {'rds_id': rds_id}
+        logs = get_rdshistory(
+            data, filters=filters_serializer.validated_data)[::-1]
+
+        return get_paginated_response(
+            serializer_class=self.OutputSerializer,
+            queryset=logs,
+            request=request,
+        )
+
+
+class RDSMetricsAPI(APIView):
+    class OutputSerializer(serializers.Serializer):
+        metrics = serializers.JSONField()
+
+    def get(self, request, *args, **kwargs):
+        metrics = get_servermetrics("rds")
+
+        metrics_dict = {metric.name: metric.key for metric in metrics}
+        output = {"metrics": metrics_dict}
+
+        return Response(self.OutputSerializer(output).data)
+
+
+class RDSTypesAPI(APIView):
+    class OutputSerializer(serializers.Serializer):
+        instance_class = serializers.CharField()
+
+    def get(self, request, *args, **kwargs):
+        rds_types = get_rdstypes()
+
+        output = self.OutputSerializer(rds_types, many=True).data
 
         return Response(output)
 

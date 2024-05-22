@@ -306,6 +306,7 @@ class Server(models.Model):
 class ServerMetric(models.Model):
     name = models.CharField(max_length=50)
     key = models.CharField(max_length=50)
+    service = models.CharField(default="", max_length=40)
 
     def __str__(self):
         return self.name
@@ -339,3 +340,44 @@ class ServerHistory(models.Model):
 
     class Meta:
         verbose_name_plural = "Server histories"
+
+
+class RDS(models.Model):
+    name = models.CharField(max_length=50)
+    instance_class = models.CharField(max_length=50)
+    region = models.ForeignKey(
+        ServerRegion, on_delete=models.CASCADE, null=True, blank=True)
+
+    def __str__(self):
+        return f'{self.id} - {self.name}'
+
+
+class RDSStatus(models.Model):
+    rds = models.ForeignKey(RDS, on_delete=models.CASCADE)
+    status = models.CharField(max_length=50)
+    last_activity = models.DateTimeField(
+        auto_now=False, auto_now_add=False, blank=True)
+    activity_data = models.JSONField(blank=True, null=True)
+
+    def __str__(self):
+        return self.rds.name
+
+    class Meta:
+        verbose_name_plural = "RDS status"
+
+
+class RDSHistory(models.Model):
+    rds = models.ForeignKey(RDS, on_delete=models.CASCADE)
+    register_datetime = models.DateTimeField(
+        auto_now=False, auto_now_add=False)
+    register_date = models.DateField(
+        db_index=True, auto_now=False, auto_now_add=False)
+    status = models.CharField(max_length=50)
+    metric_type = models.ForeignKey(ServerMetric, on_delete=models.CASCADE)
+    metric_value = models.FloatField()
+
+    def __str__(self):
+        return self.rds.name
+
+    class Meta:
+        verbose_name_plural = "RDS histories"

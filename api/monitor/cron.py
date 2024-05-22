@@ -154,7 +154,8 @@ def process_driving_data(response, now=None):
             now - timedelta(hours=1))]
 
         aux = logs_last_hour.loc[logs_last_hour["Tipo"] == "Aux"]
-        all_ignitions = logs_last_hour.loc[logs_last_hour["Tipo"] == "Ignición"]
+        all_ignitions = logs_last_hour.loc[logs_last_hour["Tipo"]
+                                           == "Ignición"]
 
         # logs_last_hour = logs_last_hour.loc[(logs_last_hour["Tipo"] != "Aux") &
         #                                        (logs_last_hour["Tipo"] != "Ignición")]
@@ -1489,11 +1490,11 @@ def update_servers_status():
     for region in server_regions:
         utils = AWSUtils(region.name)
         instances = utils.list_instances()
-        metrics_to_get = get_servermetrics()
+        metrics_to_get = get_servermetrics("ec2")
 
         all_metrics_data = {}
         for metric in metrics_to_get:
-            metric_data = utils.get_metrics(instances, metric.name)
+            metric_data = utils.get_ec2_metrics(instances, metric.name)
             all_metrics_data[metric.name] = metric_data
 
         for i in range(len(instances)):
@@ -1512,7 +1513,7 @@ def update_servers_status():
             current_server_status = get_serverstatus_by_awsid(server_id)
 
             server = get_or_create_server(server_id, defaults={
-                "name": name, "server_type": server_type})
+                "name": name, "server_type": server_type, "region": region})
 
             if server.name != name:
                 server.name = name
@@ -1575,7 +1576,89 @@ def update_servers_status():
                 })
 
 
+def update_rds_status():
+    now = datetime.now(tz=pytz.timezone("UTC"))
+    server_regions = get_serverregions()
+
+    for region in server_regions:
+        utils = AWSUtils(region.name)
+        instances = utils.list_db_instances()
+        all_metrics_data = {}
+
+        if not instances:
+            continue
+
+        metrics_to_get = get_servermetrics("rds")
+
+        for metric in metrics_to_get:
+            metric_data = utils.get_db_metrics(instances, metric.name)
+            all_metrics_data[metric.name] = metric_data
+
+        for i in range(len(instances)):
+            instance = instances[i]
+
+            name = instance["db_id"]
+            instance_status = instance["instance_status"]
+            instance_class = instance["instance_class"]
+
+            current_server_status = get_rdsstatus_by_name(name)
+
+            rds = get_or_create_rds(name, defaults={
+                "region": region, "instance_class": instance_class})
+
+            activity_data = {}
+            activity = False
+
+            for metric in metrics_to_get:
+                metric_values = all_metrics_data[metric.name]['MetricDataResults'][i]['Values']
+                metric_dates = all_metrics_data[metric.name]['MetricDataResults'][i]['Timestamps']
+
+                if metric_values:
+                    activity = True
+                    activity_data[metric.key] = metric_values[0]
+
+                else:
+                    break
+
+                for j in range(len(metric_values)):
+                    metric_date = metric_dates[j]
+                    rdshistory_args = {
+                        "rds": rds,
+                        "register_datetime": metric_date,
+                        "register_date": metric_date.date(),
+                        "status": instance_status,
+                        "metric_type": metric,
+                        "metric_value": metric_values[j],
+                    }
+                    create_rdshistory(rdshistory_args)
+
+            if activity:
+                server_status = update_or_create_rdsstatus(name, defaults={
+                    "rds": rds,
+                    "status": instance_status,
+                    "last_activity": now,
+                    "activity_data": activity_data
+                })
+
+            elif current_server_status == None:
+                server_status = update_or_create_rdsstatus(name, defaults={
+                    "rds": rds,
+                    "status": instance_status,
+                    "last_activity": now,
+                    "activity_data": {}
+                })
+            # If the server just stopped or terminated, update the status one last time
+            # with empty activity_data and the new state
+            elif activity_data == {} and current_server_status.activity_data != {}:
+                server_status = update_or_create_rdsstatus(name, defaults={
+                    "rds": rds,
+                    "status": instance_status,
+                    "activity_data": {}
+                })
+
+
 # Generate daily Telegram Safe Driving Report
+
 
 def send_daily_sd_report():
     import time
@@ -1630,7 +1713,6 @@ def send_daily_sd_report():
     if unit_problems == {}:
         message += "\nNo hubieron unidades críticas"
 
-    print(message)
     send_telegram(chat="SAFEDRIVING_CHAT", message=message)
 
 

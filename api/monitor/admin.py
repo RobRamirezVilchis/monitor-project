@@ -294,5 +294,9 @@ admin.site.register(ServerStatus, ServerStatusAdmin)
 admin.site.register(ServerHistory, ServerHistoryAdmin)
 admin.site.register(ServerRegion)
 
+admin.site.register(RDS)
+admin.site.register(RDSStatus)
+admin.site.register(RDSHistory)
+
 admin.site.register(RetailDeviceStatus, RetailDeviceStatusAdmin)
 admin.site.register(RetailDeviceHistory, RetailDeviceHistoryAdmin)
