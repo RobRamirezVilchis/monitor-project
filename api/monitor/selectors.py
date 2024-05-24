@@ -673,8 +673,8 @@ def get_rdsstatus(rds_id: str):
 
 
 class RDSStatusFilter(rf_filters.FilterSet):
-    instance_class = rf_filters.CharFilter(field_name="rds_instance_class")
-    region = rf_filters.CharFilter(field_name="server__region__name")
+    instance_class = rf_filters.CharFilter(field_name="rds__instance_class")
+    region = rf_filters.CharFilter(field_name="rds__region__name")
 
     class Meta:
         model = RDSStatus

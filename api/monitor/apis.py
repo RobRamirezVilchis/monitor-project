@@ -1219,7 +1219,7 @@ class ServerTypesAPI(APIView):
 class RDSStatusListAPI(APIView):
     class FiltersSerializer(serializers.Serializer):
         region = serializers.CharField(required=False)
-        server_type = serializers.CharField(required=False)
+        instance_class = serializers.CharField(required=False)
 
     class OutputSerializer(serializers.Serializer):
         rds_id = serializers.IntegerField()
@@ -1232,17 +1232,17 @@ class RDSStatusListAPI(APIView):
         filters_serializer = self.FiltersSerializer(data=request.query_params)
         filters_serializer.is_valid(raise_exception=True)
 
-        all_server_status = get_rdsstatus_list(
+        all_rds_status = get_rdsstatus_list(
             filters=filters_serializer.validated_data)
 
-        all_server_status = all_server_status.annotate(
+        all_rds_status = all_rds_status.annotate(
             cpu_utilization=Cast(
                 KT("activity_data__Uso de CPU"), output_field=models.FloatField()))
 
-        all_server_status = sorted(
-            all_server_status, key=lambda x: x.activity_data.get("Uso de CPU", 0), reverse=True)
+        all_rds_status = sorted(
+            all_rds_status, key=lambda x: x.activity_data.get("Uso de CPU", 0), reverse=True)
 
-        output = self.OutputSerializer(all_server_status, many=True).data
+        output = self.OutputSerializer(all_rds_status, many=True).data
 
         return Response(output)
 
