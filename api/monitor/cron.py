@@ -433,26 +433,16 @@ def update_driving_status():
 
             if description == "Read only SSD" or description == "forced reboot (>1)" or description == "Tres cámaras fallando":
                 priority = True
-            elif not description.endswith("viajes)") and (description.startswith("Sin comunicación") or description == "Inactivo" or description.startswith("Logs pendientes")):
+            elif not description.endswith("viajes)") and \
+                    (description.startswith("Sin comunicación") or description == "Inactivo" or description.startswith("Logs pendientes")):
                 # If the unit just turned inactive, check last active status
                 # If the last status was read only ssd, override severity to 5 and priority to True
-                if was_unit_active:
-                    last_active_status = get_unit_last_active_status(unit_obj)
-                    if last_active_status:
-                        if last_active_status.status.description == "Read only SSD":
-                            severity = 5
-                            priority = True
-                            message = "Sin comunicación reciente, último mensaje fue Read only SSD"
-                            if unit_name in alerts:
-                                alerts[unit_name].append(message)
-                            else:
-                                alerts[unit_name] = [message]
-                else:
-                    # If the unit was inactive before, copy previous priority
-                    priority = current_unit_status.status.priority if current_unit_status else False
 
-                    if priority:
+                last_active_status = get_unit_last_active_status(unit_obj)
+                if last_active_status:
+                    if last_active_status.status.description == "Read only SSD":
                         severity = 5
+                        priority = True
                         message = "Sin comunicación reciente, último mensaje fue Read only SSD"
                         if unit_name in alerts:
                             alerts[unit_name].append(message)

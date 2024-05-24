@@ -3,6 +3,7 @@ from .models import *
 from django_filters import rest_framework as rf_filters
 from django.db.models import Q, F, Count, Max, Min
 from datetime import datetime, timedelta
+from django.db.models import Subquery
 
 
 def get_unit(unit_id):
@@ -266,6 +267,7 @@ def get_unit_last_active_status(unit_id):
         Q(status__description="Inactivo") |
         Q(status__description="Sin comunicación reciente") |
         Q(status__description="Sin comunicación reciente (< 1 día)") |
+        Q(status__description="Sin comunicación (>2 viajes)") |
         Q(status__description="Logs pendientes (>100)") |
         Q(status__description="Logs pendientes (>20)")).order_by('-register_datetime').first()
 
@@ -808,6 +810,12 @@ def get_or_create_open_trip(unit: Unit, start_datetime: datetime):
 
 
 def get_unit_failed_trips(unit: Unit):
-    trips = UnitTrip.objects.filter(unit=unit, active=False)
+    latest_active_end_datetime_subquery = UnitTrip.objects.filter(
+        unit=unit,
+        active=True,
+    ).order_by('-end_datetime').values('end_datetime')[:1]
+
+    trips = UnitTrip.objects.filter(unit=unit, active=False, start_datetime__gt=Subquery(
+        latest_active_end_datetime_subquery))
 
     return trips
