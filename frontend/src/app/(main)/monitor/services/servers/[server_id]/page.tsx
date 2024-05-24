@@ -6,7 +6,7 @@ import {
   useServerPlotQuery,
   useServerStatusQuery,
 } from "@/api/queries/monitor";
-import BackArrow from "../../(components)/BackArrow";
+import BackArrow from "../../../(components)/BackArrow";
 import { format, parseISO } from "date-fns";
 import { PaymentOutlined, Spa } from "@mui/icons-material";
 import { Progress, SegmentedControl } from "@mantine/core";
@@ -92,7 +92,7 @@ const ServerPage = ({ params }: { params: { server_id: string } }) => {
   if (plotMetric == "Datos de salida" && plotData) {
     plotData = plotData.map((x) => ({
       ...x,
-      metric_value: x.metric_value / 300 / 1024,
+      metric_value: x.metric_value / 300 / 1e6,
     }));
   }
 
@@ -186,8 +186,7 @@ const ServerPage = ({ params }: { params: { server_id: string } }) => {
               </div>
               <p>
                 Datos de salida:{" "}
-                {(activity_data["Datos de salida"] / 300 / 1024).toFixed(2)}{" "}
-                MB/s
+                {(activity_data["Datos de salida"] / 300 / 1e6).toFixed(2)} MB/s
               </p>
             </div>
           )}
@@ -308,7 +307,7 @@ const parseMetric = (metricType: string, metricValue: number) => {
     case "CPUUtilization":
       return metricValue.toFixed(2) + " %";
     case "NetworkOut":
-      return (metricValue / 300 / 1024).toFixed(2) + " MB/s";
+      return (metricValue / 300 / 1e6).toFixed(2) + " MB/s";
     default:
       return metricValue;
   }

@@ -23,6 +23,8 @@ class AWSUtils:
         self.ec2_client = self.session.client('ec2')
         self.rds_client = self.session.client(
             'rds', aws_access_key_id=key_id, aws_secret_access_key=access_key)
+        self.elb_client = self.session.client(
+            'elb', aws_access_key_id=key_id, aws_secret_access_key=access_key)
         self.cloudwatch_db_client = self.session.client(
             'cloudwatch', aws_access_key_id=key_id, aws_secret_access_key=access_key)
         self.cloudwatch_client = self.session.client('cloudwatch')
@@ -48,11 +50,6 @@ class AWSUtils:
                 })
                 # instances.append(instance)
         return instances
-
-    def list_volumes(self):
-        response = self.ec2_client.describe_volumes()
-
-        return response
 
     def list_load_balancers(self):
         response = self.elb_client.describe_load_balancers()
@@ -124,6 +121,45 @@ class AWSUtils:
         metric_query = []
 
         for instance in db_instances:
+            metric_id = f'cpuUsage_{instance["db_id"]}'
+            metric_id = metric_id.replace('-', '_')
+            metric_query.append({
+                'Id': metric_id,
+                'MetricStat': {
+                    'Metric': {
+                        'Namespace': 'AWS/RDS',
+                        'MetricName': metric_name,
+                        'Dimensions': [
+                            {'Name': 'DBInstanceIdentifier',
+                                'Value': instance["db_id"]}
+                        ]
+                    },
+                    'Period': 300,  # Periodo en segundos (1 hora)
+                    # Puedes cambiarlo por 'Minimum', 'Maximum', 'Sum', etc.
+                    'Stat': 'Average',
+                },
+                'ReturnData': True,
+            })
+
+        # self.logger.debug(f"Query: {json.dumps(metric_query, indent=2)}")
+
+        # Obtiene estadísticas de CPU
+        metric_data = self.cloudwatch_db_client.get_metric_data(
+            MetricDataQueries=metric_query,
+            StartTime=start_time,
+            EndTime=end_time
+        )
+        for metric in metric_data['MetricDataResults']:
+            self.logger.info(f"Metric {metric['Id']}: {metric['Values']}")
+        return metric_data
+
+    def get_elb_metrics(self, elb_instances: List[Dict], metric_name: str):
+        # Establece el intervalo de tiempo para las estadísticas
+        end_time = datetime.datetime.now(tz=pytz.timezone('UTC'))
+        start_time = end_time - datetime.timedelta(minutes=10)
+        metric_query = []
+
+        for instance in elb_instances:
             metric_id = f'cpuUsage_{instance["db_id"]}'
             metric_id = metric_id.replace('-', '_')
             metric_query.append({

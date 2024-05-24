@@ -41,8 +41,8 @@ const MainLayout = ({ children }: MainLayoutProps) => {
   const [isOpen, { toggle, close }] = useDisclosure(false);
 
   const serverLink = {
-    label: "Servidores",
-    href: "/monitor/servers",
+    label: "Servicios",
+    href: "/monitor/services",
   };
 
   const [links, setLinks] = useState<NavMenuItem[]>([

@@ -1,4 +1,4 @@
-import { UnitStatus, SeverityCount, UnitHistory, DeviceStatus, UnitFilters, LastStatusChange, DeviceFilters, DeviceHistory, Client, CameraDisconnection, LastActiveStatus, SeverityHistory, AreaPlotData, AreaPlotFilters, LastUpdate, DeviceLogsFilters, DeviceLogs, DeviceWifiStatus, UnitLogsFilters, UnitLogs, NewClientData, ServerStatus, ServerHistoryFilters, ServerHistory, MetricsKeys, ServerRegion, ServerType, ServerStatusFilters, RetailDeviceStatus, RetailDeviceHistory, UnitReportContent } from "./types";
+import { UnitStatus, SeverityCount, UnitHistory, DeviceStatus, UnitFilters, LastStatusChange, DeviceFilters, DeviceHistory, Client, CameraDisconnection, LastActiveStatus, SeverityHistory, AreaPlotData, AreaPlotFilters, LastUpdate, DeviceLogsFilters, DeviceLogs, DeviceWifiStatus, UnitLogsFilters, UnitLogs, NewClientData, ServerStatus, ServerHistoryFilters, ServerHistory, MetricsKeys, ServerRegion, ServerType, ServerStatusFilters, RetailDeviceStatus, RetailDeviceHistory, UnitReportContent, RDSStatusFilters, RDSStatus, RDSHistoryFilters, RDSHistory, RDSType, RDSFilters } from "./types";
 import { Id, OptionallyPaginated, Paginated } from "@/api/types";
 import { Role, User } from "../auth/types";
 import api from "../..";
@@ -496,6 +496,102 @@ export async function getMetricsKeys(
 ) {
     const resp = await http.get<MetricsKeys>(
       api.endpoints.monitor.servers.metricsKeys,
+      {
+        ...config,
+      }
+    );
+    return resp.data;
+}
+
+// RDS
+export async function getAllRDSStatus(
+  filters: RDSStatusFilters,
+  config?: Parameters<typeof http.get>[1]
+) {
+    const resp = await http.get<RDSStatus[]>(
+      api.endpoints.monitor.rds.status,
+      {
+        params: filters,
+        ...config,
+      }
+    );
+    return resp.data;
+}
+
+export async function getRDSStatus(
+  filters: RDSFilters,
+  config?: Parameters<typeof http.get>[1]
+) {
+    const resp = await http.get<RDSStatus>(
+      api.endpoints.monitor.rds.RDSStatus(filters.rds_id),
+      {
+        params: filters,
+        ...config,
+      }
+    );
+    return resp.data;
+}
+
+export async function getRDSHistory(
+  filters: RDSHistoryFilters,
+  config?: Parameters<typeof http.get>[1]
+) {
+    const resp = await http.get<Paginated<RDSHistory>>(
+      api.endpoints.monitor.rds.RDSHistory(filters.rds_id),
+      {
+        params: filters,
+        ...config,
+      }
+    );
+    return resp.data;
+}
+
+
+export async function getRDSMetricPlotData(
+  filters: RDSHistoryFilters,
+  config?: Parameters<typeof http.get>[1]
+) {
+    const resp = await http.get<RDSHistory[]>(
+      api.endpoints.monitor.rds.RDSHistory(filters.rds_id),
+      {
+        params: filters,
+        ...config,
+      }
+    );
+    return resp.data;
+}
+
+
+
+export async function getRDSRegions(
+  config?: Parameters<typeof http.get>[1]
+) {
+    const resp = await http.get<ServerRegion[]>(
+      api.endpoints.monitor.rds.regions,
+      {
+        ...config,
+      }
+    );
+    return resp.data;
+}
+
+export async function getRDSTypes(
+  config?: Parameters<typeof http.get>[1]
+) {
+    const resp = await http.get<RDSType[]>(
+      api.endpoints.monitor.rds.RDSTypes,
+      {
+        ...config,
+      }
+    );
+    return resp.data;
+}
+
+export async function getRDSMetricsKeys(
+  config?: Parameters<typeof http.get>[1]
+) {
+    const resp = await http.get<MetricsKeys>(
+      api.endpoints.monitor.rds.RDSMetricsKeys,
       {
         ...config,
       }

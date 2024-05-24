@@ -123,7 +123,7 @@ urlpatterns = [
              path("metric-keys/", apis.RDSMetricsAPI.as_view(), name="metrics"),
              path("regions/", apis.ServerRegionsAPI.as_view(), name="regions"),
              path("types/", apis.RDSTypesAPI.as_view(), name="types"),
-             path("server/<int:server_id>/",
+             path("db/<int:rds_id>/",
                   include(([
                       path("", apis.RDSStatusAPI.as_view(),
                           name="rds-status"),

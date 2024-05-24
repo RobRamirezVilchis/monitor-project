@@ -1,6 +1,6 @@
 import { createQuery } from "../helpers/createQuery";
-import { getUnits, getDevices, getUnitHistory, getDrivingSeverityCount, getUnitLastStatusChange, getDeviceHistory, getIndustrySeverityCount, getUnitStatus, getDeviceStatus, getSafeDrivingClients, getIndustryClients, getDeviceLastStatusChange, getIndustryCameraDisconnections, getUnitLastActiveStatus, getUnitSeverityHistory, getSafeDrivingAreaPlotData, getIndustryAreaPlotData, getDrivingLastUpdate, getIndustryLastUpdate, getDeviceSeverityHistory, getDeviceLogs, getDeviceWifiStatus, getUnitLogs, getServersStatus, getServerStatus, getServerHistory, getMetricsKeys, getServerMetricPlotData, getServerRegions, getServerTypes, getRetailDeviceStatus, getSmartRetailSeverityCount, getRetailStatus, getRetailDeviceLastStatusChange, getRetailDeviceLogs, getRetailDeviceHistory, getRetailDeviceSeverityHistory, getSmartRetailAreaPlotData, getSmartRetailClients, getUnitReportContent } from "../services/monitor";
-import { AreaPlotFilters, DeviceFilters, UnitSeverityHistoryFilters, UnitFilters, DeviceSeverityHistoryFilters, DeviceLogsFilters, UnitLogsFilters, ServerHistoryFilters, ServerStatusFilters, RetailDeviceSeverityHistoryFilters } from "../services/monitor/types";
+import { getUnits, getDevices, getUnitHistory, getDrivingSeverityCount, getUnitLastStatusChange, getDeviceHistory, getIndustrySeverityCount, getUnitStatus, getDeviceStatus, getSafeDrivingClients, getIndustryClients, getDeviceLastStatusChange, getIndustryCameraDisconnections, getUnitLastActiveStatus, getUnitSeverityHistory, getSafeDrivingAreaPlotData, getIndustryAreaPlotData, getDrivingLastUpdate, getIndustryLastUpdate, getDeviceSeverityHistory, getDeviceLogs, getDeviceWifiStatus, getUnitLogs, getServersStatus, getServerStatus, getServerHistory, getMetricsKeys, getServerMetricPlotData, getServerRegions, getServerTypes, getRetailDeviceStatus, getSmartRetailSeverityCount, getRetailStatus, getRetailDeviceLastStatusChange, getRetailDeviceLogs, getRetailDeviceHistory, getRetailDeviceSeverityHistory, getSmartRetailAreaPlotData, getSmartRetailClients, getUnitReportContent, getRDSStatus, getAllRDSStatus, getRDSHistory, getRDSMetricPlotData, getRDSMetricsKeys, getRDSRegions, getRDSTypes } from "../services/monitor";
+import { AreaPlotFilters, DeviceFilters, UnitSeverityHistoryFilters, UnitFilters, DeviceSeverityHistoryFilters, DeviceLogsFilters, UnitLogsFilters, ServerHistoryFilters, ServerStatusFilters, RetailDeviceSeverityHistoryFilters, RDSStatusFilters, RDSFilters, RDSHistoryFilters } from "../services/monitor/types";
 import defaultQueryClient from "../clients/defaultQueryClient";
 
 // Safe Driving API ----------------------------------------------------------
@@ -278,6 +278,79 @@ export const useDeviceLogsQuery = createQuery({
 });
 
 // Servers
+export const useAllRDSStatusQuery = createQuery({
+  queryPrimaryKey: "all-rds-status",
+  queryKeyVariables: (vars: RDSStatusFilters) => vars ? [vars] : [],
+  queryFn: (ctx, vars) => getAllRDSStatus(vars, { signal: ctx.signal }),
+  cacheTime: 1000 * 60 * 5,  // 5 minutes
+  staleTime: 1000 * 60 * 3,  // 3 minutes
+  keepPreviousData: true,
+  queryClient: defaultQueryClient,
+  refetchInterval: 60000,
+  refetchIntervalInBackground: true
+});
+
+export const useRDSStatusQuery = createQuery({
+  queryPrimaryKey: "rds-status",
+  queryKeyVariables: (vars: RDSFilters) => vars ? [vars] : [],
+  queryFn: (ctx, vars) => getRDSStatus(vars, { signal: ctx.signal }),
+  cacheTime: 1000 * 60 * 5,  // 5 minutes
+  staleTime: 1000 * 60 * 3,  // 3 minutes
+  keepPreviousData: true,
+  queryClient: defaultQueryClient,
+  refetchInterval: 60000,
+  refetchIntervalInBackground: true
+});
+
+
+export const useRDSHistoryQuery = createQuery({
+  queryPrimaryKey: "rds-history",
+  queryKeyVariables: (vars: RDSHistoryFilters) => vars ? [vars] : [],
+  queryFn: (ctx, vars) => getRDSHistory(vars, { signal: ctx.signal }),
+  cacheTime: 1000 * 60 * 5,  // 5 minutes
+  staleTime: 1000 * 60 * 3,  // 3 minutes
+  keepPreviousData: true,
+  queryClient: defaultQueryClient,
+});
+
+export const useRDSPlotQuery = createQuery({
+  queryPrimaryKey: "rds_metric_plot",
+  queryKeyVariables: (vars: RDSHistoryFilters) => vars ? [vars] : [],
+  queryFn: (ctx, vars) => getRDSMetricPlotData(vars, { signal: ctx.signal }),
+  cacheTime: 1000 * 60 * 5,  // 5 minutes
+  staleTime: 1000 * 60 * 3,  // 3 minutes
+  keepPreviousData: true,
+  queryClient: defaultQueryClient,
+});
+
+export const useRDSMetricsKeysQuery = createQuery({
+  queryPrimaryKey: "rds_metrics_keys",
+  queryFn: (ctx) => getRDSMetricsKeys({ signal: ctx.signal }),
+  cacheTime: 1000 * 60 * 5,  // 5 minutes
+  staleTime: 1000 * 60 * 3,  // 3 minutes
+  keepPreviousData: true,
+  queryClient: defaultQueryClient,
+});
+
+export const useRDSRegionsQuery = createQuery({
+  queryPrimaryKey: "rds_regions",
+  queryFn: (ctx) => getRDSRegions({ signal: ctx.signal }),
+  cacheTime: 1000 * 60 * 5,  // 5 minutes
+  staleTime: 1000 * 60 * 3,  // 3 minutes
+  keepPreviousData: true,
+  queryClient: defaultQueryClient,
+});
+
+export const useRDSTypesQuery = createQuery({
+  queryPrimaryKey: "rds_types",
+  queryFn: (ctx) => getRDSTypes({ signal: ctx.signal }),
+  cacheTime: 1000 * 60 * 5,  // 5 minutes
+  staleTime: 1000 * 60 * 3,  // 3 minutes
+  keepPreviousData: true,
+  queryClient: defaultQueryClient,
+});
+
+// RDS
 export const useServersStatusQuery = createQuery({
   queryPrimaryKey: "servers_status",
   queryKeyVariables: (vars: ServerStatusFilters) => vars ? [vars] : [],

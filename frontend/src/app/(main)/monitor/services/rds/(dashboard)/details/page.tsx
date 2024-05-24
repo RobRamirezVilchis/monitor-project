@@ -1,36 +1,38 @@
 "use client";
 
 import {
-  useServerRegionsQuery,
-  useServerTypesQuery,
-  useServersStatusQuery,
+  useAllRDSStatusQuery,
+  useRDSRegionsQuery,
+  useRDSStatusQuery,
+  useRDSTypesQuery,
 } from "@/api/queries/monitor";
-import ServerCard from "../../../(components)/ServerCard";
+import ServerCard from "../../../../(components)/ServerCard";
 import { Select, TextInput } from "@mantine/core";
 import { useCallback, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import RDSCard from "@/app/(main)/monitor/(components)/RDSCard";
 
-const ServersDetailPage = () => {
+const RDSDetailPage = () => {
   const router = useRouter();
 
   const [nameInput, setNameInput] = useState<string>("");
 
-  const [serverType, setServerType] = useState<string | null>(null);
-  const [serverRegion, setServerRegion] = useState<string | null>(null);
+  const [rdsType, setRdsType] = useState<string | null>(null);
+  const [rdsRegion, setRdsRegion] = useState<string | null>(null);
 
-  const serversStatusQuery = useServersStatusQuery({
+  const rdsStatusQuery = useAllRDSStatusQuery({
     variables: {
-      region: serverRegion,
-      server_type: serverType,
+      region: rdsRegion,
+      instance_class: rdsType,
     },
   });
-  const serversStatus = serversStatusQuery.data;
+  const rdsStatus = rdsStatusQuery.data;
 
-  const serverTypesQuery = useServerTypesQuery({});
-  const serverTypes = serverTypesQuery.data?.map((data) => data.server_type);
+  const rdsTypesQuery = useRDSTypesQuery({});
+  const rdsTypes = rdsTypesQuery.data?.map((data) => data.instance_class);
 
-  const serverRegionsQuery = useServerRegionsQuery({});
-  const serverRegions = serverRegionsQuery.data?.map((data) => data.name);
+  const rdsRegionsQuery = useRDSRegionsQuery({});
+  const rdsRegions = rdsRegionsQuery.data?.map((data) => data.name);
 
   const searchParams = useSearchParams();
 
@@ -63,7 +65,7 @@ const ServersDetailPage = () => {
           styles={{
             label: { fontSize: 18 },
           }}
-          label="Buscar servidor:"
+          label="Buscar base de datos:"
           value={nameInput}
           onChange={(event) => setNameInput(event.currentTarget.value)}
         />
@@ -74,16 +76,16 @@ const ServersDetailPage = () => {
           }}
           label="Filtrar por región:"
           placeholder="Todas"
-          data={serverRegions}
-          value={serverRegion}
+          data={rdsRegions}
+          value={rdsRegion}
           onChange={(value: string | null) => {
             router.push(
               value
-                ? "/monitor/servers/details/?" +
+                ? "/monitor/services/rds/details/?" +
                     createQueryString("region", value)
-                : "/monitor/servers/details/?" + removeQueryParam("region")
+                : "/monitor/services/rds/details/?" + removeQueryParam("region")
             );
-            setServerRegion(value);
+            setRdsRegion(value);
           }}
         ></Select>
         <Select
@@ -93,29 +95,26 @@ const ServersDetailPage = () => {
           }}
           label="Filtrar por tamaño:"
           placeholder="Todos"
-          data={serverTypes}
-          value={serverType}
+          data={rdsTypes}
+          value={rdsType}
           onChange={(value: string | null) => {
             router.push(
               value
-                ? "/monitor/servers/details/?" +
+                ? "/monitor/services/rds/details/?" +
                     createQueryString("type", value)
-                : "/monitor/servers/details/?" + removeQueryParam("type")
+                : "/monitor/services/rds/details/?" + removeQueryParam("type")
             );
-            setServerType(value);
+            setRdsType(value);
           }}
         ></Select>
       </div>
       <div className="flex flex-row gap-4 flex-wrap">
-        {serversStatus?.map(
-          (serverStatus) =>
-            serverStatus.server_name
+        {rdsStatus?.map(
+          (rdsStatus) =>
+            rdsStatus.name
               .toLowerCase()
               .includes(nameInput.toLowerCase().replace(" ", "_")) && (
-              <ServerCard
-                key={serverStatus.server_id}
-                {...serverStatus}
-              ></ServerCard>
+              <RDSCard key={rdsStatus.rds_id} {...rdsStatus}></RDSCard>
             )
         )}
       </div>
@@ -123,4 +122,4 @@ const ServersDetailPage = () => {
   );
 };
 
-export default ServersDetailPage;
+export default RDSDetailPage;

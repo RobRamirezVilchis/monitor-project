@@ -94,7 +94,7 @@ class UnitSeverityCount(APIView):
 
         for level in output:
             level["breakdown"] = problem_counts.filter(
-                severity=level["severity"]).values('description', 'count')
+                severity=level["severity"]).order_by("-count").values('description', 'count')
 
         # Serialize the result
         serializer = self.OutputSerializer(output, many=True)
@@ -1164,7 +1164,7 @@ class ServerHistoryList(APIView):
             date_now = datetime.datetime.now()
             end_date = date_now.astimezone(pytz.timezone("America/Mexico_City")).replace(
                 tzinfo=pytz.utc) + datetime.timedelta(hours=6)
-            start_date = end_date - timedelta(hours=24)
+            start_date = end_date - timedelta(hours=1)
 
             filters_serializer.validated_data["register_datetime_before"] = end_date
             filters_serializer.validated_data["register_datetime_after"] = start_date
@@ -1272,7 +1272,7 @@ class RDSHistoryList(APIView):
     class OutputSerializer(serializers.Serializer):
         rds = serializers.CharField()
         register_datetime = serializers.DateTimeField()
-        state = serializers.CharField()
+        status = serializers.CharField()
         metric_type = serializers.CharField()
         metric_value = serializers.FloatField()
 
@@ -1289,7 +1289,7 @@ class RDSHistoryList(APIView):
             date_now = datetime.datetime.now()
             end_date = date_now.astimezone(pytz.timezone("America/Mexico_City")).replace(
                 tzinfo=pytz.utc) + datetime.timedelta(hours=6)
-            start_date = end_date - timedelta(hours=24)
+            start_date = end_date - timedelta(hours=1)
 
             filters_serializer.validated_data["register_datetime_before"] = end_date
             filters_serializer.validated_data["register_datetime_after"] = start_date

@@ -1648,8 +1648,6 @@ def update_rds_status():
 
 
 # Generate daily Telegram Safe Driving Report
-
-
 def send_daily_sd_report():
     import time
 

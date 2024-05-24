@@ -100,7 +100,14 @@ const api = {
         regions: "api/v1/monitor/servers/regions/",
         serverStatus: (server_id: string) => `api/v1/monitor/servers/server/${server_id}/`,
         serverHistory: (device_id: DeviceId) => `api/v1/monitor/servers/server/${device_id}/history/`,
-
+      },
+      rds: {
+        status: "api/v1/monitor/rds/status/",
+        RDSMetricsKeys: "api/v1/monitor/rds/metric-keys/",
+        RDSTypes: "api/v1/monitor/rds/types/",
+        regions: "api/v1/monitor/rds/regions/",
+        RDSStatus: (server_id: string) => `api/v1/monitor/rds/db/${server_id}/`,
+        RDSHistory: (device_id: DeviceId) => `api/v1/monitor/rds/db/${device_id}/history/`,
       }
     }
   },

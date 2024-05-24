@@ -192,6 +192,10 @@ export interface UnitLogs {
 
 // Servers
 
+export interface ServerFilters {
+  server_id: string;
+}
+
 export interface ServerStatus {
   server_id: number;
   aws_id: string;
@@ -206,6 +210,7 @@ export interface ServerStatusFilters {
   region: string | null,
   server_type: string | null
 }
+
 
 export interface ServerHistory extends Partial<PageNumberPaginationParams> {
   server: string,
@@ -235,6 +240,45 @@ export interface ServerType {
 
 export interface ServerRegion {
   name: string
+}
+
+// RDS
+export interface RDSFilters {
+  rds_id: string;
+}
+
+export interface RDSStatus {
+  rds_id: number;
+  name: string;
+  last_activity: Date;
+  status: string;
+  activity_data: {[metric: string]: number};
+}
+
+export interface RDSStatusFilters {
+  region: string | null,
+  instance_class: string | null
+}
+
+
+export interface RDSHistory extends Partial<PageNumberPaginationParams> {
+  rds: string,
+  register_datetime: Date,
+  status: string,
+  metric_type: string,
+  metric_value: number,
+}
+
+export interface RDSHistoryFilters extends Partial<PageNumberPaginationParams>{
+  rds_id: string;
+  metric_type?: string;
+  sort?: string;
+  register_datetime_before?: Date | null;
+  register_datetime_after?: Date | null;
+}
+
+export interface RDSType {
+  instance_class: string
 }
 
 // Smart Retail
