@@ -35,11 +35,11 @@ const RDSCard = (rdsStatus: RDSStatus) => {
     transition duration-300 shadow-md dark:border-gray-700 hover:shadow-lg"
       href={`/monitor/services/rds/${rds_id}`}
     >
-      {status == "running" && (
+      {status == "available" && (
         <span className="absolute right-6 animate-ping inline-flex h-2 w-2 rounded-full bg-green-600 opacity-100"></span>
       )}
       <div className="flex flex-col gap-2">
-        <div className="flex flex-col h-20 justify-center mb-2">
+        <div className="flex flex-col h-10 justify-center mt-2">
           <h3 className="text-2xl font-bold">
             {capitalize(name.split(splitter).join(" "))}
           </h3>
@@ -63,12 +63,16 @@ const RDSCard = (rdsStatus: RDSStatus) => {
         </div>
         <div className="text-lg">
           <div>
-            <span>Uso de CPU: </span>
-            {activity_data["Uso de CPU"] ? (
-              <span>{activity_data["Uso de CPU"].toFixed(2) + "%"}</span>
-            ) : (
-              <span>{"0%"}</span>
-            )}
+            <span>Espacio disponible: </span>
+            <span>
+              {(activity_data["Espacio disponible"] / 1e9).toFixed(2) + " GB"}
+            </span>
+          </div>
+          <div>
+            <span>RAM disponible: </span>
+            <span>
+              {(activity_data["RAM disponible"] / 1e9).toFixed(2) + " GB"}
+            </span>
           </div>
           <div>
             {activity_data["Conexiones"] && (
