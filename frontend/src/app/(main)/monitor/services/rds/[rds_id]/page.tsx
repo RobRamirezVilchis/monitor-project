@@ -279,7 +279,7 @@ function ChartTooltip({ label, payload }: ChartTooltipProps) {
   return (
     <div>
       {payload.length && (
-        <div className="bg-white p-4 rounded-md shadow-md">
+        <div className="bg-white dark:bg-gray-700 p-4 rounded-md shadow-md">
           <p className="font-bold">{metric_date}</p>
           <span>{metric_name}: </span>
           <span>{metric_value}</span>
