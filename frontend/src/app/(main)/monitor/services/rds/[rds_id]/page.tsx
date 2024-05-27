@@ -41,7 +41,7 @@ const capitalize = (text: string) => {
 };
 
 const RDSPage = ({ params }: { params: { rds_id: string } }) => {
-  const [plotMetric, setPlotMetric] = useState("Espacio disponible");
+  const [plotMetric, setPlotMetric] = useState("Uso de CPU");
 
   const currentDate = new Date();
   let yesterday = new Date();

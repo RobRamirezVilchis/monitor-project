@@ -63,10 +63,8 @@ const RDSCard = (rdsStatus: RDSStatus) => {
         </div>
         <div className="text-md bg-gray-200 dark:bg-gray-700 p-3 rounded-md">
           <div>
-            <span>Espacio disponible: </span>
-            <span>
-              {(activity_data["Espacio disponible"] / 1e9).toFixed(2) + " GB"}
-            </span>
+            <span>Uso de CPU: </span>
+            <span>{activity_data["Uso de CPU"].toFixed(2) + "%"}</span>
           </div>
           <div>
             <span>RAM disponible: </span>
