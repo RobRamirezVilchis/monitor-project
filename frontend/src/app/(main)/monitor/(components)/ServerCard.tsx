@@ -38,7 +38,7 @@ const ServerCard = (serverStatus: ServerStatus) => {
         <span className="absolute right-6 animate-ping inline-flex h-2 w-2 rounded-full bg-green-600 opacity-100"></span>
       )}
       <div className="flex flex-col gap-2">
-        <div className="flex flex-col h-20 justify-center mb-2">
+        <div className="flex flex-col h-16 justify-center mb-2">
           <h3 className="text-2xl font-bold">
             {server_name.split(splitter).join(" ")}
           </h3>
@@ -61,7 +61,7 @@ const ServerCard = (serverStatus: ServerStatus) => {
           </svg>
           <p className="text-sm ml-1">{timeAgo}</p>
         </div>
-        <div className="text-lg">
+        <div className="text-md bg-gray-200 p-3 rounded-md">
           <div>
             <span>Uso de CPU: </span>
             {activity_data["Uso de CPU"] ? (
