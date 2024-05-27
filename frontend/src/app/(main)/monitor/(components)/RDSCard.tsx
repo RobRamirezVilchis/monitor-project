@@ -61,7 +61,7 @@ const RDSCard = (rdsStatus: RDSStatus) => {
           </svg>
           <p className="text-sm ml-1">{timeAgo}</p>
         </div>
-        <div className="text-md bg-gray-200 p-3 rounded-md">
+        <div className="text-md bg-gray-200 dark:bg-gray-700 p-3 rounded-md">
           <div>
             <span>Espacio disponible: </span>
             <span>

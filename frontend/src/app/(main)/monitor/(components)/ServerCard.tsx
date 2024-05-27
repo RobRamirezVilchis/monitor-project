@@ -42,7 +42,7 @@ const ServerCard = (serverStatus: ServerStatus) => {
           <h3 className="text-2xl font-bold">
             {server_name.split(splitter).join(" ")}
           </h3>
-          <p className="text-gray-500 ">{aws_id}</p>
+          <p className="text-gray-500">{aws_id}</p>
         </div>
         <div className="flex items-center">
           <svg
@@ -61,7 +61,7 @@ const ServerCard = (serverStatus: ServerStatus) => {
           </svg>
           <p className="text-sm ml-1">{timeAgo}</p>
         </div>
-        <div className="text-md bg-gray-200 p-3 rounded-md">
+        <div className="text-md bg-gray-200 dark:bg-gray-700 p-3 rounded-md">
           <div>
             <span>Uso de CPU: </span>
             {activity_data["Uso de CPU"] ? (
