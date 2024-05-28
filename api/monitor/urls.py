@@ -4,6 +4,7 @@ from . import apis
 
 
 urlpatterns = [
+    path("deployments/", apis.DeploymentList.as_view(), name="deployments"),
     path("driving/",
          include(([
              path("status/", apis.UnitStatusList.as_view(), name="status"),
@@ -104,6 +105,12 @@ urlpatterns = [
          ),
     path("servers/",
          include(([
+             path("list/", apis.ServerList.as_view(), name="list"),
+             path("projects/", apis.ProjectsAPI.as_view(), name="projects"),
+             path("server-projects/",
+                  apis.ServerProjectsAPI.as_view(), name="projects"),
+             path("new-project/", apis.CreateProjectAPI.as_view(),
+                  name="create-project"),
              path("status/", apis.ServerStatusListAPI.as_view(), name="status"),
              path("metric-keys/", apis.ServerMetricsAPI.as_view(), name="metrics"),
              path("regions/", apis.ServerRegionsAPI.as_view(), name="regions"),
@@ -119,6 +126,7 @@ urlpatterns = [
          ], "servers"))),
     path("rds/",
          include(([
+             path("list/", apis.RDSList.as_view(), name="list"),
              path("status/", apis.RDSStatusListAPI.as_view(), name="status"),
              path("metric-keys/", apis.RDSMetricsAPI.as_view(), name="metrics"),
              path("regions/", apis.ServerRegionsAPI.as_view(), name="regions"),

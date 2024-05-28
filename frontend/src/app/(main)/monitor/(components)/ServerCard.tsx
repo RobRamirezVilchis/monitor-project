@@ -5,7 +5,13 @@ import { ServerStatus } from "@/api/services/monitor/types";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 
-const ServerCard = (serverStatus: ServerStatus) => {
+const ServerCard = ({
+  serverStatus,
+  projects,
+}: {
+  serverStatus: ServerStatus;
+  projects: string[];
+}) => {
   const [isHovering, setIsHovering] = useState(false);
   const router = useRouter();
 
@@ -30,7 +36,7 @@ const ServerCard = (serverStatus: ServerStatus) => {
   let splitter = new RegExp("_|-", "g");
   return (
     <Link
-      className="relative pb-6 w-72 md:max-lg:w-52 h-60 md:max-lg:h-72 rounded-lg p-6 border-2 
+      className="group relative pb-6 w-72 md:max-lg:w-52 h-60 md:max-lg:h-72 rounded-lg p-6 border-2 
     transition duration-300 shadow-md dark:border-gray-700 hover:shadow-lg"
       href={`/monitor/services/servers/${server_id}`}
     >
@@ -44,6 +50,7 @@ const ServerCard = (serverStatus: ServerStatus) => {
           </h3>
           <p className="text-gray-500">{aws_id}</p>
         </div>
+
         <div className="flex items-center">
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -61,7 +68,7 @@ const ServerCard = (serverStatus: ServerStatus) => {
           </svg>
           <p className="text-sm ml-1">{timeAgo}</p>
         </div>
-        <div className="text-md bg-gray-200 dark:bg-gray-700 p-3 rounded-md">
+        <div className="text-md bg-gray-200 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 p-3 rounded-md">
           <div>
             <span>Uso de CPU: </span>
             {activity_data["Uso de CPU"] ? (
@@ -83,6 +90,24 @@ const ServerCard = (serverStatus: ServerStatus) => {
           </div>
         </div>
       </div>
+      {projects.length != 0 && (
+        <div
+          className="z-50 absolute invisible opacity-0 bottom-full p-4 w-52 ml-4 mb-2 bg-gray-600 text-white rounded-lg shadow-lg 
+      transition-opacity duration-300 delay-200 ease-in-out group-hover:visible group-hover:opacity-100"
+        >
+          <p className="font-bold mb-2 opacity-60">Proyectos</p>
+          <div className="flex flex-wrap gap-2">
+            {projects.map((name, index) => (
+              <div
+                key={index}
+                className="border font-semibold border-gray-200 p-1 px-2 rounded-xl w-fit"
+              >
+                {name}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     </Link>
   );
 };

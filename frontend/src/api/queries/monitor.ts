@@ -1,7 +1,19 @@
 import { createQuery } from "../helpers/createQuery";
-import { getUnits, getDevices, getUnitHistory, getDrivingSeverityCount, getUnitLastStatusChange, getDeviceHistory, getIndustrySeverityCount, getUnitStatus, getDeviceStatus, getSafeDrivingClients, getIndustryClients, getDeviceLastStatusChange, getIndustryCameraDisconnections, getUnitLastActiveStatus, getUnitSeverityHistory, getSafeDrivingAreaPlotData, getIndustryAreaPlotData, getDrivingLastUpdate, getIndustryLastUpdate, getDeviceSeverityHistory, getDeviceLogs, getDeviceWifiStatus, getUnitLogs, getServersStatus, getServerStatus, getServerHistory, getMetricsKeys, getServerMetricPlotData, getServerRegions, getServerTypes, getRetailDeviceStatus, getSmartRetailSeverityCount, getRetailStatus, getRetailDeviceLastStatusChange, getRetailDeviceLogs, getRetailDeviceHistory, getRetailDeviceSeverityHistory, getSmartRetailAreaPlotData, getSmartRetailClients, getUnitReportContent, getRDSStatus, getAllRDSStatus, getRDSHistory, getRDSMetricPlotData, getRDSMetricsKeys, getRDSRegions, getRDSTypes } from "../services/monitor";
+import { getUnits, getDevices, getUnitHistory, getDrivingSeverityCount, getUnitLastStatusChange, getDeviceHistory, getIndustrySeverityCount, getUnitStatus, getDeviceStatus, getSafeDrivingClients, getIndustryClients, getDeviceLastStatusChange, getIndustryCameraDisconnections, getUnitLastActiveStatus, getUnitSeverityHistory, getSafeDrivingAreaPlotData, getIndustryAreaPlotData, getDrivingLastUpdate, getIndustryLastUpdate, getDeviceSeverityHistory, getDeviceLogs, getDeviceWifiStatus, getUnitLogs, getServersStatus, getServerStatus, getServerHistory, getMetricsKeys, getServerMetricPlotData, getServerRegions, getServerTypes, getRetailDeviceStatus, getSmartRetailSeverityCount, getRetailStatus, getRetailDeviceLastStatusChange, getRetailDeviceLogs, getRetailDeviceHistory, getRetailDeviceSeverityHistory, getSmartRetailAreaPlotData, getSmartRetailClients, getUnitReportContent, getRDSStatus, getAllRDSStatus, getRDSHistory, getRDSMetricPlotData, getRDSMetricsKeys, getRDSRegions, getRDSTypes, getAllRDS, getAllServers, getDeployments, getServersProjects, getProjects } from "../services/monitor";
 import { AreaPlotFilters, DeviceFilters, UnitSeverityHistoryFilters, UnitFilters, DeviceSeverityHistoryFilters, DeviceLogsFilters, UnitLogsFilters, ServerHistoryFilters, ServerStatusFilters, RetailDeviceSeverityHistoryFilters, RDSStatusFilters, RDSFilters, RDSHistoryFilters } from "../services/monitor/types";
 import defaultQueryClient from "../clients/defaultQueryClient";
+
+
+export const useDeploymentsQuery = createQuery({
+  queryPrimaryKey: "deployments",
+  //queryKeyVariables: (vars: UsersFilters) => vars ? [vars] : [],
+  queryFn: (ctx, vars) => getDeployments({ signal: ctx.signal }),
+  cacheTime: 1000 * 60 * 5,  // 5 minutes
+  staleTime: 1000 * 60 * 3,  // 3 minutes
+  keepPreviousData: true,
+  queryClient: defaultQueryClient,
+});
+
 
 // Safe Driving API ----------------------------------------------------------
 
@@ -277,7 +289,17 @@ export const useDeviceLogsQuery = createQuery({
   queryClient: defaultQueryClient,
 });
 
-// Servers
+// RDS
+export const useAllRDSQuery = createQuery({
+  queryPrimaryKey: "all-rds-query",
+  queryFn: (ctx) => getAllRDS({ signal: ctx.signal }),
+  cacheTime: 1000 * 60 * 5,  // 5 minutes
+  staleTime: 1000 * 60 * 3,  // 3 minutes
+  keepPreviousData: true,
+  queryClient: defaultQueryClient,
+});
+
+
 export const useAllRDSStatusQuery = createQuery({
   queryPrimaryKey: "all-rds-status",
   queryKeyVariables: (vars: RDSStatusFilters) => vars ? [vars] : [],
@@ -350,7 +372,35 @@ export const useRDSTypesQuery = createQuery({
   queryClient: defaultQueryClient,
 });
 
-// RDS
+// Servers
+export const useAllServersQuery = createQuery({
+  queryPrimaryKey: "all-servers-query",
+  queryFn: (ctx) => getAllServers({ signal: ctx.signal }),
+  cacheTime: 1000 * 60 * 5,  // 5 minutes
+  staleTime: 1000 * 60 * 3,  // 3 minutes
+  keepPreviousData: true,
+  queryClient: defaultQueryClient,
+});
+
+export const useProjectsQuery = createQuery({
+  queryPrimaryKey: "projects",
+  queryFn: (ctx) => getProjects({ signal: ctx.signal }),
+  cacheTime: 1000 * 60 * 5,  // 5 minutes
+  staleTime: 1000 * 60 * 3,  // 3 minutes
+  keepPreviousData: true,
+  queryClient: defaultQueryClient,
+});
+
+export const useServersProjectsQuery = createQuery({
+  queryPrimaryKey: "servers-projects",
+  queryFn: (ctx) => getServersProjects({ signal: ctx.signal }),
+  cacheTime: 1000 * 60 * 5,  // 5 minutes
+  staleTime: 1000 * 60 * 3,  // 3 minutes
+  keepPreviousData: true,
+  queryClient: defaultQueryClient,
+});
+
+
 export const useServersStatusQuery = createQuery({
   queryPrimaryKey: "servers_status",
   queryKeyVariables: (vars: ServerStatusFilters) => vars ? [vars] : [],

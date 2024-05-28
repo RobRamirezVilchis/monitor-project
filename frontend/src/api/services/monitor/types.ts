@@ -1,5 +1,9 @@
 import { Id, PageNumberPaginationParams } from "../../types";
 
+export interface Deployment {
+  name: string;
+}
+
 export interface Unit{
   name: string;
 }
@@ -13,6 +17,13 @@ export interface NewClientData{
   keyname: string,
   api_username: string,
   api_password: string,
+}
+
+export interface NewProjectData {
+  name: string,
+  servers: string[],
+  database_id: number | null,
+  deployment: string
 }
 
 export interface UnitStatus {
@@ -191,6 +202,19 @@ export interface UnitLogs {
 
 
 // Servers
+export interface Server {
+  aws_id: string,
+  name: string,
+}
+
+export interface Project {
+  name: string,
+}
+
+export interface ServerProject {
+  server_id: number;
+  projects: string[]
+}
 
 export interface ServerFilters {
   server_id: string;
@@ -245,6 +269,11 @@ export interface ServerRegion {
 // RDS
 export interface RDSFilters {
   rds_id: string;
+}
+
+export interface RDS {
+  id: string,
+  name: string,
 }
 
 export interface RDSStatus {

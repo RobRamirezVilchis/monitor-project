@@ -1,8 +1,23 @@
-import { UnitStatus, SeverityCount, UnitHistory, DeviceStatus, UnitFilters, LastStatusChange, DeviceFilters, DeviceHistory, Client, CameraDisconnection, LastActiveStatus, SeverityHistory, AreaPlotData, AreaPlotFilters, LastUpdate, DeviceLogsFilters, DeviceLogs, DeviceWifiStatus, UnitLogsFilters, UnitLogs, NewClientData, ServerStatus, ServerHistoryFilters, ServerHistory, MetricsKeys, ServerRegion, ServerType, ServerStatusFilters, RetailDeviceStatus, RetailDeviceHistory, UnitReportContent, RDSStatusFilters, RDSStatus, RDSHistoryFilters, RDSHistory, RDSType, RDSFilters } from "./types";
+import { UnitStatus, SeverityCount, UnitHistory, DeviceStatus, UnitFilters, LastStatusChange, DeviceFilters, DeviceHistory, Client, CameraDisconnection, LastActiveStatus, SeverityHistory, AreaPlotData, AreaPlotFilters, LastUpdate, DeviceLogsFilters, DeviceLogs, DeviceWifiStatus, UnitLogsFilters, UnitLogs, NewClientData, ServerStatus, ServerHistoryFilters, ServerHistory, MetricsKeys, ServerRegion, ServerType, ServerStatusFilters, RetailDeviceStatus, RetailDeviceHistory, UnitReportContent, RDSStatusFilters, RDSStatus, RDSHistoryFilters, RDSHistory, RDSType, RDSFilters, RDS, Server, Deployment, NewProjectData, ServerProject, Project } from "./types";
 import { Id, OptionallyPaginated, Paginated } from "@/api/types";
 import { Role, User } from "../auth/types";
 import api from "../..";
 import http from "@/api/http";
+
+
+export async function getDeployments(config?: Parameters<typeof http.get>[1]) {
+
+  const resp = await http.get<Deployment[]>(
+    api.endpoints.monitor.deployments,
+    {
+      ...config,
+    }
+  );
+  return resp.data;
+
+}
+
+
 
 // Safe Driving API ----------------------------------------------------------
 
@@ -408,6 +423,42 @@ export async function getDeviceLogs(
 
 
 // Servers
+export async function getAllServers(
+  config?: Parameters<typeof http.get>[1]
+) {
+    const resp = await http.get<Server[]>(
+      api.endpoints.monitor.servers.list,
+      {
+        ...config,
+      }
+    );
+    return resp.data;
+}
+
+export async function getProjects(
+  config?: Parameters<typeof http.get>[1]
+) {
+    const resp = await http.get<Project[]>(
+      api.endpoints.monitor.servers.projects,
+      {
+        ...config,
+      }
+    );
+    return resp.data;
+}
+
+export async function getServersProjects(
+  config?: Parameters<typeof http.get>[1]
+) {
+    const resp = await http.get<ServerProject[]>(
+      api.endpoints.monitor.servers.serverProjects,
+      {
+        ...config,
+      }
+    );
+    return resp.data;
+}
+
 export async function getServersStatus(
   filters: ServerStatusFilters,
   config?: Parameters<typeof http.get>[1]
@@ -504,6 +555,18 @@ export async function getMetricsKeys(
 }
 
 // RDS
+export async function getAllRDS(
+  config?: Parameters<typeof http.get>[1]
+) {
+    const resp = await http.get<RDS[]>(
+      api.endpoints.monitor.rds.list,
+      {
+        ...config,
+      }
+    );
+    return resp.data;
+}
+
 export async function getAllRDSStatus(
   filters: RDSStatusFilters,
   config?: Parameters<typeof http.get>[1]
@@ -737,3 +800,16 @@ export async function getSmartRetailClients(config?: Parameters<typeof http.get>
 }
 
 
+export async function addNewProject(
+  data: NewProjectData,
+  config?: Parameters<typeof http.post>[2]
+) {
+  
+    const resp = await http.post<NewProjectData>(
+      api.endpoints.monitor.servers.newProject,
+      data,
+      config
+    );
+    return resp.data;
+
+}

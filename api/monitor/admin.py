@@ -288,6 +288,8 @@ admin.site.register(GxStatus, GxStatusAdmin)
 admin.site.register(Alert, AlertAdmin)
 admin.site.register(SeverityCount, SeverityCountAdmin)
 
+admin.site.register(Project)
+
 admin.site.register(Server)
 admin.site.register(ServerMetric)
 admin.site.register(ServerStatus, ServerStatusAdmin)

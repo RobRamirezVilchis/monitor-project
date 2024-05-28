@@ -48,6 +48,7 @@ const api = {
       }
     },
     monitor: {
+      deployments: "api/v1/monitor/deployments/",
       driving: {
         clients: "api/v1/monitor/driving/clients/",
         addClient: "api/v1/monitor/driving/clients/create/",
@@ -94,6 +95,10 @@ const api = {
 
       },
       servers: {
+        list: "api/v1/monitor/servers/list/",
+        serverProjects: "api/v1/monitor/servers/server-projects/",
+        projects: "api/v1/monitor/servers/projects/",
+        newProject: "api/v1/monitor/servers/new-project/",
         status: "api/v1/monitor/servers/status/",
         metricsKeys: "api/v1/monitor/servers/metric-keys/",
         serverTypes: "api/v1/monitor/servers/types/",
@@ -102,6 +107,7 @@ const api = {
         serverHistory: (device_id: DeviceId) => `api/v1/monitor/servers/server/${device_id}/history/`,
       },
       rds: {
+        list: "api/v1/monitor/rds/list/",
         status: "api/v1/monitor/rds/status/",
         RDSMetricsKeys: "api/v1/monitor/rds/metric-keys/",
         RDSTypes: "api/v1/monitor/rds/types/",

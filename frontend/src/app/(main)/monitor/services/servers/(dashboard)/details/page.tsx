@@ -1,8 +1,10 @@
 "use client";
 
 import {
+  useProjectsQuery,
   useServerRegionsQuery,
   useServerTypesQuery,
+  useServersProjectsQuery,
   useServersStatusQuery,
 } from "@/api/queries/monitor";
 import ServerCard from "../../../../(components)/ServerCard";
@@ -16,6 +18,7 @@ const ServersDetailPage = () => {
   const [nameInput, setNameInput] = useState<string>("");
 
   const [serverType, setServerType] = useState<string | null>(null);
+  const [projectFilter, setProject] = useState<string | null>(null);
   const [serverRegion, setServerRegion] = useState<string | null>(null);
 
   const serversStatusQuery = useServersStatusQuery({
@@ -25,6 +28,19 @@ const ServersDetailPage = () => {
     },
   });
   const serversStatus = serversStatusQuery.data;
+
+  const serverProjectsData = useServersProjectsQuery({}).data;
+
+  let serverProjects: { [id: number]: string[] } = {};
+  if (serverProjectsData) {
+    for (const project of serverProjectsData) {
+      serverProjects[project.server_id] = project.projects;
+    }
+  }
+
+  const projects = useProjectsQuery({}).data?.map(
+    (obj, index) => `${index + 1}. ${obj.name}`
+  );
 
   const serverTypesQuery = useServerTypesQuery({});
   const serverTypes = serverTypesQuery.data?.map((data) => data.server_type);
@@ -57,7 +73,7 @@ const ServersDetailPage = () => {
 
   return (
     <section>
-      <div className="md:flex flex-wrap space-y-2 sm:space-y-0 gap-6 mb-4">
+      <div className="md:flex flex-wrap space-y-2 sm:space-y-0 gap-6 mb-4 items-center">
         <TextInput
           className="md:flex gap-3 items-center "
           styles={{
@@ -67,59 +83,88 @@ const ServersDetailPage = () => {
           value={nameInput}
           onChange={(event) => setNameInput(event.currentTarget.value)}
         />
-        <Select
-          className="md:flex gap-3 items-center"
-          styles={{
-            label: { fontSize: 18 },
-          }}
-          label="Filtrar por región:"
-          placeholder="Todas"
-          data={serverRegions}
-          value={serverRegion}
-          onChange={(value: string | null) => {
-            router.push(
-              value
-                ? "/monitor/services/servers/details/?" +
-                    createQueryString("region", value)
-                : "/monitor/services/servers/details/?" +
-                    removeQueryParam("region")
-            );
-            setServerRegion(value);
-          }}
-        ></Select>
-        <Select
-          className="md:flex gap-3 items-center"
-          styles={{
-            label: { fontSize: 18 },
-          }}
-          label="Filtrar por tamaño:"
-          placeholder="Todos"
-          data={serverTypes}
-          value={serverType}
-          onChange={(value: string | null) => {
-            router.push(
-              value
-                ? "/monitor/servers/details/?" +
-                    createQueryString("type", value)
-                : "/monitor/servers/details/?" + removeQueryParam("type")
-            );
-            setServerType(value);
-          }}
-        ></Select>
+        <div className="md:flex gap-2">
+          <p className="text-lg mt-1">Filtros:</p>
+          <Select
+            className="md:flex gap-3 items-center"
+            styles={{
+              label: { fontSize: 18 },
+            }}
+            placeholder="Región"
+            data={serverRegions}
+            value={serverRegion}
+            onChange={(value: string | null) => {
+              router.push(
+                value
+                  ? "/monitor/services/servers/details/?" +
+                      createQueryString("region", value)
+                  : "/monitor/services/servers/details/?" +
+                      removeQueryParam("region")
+              );
+              setServerRegion(value);
+            }}
+          ></Select>
+          <Select
+            className="md:flex gap-3 items-center"
+            styles={{
+              label: { fontSize: 18 },
+            }}
+            placeholder="Tamaño"
+            data={serverTypes}
+            value={serverType}
+            onChange={(value: string | null) => {
+              router.push(
+                value
+                  ? "/monitor/services/servers/details/?" +
+                      createQueryString("type", value)
+                  : "/monitor/services/servers/details/?" +
+                      removeQueryParam("type")
+              );
+              setServerType(value);
+            }}
+          ></Select>
+          <Select
+            className="md:flex gap-3 items-center"
+            styles={{
+              label: { fontSize: 18 },
+            }}
+            placeholder="Proyecto"
+            data={projects}
+            value={projectFilter}
+            onChange={(value: string | null) => {
+              router.push(
+                value
+                  ? "/monitor/services/servers/details/?" +
+                      createQueryString("project", value)
+                  : "/monitor/services/servers/details/?" +
+                      removeQueryParam("project")
+              );
+              setProject(value);
+            }}
+          ></Select>
+        </div>
       </div>
-      <div className="flex flex-row gap-4 flex-wrap">
-        {serversStatus?.map(
-          (serverStatus) =>
-            serverStatus.server_name
-              .toLowerCase()
-              .includes(nameInput.toLowerCase().replace(" ", "_")) && (
-              <ServerCard
-                key={serverStatus.server_id}
-                {...serverStatus}
-              ></ServerCard>
-            )
-        )}
-      </div>
+      {serverProjects && (
+        <div className="flex flex-row gap-4 flex-wrap">
+          {serversStatus?.map(
+            (serverStatus) =>
+              serverStatus.server_name
+                .toLowerCase()
+                .includes(nameInput.toLowerCase().replace(" ", "_")) &&
+              (projectFilter == null ||
+                serverProjects[serverStatus.server_id].includes(
+                  projectFilter.split(".")[1].slice(1)
+                )) &&
+              !(serverProjects[serverStatus.server_id] == null) && (
+                <ServerCard
+                  key={serverStatus.server_id}
+                  projects={serverProjects[serverStatus.server_id]}
+                  serverStatus={serverStatus}
+                ></ServerCard>
+              )
+          )}
+        </div>
+      )}
     </section>
   );
 };

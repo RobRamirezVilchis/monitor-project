@@ -252,3 +252,20 @@ def create_unit_trip(unit: Unit, start_datetime: datetime, success: bool = False
         success=success
     )
     return unit_trip
+
+
+# Projects --------------------------------------------------------
+def create_project(name: str, server_aws_ids: list, deployment_name: str, database_id: str = None):
+    servers = [Server.objects.get(aws_id=aws_id) for aws_id in server_aws_ids]
+    deployment = Deployment.objects.get(name=deployment_name)
+
+    project = Project(
+        name=name, deployment=deployment)
+
+    print(database_id)
+    if database_id:
+        project.database = RDS.objects.get(id=database_id)
+
+    project.save()
+    project.server.set(servers)
+    project.save()

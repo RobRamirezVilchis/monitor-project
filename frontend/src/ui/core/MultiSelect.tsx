@@ -1,19 +1,16 @@
-import { 
+import {
   MultiSelect as _MantineMultiSelect,
   type MultiSelectProps as _MultiSelectProps,
 } from "@mantine/core";
 import { FieldValues } from "react-hook-form";
 
-import _MultiSelect from "../hook-form/core/MultiSelect";
 import type { BaseInputProps } from "../types";
+import _MultiSelect from "../hook-form/core/MultiSelect";
 
-export type MultiSelectProps<
-  TFieldValues extends FieldValues = FieldValues,
-> = BaseInputProps<TFieldValues, _MultiSelectProps>;
+export type MultiSelectProps<TFieldValues extends FieldValues = FieldValues> =
+  BaseInputProps<TFieldValues, _MultiSelectProps>;
 
-const MultiSelect = <
-  TFieldValues extends FieldValues = FieldValues,
->({
+const MultiSelect = <TFieldValues extends FieldValues = FieldValues>({
   name,
   control,
   rules,
@@ -22,9 +19,17 @@ const MultiSelect = <
   ...props
 }: MultiSelectProps<TFieldValues>) => {
   if (control && name)
-    return <_MultiSelect name={name} control={control} rules={rules} shouldUnregister={shouldUnregister} inputRef={inputRef} {...props} />;
-  else
-    return <_MantineMultiSelect name={name} ref={inputRef} {...props} />;
-}
+    return (
+      <_MultiSelect
+        name={name}
+        control={control}
+        rules={rules}
+        shouldUnregister={shouldUnregister}
+        inputRef={inputRef}
+        {...props}
+      />
+    );
+  else return <_MantineMultiSelect name={name} ref={inputRef} {...props} />;
+};
 
 export default MultiSelect;

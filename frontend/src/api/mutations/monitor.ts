@@ -1,5 +1,5 @@
 import { createMutation } from "../helpers/createMutation";
-import { addIndustryClient, addSafeDrivingClient, addSmartRetailClient, setDeviceAsInactive, setUnitAsInactive } from "../services/monitor";
+import { addIndustryClient, addNewProject, addSafeDrivingClient, addSmartRetailClient, setDeviceAsInactive, setUnitAsInactive } from "../services/monitor";
 
 
 export const useAddSDClientMutation = createMutation({
@@ -33,3 +33,7 @@ export const useSetDeviceInactiveMutation = createMutation({
 
 });
 
+export const useNewProjectMutation = createMutation({
+  mutationKey: ["new-project"],
+  mutationFn: (data: Parameters<typeof addNewProject>[0]) => addNewProject(data),
+})

@@ -292,6 +292,16 @@ class ServerRegion(models.Model):
     name = models.CharField(max_length=50)
 
 
+class RDS(models.Model):
+    name = models.CharField(max_length=50)
+    instance_class = models.CharField(max_length=50)
+    region = models.ForeignKey(
+        ServerRegion, on_delete=models.CASCADE, null=True, blank=True)
+
+    def __str__(self):
+        return f'{self.id} - {self.name}'
+
+
 class Server(models.Model):
     name = models.CharField(max_length=50)
     server_type = models.CharField(max_length=50)
@@ -301,6 +311,14 @@ class Server(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class Project(models.Model):
+    name = models.CharField(max_length=50)
+    server = models.ManyToManyField(Server, related_name="projects")
+    database = models.ForeignKey(
+        RDS, on_delete=models.DO_NOTHING, null=True, blank=True)
+    deployment = models.ForeignKey(Deployment, on_delete=models.DO_NOTHING)
 
 
 class ServerMetric(models.Model):
@@ -340,16 +358,6 @@ class ServerHistory(models.Model):
 
     class Meta:
         verbose_name_plural = "Server histories"
-
-
-class RDS(models.Model):
-    name = models.CharField(max_length=50)
-    instance_class = models.CharField(max_length=50)
-    region = models.ForeignKey(
-        ServerRegion, on_delete=models.CASCADE, null=True, blank=True)
-
-    def __str__(self):
-        return f'{self.id} - {self.name}'
 
 
 class RDSStatus(models.Model):

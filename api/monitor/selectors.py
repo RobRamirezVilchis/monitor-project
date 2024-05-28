@@ -6,6 +6,10 @@ from datetime import datetime, timedelta
 from django.db.models import Subquery
 
 
+def get_deployments():
+    return Deployment.objects.all()
+
+
 def get_unit(unit_id):
     return Unit.objects.get(id=unit_id)
 
@@ -534,6 +538,14 @@ def get_or_create_server(aws_id: str, defaults: dict):
     return server
 
 
+def get_all_servers():
+    return Server.objects.all()
+
+
+def get_projects():
+    return Project.objects.all()
+
+
 def get_serverstatus_by_awsid(aws_id: str):
     try:
         server_status = ServerStatus.objects.get(
@@ -625,6 +637,10 @@ def get_servertypes():
     types = Server.objects.order_by(
         "server_type").values("server_type").distinct()
     return types
+
+
+def get_all_rds():
+    return RDS.objects.all()
 
 
 def get_or_create_rds(name: str, defaults: dict):

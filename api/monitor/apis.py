@@ -16,10 +16,22 @@ from rest_framework import status, filters
 import humanize.locale
 
 from .selectors import *
-from .services import get_or_create_client
+from .services import create_project, get_or_create_client
 from api.pagination import get_paginated_response, LimitOffsetPagination
 from .models import UnitStatus
 from .cron import api_login, make_request
+
+
+class DeploymentList(APIView):
+    class OutputSerializer(serializers.Serializer):
+        name = serializers.CharField()
+
+    def get(self, request, *args, **kwargs):
+        deployments = get_deployments()
+
+        output = self.OutputSerializer(deployments, many=True).data
+
+        return Response(output)
 
 
 # All gx status list
@@ -1086,6 +1098,45 @@ class SetDeviceClientAsInactiveAPI(APIView):
 
 
 # Servers ----------------------------------------------------------------------
+class ServerList(APIView):
+    class OutputSerializer(serializers.Serializer):
+        aws_id = serializers.CharField()
+        name = serializers.CharField()
+
+    def get(self, request, *args, **kwargs):
+        servers = get_all_servers()
+
+        output = self.OutputSerializer(servers, many=True).data
+
+        return Response(output)
+
+
+class ServerProjectsAPI(APIView):
+    class OutputSerializer(serializers.Serializer):
+        server_id = serializers.IntegerField(source="id")
+        projects = serializers.SlugRelatedField(
+            slug_field="name", read_only=True, many=True)
+
+    def get(self, request, *args, **kwargs):
+        servers = get_all_servers()
+
+        output = self.OutputSerializer(servers, many=True).data
+
+        return Response(output)
+
+
+class ProjectsAPI(APIView):
+    class OutputSerializer(serializers.Serializer):
+        name = serializers.CharField()
+
+    def get(self, request, *args, **kwargs):
+        projects = get_projects()
+
+        output = self.OutputSerializer(projects, many=True).data
+
+        return Response(output)
+
+
 class ServerStatusListAPI(APIView):
     class FiltersSerializer(serializers.Serializer):
         region = serializers.CharField(required=False)
@@ -1114,7 +1165,8 @@ class ServerStatusListAPI(APIView):
         all_server_status = sorted(
             all_server_status, key=lambda x: x.activity_data.get("Uso de CPU", 0), reverse=True)
 
-        output = self.OutputSerializer(all_server_status, many=True).data
+        output = self.OutputSerializer(
+            all_server_status, many=True, read_only=True).data
 
         return Response(output)
 
@@ -1212,6 +1264,20 @@ class ServerTypesAPI(APIView):
         server_types = get_servertypes()
 
         output = self.OutputSerializer(server_types, many=True).data
+
+        return Response(output)
+
+
+# RDS ---------------------------------------------------------------------------
+class RDSList(APIView):
+    class OutputSerializer(serializers.Serializer):
+        id = serializers.IntegerField()
+        name = serializers.CharField()
+
+    def get(self, request, *args, **kwargs):
+        rds = get_all_rds()
+
+        output = self.OutputSerializer(rds, many=True).data
 
         return Response(output)
 
@@ -1750,5 +1816,30 @@ class SetRetailDeviceAsInactiveAPI(APIView):
             device_status.save()
         except:
             return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+        return Response(status=status.HTTP_200_OK)
+
+
+# Projects
+class CreateProjectAPI(APIView):
+    class InputSerializer(serializers.Serializer):
+        name = serializers.CharField()
+        servers = serializers.JSONField()
+        database_id = serializers.IntegerField(required=False, allow_null=True)
+        deployment = serializers.CharField()
+
+    def post(self, request, *args, **kwargs):
+        serializer = self.InputSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        args = {"name": serializer.validated_data["name"],
+                "server_aws_ids": serializer.validated_data["servers"],
+                "deployment_name": serializer.validated_data["deployment"]}
+
+        if serializer.validated_data.get("database_id"):
+            args["database_id"] = serializer.validated_data["database_id"]
+        project = create_project(
+            **args
+        )
 
         return Response(status=status.HTTP_200_OK)
