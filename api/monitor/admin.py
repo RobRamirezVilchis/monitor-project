@@ -243,10 +243,14 @@ class SeverityCountAdmin(admin.ModelAdmin):
 class ServerStatusAdmin(admin.ModelAdmin):
     list_display = (
         'server',
+        'last_launch',
         'last_activity',
         'state',
         'activity_data',
+        'active'
     )
+
+    search_fields = ('server__name',)
 
 
 class ServerHistoryAdmin(admin.ModelAdmin):
@@ -267,6 +271,13 @@ class UnitTripAdmin(admin.ModelAdmin):
     )
 
     search_fields = ('unit__name',)
+
+
+class ServerAdmin(admin.ModelAdmin):
+    list_display = (
+        'name',
+        'launch_time',
+    )
 
 
 admin.site.register(Unit, UnitAdmin)

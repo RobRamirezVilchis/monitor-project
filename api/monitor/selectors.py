@@ -539,11 +539,22 @@ def get_or_create_server(aws_id: str, defaults: dict):
 
 
 def get_all_servers():
-    return Server.objects.all()
+    return Server.objects.filter(serverstatus__active=True)
 
 
 def get_projects():
     return Project.objects.all()
+
+
+def set_servers_as_inactive():
+    from datetime import datetime, timedelta
+
+    to_inactivate = ServerStatus.objects.filter(
+        active=True, last_activity__lt=datetime.now()-timedelta(days=3))
+
+    for server_status in to_inactivate:
+        server_status.active = False
+        server_status.save()
 
 
 def get_serverstatus_by_awsid(aws_id: str):
@@ -578,7 +589,7 @@ class ServerStatusFilter(rf_filters.FilterSet):
 
 
 def get_serverstatus_list(filters=None):
-    all_server_status = ServerStatus.objects.all()
+    all_server_status = ServerStatus.objects.filter(active=True)
     return ServerStatusFilter(filters, all_server_status).qs
 
 

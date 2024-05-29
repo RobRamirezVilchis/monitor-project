@@ -1545,7 +1545,8 @@ def update_servers_status():
                     "state": state,
                     "last_launch": launch_time,
                     "last_activity": now,
-                    "activity_data": activity_data
+                    "activity_data": activity_data,
+                    "active": True,
                 })
 
             elif current_server_status == None:
@@ -1564,6 +1565,8 @@ def update_servers_status():
                     "state": state,
                     "activity_data": {}
                 })
+
+    set_servers_as_inactive()
 
 
 def update_rds_status():

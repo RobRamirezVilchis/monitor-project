@@ -337,6 +337,7 @@ class ServerStatus(models.Model):
         auto_now=False, auto_now_add=False, blank=True)
     state = models.CharField(max_length=50)
     activity_data = models.JSONField(blank=True, null=True)
+    active = models.BooleanField(default=True)
 
     def __str__(self):
         return self.server.name
