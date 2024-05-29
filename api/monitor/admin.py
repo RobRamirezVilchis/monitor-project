@@ -247,7 +247,6 @@ class ServerStatusAdmin(admin.ModelAdmin):
         'last_activity',
         'state',
         'activity_data',
-        'active'
     )
 
     search_fields = ('server__name',)
@@ -280,6 +279,33 @@ class ServerAdmin(admin.ModelAdmin):
     )
 
 
+class ELBStatusAdmin(admin.ModelAdmin):
+    list_display = (
+        'elb',
+        'last_activity',
+        'state_code',
+        'activity_data',
+    )
+
+
+class ELBHistoryAdmin(admin.ModelAdmin):
+    list_display = (
+        'elb',
+        'metric_type',
+        'metric_value',
+        'register_datetime',
+    )
+
+
+class ServerMetricAdmin(admin.ModelAdmin):
+    list_display = (
+        'name',
+        'key',
+        'statistic',
+        'service'
+    )
+
+
 admin.site.register(Unit, UnitAdmin)
 admin.site.register(UnitStatus, UnitStatusAdmin)
 admin.site.register(UnitTrip, UnitTripAdmin)
@@ -302,7 +328,7 @@ admin.site.register(SeverityCount, SeverityCountAdmin)
 admin.site.register(Project)
 
 admin.site.register(Server)
-admin.site.register(ServerMetric)
+admin.site.register(ServerMetric, ServerMetricAdmin)
 admin.site.register(ServerStatus, ServerStatusAdmin)
 admin.site.register(ServerHistory, ServerHistoryAdmin)
 admin.site.register(ServerRegion)
@@ -310,6 +336,10 @@ admin.site.register(ServerRegion)
 admin.site.register(RDS)
 admin.site.register(RDSStatus)
 admin.site.register(RDSHistory)
+
+admin.site.register(LoadBalancer)
+admin.site.register(LoadBalancerStatus, ELBStatusAdmin)
+admin.site.register(LoadBalancerHistory, ELBHistoryAdmin)
 
 admin.site.register(RetailDeviceStatus, RetailDeviceStatusAdmin)
 admin.site.register(RetailDeviceHistory, RetailDeviceHistoryAdmin)

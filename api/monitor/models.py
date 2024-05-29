@@ -324,6 +324,7 @@ class Project(models.Model):
 class ServerMetric(models.Model):
     name = models.CharField(max_length=50)
     key = models.CharField(max_length=50)
+    statistic = models.CharField(max_length=50, default='Average')
     service = models.CharField(default="", max_length=40)
 
     def __str__(self):
@@ -390,3 +391,47 @@ class RDSHistory(models.Model):
 
     class Meta:
         verbose_name_plural = "RDS histories"
+
+
+class LoadBalancer(models.Model):
+    name = models.CharField(max_length=50)
+    arn = models.TextField(max_length=50)
+    elb_type = models.CharField(max_length=50)
+    created_time = models.DateTimeField()
+    region = models.ForeignKey(
+        ServerRegion, on_delete=models.CASCADE, null=True, blank=True)
+
+    def __str__(self):
+        return self.name
+
+
+class LoadBalancerStatus(models.Model):
+    elb = models.ForeignKey(LoadBalancer, on_delete=models.CASCADE)
+    last_activity = models.DateTimeField(auto_now=False, auto_now_add=False)
+    state_code = models.CharField(max_length=50)
+    state_reason = models.CharField(max_length=50)
+    activity_data = models.JSONField(blank=True, null=True)
+
+    def __str__(self):
+        return self.elb.name
+
+    class Meta:
+        verbose_name_plural = "Load balancer status"
+
+
+class LoadBalancerHistory(models.Model):
+    elb = models.ForeignKey(LoadBalancer, on_delete=models.CASCADE)
+    register_datetime = models.DateTimeField(
+        auto_now=False, auto_now_add=False)
+    register_date = models.DateField(
+        db_index=True, auto_now=False, auto_now_add=False)
+    state_code = models.CharField(max_length=50)
+    state_reason = models.CharField(max_length=50)
+    metric_type = models.ForeignKey(ServerMetric, on_delete=models.CASCADE)
+    metric_value = models.FloatField()
+
+    def __str__(self):
+        return f'{self.elb.name} - {self.metric_type.name}'
+
+    class Meta:
+        verbose_name_plural = "Load balancer histories"

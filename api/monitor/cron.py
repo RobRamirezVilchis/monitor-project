@@ -1650,6 +1650,113 @@ def update_rds_status():
                 })
 
 
+def update_elb_status():
+    now = datetime.now(tz=pytz.timezone("UTC"))
+    server_regions = get_serverregions()
+
+    for region in server_regions:
+        utils = AWSUtils(region.name)
+        instances = utils.list_elb_instances()
+        all_metrics_data = {}
+
+        if not instances:
+            continue
+
+        metrics_to_get = get_servermetrics("elb")
+
+        for metric in metrics_to_get:
+            metric_data = utils.get_elb_metrics(
+                instances, metric.name, stat=metric.statistic)
+            all_metrics_data[metric.name] = metric_data['MetricDataResults']
+
+        for i in range(len(instances)):
+            instance = instances[i]
+
+            arn = instance.get("arn")
+            name = instance.get("name")
+            created_time = instance.get("created_time")
+            state_code = instance.get("state_code")
+            state_reason = instance.get("state_reason")
+            elb_type = instance.get("type")
+
+            current_elb_status = get_elbstatus_by_name(name)
+
+            elb = get_or_create_elb(name, defaults={
+                "region": region,
+                "arn": arn,
+                "created_time": created_time,
+                "elb_type": elb_type
+            })
+
+            activity_data = {}
+            activity = False
+
+            metrics_expected_times = [now.replace(second=0, microsecond=0)-timedelta(minutes=5),
+                                      now.replace(second=0, microsecond=0)-timedelta(minutes=10)]
+
+            for metric in metrics_to_get:
+                metric_values = all_metrics_data[metric.name][i]['Values']
+                metric_dates = all_metrics_data[metric.name][i]['Timestamps']
+
+                if len(metric_values) == 2:
+                    activity = True
+                    activity_data[metric.key] = metric_values[0]
+
+                else:
+                    if now.replace(second=0, microsecond=0)-timedelta(minutes=5) not in metric_dates:
+                        activity_data[metric.key] = 0
+                    else:
+                        activity_data[metric.key] = metric_values[0]
+
+                    for metric_time in metrics_expected_times:
+                        if metric_time not in metric_dates:
+                            metric_dates.append(metric_time)
+                            metric_values.append(0)
+
+                            print(f"Added 0 to {metric.name} {metric_time}")
+
+                for j in range(len(metric_values)):
+                    metric_date = metric_dates[j]
+                    elbhistory_args = {
+                        "elb": elb,
+                        "register_datetime": metric_date,
+                        "register_date": metric_date.date(),
+                        "state_code": state_code,
+                        "state_reason": state_reason,
+                        "metric_type": metric,
+                        "metric_value": metric_values[j],
+                    }
+                    create_elbhistory(elbhistory_args)
+
+            if activity:
+                elb_status = update_or_create_elbstatus(name, defaults={
+                    "elb": elb,
+                    "state_code": state_code,
+                    "state_reason": state_reason,
+                    "last_activity": now,
+                    "activity_data": activity_data
+                })
+
+            elif current_elb_status == None:
+                elb_status = update_or_create_elbstatus(name, defaults={
+                    "elb": elb,
+                    "state_code": state_code,
+                    "state_reason": state_reason,
+                    "last_activity": now,
+                    "activity_data": {}
+                })
+            # If the server just stopped or terminated, update the status one last time
+            # with empty activity_data and the new state
+            elif activity_data == {} and current_elb_status.activity_data != {}:
+                elb_status = update_or_create_rdsstatus(name, defaults={
+                    "elb": elb,
+                    "state_code": state_code,
+                    "state_reason": state_reason,
+                    "last_activity": now,
+                    "activity_data": {}
+                })
+
+
 # Generate daily Telegram Safe Driving Report
 def send_daily_sd_report():
     import time

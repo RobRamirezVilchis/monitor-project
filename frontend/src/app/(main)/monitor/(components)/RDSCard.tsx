@@ -61,7 +61,7 @@ const RDSCard = (rdsStatus: RDSStatus) => {
           </svg>
           <p className="text-sm ml-1">{timeAgo}</p>
         </div>
-        <div className="text-md bg-gray-200 dark:bg-gray-700 p-3 rounded-md">
+        <div className="text-md bg-gray-200 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 p-3 rounded-md">
           <div>
             <span>Uso de CPU: </span>
             <span>{activity_data["Uso de CPU"].toFixed(2) + "%"}</span>

@@ -751,6 +751,93 @@ def get_rdstypes():
     return types
 
 
+# Load Balancers ------------------------------------
+def get_or_create_elb(name: str, defaults: dict):
+    elb, created = LoadBalancer.objects.get_or_create(
+        name=name,
+        defaults=defaults
+    )
+    return elb
+
+
+def update_or_create_elbstatus(name: str, defaults: dict):
+    elb_status, created = LoadBalancerStatus.objects.update_or_create(
+        elb__name=name,
+        defaults=defaults
+    )
+    return elb_status
+
+
+def create_elbhistory(args):
+    elb_history = LoadBalancerHistory.objects.create(
+        **args
+    )
+    return elb_history
+
+
+def get_elbstatus_by_name(name: str):
+    try:
+        elb_status = LoadBalancerStatus.objects.get(
+            elb__name=name,
+        )
+    except LoadBalancerStatus.DoesNotExist:
+        return None
+
+    return elb_status
+
+
+def get_elbstatus(elb_id: str):
+    try:
+        elb_status = LoadBalancerStatus.objects.get(
+            elb_id=elb_id,
+        )
+    except LoadBalancerStatus.DoesNotExist:
+        return None
+
+    return elb_status
+
+
+class LoadBalancerStatusFilter(rf_filters.FilterSet):
+    region = rf_filters.CharFilter(field_name="rds__region__name")
+
+    class Meta:
+        model = LoadBalancerStatus
+        fields = ['elb__region']
+
+
+def get_load_balancer_status_list(filters=None):
+    all_load_balancer_status = LoadBalancerStatus.objects.all()
+    return LoadBalancerStatusFilter(filters, all_load_balancer_status).qs
+
+
+class LoadBalancerHistoryFilter(rf_filters.FilterSet):
+    register_datetime = rf_filters.DateTimeFromToRangeFilter()
+    metric_type = rf_filters.CharFilter(
+        field_name='metric_type__key', lookup_expr="icontains")
+    sort = rf_filters.OrderingFilter(
+        fields=(
+            'register_datetime',
+            'metric_type',
+            'metric_value'
+        )
+    )
+
+    class Meta:
+        model = LoadBalancerHistory
+        fields = ['register_datetime',
+                  'elb',
+                  'metric_type',
+                  'metric_value'
+                  ]
+
+
+def get_load_balancer_history(elb_id: int, filters=None):
+    logs = LoadBalancerHistory.objects.filter(
+        elb_id=elb_id).order_by('register_datetime')
+
+    return LoadBalancerHistoryFilter(filters, logs).qs
+
+
 # Retail --------------------------------------
 
 

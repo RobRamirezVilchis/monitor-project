@@ -23,8 +23,7 @@ class AWSUtils:
         self.ec2_client = self.session.client('ec2')
         self.rds_client = self.session.client(
             'rds', aws_access_key_id=key_id, aws_secret_access_key=access_key)
-        self.elb_client = self.session.client(
-            'elb', aws_access_key_id=key_id, aws_secret_access_key=access_key)
+        self.elb_client = self.session.client('elbv2')
         self.cloudwatch_db_client = self.session.client(
             'cloudwatch', aws_access_key_id=key_id, aws_secret_access_key=access_key)
         self.cloudwatch_client = self.session.client('cloudwatch')
@@ -51,21 +50,11 @@ class AWSUtils:
                 # instances.append(instance)
         return instances
 
-    def list_load_balancers(self):
-        response = self.elb_client.describe_load_balancers()
-
-        return response
-
     def list_db_instances(self):
 
         response = self.rds_client.describe_db_instances()
         instances = []
         for instance in response['DBInstances']:
-
-            name = None
-            for tag in instance.get('Tags', []):
-                if tag['Key'] == 'Name':
-                    name = tag['Value']
 
             instances.append({
                 'db_id': instance.get('DBInstanceIdentifier', ''),
@@ -75,6 +64,22 @@ class AWSUtils:
             })
             # instances.append(instance)
         return instances
+
+    def list_elb_instances(self):
+        response = self.elb_client.describe_load_balancers()
+
+        load_balancers = []
+        for elb in response.get("LoadBalancers", []):
+            load_balancers.append({
+                "arn": elb.get("LoadBalancerArn"),
+                "name": elb.get("LoadBalancerName"),
+                "created_time": elb.get("CreatedTime"),
+                "state_code": elb.get("State")['Code'],
+                "state_reason": elb.get("State").get('Reason', ""),
+                "type": elb.get("Type"),
+            })
+
+        return load_balancers
 
     def get_ec2_metrics(self, instances: List[Dict], metric_name='CPUUtilization'):
         # Establece el intervalo de tiempo para las estadísticas
@@ -153,29 +158,34 @@ class AWSUtils:
             self.logger.info(f"Metric {metric['Id']}: {metric['Values']}")
         return metric_data
 
-    def get_elb_metrics(self, elb_instances: List[Dict], metric_name: str):
+    def get_elb_metrics(self, elb_instances: List[Dict], metric_name: str, stat: str = "Average"):
         # Establece el intervalo de tiempo para las estadísticas
         end_time = datetime.datetime.now(tz=pytz.timezone('UTC'))
         start_time = end_time - datetime.timedelta(minutes=10)
         metric_query = []
 
         for instance in elb_instances:
-            metric_id = f'cpuUsage_{instance["db_id"]}'
+            metric_id = f'id_{metric_name}_{instance["arn"].split("/")[-1]}'
+            print(metric_id)
             metric_id = metric_id.replace('-', '_')
+
+            identifier = instance["arn"].split("loadbalancer/")[1]
+            print(identifier)
+
             metric_query.append({
                 'Id': metric_id,
                 'MetricStat': {
                     'Metric': {
-                        'Namespace': 'AWS/RDS',
+                        'Namespace': 'AWS/ApplicationELB',
                         'MetricName': metric_name,
                         'Dimensions': [
-                            {'Name': 'DBInstanceIdentifier',
-                                'Value': instance["db_id"]}
+                            {'Name': 'LoadBalancer',
+                                'Value': identifier}
                         ]
                     },
                     'Period': 300,  # Periodo en segundos (1 hora)
                     # Puedes cambiarlo por 'Minimum', 'Maximum', 'Sum', etc.
-                    'Stat': 'Average',
+                    'Stat': stat,
                 },
                 'ReturnData': True,
             })
@@ -183,7 +193,7 @@ class AWSUtils:
         # self.logger.debug(f"Query: {json.dumps(metric_query, indent=2)}")
 
         # Obtiene estadísticas de CPU
-        metric_data = self.cloudwatch_db_client.get_metric_data(
+        metric_data = self.cloudwatch_client.get_metric_data(
             MetricDataQueries=metric_query,
             StartTime=start_time,
             EndTime=end_time
