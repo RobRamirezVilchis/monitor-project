@@ -310,6 +310,47 @@ export interface RDSType {
   instance_class: string
 }
 
+// Load Balancers
+export interface LoadBalancerFilters {
+  elb_id: string;
+}
+
+export interface LoadBalancer {
+  id: string,
+  name: string,
+}
+
+export interface LoadBalancerStatus {
+  elb_id: number;
+  name: string;
+  last_activity: Date;
+  state_code: string;
+  activity_data: {[metric: string]: number};
+}
+
+export interface LoadBalancerStatusFilters {
+  region: string | null,
+}
+
+
+export interface LoadBalancerHistory extends Partial<PageNumberPaginationParams> {
+  elb: string,
+  register_datetime: Date,
+  status: string,
+  metric_type: string,
+  metric_value: number,
+}
+
+export interface LoadBalancerHistoryFilters extends Partial<PageNumberPaginationParams>{
+  elb_id: string;
+  metric_type?: string;
+  sort?: string;
+  register_datetime_before?: Date | null;
+  register_datetime_after?: Date | null;
+}
+
+
+
 // Smart Retail
 export interface RetailDeviceStatus {
   device_id: number,

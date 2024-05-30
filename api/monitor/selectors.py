@@ -752,6 +752,10 @@ def get_rdstypes():
 
 
 # Load Balancers ------------------------------------
+def get_all_elb():
+    return LoadBalancer.objects.all()
+
+
 def get_or_create_elb(name: str, defaults: dict):
     elb, created = LoadBalancer.objects.get_or_create(
         name=name,
@@ -786,7 +790,7 @@ def get_elbstatus_by_name(name: str):
     return elb_status
 
 
-def get_elbstatus(elb_id: str):
+def get_load_balancer_status(elb_id: str):
     try:
         elb_status = LoadBalancerStatus.objects.get(
             elb_id=elb_id,
@@ -798,7 +802,7 @@ def get_elbstatus(elb_id: str):
 
 
 class LoadBalancerStatusFilter(rf_filters.FilterSet):
-    region = rf_filters.CharFilter(field_name="rds__region__name")
+    region = rf_filters.CharFilter(field_name="elb__region__name")
 
     class Meta:
         model = LoadBalancerStatus

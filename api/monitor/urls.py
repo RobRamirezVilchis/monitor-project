@@ -139,6 +139,23 @@ urlpatterns = [
                           name="history"),
                   ], "rds")
                   )),
-         ], "rds")))
+         ], "rds"))),
+    path("load-balancers/",
+         include(([
+                  path("list/", apis.LoadBalancerList.as_view(), name="list"),
+                  path("status/", apis.LoadBalancerStatusListAPI.as_view(),
+                       name="status"),
+                  path("metric-keys/", apis.LoadBalancerMetricsAPI.as_view(),
+                       name="metrics"),
+                  path("regions/", apis.ServerRegionsAPI.as_view(), name="regions"),
+                  path("elb/<int:elb_id>/",
+                       include(([
+                           path("", apis.LoadBalancerStatusAPI.as_view(),
+                                name="status"),
+                           path("history/", apis.LoadBalancerHistoryList.as_view(),
+                                name="history"),
+                       ], "elb")
+                       )),
+                  ], "load_balancers")))
 
 ]

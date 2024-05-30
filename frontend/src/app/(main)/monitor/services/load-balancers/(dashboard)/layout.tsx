@@ -7,8 +7,12 @@ import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
 import ServicesDashboardLayout from "../../../(components)/ServicesDashboardLayout";
 
-const RDSDashboardLayout = ({ children }: { children: ReactNode }) => {
+const LoadBalancersDashboardLayout = ({
+  children,
+}: {
+  children: ReactNode;
+}) => {
   return <ServicesDashboardLayout>{children}</ServicesDashboardLayout>;
 };
 
-export default RDSDashboardLayout;
+export default LoadBalancersDashboardLayout;

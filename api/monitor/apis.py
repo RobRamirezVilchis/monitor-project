@@ -1395,6 +1395,116 @@ class RDSTypesAPI(APIView):
 
         return Response(output)
 
+# Load Balancers ---------------------------------------------
+
+
+class LoadBalancerList(APIView):
+    class OutputSerializer(serializers.Serializer):
+        id = serializers.IntegerField()
+        name = serializers.CharField()
+
+    def get(self, request, *args, **kwargs):
+        elb = get_all_elb()
+
+        output = self.OutputSerializer(elb, many=True).data
+
+        return Response(output)
+
+
+class LoadBalancerStatusListAPI(APIView):
+    class FiltersSerializer(serializers.Serializer):
+        region = serializers.CharField(required=False)
+        instance_class = serializers.CharField(required=False)
+
+    class OutputSerializer(serializers.Serializer):
+        elb_id = serializers.IntegerField()
+        name = serializers.CharField(source="elb.name")
+        last_activity = serializers.DateTimeField()
+        state_code = serializers.CharField()
+        activity_data = serializers.JSONField()
+
+    def get(self, request, *args, **kwargs):
+        filters_serializer = self.FiltersSerializer(data=request.query_params)
+        filters_serializer.is_valid(raise_exception=True)
+
+        all_elb_status = get_load_balancer_status_list(
+            filters=filters_serializer.validated_data)
+
+        output = self.OutputSerializer(all_elb_status, many=True).data
+
+        return Response(output)
+
+
+class LoadBalancerStatusAPI(APIView):
+    class OutputSerializer(serializers.Serializer):
+        elb_id = serializers.IntegerField()
+        name = serializers.CharField(source="elb.name")
+        last_activity = serializers.DateTimeField()
+        state_code = serializers.CharField()
+        state_reason = serializers.CharField()
+        activity_data = serializers.JSONField()
+
+    def get(self, request, elb_id, *args, **kwargs):
+        elb_status = get_load_balancer_status(elb_id)
+        output = self.OutputSerializer(elb_status).data
+
+        return Response(output)
+
+
+class LoadBalancerHistoryList(APIView):
+    class FiltersSerializer(serializers.Serializer):
+        register_datetime_after = serializers.DateTimeField(required=False)
+        register_datetime_before = serializers.DateTimeField(required=False)
+        sort = serializers.CharField(required=False)
+        metric_type = serializers.CharField(required=False)
+
+    class OutputSerializer(serializers.Serializer):
+        elb = serializers.CharField()
+        register_datetime = serializers.DateTimeField()
+        state_code = serializers.CharField()
+        metric_type = serializers.CharField()
+        metric_value = serializers.FloatField()
+
+    def get(self, request, elb_id, *args, **kwargs):
+
+        filters_serializer = self.FiltersSerializer(data=request.query_params)
+        filters_serializer.is_valid(raise_exception=True)
+
+        # Si no se especificó rango de fechas, regresar registros del último día
+        if not (filters_serializer.validated_data.get("register_datetime_after") or filters_serializer.validated_data.get("register_datetime_before")):
+            import datetime
+            import pytz
+
+            date_now = datetime.datetime.now()
+            end_date = date_now.astimezone(pytz.timezone("America/Mexico_City")).replace(
+                tzinfo=pytz.utc) + datetime.timedelta(hours=6)
+            start_date = end_date - timedelta(hours=1)
+
+            filters_serializer.validated_data["register_datetime_before"] = end_date
+            filters_serializer.validated_data["register_datetime_after"] = start_date
+
+        logs = get_load_balancer_history(
+            elb_id, filters=filters_serializer.validated_data)[::-1]
+
+        return get_paginated_response(
+            serializer_class=self.OutputSerializer,
+            queryset=logs,
+            request=request,
+        )
+
+
+class LoadBalancerMetricsAPI(APIView):
+    class OutputSerializer(serializers.Serializer):
+        metrics = serializers.JSONField()
+
+    def get(self, request, *args, **kwargs):
+        metrics = get_servermetrics("elb")
+
+        metrics_dict = {metric.name: metric.key for metric in metrics}
+        output = {"metrics": metrics_dict}
+
+        return Response(self.OutputSerializer(output).data)
+
 
 # Retail -----------------------------------------------
 class RetailDeviceStatusList(APIView):

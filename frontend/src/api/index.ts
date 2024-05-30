@@ -114,6 +114,14 @@ const api = {
         regions: "api/v1/monitor/rds/regions/",
         RDSStatus: (server_id: string) => `api/v1/monitor/rds/db/${server_id}/`,
         RDSHistory: (device_id: DeviceId) => `api/v1/monitor/rds/db/${device_id}/history/`,
+      },
+      elb: {
+        list: "api/v1/monitor/load-balancers/list/",
+        status: "api/v1/monitor/load-balancers/status/",
+        metricsKeys: "api/v1/monitor/load-balancers/metric-keys/",
+        regions: "api/v1/monitor/load-balancers/regions/",
+        loadBalancerStatus: (elb_id: string) => `api/v1/monitor/load-balancers/elb/${elb_id}/`,
+        loadBalancerHistory: (elb_id: DeviceId) => `api/v1/monitor/load-balancers/elb/${elb_id}/history/`,
       }
     }
   },

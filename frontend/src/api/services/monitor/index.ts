@@ -1,4 +1,4 @@
-import { UnitStatus, SeverityCount, UnitHistory, DeviceStatus, UnitFilters, LastStatusChange, DeviceFilters, DeviceHistory, Client, CameraDisconnection, LastActiveStatus, SeverityHistory, AreaPlotData, AreaPlotFilters, LastUpdate, DeviceLogsFilters, DeviceLogs, DeviceWifiStatus, UnitLogsFilters, UnitLogs, NewClientData, ServerStatus, ServerHistoryFilters, ServerHistory, MetricsKeys, ServerRegion, ServerType, ServerStatusFilters, RetailDeviceStatus, RetailDeviceHistory, UnitReportContent, RDSStatusFilters, RDSStatus, RDSHistoryFilters, RDSHistory, RDSType, RDSFilters, RDS, Server, Deployment, NewProjectData, ServerProject, Project } from "./types";
+import { UnitStatus, SeverityCount, UnitHistory, DeviceStatus, UnitFilters, LastStatusChange, DeviceFilters, DeviceHistory, Client, CameraDisconnection, LastActiveStatus, SeverityHistory, AreaPlotData, AreaPlotFilters, LastUpdate, DeviceLogsFilters, DeviceLogs, DeviceWifiStatus, UnitLogsFilters, UnitLogs, NewClientData, ServerStatus, ServerHistoryFilters, ServerHistory, MetricsKeys, ServerRegion, ServerType, ServerStatusFilters, RetailDeviceStatus, RetailDeviceHistory, UnitReportContent, RDSStatusFilters, RDSStatus, RDSHistoryFilters, RDSHistory, RDSType, RDSFilters, RDS, Server, Deployment, NewProjectData, ServerProject, Project, LoadBalancer, LoadBalancerStatusFilters, LoadBalancerStatus, LoadBalancerFilters, LoadBalancerHistoryFilters, LoadBalancerHistory } from "./types";
 import { Id, OptionallyPaginated, Paginated } from "@/api/types";
 import { Role, User } from "../auth/types";
 import api from "../..";
@@ -655,6 +655,102 @@ export async function getRDSMetricsKeys(
 ) {
     const resp = await http.get<MetricsKeys>(
       api.endpoints.monitor.rds.RDSMetricsKeys,
+      {
+        ...config,
+      }
+    );
+    return resp.data;
+}
+
+// Load Balancers
+export async function getAllLoadBalancers(
+  config?: Parameters<typeof http.get>[1]
+) {
+    const resp = await http.get<LoadBalancer[]>(
+      api.endpoints.monitor.elb.list,
+      {
+        ...config,
+      }
+    );
+    return resp.data;
+}
+
+export async function getAllLoadBalancerStatus(
+  filters: LoadBalancerStatusFilters,
+  config?: Parameters<typeof http.get>[1]
+) {
+    const resp = await http.get<LoadBalancerStatus[]>(
+      api.endpoints.monitor.elb.status,
+      {
+        params: filters,
+        ...config,
+      }
+    );
+    return resp.data;
+}
+
+export async function getLoadBalancerStatus(
+  filters: LoadBalancerFilters,
+  config?: Parameters<typeof http.get>[1]
+) {
+    const resp = await http.get<LoadBalancerStatus>(
+      api.endpoints.monitor.elb.loadBalancerStatus(filters.elb_id),
+      {
+        params: filters,
+        ...config,
+      }
+    );
+    return resp.data;
+}
+
+export async function getLoadBalancerHistory(
+  filters: LoadBalancerHistoryFilters,
+  config?: Parameters<typeof http.get>[1]
+) {
+    const resp = await http.get<Paginated<LoadBalancerHistory>>(
+      api.endpoints.monitor.elb.loadBalancerHistory(filters.elb_id),
+      {
+        params: filters,
+        ...config,
+      }
+    );
+    return resp.data;
+}
+
+
+export async function getLoadBalancerMetricPlotData(
+  filters: LoadBalancerHistoryFilters,
+  config?: Parameters<typeof http.get>[1]
+) {
+    const resp = await http.get<LoadBalancerHistory[]>(
+      api.endpoints.monitor.elb.loadBalancerHistory(filters.elb_id),
+      {
+        params: filters,
+        ...config,
+      }
+    );
+    return resp.data;
+}
+
+
+
+export async function getLoadBalancerRegions(
+  config?: Parameters<typeof http.get>[1]
+) {
+    const resp = await http.get<ServerRegion[]>(
+      api.endpoints.monitor.elb.regions,
+      {
+        ...config,
+      }
+    );
+    return resp.data;
+}
+
+export async function getLoadBalancerMetricsKeys(
+  config?: Parameters<typeof http.get>[1]
+) {
+    const resp = await http.get<MetricsKeys>(
+      api.endpoints.monitor.elb.metricsKeys,
       {
         ...config,
       }

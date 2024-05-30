@@ -409,7 +409,7 @@ class LoadBalancerStatus(models.Model):
     elb = models.ForeignKey(LoadBalancer, on_delete=models.CASCADE)
     last_activity = models.DateTimeField(auto_now=False, auto_now_add=False)
     state_code = models.CharField(max_length=50)
-    state_reason = models.CharField(max_length=50)
+    state_reason = models.CharField(max_length=50, null=True, blank=True)
     activity_data = models.JSONField(blank=True, null=True)
 
     def __str__(self):
