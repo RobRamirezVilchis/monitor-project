@@ -1713,8 +1713,6 @@ def update_elb_status():
                             metric_dates.append(metric_time)
                             metric_values.append(0)
 
-                            print(f"Added 0 to {metric.name} {metric_time}")
-
                 for j in range(len(metric_values)):
                     metric_date = metric_dates[j]
                     elbhistory_args = {

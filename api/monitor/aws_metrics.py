@@ -166,11 +166,9 @@ class AWSUtils:
 
         for instance in elb_instances:
             metric_id = f'id_{metric_name}_{instance["arn"].split("/")[-1]}'
-            print(metric_id)
             metric_id = metric_id.replace('-', '_')
 
             identifier = instance["arn"].split("loadbalancer/")[1]
-            print(identifier)
 
             metric_query.append({
                 'Id': metric_id,
