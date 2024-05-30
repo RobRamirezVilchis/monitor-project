@@ -250,17 +250,14 @@ function ChartTooltip({ label, payload }: ChartTooltipProps) {
     metric_date = format(parseISO(payload[0].payload.register_datetime), "Pp");
     metric_name = payload[0].payload.metric_type;
     switch (metric_name) {
-      case "FreeStorageSpace":
-        metric_value = payload[0].payload.metric_value.toFixed(2) + " GB";
+      case "RequestCount":
+        metric_value = payload[0].payload.metric_value;
         break;
-      case "FreeableMemory":
-        metric_value = payload[0].payload.metric_value.toFixed(2) + " GB";
+      case "HTTPCode_Target_5XX_Count":
+        metric_value = payload[0].payload.metric_value;
         break;
-      case "CPUUtilization":
-        metric_value = payload[0].payload.metric_value.toFixed(2) + "%";
-        break;
-      case "DatabaseConnections":
-        metric_value = payload[0].payload.metric_value.toFixed(2);
+      case "TargetResponseTime":
+        metric_value = payload[0].payload.metric_value.toFixed(2) + " s";
         break;
     }
   }
