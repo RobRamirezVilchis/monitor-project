@@ -2,7 +2,7 @@
 
 import { ReactNode } from "react";
 import "@mantine/charts/styles.css";
-import { Tabs } from "@mantine/core";
+import { Button, Tabs } from "@mantine/core";
 import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
 
@@ -14,9 +14,9 @@ const ServicesDashboardLayout = ({ children }: { children: ReactNode }) => {
   return (
     <section>
       <Tabs value={currentTab}>
-        <div className="md:flex md:items-center pb-2 mb-3 md:mb-6 justify-left 2xl:justify-between">
-          <div className="md:flex md:items-center">
-            <h1 className="mb-4 md:mb-0 text-5xl font-bold pr-10 ">
+        <div className="md:flex md:items-center pb-2 mb-3 md:mb-6 justify-left xl:justify-between">
+          <div className="md:flex md:items-center mr-3 xl:mr-0">
+            <h1 className="mb-4  md:mb-0 text-5xl font-bold pr-10 ">
               Servicios
             </h1>
             <Tabs.List>
@@ -37,6 +37,14 @@ const ServicesDashboardLayout = ({ children }: { children: ReactNode }) => {
               </Link>
             </Tabs.List>
           </div>
+          <Link href={"/monitor/services/new-project"}>
+            <Button
+              color="gray.5"
+              classNames={{ root: "dark:bg-gray-800 dark:hover:bg-gray-700" }}
+            >
+              Nuevo proyecto
+            </Button>
+          </Link>
         </div>
         <div>{children}</div>
       </Tabs>
