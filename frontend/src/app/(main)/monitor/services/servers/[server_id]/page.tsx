@@ -2,16 +2,27 @@
 
 import {
   useMetricsKeysQuery,
+  useProjectsQuery,
   useServerHistoryQuery,
   useServerPlotQuery,
+  useServerProjectsQuery,
   useServerStatusQuery,
 } from "@/api/queries/monitor";
 import BackArrow from "../../../(components)/BackArrow";
 import { format, parseISO } from "date-fns";
 import { PaymentOutlined, Spa } from "@mui/icons-material";
-import { Progress, SegmentedControl } from "@mantine/core";
+import {
+  Button,
+  Modal,
+  Progress,
+  SegmentedControl,
+  Select,
+  Skeleton,
+  TextInput,
+} from "@mantine/core";
 import { useDataGrid, useSsrDataGrid } from "@/hooks/data-grid";
 import {
+  ModifyProjectsData,
   ServerHistory,
   ServerHistoryFilters,
   SeverityHistory,
@@ -19,16 +30,38 @@ import {
 import { ColumnDef } from "@/ui/data-grid/types";
 import DataGrid from "@/ui/data-grid/DataGrid";
 import { ChartTooltipProps, LineChart } from "@mantine/charts";
-import { useMergedRef } from "@mantine/hooks";
-import { useState } from "react";
+import { useDisclosure, useMergedRef } from "@mantine/hooks";
+import { useEffect, useState } from "react";
 import { DatePickerInput } from "@mantine/dates";
+import { useForm } from "react-hook-form";
+import { MultiSelect } from "@/ui/core";
+import { useModifyServerProjectsMutation } from "@/api/mutations/monitor";
+import { setRequestMeta } from "next/dist/server/request-meta";
 
 const ServerPage = ({ params }: { params: { server_id: string } }) => {
   const [plotMetric, setPlotMetric] = useState("Uso de CPU");
+  const [opened, { open, close }] = useDisclosure(false);
+  const [assignedProjects, setProjects] = useState<string[]>([]);
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState(false);
 
   const currentDate = new Date();
   let yesterday = new Date();
   yesterday.setDate(yesterday.getDate() - 1);
+
+  const {
+    register,
+    handleSubmit,
+    watch,
+    control,
+    reset,
+    formState: { errors },
+  } = useForm<ModifyProjectsData>({
+    defaultValues: {
+      server_id: params.server_id,
+      projects: [],
+    },
+  });
 
   const [dateValue, setDateValue] = useState<[Date | null, Date | null]>([
     yesterday,
@@ -89,6 +122,38 @@ const ServerPage = ({ params }: { params: { server_id: string } }) => {
   });
   let plotData = plotDataQuery.data;
 
+  const serverProjectsQuery = useServerProjectsQuery({
+    variables: {
+      server_id: params.server_id,
+    },
+  });
+  const serverProjectsData = serverProjectsQuery.data;
+
+  const serverProjects = serverProjectsData?.map((obj) => obj.name);
+
+  const allProjectsData = useProjectsQuery({}).data;
+  const allProjects = allProjectsData?.map((obj) => obj.name);
+
+  useEffect(() => {
+    if (serverProjectsData) {
+      reset({ projects: serverProjects });
+    }
+  }, [serverProjectsData]);
+
+  const modifyProjectsMutation = useModifyServerProjectsMutation({
+    onSuccess: () => {
+      setSuccess(true);
+    },
+    onError: (error: any, variables, context) => {
+      setError("Ocurrió un error");
+    },
+  });
+
+  const onSubmit = async (values: ModifyProjectsData) => {
+    values.server_id = params.server_id;
+    modifyProjectsMutation.mutate(values);
+  };
+
   if (plotMetric == "Datos de salida" && plotData) {
     plotData = plotData.map((x) => ({
       ...x,
@@ -144,7 +209,33 @@ const ServerPage = ({ params }: { params: { server_id: string } }) => {
   let splitter = new RegExp("_|-", "g");
 
   return (
-    <section className="relative mb-28">
+    <section className="relative mb-20">
+      <Modal
+        centered
+        opened={opened}
+        onClose={close}
+        title="Modificar proyectos asignados"
+      >
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <div className="mb-4">
+            {serverProjects && (
+              <MultiSelect
+                name="projects"
+                control={control}
+                value={assignedProjects}
+                onChange={setProjects}
+                data={allProjects}
+                placeholder="Proyectos"
+                searchable
+              />
+            )}
+          </div>
+
+          <Button type="submit" color="green.6">
+            Aceptar
+          </Button>
+        </form>
+      </Modal>
       <BackArrow />
       <div className="flex justify-between items-center">
         <h1 className="mb-6 text-5xl font-bold pr-10">
@@ -157,54 +248,75 @@ const ServerPage = ({ params }: { params: { server_id: string } }) => {
         </h1>
         <p className="opacity-40 text-xl">ID: {serverStatus?.aws_id}</p>
       </div>
-      {serverStatus && (
-        <div className="text-2xl text-gray-500">
-          <p>
-            Última actividad:{" "}
-            {format(parseISO(String(serverStatus.last_activity)), "Pp")}
-          </p>
-          {activity_data && (
-            <div>
-              <div className="sm:flex gap-4 items-center">
-                <p>
-                  <span>Uso de CPU: </span>
-                  {activity_data["Uso de CPU"] ? (
-                    <span>{activity_data["Uso de CPU"].toFixed(2) + "%"}</span>
-                  ) : (
-                    <span>{"0%"}</span>
-                  )}
-                </p>
+      <div className="flex justify-between items-end">
+        {serverStatus ? (
+          <div className="text-xl text-gray-500">
+            <p>
+              Última actividad:{" "}
+              {format(parseISO(String(serverStatus.last_activity)), "Pp")}
+            </p>
+            {activity_data && (
+              <div>
+                <div className="sm:flex gap-4 items-center">
+                  <p>
+                    <span>Uso de CPU: </span>
+                    {activity_data["Uso de CPU"] ? (
+                      <span>
+                        {activity_data["Uso de CPU"].toFixed(2) + "%"}
+                      </span>
+                    ) : (
+                      <span>{"0%"}</span>
+                    )}
+                  </p>
 
-                <Progress
-                  size={"xl"}
-                  classNames={{
-                    root: "w-48 bg-gray-300 dark:bg-gray-700 mb-2 sm:mb-0",
-                  }}
-                  value={progressValue}
-                  color="green"
-                ></Progress>
+                  <Progress
+                    size={"xl"}
+                    classNames={{
+                      root: "w-48 bg-gray-300 dark:bg-gray-700 mb-2 sm:mb-0",
+                    }}
+                    value={progressValue}
+                    color="green"
+                  ></Progress>
+                </div>
+                <p>
+                  Datos de salida:{" "}
+                  {(activity_data["Datos de salida"] / 300 / 1e6).toFixed(2)}{" "}
+                  MB/s
+                </p>
               </div>
-              <p>
-                Datos de salida:{" "}
-                {(activity_data["Datos de salida"] / 300 / 1e6).toFixed(2)} MB/s
-              </p>
-            </div>
-          )}
-        </div>
-      )}
-      <div className="h-[62vh] mb-10">
-        <DataGrid instance={grid} />
+            )}
+          </div>
+        ) : (
+          <div className="space-y-2">
+            <Skeleton h={20} w={300} />
+            <Skeleton h={20} w={300} />
+            <Skeleton h={20} w={300} />
+          </div>
+        )}
+        <Button
+          color="gray.5"
+          classNames={{ root: "dark:bg-gray-800 dark:hover:bg-gray-700" }}
+          onClick={open}
+        >
+          Modificar proyectos
+        </Button>
       </div>
-      <p className="text-2xl opacity-60 mb-2 pt-10">Gráfica de métricas</p>
-      <div className="md:flex items-center gap-8 mb-4">
+
+      <h2 className="text-3xl opacity-60 mb-2 mt-8">Gráfica de métricas</h2>
+      <div className="md:flex items-center gap-8 mb-4 justify-between">
         <div className="mt-1 sm:mt-0">
           <SegmentedControl
             value={plotMetric}
             onChange={setPlotMetric}
             data={metrics}
+            classNames={{
+              root: "bg-gray-200 rounded-xl",
+              indicator: "rounded-lg",
+            }}
           ></SegmentedControl>
         </div>
-        <div className="w-80 mt-1 sm:mt-0">
+        <div className="sm:flex w-96 gap-2 items-center mt-1 sm:mt-0">
+          <p>Rango de tiempo:</p>
           <DatePickerInput
             type="range"
             placeholder="Pick date"
@@ -213,21 +325,26 @@ const ServerPage = ({ params }: { params: { server_id: string } }) => {
           />
         </div>
       </div>
-      {plotData && (
+      <Skeleton visible={plotData == undefined}>
         <LineChart
           tooltipProps={{
             content: ({ label, payload }) => (
               <ChartTooltip label={label} payload={payload} />
             ),
           }}
-          h={300}
+          h={450}
           data={plotData as Record<string, any>[]}
           dataKey="register_datetime"
           series={[{ name: "metric_value", color: "green.6" }]}
           curveType="linear"
           withDots={false}
         ></LineChart>
-      )}
+      </Skeleton>
+
+      <h2 className="text-3xl opacity-60 mb-2 mt-28">Listado de métricas</h2>
+      <div className="h-[70vh] mt-5">
+        <DataGrid instance={grid} />
+      </div>
     </section>
   );
 };

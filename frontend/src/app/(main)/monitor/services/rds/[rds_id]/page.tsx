@@ -17,7 +17,7 @@ import {
   PaymentOutlined,
   Spa,
 } from "@mui/icons-material";
-import { Progress, SegmentedControl } from "@mantine/core";
+import { Progress, SegmentedControl, Skeleton } from "@mantine/core";
 import { useDataGrid, useSsrDataGrid } from "@/hooks/data-grid";
 import {
   ServerHistory,
@@ -164,20 +164,20 @@ const RDSPage = ({ params }: { params: { rds_id: string } }) => {
   let splitter = new RegExp("_|-", "g");
 
   return (
-    <section className="relative mb-28">
+    <section className="relative mb-20">
       <BackArrow />
       <div className="flex justify-between items-center">
         <h1 className="mb-6 text-5xl font-bold pr-10">
           <span className="hidden md:inline text-gray-400 dark:text-gray-600">
-            Bases de datos /{" "}
+            Bases de datos |{" "}
           </span>
           {rdsStatus && (
             <span>{capitalize(rdsStatus.name.split(splitter).join(" "))}</span>
           )}
         </h1>
       </div>
-      {rdsStatus && (
-        <div className="text-2xl text-gray-500">
+      {rdsStatus ? (
+        <div className="text-xl text-gray-500">
           <p>
             Última actividad:{" "}
             {format(parseISO(String(rdsStatus.last_activity)), "Pp")}
@@ -212,20 +212,31 @@ const RDSPage = ({ params }: { params: { rds_id: string } }) => {
             </div>
           )}
         </div>
+      ) : (
+        <div className="space-y-2">
+          <Skeleton h={20} w={300} />
+          <Skeleton h={20} w={300} />
+          <Skeleton h={20} w={300} />
+        </div>
       )}
-      <div className="h-[62vh] mb-10">
-        <DataGrid instance={grid} />
-      </div>
-      <p className="text-2xl opacity-60 mb-2 pt-10">Gráfica de métricas</p>
-      <div className="md:flex items-center gap-8 mb-4">
+      <h2 className="text-3xl opacity-60 mb-2 mt-8">Gráfica de métricas</h2>
+      <div className="md:flex items-center gap-8 mb-4 justify-between">
         <div className="mt-1 sm:mt-0">
+          {metrics.length == 0 && (
+            <Skeleton visible={metrics.length == 0} h={30} w={300} />
+          )}
           <SegmentedControl
             value={plotMetric}
             onChange={setPlotMetric}
             data={metrics}
+            classNames={{
+              root: "bg-gray-200 rounded-xl",
+              indicator: "rounded-lg",
+            }}
           ></SegmentedControl>
         </div>
-        <div className="w-80 mt-1 sm:mt-0">
+        <div className="sm:flex w-96 gap-2 items-center mt-1 sm:mt-0">
+          <p>Rango de tiempo:</p>
           <DatePickerInput
             type="range"
             placeholder="Pick date"
@@ -234,21 +245,25 @@ const RDSPage = ({ params }: { params: { rds_id: string } }) => {
           />
         </div>
       </div>
-      {plotData && (
+      <Skeleton visible={plotData == undefined}>
         <LineChart
           tooltipProps={{
             content: ({ label, payload }) => (
               <ChartTooltip label={label} payload={payload} />
             ),
           }}
-          h={300}
+          h={450}
           data={plotData as Record<string, any>[]}
           dataKey="register_datetime"
           series={[{ name: "metric_value", color: "green.6" }]}
           curveType="linear"
           withDots={false}
         ></LineChart>
-      )}
+      </Skeleton>
+      <h2 className="text-3xl opacity-60 mb-2 mt-28">Listado de métricas</h2>
+      <div className="h-[70vh] mt-5">
+        <DataGrid instance={grid} />
+      </div>
     </section>
   );
 };

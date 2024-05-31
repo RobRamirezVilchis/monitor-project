@@ -44,7 +44,7 @@ const RDSCard = (rdsStatus: RDSStatus) => {
             {capitalize(name.split(splitter).join(" "))}
           </h3>
         </div>
-        <div className="flex items-center">
+        <div className="flex items-center opacity-60">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             fill="none"

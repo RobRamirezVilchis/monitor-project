@@ -269,3 +269,15 @@ def create_project(name: str, server_aws_ids: list, deployment_name: str, databa
     project.save()
     project.server.set(servers)
     project.save()
+
+
+def assign_project_to_server(project_id, server_id):
+    try:
+        project = Project.objects.get(id=project_id)
+        server = Server.objects.get(id=server_id)
+
+        project.server.add(server)
+
+        return True
+    except Project.DoesNotExist:
+        return False

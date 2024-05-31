@@ -1,4 +1,4 @@
-import { UnitStatus, SeverityCount, UnitHistory, DeviceStatus, UnitFilters, LastStatusChange, DeviceFilters, DeviceHistory, Client, CameraDisconnection, LastActiveStatus, SeverityHistory, AreaPlotData, AreaPlotFilters, LastUpdate, DeviceLogsFilters, DeviceLogs, DeviceWifiStatus, UnitLogsFilters, UnitLogs, NewClientData, ServerStatus, ServerHistoryFilters, ServerHistory, MetricsKeys, ServerRegion, ServerType, ServerStatusFilters, RetailDeviceStatus, RetailDeviceHistory, UnitReportContent, RDSStatusFilters, RDSStatus, RDSHistoryFilters, RDSHistory, RDSType, RDSFilters, RDS, Server, Deployment, NewProjectData, ServerProject, Project, LoadBalancer, LoadBalancerStatusFilters, LoadBalancerStatus, LoadBalancerFilters, LoadBalancerHistoryFilters, LoadBalancerHistory } from "./types";
+import { UnitStatus, SeverityCount, UnitHistory, DeviceStatus, UnitFilters, LastStatusChange, DeviceFilters, DeviceHistory, Client, CameraDisconnection, LastActiveStatus, SeverityHistory, AreaPlotData, AreaPlotFilters, LastUpdate, DeviceLogsFilters, DeviceLogs, DeviceWifiStatus, UnitLogsFilters, UnitLogs, NewClientData, ServerStatus, ServerHistoryFilters, ServerHistory, MetricsKeys, ServerRegion, ServerType, ServerStatusFilters, RetailDeviceStatus, RetailDeviceHistory, UnitReportContent, RDSStatusFilters, RDSStatus, RDSHistoryFilters, RDSHistory, RDSType, RDSFilters, RDS, Server, Deployment, NewProjectData, ServerProject, Project, LoadBalancer, LoadBalancerStatusFilters, LoadBalancerStatus, LoadBalancerFilters, LoadBalancerHistoryFilters, LoadBalancerHistory, ServerFilters, ModifyProjectsData } from "./types";
 import { Id, OptionallyPaginated, Paginated } from "@/api/types";
 import { Role, User } from "../auth/types";
 import api from "../..";
@@ -451,7 +451,7 @@ export async function getServersProjects(
   config?: Parameters<typeof http.get>[1]
 ) {
     const resp = await http.get<ServerProject[]>(
-      api.endpoints.monitor.servers.serverProjects,
+      api.endpoints.monitor.servers.serversProjects,
       {
         ...config,
       }
@@ -474,11 +474,25 @@ export async function getServersStatus(
 }
 
 export async function getServerStatus(
-  filters: ServerHistoryFilters,
+  filters: ServerFilters,
   config?: Parameters<typeof http.get>[1]
 ) {
     const resp = await http.get<ServerStatus>(
       api.endpoints.monitor.servers.serverStatus(filters.server_id),
+      {
+        params: filters,
+        ...config,
+      }
+    );
+    return resp.data;
+}
+
+export async function getServerProjects(
+  filters: ServerFilters,
+  config?: Parameters<typeof http.get>[1]
+) {
+    const resp = await http.get<Project[]>(
+      api.endpoints.monitor.servers.serverProjects(filters.server_id),
       {
         params: filters,
         ...config,
@@ -908,4 +922,16 @@ export async function addNewProject(
     );
     return resp.data;
 
+}
+
+export async function modifyServerProjects(
+  data: ModifyProjectsData,
+  config?: Parameters<typeof http.post>[2]
+) {
+  const resp = await http.post<ModifyProjectsData>(
+    api.endpoints.monitor.servers.modifyProjects(data.server_id), 
+    data,
+    config
+  );
+  return resp.data;
 }

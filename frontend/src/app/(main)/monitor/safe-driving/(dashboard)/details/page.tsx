@@ -94,10 +94,6 @@ const SafeDrivingPage = () => {
   const countQuery = useDrivingSeverityCount({
     refetchOnWindowFocus: false,
   });
-  const lastUpdateQuery = useDrivingLastUpdateQuery({
-    refetchOnWindowFocus: false,
-  });
-  const last_update = lastUpdateQuery.data;
 
   const clientsQuery = useSafeDrivingClientsQuery({
     refetchOnWindowFocus: false,

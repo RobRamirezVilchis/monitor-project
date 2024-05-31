@@ -69,44 +69,46 @@ const RDSDetailPage = () => {
           value={nameInput}
           onChange={(event) => setNameInput(event.currentTarget.value)}
         />
-        <Select
-          className="md:flex gap-3 items-center"
-          styles={{
-            label: { fontSize: 18 },
-          }}
-          label="Filtrar por región:"
-          placeholder="Todas"
-          data={rdsRegions}
-          value={rdsRegion}
-          onChange={(value: string | null) => {
-            router.push(
-              value
-                ? "/monitor/services/rds/details/?" +
-                    createQueryString("region", value)
-                : "/monitor/services/rds/details/?" + removeQueryParam("region")
-            );
-            setRdsRegion(value);
-          }}
-        ></Select>
-        <Select
-          className="md:flex gap-3 items-center"
-          styles={{
-            label: { fontSize: 18 },
-          }}
-          label="Filtrar por tamaño:"
-          placeholder="Todos"
-          data={rdsTypes}
-          value={rdsType}
-          onChange={(value: string | null) => {
-            router.push(
-              value
-                ? "/monitor/services/rds/details/?" +
-                    createQueryString("type", value)
-                : "/monitor/services/rds/details/?" + removeQueryParam("type")
-            );
-            setRdsType(value);
-          }}
-        ></Select>
+        <div className="md:flex gap-2">
+          <p className="text-lg mt-1">Filtros:</p>
+          <Select
+            className="md:flex gap-3 items-center"
+            styles={{
+              label: { fontSize: 18 },
+            }}
+            placeholder="Región"
+            data={rdsRegions}
+            value={rdsRegion}
+            onChange={(value: string | null) => {
+              router.push(
+                value
+                  ? "/monitor/services/rds/details/?" +
+                      createQueryString("region", value)
+                  : "/monitor/services/rds/details/?" +
+                      removeQueryParam("region")
+              );
+              setRdsRegion(value);
+            }}
+          ></Select>
+          <Select
+            className="md:flex gap-3 items-center"
+            styles={{
+              label: { fontSize: 18 },
+            }}
+            placeholder="Tamaño"
+            data={rdsTypes}
+            value={rdsType}
+            onChange={(value: string | null) => {
+              router.push(
+                value
+                  ? "/monitor/services/rds/details/?" +
+                      createQueryString("type", value)
+                  : "/monitor/services/rds/details/?" + removeQueryParam("type")
+              );
+              setRdsType(value);
+            }}
+          ></Select>
+        </div>
       </div>
       <div className="flex flex-row gap-4 flex-wrap">
         {rdsStatus?.map(

@@ -16,7 +16,7 @@ from rest_framework import status, filters
 import humanize.locale
 
 from .selectors import *
-from .services import create_project, get_or_create_client
+from .services import assign_project_to_server, create_project, get_or_create_client
 from api.pagination import get_paginated_response, LimitOffsetPagination
 from .models import UnitStatus
 from .cron import api_login, make_request
@@ -1111,7 +1111,7 @@ class ServerList(APIView):
         return Response(output)
 
 
-class ServerProjectsAPI(APIView):
+class AllServersProjectsAPI(APIView):
     class OutputSerializer(serializers.Serializer):
         server_id = serializers.IntegerField(source="id")
         projects = serializers.SlugRelatedField(
@@ -1121,18 +1121,6 @@ class ServerProjectsAPI(APIView):
         servers = get_all_servers()
 
         output = self.OutputSerializer(servers, many=True).data
-
-        return Response(output)
-
-
-class ProjectsAPI(APIView):
-    class OutputSerializer(serializers.Serializer):
-        name = serializers.CharField()
-
-    def get(self, request, *args, **kwargs):
-        projects = get_projects()
-
-        output = self.OutputSerializer(projects, many=True).data
 
         return Response(output)
 
@@ -1268,7 +1256,40 @@ class ServerTypesAPI(APIView):
         return Response(output)
 
 
+class AssignProjectToServer(APIView):
+    class InputSerializer(serializers.Serializer):
+        project_id = serializers.IntegerField()
+
+    def post(self, request, server_id, *args, **kwargs):
+        serializer = self.InputSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        project_id = serializer.validated_data["project_id"]
+
+        success = assign_project_to_server(
+            project_id=project_id, server_id=server_id)
+
+        if success:
+            return Response(status=status.HTTP_200_OK)
+        else:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
+
+class ServerProjectsList(APIView):
+    class OutputSerializer(serializers.Serializer):
+        id = serializers.IntegerField()
+        name = serializers.CharField()
+
+    def get(self, request, server_id, *args, **kwargs):
+        projects = get_server_projects(server_id)
+
+        output = self.OutputSerializer(projects, many=True).data
+
+        return Response(output)
+
+
 # RDS ---------------------------------------------------------------------------
+
 class RDSList(APIView):
     class OutputSerializer(serializers.Serializer):
         id = serializers.IntegerField()
@@ -1951,5 +1972,33 @@ class CreateProjectAPI(APIView):
         project = create_project(
             **args
         )
+
+        return Response(status=status.HTTP_200_OK)
+
+
+class ProjectsAPI(APIView):
+    class OutputSerializer(serializers.Serializer):
+        id = serializers.IntegerField()
+        name = serializers.CharField()
+
+    def get(self, request, *args, **kwargs):
+        projects = get_projects()
+
+        output = self.OutputSerializer(projects, many=True).data
+
+        return Response(output)
+
+
+class ModifyServerProjectsAPI(APIView):
+    class InputSerializer(serializers.Serializer):
+        projects = serializers.JSONField()
+
+    def post(self, request, server_id, *args, **kwargs):
+        serializer = self.InputSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        projects = serializer.validated_data["projects"]
+
+        set_projects_to_server(server_id, projects)
 
         return Response(status=status.HTTP_200_OK)

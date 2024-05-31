@@ -546,6 +546,18 @@ def get_projects():
     return Project.objects.all()
 
 
+def get_server_projects(server_id: int):
+    server = Server.objects.get(id=server_id)
+    return Project.objects.filter(server=server)
+
+
+def set_projects_to_server(server_id: int, project_names: list):
+    projects = Project.objects.filter(name__in=project_names)
+    server = Server.objects.get(id=server_id)
+
+    server.projects.set(projects)
+
+
 def set_servers_as_inactive():
     from datetime import datetime, timedelta
 

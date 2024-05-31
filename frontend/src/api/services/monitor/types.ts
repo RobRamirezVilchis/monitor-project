@@ -26,6 +26,11 @@ export interface NewProjectData {
   deployment: string
 }
 
+export interface ModifyProjectsData {
+  server_id: string,
+  projects: string[]
+}
+
 export interface UnitStatus {
   unit_id: number;
   unit: string;
@@ -208,6 +213,7 @@ export interface Server {
 }
 
 export interface Project {
+  id: number,
   name: string,
 }
 

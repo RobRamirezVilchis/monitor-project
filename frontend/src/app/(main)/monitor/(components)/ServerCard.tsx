@@ -51,7 +51,7 @@ const ServerCard = ({
           <p className="text-gray-500">{aws_id}</p>
         </div>
 
-        <div className="flex items-center">
+        <div className="flex items-center opacity-60">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             fill="none"

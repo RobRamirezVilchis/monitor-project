@@ -78,11 +78,6 @@ const IndustryDetailsPage = () => {
   });
   const deviceData = devicesQuery.data;
 
-  const lastUpdateQuery = useIndustryLastUpdateQuery({
-    refetchOnWindowFocus: false,
-  });
-  const last_update = lastUpdateQuery.data;
-
   const countQuery = useIndustrySeverityCount({
     refetchOnWindowFocus: false,
   });
@@ -106,16 +101,6 @@ const IndustryDetailsPage = () => {
     Alerta: number;
     Funcionando: number;
   }[] = [];
-
-  let timeSinceLastUpdate: string;
-  if (last_update != null) {
-    timeSinceLastUpdate = formatDistanceToNow(last_update.last_update, {
-      addSuffix: true,
-      locale: es,
-    });
-  } else {
-    timeSinceLastUpdate = "-";
-  }
 
   return (
     <section>

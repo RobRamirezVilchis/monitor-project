@@ -21,7 +21,7 @@ const IndustryDashboardLayout = ({ children }: { children: ReactNode }) => {
   const last_update = lastUpdateQuery.data;
 
   let timeSinceLastUpdate: string;
-  if (last_update != null) {
+  if (last_update && last_update.last_update) {
     timeSinceLastUpdate = formatDistanceToNow(last_update.last_update, {
       addSuffix: true,
       locale: es,

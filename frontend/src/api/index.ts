@@ -96,7 +96,7 @@ const api = {
       },
       servers: {
         list: "api/v1/monitor/servers/list/",
-        serverProjects: "api/v1/monitor/servers/server-projects/",
+        serversProjects: "api/v1/monitor/servers/server-projects/",
         projects: "api/v1/monitor/servers/projects/",
         newProject: "api/v1/monitor/servers/new-project/",
         status: "api/v1/monitor/servers/status/",
@@ -105,6 +105,8 @@ const api = {
         regions: "api/v1/monitor/servers/regions/",
         serverStatus: (server_id: string) => `api/v1/monitor/servers/server/${server_id}/`,
         serverHistory: (device_id: DeviceId) => `api/v1/monitor/servers/server/${device_id}/history/`,
+        modifyProjects: (server_id: string) => `api/v1/monitor/servers/server/${server_id}/modify-projects/`,
+        serverProjects: (server_id: string) => `api/v1/monitor/servers/server/${server_id}/projects/`,
       },
       rds: {
         list: "api/v1/monitor/rds/list/",
