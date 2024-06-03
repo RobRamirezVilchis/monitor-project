@@ -712,7 +712,8 @@ def get_rdsstatus(rds_id: str):
 
 
 class RDSStatusFilter(rf_filters.FilterSet):
-    instance_class = rf_filters.CharFilter(field_name="rds__instance_class")
+    instance_class = rf_filters.CharFilter(
+        field_name="rds__instance_class__name")
     region = rf_filters.CharFilter(field_name="rds__region__name")
 
     class Meta:
@@ -759,8 +760,14 @@ def get_rdshistory(args, filters=None):
 
 def get_rdstypes():
     types = RDS.objects.order_by(
-        "instance_class").values("instance_class").distinct()
+        "instance_class").values("instance_class__name").distinct()
     return types
+
+
+def get_rds_type(name):
+    instance_class = RDSInstanceClass.objects.get(name=name)
+
+    return instance_class
 
 
 # Load Balancers ------------------------------------

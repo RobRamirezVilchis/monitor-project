@@ -292,9 +292,22 @@ class ServerRegion(models.Model):
     name = models.CharField(max_length=50)
 
 
+class RDSInstanceClass(models.Model):
+    name = models.CharField(max_length=50)
+    core_count = models.IntegerField()
+    vcpu = models.IntegerField()
+    cpu_credits = models.IntegerField()
+    memory = models.IntegerField()
+    network_performance = models.CharField(max_length=50)
+
+    def __str__(self):
+        return self.name
+
+
 class RDS(models.Model):
     name = models.CharField(max_length=50)
-    instance_class = models.CharField(max_length=50)
+    instance_class = models.ForeignKey(
+        RDSInstanceClass, on_delete=models.CASCADE, null=True)
     region = models.ForeignKey(
         ServerRegion, on_delete=models.CASCADE, null=True, blank=True)
 

@@ -263,7 +263,7 @@ def process_driving_data(response, now=None):
                     alerts[device].add(description)
 
         status_conditions = [
-            # (Condition, Status, Severity Key, Description)
+            # (Condition, Status, Description)
             (output_gx["hour"][device]["read_only_ssd"]
              > 0, 5, "Read only SSD"),
             (datos.get("En_viaje") and disc_cameras ==
@@ -1597,7 +1597,7 @@ def update_rds_status():
             current_server_status = get_rdsstatus_by_name(name)
 
             rds = get_or_create_rds(name, defaults={
-                "region": region, "instance_class": instance_class})
+                "region": region, "instance_class": get_rds_type(instance_class)})
 
             activity_data = {}
             activity = False

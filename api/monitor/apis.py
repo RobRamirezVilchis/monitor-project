@@ -1407,7 +1407,7 @@ class RDSMetricsAPI(APIView):
 
 class RDSTypesAPI(APIView):
     class OutputSerializer(serializers.Serializer):
-        instance_class = serializers.CharField()
+        instance_class = serializers.CharField(source='instance_class__name')
 
     def get(self, request, *args, **kwargs):
         rds_types = get_rdstypes()

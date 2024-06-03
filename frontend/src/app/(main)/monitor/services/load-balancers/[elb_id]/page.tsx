@@ -213,17 +213,31 @@ const LoadBalancerPage = ({ params }: { params: { elb_id: string } }) => {
           {metrics.length == 0 && (
             <Skeleton visible={metrics.length == 0} h={30} w={300} />
           )}
-          <SegmentedControl
-            value={plotMetric}
-            onChange={setPlotMetric}
-            data={metrics}
-            classNames={{
-              root: "bg-gray-200 rounded-xl",
-              indicator: "rounded-lg",
-            }}
-          ></SegmentedControl>
+          <div className="hidden sm:block">
+            <SegmentedControl
+              value={plotMetric}
+              onChange={setPlotMetric}
+              data={metrics}
+              classNames={{
+                root: "bg-gray-200 rounded-xl",
+                indicator: "rounded-lg",
+              }}
+            ></SegmentedControl>
+          </div>
+          <div className="block sm:hidden">
+            <SegmentedControl
+              value={plotMetric}
+              onChange={setPlotMetric}
+              orientation="vertical"
+              data={metrics}
+              classNames={{
+                root: "bg-gray-200 rounded-xl",
+                indicator: "rounded-lg",
+              }}
+            ></SegmentedControl>
+          </div>
         </div>
-        <div className="sm:flex w-96 gap-2 items-center mt-1 sm:mt-0">
+        <div className="flex w-96 gap-2 items-center mt-3 sm:mt-0">
           <p>Rango de tiempo:</p>
           <DatePickerInput
             type="range"
