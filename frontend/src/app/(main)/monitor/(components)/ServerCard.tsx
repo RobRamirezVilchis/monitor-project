@@ -5,6 +5,11 @@ import { ServerStatus } from "@/api/services/monitor/types";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 
+const statusStyles: { [condition: string]: string } = {
+  normal: "bg-blue-100 border-blue-400 text-blue-900",
+  critical: "bg-red-100 border-red-400 text-red-900",
+};
+
 const ServerCard = ({
   serverStatus,
   projects,
@@ -23,6 +28,7 @@ const ServerCard = ({
     last_activity,
     state,
     activity_data,
+    critical,
   } = serverStatus;
 
   const { setDefaultOptions } = require("date-fns");
@@ -32,19 +38,31 @@ const ServerCard = ({
     addSuffix: true,
     locale: es,
   });
+  let color;
+  if (critical) {
+    color = statusStyles.critical;
+  } else {
+    color = statusStyles.normal;
+  }
 
   let splitter = new RegExp("_|-", "g");
   return (
     <Link
-      className="group relative pb-6 w-72 md:max-lg:w-52 h-60 md:max-lg:h-72 rounded-lg p-6 border-2 
+      className="group relative pb-6 w-72 md:max-lg:w-52 h-72 md:max-lg:h-72 rounded-lg p-6 border-2 
     transition duration-300 shadow-md dark:border-gray-700 hover:shadow-lg"
       href={`/monitor/services/servers/${server_id}`}
     >
       {state == "running" && (
         <span className="absolute right-6 animate-ping inline-flex h-2 w-2 rounded-full bg-green-600 opacity-100"></span>
       )}
+      <div
+        className={`inline-flex mb-2 px-2.5 pt-1 pb-0.5 text-s font-semibold 
+        border-2 ${color} rounded-full`}
+      >
+        {critical ? "Crítico" : "Normal"}
+      </div>
       <div className="flex flex-col gap-2">
-        <div className="flex flex-col h-16 justify-center mb-2">
+        <div className="flex flex-col justify-center my-1 leading-none h-16">
           <h3 className="text-2xl font-bold">
             {server_name.split(splitter).join(" ")}
           </h3>

@@ -60,6 +60,7 @@ class AWSUtils:
                 'db_id': instance.get('DBInstanceIdentifier', ''),
                 'instance_status': instance.get('DBInstanceStatus', ''),
                 'instance_class': instance.get('DBInstanceClass', ''),
+                'allocated_storage': instance.get('AllocatedStorage', ''),
 
             })
             # instances.append(instance)

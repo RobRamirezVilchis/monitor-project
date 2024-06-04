@@ -315,6 +315,7 @@ class RDS(models.Model):
         return f'{self.id} - {self.name}'
 
 
+# AWS Services -----------------------------------------------------
 class Server(models.Model):
     name = models.CharField(max_length=50)
     server_type = models.CharField(max_length=50)
@@ -339,6 +340,8 @@ class ServerMetric(models.Model):
     key = models.CharField(max_length=50)
     statistic = models.CharField(max_length=50, default='Average')
     service = models.CharField(default="", max_length=40)
+    threshold = models.IntegerField(null=True, blank=True)
+    to_exceed = models.BooleanField(default=True)
 
     def __str__(self):
         return self.name
@@ -352,6 +355,7 @@ class ServerStatus(models.Model):
     state = models.CharField(max_length=50)
     activity_data = models.JSONField(blank=True, null=True)
     active = models.BooleanField(default=True)
+    critical = models.BooleanField(default=False)
 
     def __str__(self):
         return self.server.name
@@ -370,6 +374,7 @@ class ServerHistory(models.Model):
     state = models.CharField(max_length=50)
     metric_type = models.ForeignKey(ServerMetric, on_delete=models.CASCADE)
     metric_value = models.FloatField()
+    critical = models.BooleanField(default=False)
 
     class Meta:
         verbose_name_plural = "Server histories"
@@ -377,10 +382,12 @@ class ServerHistory(models.Model):
 
 class RDSStatus(models.Model):
     rds = models.ForeignKey(RDS, on_delete=models.CASCADE)
+    allocated_storage = models.IntegerField(null=True)
     status = models.CharField(max_length=50)
     last_activity = models.DateTimeField(
         auto_now=False, auto_now_add=False, blank=True)
     activity_data = models.JSONField(blank=True, null=True)
+    critical = models.BooleanField(default=False)
 
     def __str__(self):
         return self.rds.name
@@ -398,6 +405,7 @@ class RDSHistory(models.Model):
     status = models.CharField(max_length=50)
     metric_type = models.ForeignKey(ServerMetric, on_delete=models.CASCADE)
     metric_value = models.FloatField()
+    critical = models.BooleanField(default=False)
 
     def __str__(self):
         return self.rds.name
@@ -424,6 +432,7 @@ class LoadBalancerStatus(models.Model):
     state_code = models.CharField(max_length=50)
     state_reason = models.CharField(max_length=50, null=True, blank=True)
     activity_data = models.JSONField(blank=True, null=True)
+    critical = models.BooleanField(default=False)
 
     def __str__(self):
         return self.elb.name
@@ -442,6 +451,7 @@ class LoadBalancerHistory(models.Model):
     state_reason = models.CharField(max_length=50)
     metric_type = models.ForeignKey(ServerMetric, on_delete=models.CASCADE)
     metric_value = models.FloatField()
+    critical = models.BooleanField(default=False)
 
     def __str__(self):
         return f'{self.elb.name} - {self.metric_type.name}'

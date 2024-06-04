@@ -233,6 +233,7 @@ export interface ServerStatus {
   last_launch: Date;
   last_activity: Date;
   state: string;
+  critical: boolean;
   activity_data: {[metric: string]: number};
 }
 
@@ -247,6 +248,7 @@ export interface ServerHistory extends Partial<PageNumberPaginationParams> {
   last_launch: Date,
   register_datetime: Date,
   state: string,
+  critical: boolean;
   metric_type: string,
   metric_value: number,
 }
@@ -255,6 +257,7 @@ export interface ServerHistoryFilters extends Partial<PageNumberPaginationParams
   server_id: string;
   metric_type?: string;
   sort?: string;
+  critical?: boolean;
   register_datetime_before?: Date | null;
   register_datetime_after?: Date | null;
 }
@@ -285,8 +288,11 @@ export interface RDS {
 export interface RDSStatus {
   rds_id: number;
   name: string;
+  total_storage: number;
+  total_ram: number;
   last_activity: Date;
   status: string;
+  critical: boolean;
   activity_data: {[metric: string]: number};
 }
 
@@ -300,6 +306,7 @@ export interface RDSHistory extends Partial<PageNumberPaginationParams> {
   rds: string,
   register_datetime: Date,
   status: string,
+  critical: boolean;
   metric_type: string,
   metric_value: number,
 }
@@ -308,6 +315,7 @@ export interface RDSHistoryFilters extends Partial<PageNumberPaginationParams>{
   rds_id: string;
   metric_type?: string;
   sort?: string;
+  critical?: boolean;
   register_datetime_before?: Date | null;
   register_datetime_after?: Date | null;
 }
@@ -330,6 +338,7 @@ export interface LoadBalancerStatus {
   elb_id: number;
   name: string;
   last_activity: Date;
+  critical: boolean;
   state_code: string;
   activity_data: {[metric: string]: number};
 }
@@ -343,6 +352,7 @@ export interface LoadBalancerHistory extends Partial<PageNumberPaginationParams>
   elb: string,
   register_datetime: Date,
   status: string,
+  critical: boolean;
   metric_type: string,
   metric_value: number,
 }
@@ -351,6 +361,7 @@ export interface LoadBalancerHistoryFilters extends Partial<PageNumberPagination
   elb_id: string;
   metric_type?: string;
   sort?: string;
+  critical?: boolean;
   register_datetime_before?: Date | null;
   register_datetime_after?: Date | null;
 }

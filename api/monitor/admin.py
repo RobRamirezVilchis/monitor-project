@@ -282,6 +282,7 @@ class ServerAdmin(admin.ModelAdmin):
 class ELBStatusAdmin(admin.ModelAdmin):
     list_display = (
         'elb',
+        'critical',
         'last_activity',
         'state_code',
         'activity_data',
@@ -291,6 +292,7 @@ class ELBStatusAdmin(admin.ModelAdmin):
 class ELBHistoryAdmin(admin.ModelAdmin):
     list_display = (
         'elb',
+        'critical',
         'metric_type',
         'metric_value',
         'register_datetime',
@@ -302,7 +304,9 @@ class ServerMetricAdmin(admin.ModelAdmin):
         'name',
         'key',
         'statistic',
-        'service'
+        'service',
+        'threshold',
+        'to_exceed'
     )
 
 

@@ -1138,6 +1138,7 @@ class ServerStatusListAPI(APIView):
         last_activity = serializers.DateTimeField()
         state = serializers.CharField()
         activity_data = serializers.JSONField()
+        critical = serializers.BooleanField()
 
     def get(self, request, *args, **kwargs):
         filters_serializer = self.FiltersSerializer(data=request.query_params)
@@ -1168,6 +1169,7 @@ class ServerStatusAPI(APIView):
         last_activity = serializers.DateTimeField()
         state = serializers.CharField()
         activity_data = serializers.JSONField()
+        critical = serializers.BooleanField()
 
     def get(self, request, server_id, *args, **kwargs):
         server_status = get_serverstatus(server_id)
@@ -1190,6 +1192,7 @@ class ServerHistoryList(APIView):
         state = serializers.CharField()
         metric_type = serializers.CharField()
         metric_value = serializers.FloatField()
+        critical = serializers.BooleanField()
 
     def get(self, request, server_id, *args, **kwargs):
 
@@ -1313,6 +1316,7 @@ class RDSStatusListAPI(APIView):
         name = serializers.CharField(source="rds.name")
         last_activity = serializers.DateTimeField()
         status = serializers.CharField()
+        critical = serializers.BooleanField()
         activity_data = serializers.JSONField()
 
     def get(self, request, *args, **kwargs):
@@ -1338,8 +1342,12 @@ class RDSStatusAPI(APIView):
     class OutputSerializer(serializers.Serializer):
         rds_id = serializers.IntegerField()
         name = serializers.CharField(source="rds.name")
+        total_storage = serializers.IntegerField(source="allocated_storage")
+        total_ram = serializers.IntegerField(
+            source="rds.instance_class.memory")
         last_activity = serializers.DateTimeField()
         status = serializers.CharField()
+        critical = serializers.BooleanField()
         activity_data = serializers.JSONField()
 
     def get(self, request, rds_id, *args, **kwargs):
@@ -1360,6 +1368,7 @@ class RDSHistoryList(APIView):
         rds = serializers.CharField()
         register_datetime = serializers.DateTimeField()
         status = serializers.CharField()
+        critical = serializers.BooleanField()
         metric_type = serializers.CharField()
         metric_value = serializers.FloatField()
 
@@ -1443,6 +1452,7 @@ class LoadBalancerStatusListAPI(APIView):
         last_activity = serializers.DateTimeField()
         state_code = serializers.CharField()
         activity_data = serializers.JSONField()
+        critical = serializers.BooleanField()
 
     def get(self, request, *args, **kwargs):
         filters_serializer = self.FiltersSerializer(data=request.query_params)
@@ -1464,6 +1474,7 @@ class LoadBalancerStatusAPI(APIView):
         state_code = serializers.CharField()
         state_reason = serializers.CharField()
         activity_data = serializers.JSONField()
+        critical = serializers.BooleanField()
 
     def get(self, request, elb_id, *args, **kwargs):
         elb_status = get_load_balancer_status(elb_id)
@@ -1485,6 +1496,7 @@ class LoadBalancerHistoryList(APIView):
         state_code = serializers.CharField()
         metric_type = serializers.CharField()
         metric_value = serializers.FloatField()
+        critical = models.BooleanField()
 
     def get(self, request, elb_id, *args, **kwargs):
 

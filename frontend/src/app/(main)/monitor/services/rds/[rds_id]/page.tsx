@@ -169,7 +169,7 @@ const RDSPage = ({ params }: { params: { rds_id: string } }) => {
       <div className="flex justify-between items-center">
         <h1 className="mb-6 text-5xl font-bold pr-10">
           <span className="hidden md:inline text-gray-400 dark:text-gray-600">
-            Bases de datos |{" "}
+            Bases de datos /{" "}
           </span>
           {rdsStatus && (
             <span>{capitalize(rdsStatus.name.split(splitter).join(" "))}</span>
@@ -187,7 +187,15 @@ const RDSPage = ({ params }: { params: { rds_id: string } }) => {
               <div>
                 <span>Espacio disponible: </span>
                 <span>
-                  {(activity_data["Espacio disponible"] / 1e9).toFixed(2)} GB
+                  {(activity_data["Espacio disponible"] / 1e9).toFixed(2)} GB de{" "}
+                  {rdsStatus.total_storage} GB
+                </span>
+              </div>
+              <div>
+                <span>Memoria RAM disponible: </span>
+                <span>
+                  {(activity_data["RAM disponible"] / 1e9).toFixed(2)} GB de{" "}
+                  {rdsStatus.total_ram} GB
                 </span>
               </div>
               <div className="sm:flex gap-4 items-center">

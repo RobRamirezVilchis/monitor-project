@@ -111,14 +111,16 @@ const RDSDetailPage = () => {
         </div>
       </div>
       <div className="flex flex-row gap-4 flex-wrap">
-        {rdsStatus?.map(
-          (rdsStatus) =>
-            rdsStatus.name
-              .toLowerCase()
-              .includes(nameInput.toLowerCase().replace(" ", "_")) && (
-              <RDSCard key={rdsStatus.rds_id} {...rdsStatus}></RDSCard>
-            )
-        )}
+        {rdsStatus
+          ?.sort((x) => -+x.critical)
+          ?.map(
+            (rdsStatus) =>
+              rdsStatus.name
+                .toLowerCase()
+                .includes(nameInput.toLowerCase().replace(" ", "_")) && (
+                <RDSCard key={rdsStatus.rds_id} {...rdsStatus}></RDSCard>
+              )
+          )}
       </div>
     </section>
   );

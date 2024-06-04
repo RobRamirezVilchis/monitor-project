@@ -85,17 +85,19 @@ const LoadBalancerDetailPage = () => {
         ></Select>
       </div>
       <div className="flex flex-row gap-4 flex-wrap">
-        {elbStatus?.map(
-          (elbStatus) =>
-            elbStatus.name
-              .toLowerCase()
-              .includes(nameInput.toLowerCase().replace(" ", "_")) && (
-              <LoadBalancerCard
-                key={elbStatus.elb_id}
-                {...elbStatus}
-              ></LoadBalancerCard>
-            )
-        )}
+        {elbStatus
+          ?.sort((x) => -+x.critical)
+          ?.map(
+            (elbStatus) =>
+              elbStatus.name
+                .toLowerCase()
+                .includes(nameInput.toLowerCase().replace(" ", "_")) && (
+                <LoadBalancerCard
+                  key={elbStatus.elb_id}
+                  {...elbStatus}
+                ></LoadBalancerCard>
+              )
+          )}
       </div>
     </section>
   );

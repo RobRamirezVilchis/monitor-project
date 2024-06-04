@@ -272,7 +272,8 @@ def process_driving_data(response, now=None):
              and datos.get("En_viaje"), 5, "Múltiples restarts"),
             (output_gx["hour"][device]["forced_reboot"]
              > 1, 5, "forced reboot (>1)"),
-            (datos.get("Estatus") == "red", 5, "Sin comunicación reciente"),
+            (datos.get("Estatus") == "red" and datos.get(
+                "En_viaje"), 5, "Sin comunicación reciente"),
             (datos.get("Jsons_eventos_pendientes") > 100 or datos.get(
                 "Jsons_status_pendientes") > 1000, 5, "Logs pendientes (>100)"),
             (datos.get("En_viaje") and disc_cameras in {
@@ -1515,18 +1516,34 @@ def update_servers_status():
 
             activity_data = {}
             activity = False
-            for metric in metrics_to_get:
 
+            any_critical = False
+            for metric in metrics_to_get:
                 server_metric_values = all_metrics_data[metric.name]['MetricDataResults'][i]['Values']
                 server_metric_dates = all_metrics_data[metric.name]['MetricDataResults'][i]['Timestamps']
+
+                threshold = metric.threshold
+                to_exceed = metric.to_exceed
 
                 if server_metric_values:
                     activity = True
                     activity_data[metric.key] = server_metric_values[0]
+
                 else:
                     break
 
                 for j in range(len(server_metric_values)):
+                    critical = False
+
+                    if threshold is not None:
+                        if to_exceed:
+                            if server_metric_values[j] > threshold:
+                                critical = True
+                                any_critical = True
+                        else:
+                            if server_metric_values[j] < threshold:
+                                critical = True
+                                any_critical = True
                     metric_date = server_metric_dates[j]
                     serverhistory_args = {
                         "server": server,
@@ -1534,6 +1551,7 @@ def update_servers_status():
                         "register_datetime": metric_date,
                         "register_date": metric_date.date(),
                         "state": state,
+                        "critical": critical,
                         "metric_type": metric,
                         "metric_value": server_metric_values[j],
                     }
@@ -1546,6 +1564,7 @@ def update_servers_status():
                     "last_launch": launch_time,
                     "last_activity": now,
                     "activity_data": activity_data,
+                    "critical": any_critical,
                     "active": True,
                 })
 
@@ -1555,6 +1574,7 @@ def update_servers_status():
                     "state": state,
                     "last_launch": launch_time,
                     "last_activity": now,
+                    "critical": any_critical,
                     "activity_data": {}
                 })
             # If the server just stopped or terminated, update the status one last time
@@ -1563,6 +1583,7 @@ def update_servers_status():
                 server_status = update_or_create_serverstatus(server_id, defaults={
                     "server": server,
                     "state": state,
+                    "critical": any_critical,
                     "activity_data": {}
                 })
 
@@ -1593,6 +1614,7 @@ def update_rds_status():
             name = instance["db_id"]
             instance_status = instance["instance_status"]
             instance_class = instance["instance_class"]
+            allocated_storage = instance["allocated_storage"]
 
             current_server_status = get_rdsstatus_by_name(name)
 
@@ -1602,9 +1624,13 @@ def update_rds_status():
             activity_data = {}
             activity = False
 
+            any_critical = False
             for metric in metrics_to_get:
                 metric_values = all_metrics_data[metric.name]['MetricDataResults'][i]['Values']
                 metric_dates = all_metrics_data[metric.name]['MetricDataResults'][i]['Timestamps']
+
+                threshold = metric.threshold
+                to_exceed = metric.to_exceed
 
                 if metric_values:
                     activity = True
@@ -1614,6 +1640,18 @@ def update_rds_status():
                     break
 
                 for j in range(len(metric_values)):
+                    critical = False
+
+                    if threshold is not None:
+                        if to_exceed:
+                            if metric_values[j] > threshold:
+                                critical = True
+                                any_critical = True
+                        else:
+                            if metric_values[j] < threshold:
+                                critical = True
+                                any_critical = True
+
                     metric_date = metric_dates[j]
                     rdshistory_args = {
                         "rds": rds,
@@ -1622,31 +1660,38 @@ def update_rds_status():
                         "status": instance_status,
                         "metric_type": metric,
                         "metric_value": metric_values[j],
+                        "critical": critical
                     }
                     create_rdshistory(rdshistory_args)
 
             if activity:
                 server_status = update_or_create_rdsstatus(name, defaults={
                     "rds": rds,
+                    "allocated_storage": allocated_storage,
                     "status": instance_status,
                     "last_activity": now,
-                    "activity_data": activity_data
+                    "activity_data": activity_data,
+                    "critical": any_critical,
                 })
 
             elif current_server_status == None:
                 server_status = update_or_create_rdsstatus(name, defaults={
                     "rds": rds,
+                    "allocated_storage": allocated_storage,
                     "status": instance_status,
                     "last_activity": now,
-                    "activity_data": {}
+                    "activity_data": {},
+                    "critical": any_critical,
                 })
             # If the server just stopped or terminated, update the status one last time
             # with empty activity_data and the new state
             elif activity_data == {} and current_server_status.activity_data != {}:
                 server_status = update_or_create_rdsstatus(name, defaults={
                     "rds": rds,
+                    "allocated_storage": allocated_storage,
                     "status": instance_status,
-                    "activity_data": {}
+                    "activity_data": {},
+                    "critical": any_critical,
                 })
 
 
@@ -1694,9 +1739,13 @@ def update_elb_status():
             metrics_expected_times = [now.replace(second=0, microsecond=0)-timedelta(minutes=5),
                                       now.replace(second=0, microsecond=0)-timedelta(minutes=10)]
 
+            any_critical = False
             for metric in metrics_to_get:
                 metric_values = all_metrics_data[metric.name][i]['Values']
                 metric_dates = all_metrics_data[metric.name][i]['Timestamps']
+
+                threshold = metric.threshold
+                to_exceed = metric.to_exceed
 
                 if len(metric_values) == 2:
                     activity = True
@@ -1714,6 +1763,17 @@ def update_elb_status():
                             metric_values.append(0)
 
                 for j in range(len(metric_values)):
+                    critical = False
+                    if threshold is not None:
+                        if to_exceed:
+                            if metric_values[j] > threshold:
+                                critical = True
+                                any_critical = True
+                        else:
+                            if metric_values[j] < threshold:
+                                critical = True
+                                any_critical = True
+
                     metric_date = metric_dates[j]
                     elbhistory_args = {
                         "elb": elb,
@@ -1723,6 +1783,7 @@ def update_elb_status():
                         "state_reason": state_reason,
                         "metric_type": metric,
                         "metric_value": metric_values[j],
+                        "critical": critical,
                     }
                     create_elbhistory(elbhistory_args)
 
@@ -1732,7 +1793,8 @@ def update_elb_status():
                     "state_code": state_code,
                     "state_reason": state_reason,
                     "last_activity": now,
-                    "activity_data": activity_data
+                    "activity_data": activity_data,
+                    "critical": any_critical,
                 })
 
             elif current_elb_status == None:
@@ -1741,7 +1803,8 @@ def update_elb_status():
                     "state_code": state_code,
                     "state_reason": state_reason,
                     "last_activity": now,
-                    "activity_data": {}
+                    "activity_data": {},
+                    "critical": any_critical,
                 })
             # If the server just stopped or terminated, update the status one last time
             # with empty activity_data and the new state
@@ -1751,7 +1814,8 @@ def update_elb_status():
                     "state_code": state_code,
                     "state_reason": state_reason,
                     "last_activity": now,
-                    "activity_data": {}
+                    "activity_data": {},
+                    "critical": any_critical,
                 })
 
 

@@ -5,6 +5,11 @@ import { RDSStatus, ServerStatus } from "@/api/services/monitor/types";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 
+const statusStyles: { [condition: string]: string } = {
+  normal: "bg-blue-100 border-blue-400 text-blue-900",
+  critical: "bg-red-100 border-red-400 text-red-900",
+};
+
 const capitalize = (text: string) => {
   return text
     .split(" ")
@@ -18,7 +23,8 @@ const RDSCard = (rdsStatus: RDSStatus) => {
   const [isHovering, setIsHovering] = useState(false);
   const router = useRouter();
 
-  const { rds_id, name, last_activity, status, activity_data } = rdsStatus;
+  const { rds_id, name, last_activity, status, activity_data, critical } =
+    rdsStatus;
 
   const { setDefaultOptions } = require("date-fns");
 
@@ -28,23 +34,36 @@ const RDSCard = (rdsStatus: RDSStatus) => {
     locale: es,
   });
 
+  let color;
+  if (critical) {
+    color = statusStyles.critical;
+  } else {
+    color = statusStyles.normal;
+  }
+
   let splitter = new RegExp("_|-", "g");
   return (
     <Link
-      className="relative pb-6 w-72 md:max-lg:w-52 h-60 md:max-lg:h-72 rounded-lg p-6 border-2 
+      className="relative pb-6 w-72 md:max-lg:w-52 h-72 md:max-lg:h-72 rounded-lg p-6 border-2 
     transition duration-300 shadow-md dark:border-gray-700 hover:shadow-lg"
       href={`/monitor/services/rds/${rds_id}`}
     >
       {status == "available" && (
         <span className="absolute right-6 animate-ping inline-flex h-2 w-2 rounded-full bg-green-600 opacity-100"></span>
       )}
-      <div className="flex flex-col gap-2">
-        <div className="flex flex-col h-10 justify-center mt-2">
+      <div
+        className={`inline-flex mb-2 px-2.5 pt-1 pb-0.5 text-s font-semibold 
+        border-2 ${color} rounded-full`}
+      >
+        {critical ? "Crítico" : "Normal"}
+      </div>
+      <div className="flex flex-col gap-2 mt-2">
+        <div className="flex flex-col justify-center">
           <h3 className="text-2xl font-bold">
             {capitalize(name.split(splitter).join(" "))}
           </h3>
         </div>
-        <div className="flex items-center opacity-60">
+        <div className="flex items-center opacity-60 mb-1">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
