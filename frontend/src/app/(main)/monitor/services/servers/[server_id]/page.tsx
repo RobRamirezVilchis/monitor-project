@@ -38,6 +38,20 @@ import { MultiSelect } from "@/ui/core";
 import { useModifyServerProjectsMutation } from "@/api/mutations/monitor";
 import { setRequestMeta } from "next/dist/server/request-meta";
 
+const statusStyles: { [condition: string]: string } = {
+  normal: "bg-blue-100 border-blue-400 text-blue-900",
+  critical: "bg-red-100 border-red-400 text-red-900",
+};
+
+const capitalize = (text: string) => {
+  return text
+    .split(" ")
+    .map((word) => {
+      return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+    })
+    .join(" ");
+};
+
 const ServerPage = ({ params }: { params: { server_id: string } }) => {
   const [plotMetric, setPlotMetric] = useState("Uso de CPU");
   const [opened, { open, close }] = useDisclosure(false);
@@ -206,6 +220,20 @@ const ServerPage = ({ params }: { params: { server_id: string } }) => {
     metrics = Object.values(metricsKeys);
   }
 
+  let color;
+  if (serverStatus && serverStatus.critical) {
+    color = statusStyles.critical;
+  } else {
+    color = statusStyles.normal;
+  }
+
+  let statusColor;
+  if (serverStatus && serverStatus.state == "running") {
+    statusColor = "green";
+  } else {
+    statusColor = "orange";
+  }
+
   let splitter = new RegExp("_|-", "g");
 
   return (
@@ -237,16 +265,37 @@ const ServerPage = ({ params }: { params: { server_id: string } }) => {
         </form>
       </Modal>
       <BackArrow />
-      <div className="flex justify-between items-center">
-        <h1 className="mb-6 text-5xl font-bold pr-10">
-          <span className="hidden md:inline text-gray-400 dark:text-gray-600">
-            Servidores /{" "}
-          </span>
+      <div className="sm:flex mb-6 items-center justify-between">
+        <div className="flex justify-start items-start sm:items-center">
+          <h1 className="text-5xl font-bold mr-6">
+            <span className="hidden md:inline text-gray-400 dark:text-gray-600">
+              Distribuidores de carga /{" "}
+            </span>
+            {serverStatus && (
+              <span>
+                {capitalize(serverStatus.server_name.split(splitter).join(" "))}
+              </span>
+            )}
+          </h1>
           {serverStatus && (
-            <span>{serverStatus.server_name.split(splitter).join(" ")}</span>
+            <div
+              className={`px-3 py-1.5  text-xl align-middle font-semibold 
+          border-2 ${color} rounded-full`}
+            >
+              {serverStatus.critical ? "Crítico" : "Normal"}
+            </div>
           )}
-        </h1>
-        <p className="opacity-40 text-xl">ID: {serverStatus?.aws_id}</p>
+        </div>
+        {serverStatus && (
+          <div className="flex mt-3 sm:mt-0 ml-0 sm:ml-4 items-center">
+            <span
+              className={`inline-flex h-4 w-4 rounded-full  bg-${statusColor}-500 opacity-100`}
+            ></span>
+            <div className="text-2xl font-semibold opacity-80 ml-3">
+              {capitalize(serverStatus.state)}
+            </div>
+          </div>
+        )}
       </div>
       <div className="flex justify-between items-end">
         {serverStatus ? (
@@ -416,6 +465,14 @@ const cols: ColumnDef<ServerHistory>[] = [
     minSize: 200,
     enableSorting: true,
     //filterVariant: "datetime-range",
+  },
+  {
+    accessorKey: "critical",
+    accessorFn: (row) => row.critical,
+    header: "Crítico",
+    columnTitle: "Crítico",
+    minSize: 200,
+    enableSorting: true,
   },
 ];
 

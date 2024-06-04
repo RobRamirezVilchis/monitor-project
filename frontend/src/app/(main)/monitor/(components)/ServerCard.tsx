@@ -66,7 +66,7 @@ const ServerCard = ({
           <h3 className="text-2xl font-bold">
             {server_name.split(splitter).join(" ")}
           </h3>
-          <p className="text-gray-500">{aws_id}</p>
+          <p className="mt-1 text-gray-500">{aws_id}</p>
         </div>
 
         <div className="flex items-center opacity-60">

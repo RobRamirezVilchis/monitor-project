@@ -1496,7 +1496,7 @@ class LoadBalancerHistoryList(APIView):
         state_code = serializers.CharField()
         metric_type = serializers.CharField()
         metric_value = serializers.FloatField()
-        critical = models.BooleanField()
+        critical = serializers.BooleanField()
 
     def get(self, request, elb_id, *args, **kwargs):
 
@@ -1504,7 +1504,8 @@ class LoadBalancerHistoryList(APIView):
         filters_serializer.is_valid(raise_exception=True)
 
         # Si no se especificó rango de fechas, regresar registros del último día
-        if not (filters_serializer.validated_data.get("register_datetime_after") or filters_serializer.validated_data.get("register_datetime_before")):
+        if not (filters_serializer.validated_data.get("register_datetime_after") or
+                filters_serializer.validated_data.get("register_datetime_before")):
             import datetime
             import pytz
 
