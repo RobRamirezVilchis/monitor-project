@@ -53,9 +53,6 @@ const LoadBalancerCard = (loadBalancerStatus: LoadBalancerStatus) => {
     transition duration-300 shadow-md dark:border-gray-700 hover:shadow-lg"
       href={`/monitor/services/load-balancers/${elb_id}`}
     >
-      {state_code == "active" && (
-        <span className="absolute right-6 animate-ping inline-flex h-2 w-2 rounded-full bg-green-600 opacity-100"></span>
-      )}
       <div
         className={`inline-flex mb-2 px-2.5 pt-1 pb-0.5 text-s font-semibold 
         border-2 ${color} rounded-full`}
