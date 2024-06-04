@@ -146,23 +146,25 @@ const ServersDetailPage = () => {
       </div>
       {serverProjects && (
         <div className="flex flex-row gap-4 flex-wrap">
-          {serversStatus?.map(
-            (serverStatus) =>
-              serverStatus.server_name
-                .toLowerCase()
-                .includes(nameInput.toLowerCase().replace(" ", "_")) &&
-              (projectFilter == null ||
-                serverProjects[serverStatus.server_id].includes(
-                  projectFilter.split(".")[1].slice(1)
-                )) &&
-              !(serverProjects[serverStatus.server_id] == null) && (
-                <ServerCard
-                  key={serverStatus.server_id}
-                  projects={serverProjects[serverStatus.server_id]}
-                  serverStatus={serverStatus}
-                ></ServerCard>
-              )
-          )}
+          {serversStatus
+            ?.sort((x) => -+x.critical)
+            ?.map(
+              (serverStatus) =>
+                serverStatus.server_name
+                  .toLowerCase()
+                  .includes(nameInput.toLowerCase().replace(" ", "_")) &&
+                (projectFilter == null ||
+                  serverProjects[serverStatus.server_id].includes(
+                    projectFilter.split(".")[1].slice(1)
+                  )) &&
+                !(serverProjects[serverStatus.server_id] == null) && (
+                  <ServerCard
+                    key={serverStatus.server_id}
+                    projects={serverProjects[serverStatus.server_id]}
+                    serverStatus={serverStatus}
+                  ></ServerCard>
+                )
+            )}
         </div>
       )}
     </section>

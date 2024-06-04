@@ -1,4 +1,4 @@
-import { UnitStatus, SeverityCount, UnitHistory, DeviceStatus, UnitFilters, LastStatusChange, DeviceFilters, DeviceHistory, Client, CameraDisconnection, LastActiveStatus, SeverityHistory, AreaPlotData, AreaPlotFilters, LastUpdate, DeviceLogsFilters, DeviceLogs, DeviceWifiStatus, UnitLogsFilters, UnitLogs, NewClientData, ServerStatus, ServerHistoryFilters, ServerHistory, MetricsKeys, ServerRegion, ServerType, ServerStatusFilters, RetailDeviceStatus, RetailDeviceHistory, UnitReportContent, RDSStatusFilters, RDSStatus, RDSHistoryFilters, RDSHistory, RDSType, RDSFilters, RDS, Server, Deployment, NewProjectData, ServerProject, Project, LoadBalancer, LoadBalancerStatusFilters, LoadBalancerStatus, LoadBalancerFilters, LoadBalancerHistoryFilters, LoadBalancerHistory, ServerFilters, ModifyProjectsData } from "./types";
+import { UnitStatus, SeverityCount, UnitHistory, DeviceStatus, UnitFilters, LastStatusChange, DeviceFilters, DeviceHistory, Client, CameraDisconnection, LastActiveStatus, SeverityHistory, AreaPlotData, AreaPlotFilters, LastUpdate, DeviceLogsFilters, DeviceLogs, DeviceWifiStatus, UnitLogsFilters, UnitLogs, NewClientData, ServerStatus, ServerHistoryFilters, ServerHistory, MetricsKeys, ServerRegion, ServerType, ServerStatusFilters, RetailDeviceStatus, RetailDeviceHistory, UnitReportContent, RDSStatusFilters, RDSStatus, RDSHistoryFilters, RDSHistory, RDSType, RDSFilters, RDS, Server, Deployment, NewProjectData, ServerProject, Project, LoadBalancer, LoadBalancerStatusFilters, LoadBalancerStatus, LoadBalancerFilters, LoadBalancerHistoryFilters, LoadBalancerHistory, ServerFilters, ModifyProjectsData, UnitFailedTrips } from "./types";
 import { Id, OptionallyPaginated, Paginated } from "@/api/types";
 import { Role, User } from "../auth/types";
 import api from "../..";
@@ -138,6 +138,23 @@ export async function getUnitReportContent(
   );
   return resp.data;
 }
+
+export async function getUnitFailedTrips(
+  filters: UnitFilters,
+  config?: Parameters<typeof http.get>[1]
+) {
+
+    const resp = await http.get<UnitFailedTrips>(
+      api.endpoints.monitor.driving.unitFailedTrips(filters.unit_id),
+      {
+        params: filters,
+        ...config,
+      }
+    );
+    return resp.data;
+
+}
+
 
 
 export async function getUnitHistory(

@@ -133,6 +133,17 @@ class DeviceSeverityCount(APIView):
 
 
 # Device history
+class UnitFailedTripsAPI(APIView):
+    class OutputSerializer(serializers.Serializer):
+        trips = serializers.IntegerField()
+
+    def get(self, request, unit_id, *args, **kwargs):
+        unit = get_unit(unit_id)
+        failed_trips = get_unit_failed_trips(unit)
+
+        output = self.OutputSerializer({"trips": len(failed_trips)}).data
+
+        return Response(output)
 
 
 class UnitHistoryList(APIView):

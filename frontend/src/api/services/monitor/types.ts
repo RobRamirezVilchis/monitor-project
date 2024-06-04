@@ -407,3 +407,7 @@ export interface RetailDeviceSeverityHistoryFilters {
 export interface UnitReportContent {
   content: string
 }
+
+export interface UnitFailedTrips {
+  trips: number;
+}

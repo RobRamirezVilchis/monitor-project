@@ -21,6 +21,8 @@ urlpatterns = [
              path("units/<int:unit_id>/",
                   include(([
                       path("", apis.UnitStatusAPI.as_view(), name="unit-status"),
+                      path("failed-trips/", apis.UnitFailedTripsAPI.as_view(),
+                           name="failed-trips"),
                       path("report/", apis.UnitReportAPI.as_view(),
                            name="unit-report"),
                       path("history/", apis.UnitHistoryList.as_view(),

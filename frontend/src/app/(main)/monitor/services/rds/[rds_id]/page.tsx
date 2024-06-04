@@ -198,7 +198,7 @@ const RDSPage = ({ params }: { params: { rds_id: string } }) => {
           </h1>
           {rdsStatus && (
             <div
-              className={`px-3 py-1.5  text-xl align-middle font-semibold 
+              className={`px-3 py-1.5  text-2xl align-middle font-semibold 
           border-2 ${color} rounded-full`}
             >
               {rdsStatus.critical ? "Crítico" : "Normal"}

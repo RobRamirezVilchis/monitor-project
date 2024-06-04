@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  useUnitFailedTripsQuery,
   useUnitHistoryQuery,
   useUnitLastActiveStatus,
   useUnitLastStatusChange,
@@ -44,6 +45,7 @@ import { useRouter } from "next/navigation";
 import BackArrow from "../../../(components)/BackArrow";
 import { useDisclosure } from "@mantine/hooks";
 import { useSetUnitInactiveMutation } from "@/api/mutations/monitor";
+import { fail } from "assert";
 
 type StatusKey = 0 | 1 | 2 | 3 | 4 | 5;
 const statusStyles: { [key in StatusKey]: string } = {
@@ -155,7 +157,7 @@ const UnitPage = ({ params }: { params: { unit_id: string } }) => {
   const inactive =
     unitStatus?.description == "Inactivo" ||
     unitStatus?.description?.startsWith("Logs pendientes") ||
-    unitStatus?.description?.startsWith("Sin comunicación reciente");
+    unitStatus?.description?.startsWith("Sin comunicación");
 
   const historyQuery = useUnitHistoryQuery({
     variables: {
@@ -175,6 +177,12 @@ const UnitPage = ({ params }: { params: { unit_id: string } }) => {
       unit_id: params.unit_id,
     },
   });
+
+  const failedTrips = useUnitFailedTripsQuery({
+    variables: {
+      unit_id: params.unit_id,
+    },
+  }).data?.trips;
 
   const unitSeverityHistory = useUnitSeverityHistory({
     variables: {
@@ -239,6 +247,13 @@ const UnitPage = ({ params }: { params: { unit_id: string } }) => {
     setUnitInactiveMutation.mutate(unitFilters);
   };
 
+  let statusDescription: string | undefined | null;
+  if (unitStatus?.description == "Sin comunicación (>2 viajes)") {
+    statusDescription = `${failedTrips} viajes sin conexión`;
+  } else {
+    statusDescription = unitStatus?.description;
+  }
+
   return (
     <section className="relative mb-20">
       <BackArrow />
@@ -257,7 +272,7 @@ const UnitPage = ({ params }: { params: { unit_id: string } }) => {
               {statusNames[severity as StatusKey]}
             </div>
             <div className="flex gap-3 text-xl text-gray-500 items-center">
-              <div className="shrink">{unitStatus?.description}</div>
+              <div className="shrink">{statusDescription}</div>
               <div>|</div>
               <div>Desde {timeAgo}</div>
             </div>

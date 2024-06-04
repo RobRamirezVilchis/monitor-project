@@ -152,7 +152,7 @@ const ServerPage = ({ params }: { params: { server_id: string } }) => {
     if (serverProjectsData) {
       reset({ projects: serverProjects });
     }
-  }, [serverProjectsData]);
+  }, [serverProjectsData, reset]);
 
   const modifyProjectsMutation = useModifyServerProjectsMutation({
     onSuccess: () => {
@@ -269,7 +269,7 @@ const ServerPage = ({ params }: { params: { server_id: string } }) => {
         <div className="flex justify-start items-start sm:items-center">
           <h1 className="text-5xl font-bold mr-6">
             <span className="hidden md:inline text-gray-400 dark:text-gray-600">
-              Distribuidores de carga /{" "}
+              Servidores /{" "}
             </span>
             {serverStatus && (
               <span>
@@ -279,7 +279,7 @@ const ServerPage = ({ params }: { params: { server_id: string } }) => {
           </h1>
           {serverStatus && (
             <div
-              className={`px-3 py-1.5  text-xl align-middle font-semibold 
+              className={`px-3 py-1.5  text-2xl align-middle font-semibold 
           border-2 ${color} rounded-full`}
             >
               {serverStatus.critical ? "Crítico" : "Normal"}
