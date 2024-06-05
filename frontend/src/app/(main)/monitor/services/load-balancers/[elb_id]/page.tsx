@@ -261,7 +261,7 @@ const LoadBalancerPage = ({ params }: { params: { elb_id: string } }) => {
               onChange={setPlotMetric}
               data={metrics}
               classNames={{
-                root: "bg-gray-200 rounded-xl",
+                root: "bg-gray-200 dark:bg-gray-800 rounded-xl",
                 indicator: "rounded-lg",
               }}
             ></SegmentedControl>
@@ -273,7 +273,7 @@ const LoadBalancerPage = ({ params }: { params: { elb_id: string } }) => {
               orientation="vertical"
               data={metrics}
               classNames={{
-                root: "bg-gray-200 rounded-xl",
+                root: "bg-gray-200 dark:bg-gray-800 rounded-xl",
                 indicator: "rounded-lg",
               }}
             ></SegmentedControl>
