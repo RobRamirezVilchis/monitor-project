@@ -6,6 +6,7 @@ from .services import *
 from dotenv import load_dotenv
 import requests
 import pandas as pd
+import json
 
 from datetime import datetime, timedelta
 
@@ -146,10 +147,10 @@ def process_driving_data(response, now=None):
             lambda x: datetime.fromisoformat(x))
 
         df_logs["Timestamp"] = df_logs["Timestamp"].dt.tz_localize('UTC')
-
         # Arreglar timezone
         past_logs = df_logs[df_logs["Timestamp"] < (
             now - timedelta(hours=1))]
+
         logs_last_hour = df_logs[df_logs["Timestamp"] > (
             now - timedelta(hours=1))]
 
@@ -162,6 +163,14 @@ def process_driving_data(response, now=None):
 
     else:
         logs_last_hour = pd.DataFrame([])
+
+    """  with open("./past_logs.json", "r") as f:
+        previous_past_logs = json.load(f)
+
+    df_past_logs = pd.DataFrame(previous_past_logs)
+    df_past_logs = pd.concat([df_past_logs, past_logs], ignore_index=True)
+    df_past_logs.to_json("./past_logs.json",
+                         orient='records', date_format='iso') """
 
     log_types = ["total", "restart", "reboot", "start",
                  "data_validation", "source_missing",
@@ -481,7 +490,8 @@ def update_driving_status():
                 }
                 camera_obj = get_or_create_camera(camera_args)
 
-                recent_disconnection_time = camera_data["ten_minutes"][unit_name][cam_num]
+                recent_disconnection_time = camera_data["ten_minutes"][unit_name].get(
+                    cam_num, 0)
                 connected = recent_disconnection_time == 0
 
                 camera_status_args = {
