@@ -89,12 +89,10 @@ const RDSCard = (rdsStatus: RDSStatus) => {
             </span>
           </div>
           <div>
-            {activity_data["Conexiones"] && (
-              <div>
-                <span>Conexiones: </span>
-                <span>{activity_data["Conexiones"]}</span>
-              </div>
-            )}
+            <div>
+              <span>Conexiones: </span>
+              <span>{activity_data["Conexiones"]}</span>
+            </div>
           </div>
         </div>
       </div>

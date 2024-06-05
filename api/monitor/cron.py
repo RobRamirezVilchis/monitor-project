@@ -280,8 +280,8 @@ def process_driving_data(response, now=None):
              1, 2}, 4, "1-2 cámaras fallando"),
             (output_gx["ten_minutes"][device]["restarting_loop"]
              and not datos.get("En_viaje"), 4, "Múltiples restarts"),
-            (1 <= output_gx["hour"][device]["forced_reboot"]
-             <= 5, 4, "Forced reboot reciente"),
+            (output_gx["hour"][device]["forced_reboot"]
+             == 1, 4, "Forced reboot reciente"),
             (datos.get("Estatus") == "orange", 4,
              "Sin comunicación reciente (< 1 día)"),
             (output_gx["hour"][device]["storage_devices"]

@@ -136,13 +136,11 @@ const ServerPage = ({ params }: { params: { server_id: string } }) => {
   });
   let plotData = plotDataQuery.data;
 
-  const serverProjectsQuery = useServerProjectsQuery({
+  const serverProjectsData = useServerProjectsQuery({
     variables: {
       server_id: params.server_id,
     },
-  });
-  const serverProjectsData = serverProjectsQuery.data;
-
+  }).data;
   const serverProjects = serverProjectsData?.map((obj) => obj.name);
 
   const allProjectsData = useProjectsQuery({}).data;
