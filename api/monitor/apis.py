@@ -1068,10 +1068,10 @@ class IndClientCreateAPI(APIView):
 
         client, created = get_or_create_client(
             name=serializer.validated_data["name"],
-            keyname=keyname,
             deployment_name="Industry",
+            keyname=keyname,
+            api_username=serializer.validated_data["api_username"],
             defaults={
-                "api_username": serializer.validated_data["api_username"],
                 "api_password": enc_password
             }
         )

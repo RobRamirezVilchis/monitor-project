@@ -516,10 +516,10 @@ def check_wifi_alerts(device_id):
     return alerts
 
 
-def get_api_credentials(deployment_name, keyname):
+def get_api_credentials(deployment_name, client_id):
     try:
         client = Client.objects.get(
-            deployment__name=deployment_name, keyname=keyname)
+            deployment__name=deployment_name, id=client_id)
     except:
         return None
     encrypt = EncryptionService()

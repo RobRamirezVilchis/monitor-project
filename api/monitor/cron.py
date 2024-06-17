@@ -79,12 +79,12 @@ def make_request(request_url, data, token):
 
 # Safe Driving
 
-def get_driving_data(client):
+def get_driving_data(client_keyname, client_id):
 
     now = datetime.now(tz=pytz.timezone('UTC')).astimezone(pytz.timezone(
         'America/Mexico_City')).replace(tzinfo=pytz.utc)
 
-    credentials = get_api_credentials("Safe Driving", client)
+    credentials = get_api_credentials("Safe Driving", client_id)
 
     # Hardcoded
     urls = {
@@ -101,12 +101,12 @@ def get_driving_data(client):
             "logs": 'https://trm.safe-d.aivat.io/ternium/logs/'
         }
     }
-    if client in urls:
-        login_url = urls[client]["login"]
-        request_url = urls[client]["logs"]
+    if client_keyname in urls:
+        login_url = urls[client_keyname]["login"]
+        request_url = urls[client_keyname]["logs"]
     else:
-        login_url = f'https://{client}.safe-d.aivat.io/login/'
-        request_url = f'https://{client}.safe-d.aivat.io/logs/'
+        login_url = f'https://{client_keyname}.safe-d.aivat.io/login/'
+        request_url = f'https://{client_keyname}.safe-d.aivat.io/logs/'
 
     try:
         token = api_login(login_url, credentials)
@@ -164,13 +164,16 @@ def process_driving_data(response, now=None):
     else:
         logs_last_hour = pd.DataFrame([])
 
-    """  with open("./past_logs.json", "r") as f:
-        previous_past_logs = json.load(f)
+    """ past_logs_file_path = "./monitor/past_logs.json"
+    try:
+        with open(past_logs_file_path, "r") as f:
+            previous_past_logs = json.load(f)
 
-    df_past_logs = pd.DataFrame(previous_past_logs)
-    df_past_logs = pd.concat([df_past_logs, past_logs], ignore_index=True)
-    df_past_logs.to_json("./past_logs.json",
-                         orient='records', date_format='iso') """
+        df_past_logs = pd.DataFrame(previous_past_logs)
+        df_past_logs = pd.concat([df_past_logs, past_logs], ignore_index=True)
+    except FileNotFoundError:
+        past_logs.to_json(past_logs_file_path,
+                          orient='records', date_format='iso') """
 
     log_types = ["total", "restart", "reboot", "start",
                  "data_validation", "source_missing",
@@ -341,9 +344,10 @@ def update_driving_status():
 
     for client in clients:
         client_name = client.name
-        client_alias = client.keyname
+        client_keyname = client.keyname
+        client_id = client.id
 
-        response = get_driving_data(client_alias)
+        response = get_driving_data(client_keyname, client_id)
         if response is not None:
             processed_data = process_driving_data(response)
 
@@ -373,7 +377,7 @@ def update_driving_status():
         history_logs = []
         alerts_to_send = {}
         for unit_name, unit_logs in hour_data.items():
-            if client_alias != "tp":  # Hardcoded
+            if client_keyname != "tp":  # Hardcoded
                 unit_logs["En_viaje"] = None
                 unit_logs["Estatus"] = None
 
@@ -569,7 +573,7 @@ def update_driving_status():
             # Last 10 minutes
 
             recent_unit_logs = recent_data[unit_name]
-            if client_alias != "tp":  # Hardcoded
+            if client_keyname != "tp":  # Hardcoded
                 recent_unit_logs["En_viaje"] = None
                 recent_unit_logs["Estatus"] = None
 
@@ -659,12 +663,12 @@ def check_severity_ratios():
 # Industry
 
 
-def get_industry_data(client_keyname):
+def get_industry_data(client_keyname, client_id):
 
     login_url = f'https://{client_keyname}.industry.aivat.io/login/'
     request_url = f'https://{client_keyname}.industry.aivat.io/stats_json/'
 
-    credentials = get_api_credentials("Industry", client_keyname)
+    credentials = get_api_credentials("Industry", client_id)
 
     try:
         token = api_login(login_url, credentials)
@@ -934,10 +938,11 @@ def update_industry_status():
     clients = get_deployment_clients(deployment)
 
     for client in clients:
-        client_alias = client.keyname
+        client_keyname = client.keyname
         client_name = client.name
+        client_id = client.id
 
-        response = get_industry_data(client_alias)
+        response = get_industry_data(client_keyname, client_id)
 
         if response is not None:
             processed_data = process_industry_data(response)
