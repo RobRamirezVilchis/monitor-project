@@ -954,16 +954,21 @@ class IndustryLogsAPI(APIView):
         register_time = serializers.CharField(max_length=50)
 
     def get(self, request, device_id, *args, **kwargs):
+        from rest_framework import status
         global request_url
 
         device = Device.objects.get(id=device_id)
         client_key = device.client.keyname
+        client_id = device.client.id
 
         login_url = f'https://{client_key}.industry.aivat.io/login/'
         request_url = f'https://{client_key}.industry.aivat.io/stats_json/'
 
-        credentials = get_api_credentials("Industry", client_key)
+        credentials = get_api_credentials("Industry", client_id)
         token = api_login(login_url=login_url, credentials=credentials)
+
+        if token is None:
+            return Response({"error": "invalid token"}, status=status.HTTP_400_BAD_REQUEST)
 
         sent_interval = False
 
@@ -988,7 +993,6 @@ class IndustryLogsAPI(APIView):
         response = response.json()
 
         show_empty = request.query_params["show_empty"]
-
         output = []
         for device, logs in response.items():
             if "device" in request.query_params:
