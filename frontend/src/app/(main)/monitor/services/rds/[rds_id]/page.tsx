@@ -22,7 +22,7 @@ import { useDataGrid, useSsrDataGrid } from "@/hooks/data-grid";
 import {
   ServerHistory,
   ServerHistoryFilters,
-  SeverityHistory,
+  StatusHistory,
 } from "@/api/services/monitor/types";
 import { ColumnDef } from "@/ui/data-grid/types";
 import DataGrid from "@/ui/data-grid/DataGrid";

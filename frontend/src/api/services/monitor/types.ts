@@ -147,10 +147,16 @@ export interface AreaPlotFilters {
   client: string | null,
 }
 
-export interface SeverityHistory {
+export interface StatusHistory {
   hora: string,
   severidad: number,
   description: string,
+}
+
+export interface UnitTrip {
+  start_datetime: string,
+  end_datetime: string,
+  active: boolean,
 }
 
 export interface UnitSeverityHistoryFilters {

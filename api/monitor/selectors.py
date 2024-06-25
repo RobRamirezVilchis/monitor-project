@@ -309,6 +309,31 @@ def get_sd_scatterplot_data(args, filters=None):
     return SDScatterplotDataFilter(filters, logs).qs
 
 
+class UnitTripsRangeFilter(rf_filters.FilterSet):
+    register_datetime = rf_filters.DateFromToRangeFilter(
+        method='filter_register_datetime')
+
+    class Meta:
+        model = UnitTrip
+        fields = []
+
+    def filter_register_datetime(self, queryset, name, value):
+        if value:
+            start_date = value.start
+            end_date = value.stop
+            return queryset.filter(
+                Q(start_datetime__range=(start_date, end_date)) |
+                Q(end_datetime__range=(start_date, end_date))
+            )
+        return queryset
+
+
+def get_trips(args, filters=None):
+    trips = UnitTrip.objects.filter(unit_id=args['unit_id'])
+    filtered_trips = UnitTripsRangeFilter(filters, trips).qs
+    return filtered_trips
+
+
 class IndustryScatterplotDataFilter(rf_filters.FilterSet):
     register_datetime = rf_filters.DateFromToRangeFilter()
 

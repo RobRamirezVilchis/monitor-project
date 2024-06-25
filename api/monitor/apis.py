@@ -615,6 +615,46 @@ class UnitScatterPlotAPI(APIView):
         return Response(data)
 
 
+class UnitTripsAPI(APIView):
+    class FiltersSerializer(serializers.Serializer):
+        register_datetime_after = serializers.DateTimeField(required=False)
+        register_datetime_before = serializers.DateTimeField(required=False)
+
+    class OutputSerializer(serializers.Serializer):
+        start_datetime = serializers.DateTimeField()
+        end_datetime = serializers.DateTimeField()
+        active = serializers.BooleanField()
+
+    def get(self, request, unit_id, *args, **kwargs):
+        import datetime
+        import pytz
+
+        filters_serializer = self.FiltersSerializer(data=request.query_params)
+        filters_serializer.is_valid(raise_exception=True)
+
+        # Si no se especificó rango de fechas, regresar registros del último día
+        if not (filters_serializer.validated_data.get("register_datetime_after") or filters_serializer.validated_data.get("register_datetime_before")):
+            import datetime
+            import pytz
+
+            date_now = datetime.datetime.now()
+            end_date = date_now.astimezone(pytz.timezone("America/Mexico_City")).replace(
+                tzinfo=pytz.utc) + datetime.timedelta(hours=6)
+            start_date = end_date - timedelta(hours=24)
+
+            filters_serializer.validated_data["register_datetime_before"] = end_date
+            filters_serializer.validated_data["register_datetime_after"] = start_date
+
+        print(filters_serializer.validated_data)
+
+        trips = get_trips({"unit_id": unit_id},
+                          filters=filters_serializer.validated_data)
+
+        output = self.OutputSerializer(trips, many=True).data
+
+        return Response(output)
+
+
 class DeviceScatterPlotAPI(APIView):
     class FiltersSerializer(serializers.Serializer):
         register_datetime_after = serializers.DateTimeField(required=False)

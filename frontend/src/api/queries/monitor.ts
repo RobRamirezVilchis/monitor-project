@@ -1,5 +1,5 @@
 import { createQuery } from "../helpers/createQuery";
-import { getUnits, getDevices, getUnitHistory, getDrivingSeverityCount, getUnitLastStatusChange, getDeviceHistory, getIndustrySeverityCount, getUnitStatus, getDeviceStatus, getSafeDrivingClients, getIndustryClients, getDeviceLastStatusChange, getIndustryCameraDisconnections, getUnitLastActiveStatus, getUnitSeverityHistory, getSafeDrivingAreaPlotData, getIndustryAreaPlotData, getDrivingLastUpdate, getIndustryLastUpdate, getDeviceSeverityHistory, getDeviceLogs, getDeviceWifiStatus, getUnitLogs, getServersStatus, getServerStatus, getServerHistory, getMetricsKeys, getServerMetricPlotData, getServerRegions, getServerTypes, getRetailDeviceStatus, getSmartRetailSeverityCount, getRetailStatus, getRetailDeviceLastStatusChange, getRetailDeviceLogs, getRetailDeviceHistory, getRetailDeviceSeverityHistory, getSmartRetailAreaPlotData, getSmartRetailClients, getUnitReportContent, getRDSStatus, getAllRDSStatus, getRDSHistory, getRDSMetricPlotData, getRDSMetricsKeys, getRDSRegions, getRDSTypes, getAllRDS, getAllServers, getDeployments, getServersProjects, getProjects, getAllLoadBalancers, getAllLoadBalancerStatus, getLoadBalancerStatus, getLoadBalancerHistory, getLoadBalancerMetricPlotData, getLoadBalancerMetricsKeys, getLoadBalancerRegions, getServerProjects, getUnitFailedTrips } from "../services/monitor";
+import { getUnits, getDevices, getUnitHistory, getDrivingSeverityCount, getUnitLastStatusChange, getDeviceHistory, getIndustrySeverityCount, getUnitStatus, getDeviceStatus, getSafeDrivingClients, getIndustryClients, getDeviceLastStatusChange, getIndustryCameraDisconnections, getUnitLastActiveStatus, getUnitSeverityHistory, getSafeDrivingAreaPlotData, getIndustryAreaPlotData, getDrivingLastUpdate, getIndustryLastUpdate, getDeviceSeverityHistory, getDeviceLogs, getDeviceWifiStatus, getUnitLogs, getServersStatus, getServerStatus, getServerHistory, getMetricsKeys, getServerMetricPlotData, getServerRegions, getServerTypes, getRetailDeviceStatus, getSmartRetailSeverityCount, getRetailStatus, getRetailDeviceLastStatusChange, getRetailDeviceLogs, getRetailDeviceHistory, getRetailDeviceSeverityHistory, getSmartRetailAreaPlotData, getSmartRetailClients, getUnitReportContent, getRDSStatus, getAllRDSStatus, getRDSHistory, getRDSMetricPlotData, getRDSMetricsKeys, getRDSRegions, getRDSTypes, getAllRDS, getAllServers, getDeployments, getServersProjects, getProjects, getAllLoadBalancers, getAllLoadBalancerStatus, getLoadBalancerStatus, getLoadBalancerHistory, getLoadBalancerMetricPlotData, getLoadBalancerMetricsKeys, getLoadBalancerRegions, getServerProjects, getUnitFailedTrips, getUnitTrips } from "../services/monitor";
 import { AreaPlotFilters, DeviceFilters, UnitSeverityHistoryFilters, UnitFilters, DeviceSeverityHistoryFilters, DeviceLogsFilters, UnitLogsFilters, ServerHistoryFilters, ServerStatusFilters, RetailDeviceSeverityHistoryFilters, RDSStatusFilters, RDSFilters, RDSHistoryFilters, LoadBalancerFilters, LoadBalancerStatusFilters, LoadBalancerHistoryFilters, ServerFilters } from "../services/monitor/types";
 import defaultQueryClient from "../clients/defaultQueryClient";
 
@@ -148,6 +148,16 @@ export const useUnitSeverityHistory = createQuery({
   queryPrimaryKey: "severity_history",
   queryKeyVariables: (vars: UnitSeverityHistoryFilters) => vars ? [vars] : [],
   queryFn: (ctx, vars) => getUnitSeverityHistory(vars, { signal: ctx.signal }),
+  cacheTime: 1000 * 60 * 5,  // 5 minutes
+  staleTime: 1000 * 60 * 3,  // 3 minutes
+  keepPreviousData: true,
+  queryClient: defaultQueryClient,
+});
+
+export const useUnitTripsQuery = createQuery({
+  queryPrimaryKey: "unit-trips",
+  queryKeyVariables: (vars: UnitSeverityHistoryFilters) => vars ? [vars] : [],
+  queryFn: (ctx, vars) => getUnitTrips(vars, { signal: ctx.signal }),
   cacheTime: 1000 * 60 * 5,  // 5 minutes
   staleTime: 1000 * 60 * 3,  // 3 minutes
   keepPreviousData: true,

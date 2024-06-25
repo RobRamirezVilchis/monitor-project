@@ -33,6 +33,8 @@ urlpatterns = [
                            name="last-active-status"),
                       path("severity-history/", apis.UnitScatterPlotAPI.as_view(),
                            name="scatter-plot"),
+                      path("trips/", apis.UnitTripsAPI.as_view(),
+                           name="trips"),
                       path("logs/", apis.SafeDrivingLogsAPI.as_view(),
                            name="device-logs"),
                       path("set-inactive/", apis.SetUnitAsInactiveAPI.as_view(),

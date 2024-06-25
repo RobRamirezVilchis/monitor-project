@@ -8,6 +8,7 @@ import {
   useUnitReportQuery,
   useUnitSeverityHistory,
   useUnitStatusQuery,
+  useUnitTripsQuery,
 } from "@/api/queries/monitor";
 import { Unit, UnitFilters, UnitHistory } from "@/api/services/monitor/types";
 
@@ -15,7 +16,13 @@ import { useDataGrid, useSsrDataGrid } from "@/hooks/data-grid";
 import DataGrid from "@/ui/data-grid/DataGrid";
 import { ColumnDef } from "@/ui/data-grid/types";
 
-import { format, formatDistanceToNow, lightFormat, parseISO } from "date-fns";
+import {
+  format,
+  formatDate,
+  formatDistanceToNow,
+  lightFormat,
+  parseISO,
+} from "date-fns";
 import { es } from "date-fns/locale";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 //import { BarChart } from "@mantine/charts";
@@ -26,10 +33,10 @@ import {
   CartesianGrid,
   ResponsiveContainer,
   Tooltip,
-  TooltipProps,
   ScatterChart,
   Scatter,
   ZAxis,
+  ReferenceArea,
 } from "recharts";
 // for recharts v2.1 and above
 import {
@@ -194,6 +201,14 @@ const UnitPage = ({ params }: { params: { unit_id: string } }) => {
 
   const plotData = unitSeverityHistory.data;
 
+  const unitTrips = useUnitTripsQuery({
+    variables: {
+      unit_id: params.unit_id,
+      register_datetime_after: dateValue[0],
+      register_datetime_before: dateValue[1],
+    },
+  }).data;
+
   let timeAgo: string;
   if (unitLastStatusChange.data != null) {
     timeAgo = formatDistanceToNow(
@@ -346,7 +361,7 @@ const UnitPage = ({ params }: { params: { unit_id: string } }) => {
           </div>
         </div>
       </div>
-      {plotData && (
+      {plotData && unitTrips && (
         <ResponsiveContainer width="100%" height={500}>
           <ScatterChart
             margin={{
@@ -356,7 +371,13 @@ const UnitPage = ({ params }: { params: { unit_id: string } }) => {
             }}
           >
             <CartesianGrid strokeDasharray={"3 3"} />
-            <XAxis dataKey="hora" />
+            <XAxis
+              dataKey="hora"
+              type="number"
+              domain={["dataMin", "dataMax"]}
+              scale={"time"}
+              tickFormatter={(tick) => format(tick, "Pp")}
+            />
             <YAxis
               type="number"
               dataKey="severidad"
@@ -365,9 +386,28 @@ const UnitPage = ({ params }: { params: { unit_id: string } }) => {
               ticks={[0, 1, 2, 3, 4, 5]}
             />
             <ZAxis dataKey="descripcion" />
+            {unitTrips.map((interval, index) => {
+              return (
+                <ReferenceArea
+                  key={index}
+                  x1={new Date(interval.start_datetime).getTime()}
+                  x2={new Date(interval.end_datetime).getTime()}
+                  strokeOpacity={0.3}
+                  fill={interval.active ? "green" : "gray"}
+                  fillOpacity={0.15}
+                />
+              );
+            })}
 
             <Tooltip content={<CustomTooltip />} />
-            <Scatter data={plotData} dataKey="severidad" fill="#8884d8">
+            <Scatter
+              data={plotData.map((point) => ({
+                ...point,
+                hora: new Date(point.hora.slice(0, -1) + ":00:00").getTime(),
+              }))}
+              dataKey="severidad"
+              fill="#8884d8"
+            >
               {plotData.map((entry, index) => (
                 <Cell
                   key={`cell-${index}`}
@@ -402,15 +442,19 @@ export default UnitPage;
 
 const ConvertBool = (condition: boolean) => (condition ? "Sí" : "No");
 
-const CustomTooltip = ({
-  active,
-  payload,
-  label,
-}: TooltipProps<ValueType, NameType>) => {
+type TooltipProps = {
+  active?: boolean;
+  payload?: { value: string }[];
+  label?: string;
+};
+
+const CustomTooltip = ({ active, payload, label }: TooltipProps) => {
   if (active && payload && payload.length) {
     return (
       <div className="custom-tooltip bg-white dark:bg-gray-800 p-4 border-2 rounded-lg">
-        <p className="label">{`Hora: ${payload[0].value}`}</p>
+        {payload[0].value && (
+          <p className="label">{`Hora: ${format(payload[0].value, "Pp")}`}</p>
+        )}
         <p className="label">{`Estátus: ${
           statusNames[Number(payload[1].value) as StatusKey]
         }`}</p>

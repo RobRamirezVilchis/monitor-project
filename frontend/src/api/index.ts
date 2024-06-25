@@ -63,6 +63,7 @@ const api = {
         lastStatusChange: (unit_id: UnitId) => `api/v1/monitor/driving/units/${unit_id}/last-status-change/`,
         lastActiveStatus: (unit_id: UnitId) => `api/v1/monitor/driving/units/${unit_id}/last-active-status/`,
         severityHistory: (unit_id: UnitId) => `api/v1/monitor/driving/units/${unit_id}/severity-history/`,
+        trips: (unit_id: UnitId) => `api/v1/monitor/driving/units/${unit_id}/trips/`,
         unitLogs: (unit_id: UnitId) => `api/v1/monitor/driving/units/${unit_id}/logs/`,
         setAsInactive: (unit_id: UnitId) => `api/v1/monitor/driving/units/${unit_id}/set-inactive/`,
       },

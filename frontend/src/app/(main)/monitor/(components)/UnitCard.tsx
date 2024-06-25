@@ -66,8 +66,12 @@ const UnitCard = ({ unit: unit_status }: GxCardProps) => {
       }`}
       href={`/monitor/safe-driving/unit/${unit_id}`}
     >
+      {/* <span className="absolute right-6 animate-ping inline-flex h-2 w-2 rounded-full bg-blue-400 opacity-100"></span> */}
       {on_trip && (
-        <span className="absolute right-6 animate-ping inline-flex h-2 w-2 rounded-full bg-blue-400 opacity-100"></span>
+        <span className="absolute right-6 flex h-3 w-3">
+          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-sky-400 opacity-75"></span>
+          <span className="relative inline-flex rounded-full h-3 w-3 bg-sky-400"></span>
+        </span>
       )}
 
       <div

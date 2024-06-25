@@ -25,7 +25,7 @@ import {
   ModifyProjectsData,
   ServerHistory,
   ServerHistoryFilters,
-  SeverityHistory,
+  StatusHistory,
 } from "@/api/services/monitor/types";
 import { ColumnDef } from "@/ui/data-grid/types";
 import DataGrid from "@/ui/data-grid/DataGrid";

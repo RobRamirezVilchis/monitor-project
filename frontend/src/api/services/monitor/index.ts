@@ -1,4 +1,4 @@
-import { UnitStatus, SeverityCount, UnitHistory, DeviceStatus, UnitFilters, LastStatusChange, DeviceFilters, DeviceHistory, Client, CameraDisconnection, LastActiveStatus, SeverityHistory, AreaPlotData, AreaPlotFilters, LastUpdate, DeviceLogsFilters, DeviceLogs, DeviceWifiStatus, UnitLogsFilters, UnitLogs, NewClientData, ServerStatus, ServerHistoryFilters, ServerHistory, MetricsKeys, ServerRegion, ServerType, ServerStatusFilters, RetailDeviceStatus, RetailDeviceHistory, UnitReportContent, RDSStatusFilters, RDSStatus, RDSHistoryFilters, RDSHistory, RDSType, RDSFilters, RDS, Server, Deployment, NewProjectData, ServerProject, Project, LoadBalancer, LoadBalancerStatusFilters, LoadBalancerStatus, LoadBalancerFilters, LoadBalancerHistoryFilters, LoadBalancerHistory, ServerFilters, ModifyProjectsData, UnitFailedTrips } from "./types";
+import { UnitStatus, SeverityCount, UnitHistory, DeviceStatus, UnitFilters, LastStatusChange, DeviceFilters, DeviceHistory, Client, CameraDisconnection, LastActiveStatus, StatusHistory, AreaPlotData, AreaPlotFilters, LastUpdate, DeviceLogsFilters, DeviceLogs, DeviceWifiStatus, UnitLogsFilters, UnitLogs, NewClientData, ServerStatus, ServerHistoryFilters, ServerHistory, MetricsKeys, ServerRegion, ServerType, ServerStatusFilters, RetailDeviceStatus, RetailDeviceHistory, UnitReportContent, RDSStatusFilters, RDSStatus, RDSHistoryFilters, RDSHistory, RDSType, RDSFilters, RDS, Server, Deployment, NewProjectData, ServerProject, Project, LoadBalancer, LoadBalancerStatusFilters, LoadBalancerStatus, LoadBalancerFilters, LoadBalancerHistoryFilters, LoadBalancerHistory, ServerFilters, ModifyProjectsData, UnitFailedTrips, UnitTrip, UnitSeverityHistoryFilters } from "./types";
 import { Id, OptionallyPaginated, Paginated } from "@/api/types";
 import { Role, User } from "../auth/types";
 import api from "../..";
@@ -225,12 +225,28 @@ export async function setUnitAsInactive(
 
 
 export async function getUnitSeverityHistory(
-  filters: UnitFilters,
+  filters: UnitSeverityHistoryFilters,
   config?: Parameters<typeof http.get>[1]
 ) {
  
-    const resp = await http.get<SeverityHistory[]>(
+    const resp = await http.get<StatusHistory[]>(
       api.endpoints.monitor.driving.severityHistory(filters.unit_id),
+      {
+        params: filters,
+        ...config,
+      }
+    );
+    return resp.data;
+
+}
+
+export async function getUnitTrips(
+  filters: UnitSeverityHistoryFilters,
+  config?: Parameters<typeof http.get>[1]
+) {
+ 
+    const resp = await http.get<UnitTrip[]>(
+      api.endpoints.monitor.driving.trips(filters.unit_id),
       {
         params: filters,
         ...config,
@@ -400,7 +416,7 @@ export async function getDeviceSeverityHistory(
   filters: DeviceFilters,
   config?: Parameters<typeof http.get>[1]
 ) {
-    const resp = await http.get<SeverityHistory[]>(
+    const resp = await http.get<StatusHistory[]>(
       api.endpoints.monitor.industry.severityHistory(filters.device_id),
       {
         params: filters,
@@ -890,7 +906,7 @@ export async function getRetailDeviceSeverityHistory(
   filters: DeviceFilters,
   config?: Parameters<typeof http.get>[1]
 ) {
-    const resp = await http.get<SeverityHistory[]>(
+    const resp = await http.get<StatusHistory[]>(
       api.endpoints.monitor.retail.severityHistory(filters.device_id),
       {
         params: filters,
