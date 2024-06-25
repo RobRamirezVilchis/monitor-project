@@ -584,7 +584,7 @@ class UnitScatterPlotAPI(APIView):
         descriptions = {}
         for register in registers:
             hour = (register.register_datetime -
-                    timedelta(hours=6)).replace(tzinfo=None).isoformat(timespec="hours", sep=' ') + "h"
+                    timedelta(hours=6) + timedelta(hours=1)).replace(tzinfo=None).isoformat(timespec="hours", sep=' ') + "h"
             severity = register.status.severity
             description = register.status.description
 
