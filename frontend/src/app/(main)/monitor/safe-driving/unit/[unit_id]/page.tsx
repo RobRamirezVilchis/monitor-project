@@ -377,6 +377,8 @@ const UnitPage = ({ params }: { params: { unit_id: string } }) => {
               domain={["dataMin", "dataMax"]}
               scale={"time"}
               tickFormatter={(tick) => format(tick, "Pp")}
+              angle={-45}
+              tickMargin={55}
             />
             <YAxis
               type="number"
@@ -419,7 +421,7 @@ const UnitPage = ({ params }: { params: { unit_id: string } }) => {
         </ResponsiveContainer>
       )}
 
-      <Button onClick={open} color="red.9" size="md">
+      <Button className="mt-6" onClick={open} color="red.9" size="md">
         Marcar como inactiva
       </Button>
       <Modal opened={opened} onClose={close} title="¿Estás seguro?" centered>
