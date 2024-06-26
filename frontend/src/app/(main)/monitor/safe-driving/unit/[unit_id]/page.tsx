@@ -115,7 +115,7 @@ const UnitPage = ({ params }: { params: { unit_id: string } }) => {
   const [error, setError] = useState("");
   const [opened, { open, close }] = useDisclosure(false);
   const [elementWidth, setElementWidth] = useState(1000);
-  const elementRef = useRef(null);
+  const elementRef = useRef<HTMLDivElement>(null);
 
   const unit: Unit = {
     name: params.unit_id,
