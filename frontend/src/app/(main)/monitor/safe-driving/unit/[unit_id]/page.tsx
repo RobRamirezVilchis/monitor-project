@@ -45,7 +45,7 @@ import {
 } from "recharts/types/component/DefaultTooltipContent";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { DatePickerInput } from "@mantine/dates";
 import { Button, Modal } from "@mantine/core";
 import { useRouter } from "next/navigation";
@@ -53,6 +53,7 @@ import BackArrow from "../../../(components)/BackArrow";
 import { useDisclosure } from "@mantine/hooks";
 import { useSetUnitInactiveMutation } from "@/api/mutations/monitor";
 import { fail } from "assert";
+import { WidthFull } from "@mui/icons-material";
 
 type StatusKey = 0 | 1 | 2 | 3 | 4 | 5;
 const statusStyles: { [key in StatusKey]: string } = {
@@ -113,6 +114,8 @@ const UnitPage = ({ params }: { params: { unit_id: string } }) => {
   const router = useRouter();
   const [error, setError] = useState("");
   const [opened, { open, close }] = useDisclosure(false);
+  const [elementWidth, setElementWidth] = useState(1000);
+  const elementRef = useRef(null);
 
   const unit: Unit = {
     name: params.unit_id,
@@ -269,6 +272,35 @@ const UnitPage = ({ params }: { params: { unit_id: string } }) => {
     statusDescription = unitStatus?.description;
   }
 
+  const element = document.getElementById("scatterplot");
+
+  useEffect(() => {
+    const updateWidth = () => {
+      if (elementRef.current) {
+        setElementWidth(elementRef.current.offsetWidth);
+      }
+    };
+
+    // Update width on window resize
+    window.addEventListener("resize", updateWidth);
+
+    // Initial update
+    updateWidth();
+
+    // Clean up event listener on component unmount
+    return () => {
+      window.removeEventListener("resize", updateWidth);
+    };
+  }, []);
+
+  console.log(elementWidth);
+
+  const numDataPoints = plotData ? plotData.length : 0;
+  console.log();
+  const tickLabelWidth = 20; // Approximate width of each tick label in pixels
+  const maxTicks = Math.floor(elementWidth / tickLabelWidth);
+  const interval = Math.max(1, Math.ceil(numDataPoints / maxTicks));
+
   return (
     <section className="relative mb-20">
       <BackArrow />
@@ -362,7 +394,7 @@ const UnitPage = ({ params }: { params: { unit_id: string } }) => {
         </div>
       </div>
       {plotData && unitTrips && (
-        <ResponsiveContainer width="100%" height={500}>
+        <ResponsiveContainer ref={elementRef} width="100%" height={500}>
           <ScatterChart
             margin={{
               top: 20,
@@ -377,8 +409,10 @@ const UnitPage = ({ params }: { params: { unit_id: string } }) => {
               domain={["dataMin", "dataMax"]}
               scale={"time"}
               tickFormatter={(tick) => format(tick, "Pp")}
-              angle={-45}
-              tickMargin={55}
+              /*  angle={-45}
+              tickMargin={55} */
+              interval={interval}
+              tick={<CustomXAxisTick />}
             />
             <YAxis
               type="number"
@@ -448,6 +482,17 @@ type TooltipProps = {
   active?: boolean;
   payload?: { value: string }[];
   label?: string;
+};
+
+const CustomXAxisTick = (props: any) => {
+  const { x, y, payload } = props;
+  return (
+    <g className="opacity-70" transform={`translate(${x},${y})`}>
+      <text x={0} y={0} dx={5} dy={20} textAnchor="end" transform="rotate(-45)">
+        {format(payload.value, "Pp")}
+      </text>
+    </g>
+  );
 };
 
 const CustomTooltip = ({ active, payload, label }: TooltipProps) => {
