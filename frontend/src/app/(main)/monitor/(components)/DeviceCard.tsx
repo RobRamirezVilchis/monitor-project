@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 
 export interface GxCardProps {
-  device: DeviceStatus;
+  device_status: DeviceStatus;
 }
 type StatusKey = 1 | 3 | 5;
 const statusStyles: { [key in StatusKey]: string } = {
@@ -21,10 +21,11 @@ const statusNames: { [key in StatusKey]: string } = {
   5: "Crítico",
 };
 
-const DeviceCard = ({ device: device_obj }: GxCardProps) => {
+const DeviceCard = ({ device_status: device_obj }: GxCardProps) => {
   const {
     device_id,
     device: device_name,
+    client,
     last_connection,
     severity,
     description,
@@ -45,19 +46,23 @@ const DeviceCard = ({ device: device_obj }: GxCardProps) => {
 
   return (
     <Link
-      className="relative pb-6 w-72 h-60 rounded-lg p-6 border-2 
+      className="relative pb-6 w-72  h-60 rounded-lg p-6 border-2 
       transition duration-300 shadow-md dark:border-gray-700 hover:shadow-lg"
       href={`/monitor/industry/device/${device_id}`}
     >
-      <div
-        className={`inline-flex mb-3 px-2.5 pt-1 pb-0.5 text-s font-semibold 
-        border-2 ${color} rounded-full`}
-      >
-        {statusNames[severity as StatusKey]}
+      <div className="flex gap-3 justify-between items-end mb-2">
+        <div
+          className={`inline-flex px-2.5 pt-1 pb-0.5 text-s font-semibold 
+          border-2 ${color} rounded-full`}
+        >
+          {statusNames[severity as StatusKey]}
+        </div>
       </div>
 
-      <div className="flex gap-3 mb-2 items-center">
-        <h3 className="ml-1 text-2xl font-bold">{device_name}</h3>
+      <div className="mb-2 ">
+        <span className="ml-1 text-2xl font-bold">{client}</span>
+        <span>{"   "}</span>
+        <span className="ml-1 text-xl font-bold opacity-40">{device_name}</span>
       </div>
 
       <div className="flex items-center my-3">

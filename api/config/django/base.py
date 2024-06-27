@@ -64,7 +64,7 @@ THIRD_PARTY_APPS = [
 CRONJOBS = [
     ('*/10 * * * *', 'monitor.cron.update_driving_status', '>> ' +
      os.path.join(BASE_DIR, 'monitor/log/debug_sd.log' + ' 2>&1 ')),
-    ('*/10 * * * *', 'monitor.cron.update_industry_status_2', '>> ' +
+    ('*/10 * * * *', 'monitor.cron.update_industry_status', '>> ' +
      os.path.join(BASE_DIR, 'monitor/log/debug_ind.log' + ' 2>&1 ')),
     ('*/10 * * * *', 'monitor.cron.update_retail_status', '>> ' +
      os.path.join(BASE_DIR, 'monitor/log/debug_ret.log' + ' 2>&1 ')),

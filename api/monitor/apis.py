@@ -73,7 +73,8 @@ class UnitStatusList(APIView):
 class DeviceStatusList(APIView):
     class OutputSerializer(serializers.Serializer):
         device_id = serializers.IntegerField()
-        device = serializers.CharField()
+        device = serializers.CharField(source='device.name')
+        client = serializers.CharField(source='device.client')
         last_connection = serializers.DateTimeField()
         severity = serializers.IntegerField(source='status.severity')
         description = serializers.CharField(source='status.description')

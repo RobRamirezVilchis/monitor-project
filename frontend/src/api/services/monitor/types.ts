@@ -48,6 +48,7 @@ export interface UnitStatus {
 export interface DeviceStatus {
   device_id: number;
   device: string;
+  client: string;
   last_connection: string | null;
   license_end: string | null;
   delayed: boolean;
