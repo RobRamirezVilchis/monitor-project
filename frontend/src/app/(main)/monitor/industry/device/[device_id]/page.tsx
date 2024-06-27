@@ -251,11 +251,20 @@ const DevicePage = ({ params }: { params: { device_id: string } }) => {
     <section className="relative mb-20">
       <BackArrow />
       <div className="flex mb-4 justify-between items-center">
-        <div className="xl:flex xl:gap-6">
-          <h1 className="text-5xl font-bold">{deviceStatus?.device}</h1>
+        <div className="xl:flex gap-6 items-center">
+          <div className="md:flex gap-3 items-center">
+            <h1 className="text-5xl font-bold">
+              {deviceStatus?.device_description
+                ? deviceStatus.device_description
+                : deviceStatus?.device.replace("_", " ")}
+            </h1>
+            <h2 className=" bg-gray-600 text-white w-fit h-fit py-1 px-2 rounded-lg text-2xl opacity-50 font-semibold">
+              {deviceStatus?.client}
+            </h2>
+          </div>
           <div className="md:flex justify-start items-center gap-4 mt-4 xl:mt-0">
             <div
-              className={`inline-flex h-fit px-4 pt-1 pb-0.5 text-3xl font-semibold mb-2 md:mb-0
+              className={`inline-flex h-fit px-4 pt-1 pb-0.5 text-2xl font-semibold mb-2 md:mb-0
               border-2 ${color} rounded-full items-center`}
             >
               {statusNames[severity as StatusKey]}

@@ -433,7 +433,9 @@ class UnitStatusAPI(APIView):
 class DeviceStatusAPI(APIView):
     class OutputSerializer(serializers.Serializer):
         device_id = serializers.IntegerField()
-        device = serializers.CharField()
+        device = serializers.CharField(source='device.name')
+        device_description = serializers.CharField(source='device.description')
+        client = serializers.CharField(source='device.client')
         last_connection = serializers.DateTimeField()
         license_end = serializers.DateTimeField(source='device.license_end')
         severity = serializers.IntegerField(source='status.severity')
@@ -704,16 +706,19 @@ class DeviceScatterPlotAPI(APIView):
             else:
                 grouped_by_hour[hour].append(severity)
 
-            if severity in descriptions:
-                descriptions[severity].append(description)
+            if hour in descriptions:
+                if severity in descriptions[hour]:
+                    descriptions[hour][severity].append(description)
+                else:
+                    descriptions[hour][severity] = [description]
             else:
-                descriptions[severity] = [description]
+                descriptions[hour] = {severity: [description]}
 
         output = []
         for date, severities in grouped_by_hour.items():
             most_common_severity = max(set(severities), key=severities.count)
             most_common_description = max(
-                set(descriptions[most_common_severity]), key=descriptions[most_common_severity].count)
+                set(descriptions[date][most_common_severity]), key=descriptions[date][most_common_severity].count)
             output.append({"hora": date,
                            "severidad": most_common_severity,
                            "descripcion": most_common_description})
