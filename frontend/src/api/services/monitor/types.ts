@@ -49,6 +49,7 @@ export interface DeviceStatus {
   device_id: number;
   device: string;
   client: string;
+  device_description: string;
   last_connection: string | null;
   license_end: string | null;
   delayed: boolean;

@@ -26,6 +26,7 @@ const DeviceCard = ({ device_status: device_obj }: GxCardProps) => {
     device_id,
     device: device_name,
     client,
+    device_description,
     last_connection,
     severity,
     description,
@@ -62,7 +63,9 @@ const DeviceCard = ({ device_status: device_obj }: GxCardProps) => {
       <div className="mb-2 ">
         <span className="ml-1 text-2xl font-bold">{client}</span>
         <span>{"   "}</span>
-        <span className="ml-1 text-xl font-bold opacity-40">{device_name}</span>
+        <span className="ml-1 text-xl font-bold opacity-40">
+          {device_description ? device_description : device_name}
+        </span>
       </div>
 
       <div className="flex items-center my-3">

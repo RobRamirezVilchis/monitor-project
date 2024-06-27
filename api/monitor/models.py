@@ -40,6 +40,7 @@ class GxStatus(models.Model):
 
 class Gx(models.Model):
     name = models.CharField("Nombre", max_length=50)
+    description = models.CharField(max_length=50, null=True)
     client = models.ForeignKey(Client, on_delete=models.CASCADE)
 
     def __str__(self):
@@ -53,8 +54,8 @@ class Unit(Gx):
 
 
 class Device(Gx):
-    license_days = models.IntegerField(null=True)
-    license_end = models.DateTimeField(null=True)
+    license_days = models.IntegerField(null=True, blank=True)
+    license_end = models.DateTimeField(null=True, blank=True)
 
     def __str__(self):
         return f'{self.client.name} - {self.name}'
