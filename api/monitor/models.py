@@ -57,7 +57,7 @@ class Device(Gx):
     license_end = models.DateTimeField(null=True)
 
     def __str__(self):
-        return self.client.name
+        return f'{self.client.name} - {self.name}'
 
 
 class AlertType(models.Model):
@@ -213,8 +213,7 @@ class DeviceStatus(models.Model):
         verbose_name_plural = "Device status"
 
     def __str__(self):
-        return self.last_update.strftime("%Y-%m-%d %H:%M:%S") + ' - ' + str(self.device.client.name) + " " + str(
-            self.device.name)
+        return f'{self.last_update.strftime("%Y-%m-%d %H:%M:%S")} - {str(self.device.client.name)} {str(self.device.name)}'
 
 
 class DeviceHistory(models.Model):

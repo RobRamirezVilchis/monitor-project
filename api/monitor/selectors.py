@@ -86,7 +86,7 @@ def get_unitstatus(unit_id):
     return unit_status
 
 
-def get_devicestatus(device_id):
+def get_device_status(device_id):
     return DeviceStatus.objects.get(
         device_id=device_id,
     )

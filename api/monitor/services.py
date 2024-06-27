@@ -77,7 +77,7 @@ def set_client_credentials_in_db(keyname, username, password):
 
 # Devices
 
-def update_or_create_devicestatus(args, retries=3, delay=1):
+def update_or_create_device_status(args, retries=3, delay=1):
     try:
         with transaction.atomic():
             obj, created = DeviceStatus.objects.update_or_create(
@@ -88,7 +88,7 @@ def update_or_create_devicestatus(args, retries=3, delay=1):
     except OperationalError as e:
         if retries > 0:
             time.sleep(delay)  # Wait for a moment before retrying
-            return update_or_create_devicestatus(args, retries - 1, delay)
+            return update_or_create_device_status(args, retries - 1, delay)
         else:
             raise e
 

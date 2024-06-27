@@ -440,7 +440,7 @@ class DeviceStatusAPI(APIView):
         delay_time = serializers.DurationField()
 
     def get(self, request, device_id, *args, **kwargs):
-        device_status = get_devicestatus(device_id)
+        device_status = get_device_status(device_id)
 
         data = self.OutputSerializer(device_status).data
 
