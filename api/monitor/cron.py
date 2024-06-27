@@ -707,6 +707,9 @@ def calculate_logs_delay(first_log_time: Optional[datetime], data_last_connectio
                 delayed = True
                 delay_time = time_since_last_log - \
                     timedelta(minutes=10)
+            else:
+                delayed = False
+                delay_time = timedelta(0)
 
     # Si no ha llegado nada en una hora, marcarlo directamente como retraso
     else:
@@ -1587,8 +1590,6 @@ def update_industry_status_2():
                 'status': status
             }
             create_device_history(devicehistory_args)
-
-        return
 
 
 # Smart Retail
