@@ -1078,7 +1078,7 @@ def update_industry_status():
 
                     last_alert = now
 
-            restarted_recently = current_device_status.status.description == "Restarts" \
+            restarted_recently = current_device_status.status.description == "Reinicios" \
                 if current_device_status else False
 
             status_conditions = [
