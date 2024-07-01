@@ -146,6 +146,16 @@ def get_or_create_device(args):
     return device
 
 
+def get_devices_without_updates():
+    import pytz
+    now = datetime.now(tz=pytz.timezone("UTC"))
+
+    devices = Device.objects.filter(
+        devicestatus__last_update__lt=(now-timedelta(minutes=55)), client__active=True)
+
+    return devices
+
+
 class UnitHistoryFilter(rf_filters.FilterSet):
     register_datetime = rf_filters.DateTimeFromToRangeFilter()
     description = rf_filters.CharFilter(
@@ -258,9 +268,9 @@ def get_industry_clients():
     return clients
 
 
-def get_or_create_alerttype(args):
+def get_or_create_alerttype(description):
     alert_type, created = AlertType.objects.get_or_create(
-        description=args["description"]
+        description=description
     )
 
     return alert_type

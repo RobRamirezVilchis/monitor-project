@@ -530,8 +530,7 @@ def update_driving_status():
             alert_interval = 59
             if unit_name in alerts and (last_alert == None or date_now - last_alert > timedelta(minutes=alert_interval)):
                 for description in alerts[unit_name]:
-                    alert_type = get_or_create_alerttype(
-                        {"description": description})
+                    alert_type = get_or_create_alerttype(description)
                     alert_args = {"alert_type": alert_type, "gx": unit_obj,
                                   "register_datetime": date_now, "register_date": date_now.date()}
                     alert = create_alert(alert_args)
@@ -934,7 +933,7 @@ def process_industry_data(response):
     log_counts = {"hour": hourly_log_counts, "recent": recent_log_counts}
 
     print("Disconnection times")
-    print(log_counts)
+
     return log_counts, disconnection_times, last_connections, first_log_times, alerts, license_ends
 
 
@@ -963,7 +962,7 @@ def update_industry_status():
             continue
 
         log_counts, disconnection_times, last_connections, first_log_times, alerts, license_ends = processed_data
-        print(license_ends)
+
         camerastatus_data = []
         camerahistory_data = []
         max_cam_disc_times = {}
@@ -1018,7 +1017,6 @@ def update_industry_status():
                 device.license_end = license_ends[device_name]
                 days_remaining = license_ends[device_name].replace(
                     tzinfo=pytz.timezone('UTC')) - now
-                print(now, license_ends[device_name])
                 device.license_days = days_remaining.days
                 device.save()
 
@@ -1057,8 +1055,7 @@ def update_industry_status():
                 alert_info = ""
 
                 for description in alerts[device_name]:
-                    alert_type = get_or_create_alerttype(
-                        {"description": description})
+                    alert_type = get_or_create_alerttype(description)
 
                     if description == "Desconexión de cámara":
                         # Mandar minutos de desconexión en última hora
@@ -1162,6 +1159,95 @@ def update_industry_status():
                 'status': status
             }
             create_device_history(devicehistory_args)
+
+        disconnected_devices = get_devices_without_updates()
+        for device in disconnected_devices:
+            try:
+                current_device_status = device.devicestatus
+                db_register_time = current_device_status.last_update
+                db_last_connection = current_device_status.last_connection
+                db_delay_time = current_device_status.delay_time
+            except:
+                current_device_status = None
+                db_last_connection = None
+                db_register_time = None
+                db_delay_time = timedelta(0)
+
+            delayed, delay_time = calculate_logs_delay(
+                None, None, db_last_connection, db_register_time, db_delay_time)
+
+            last_alert_time = current_device_status.last_alert if current_device_status else None
+            alert_interval = 59
+            last_alert = current_device_status.last_alert if current_device_status else None
+            alert_interval = 59
+
+            if delayed:
+                alerts = ["Sin comunicación reciente"]
+            else:
+                alerts = []
+
+            if last_alert == None or now - last_alert > timedelta(minutes=alert_interval):
+                message = f'{client_name} - {device.name}:\n'
+                alert_info = ""
+
+                for description in alerts:
+                    alert_type = get_or_create_alerttype(description)
+
+                    message += f'{description}: {alert_info}\n' if alert_info else f'{description}\n'
+
+                    alert_args = {"alert_type": description, "gx": device,
+                                  "register_datetime": now, "register_date": now.date(),
+                                  "description": alert_info}
+                    create_alert(alert_args)
+
+                if alerts and os.environ.get("ALERTS") == "true":
+                    send_telegram(chat="INDUSTRY_CHAT",
+                                  message=message)
+
+                    last_alert = now
+
+            if (delay_time >= timedelta(
+                    minutes=60)):
+
+                args = {
+                    'severity': 5,
+                    'description': "Sin comunicación",
+                    'deployment': deployment
+                }
+                status = get_or_create_gxstatus(args)
+
+                defaults = {
+                    'last_update': now,
+                    'camera_connection': timedelta(0),
+                    'batch_dropping': 0,
+                    'restart': 0,
+                    'license': 0,
+                    'shift_change': 0,
+                    'others': 0,
+                    'last_alert': last_alert_time,
+                    'delayed': delayed,
+                    'delay_time': delay_time,
+                    'status': status,
+                }
+                update_or_create_device_status(
+                    {"device": device, "defaults": defaults})
+
+                devicehistory_args = {
+                    'device': device,
+                    'register_date': now.date(),
+                    'register_datetime': now,
+                    'last_connection': db_last_connection,
+                    'delayed': delayed,
+                    'delay_time': delay_time,
+                    'camera_connection': timedelta(0),
+                    'batch_dropping': 0,
+                    'restart': 0,
+                    'license': 0,
+                    'shift_change': 0,
+                    'others': 0,
+                    'status': status
+                }
+                create_device_history(devicehistory_args)
 
 
 # Smart Retail
