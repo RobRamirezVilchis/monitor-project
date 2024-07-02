@@ -1046,8 +1046,6 @@ def update_industry_status():
             else:
                 last_connection = db_last_connection
 
-            last_alert_time = current_device_status.last_alert if current_device_status else None
-            alert_interval = 59
             last_alert = current_device_status.last_alert if current_device_status else None
             alert_interval = 59
 
@@ -1126,7 +1124,7 @@ def update_industry_status():
                 'shift_change': log_counts["hour"][device_name]['counts'].get("shift_change", 0),
                 'others': log_counts["hour"][device_name]['counts'].get("others", 0),
                 'last_connection': last_connection,
-                'last_alert': last_alert_time,
+                'last_alert': last_alert,
                 'delayed': delayed,
                 'delay_time': delay_time,
                 'status': status,
@@ -1183,8 +1181,6 @@ def update_industry_status():
         delayed, delay_time = calculate_logs_delay(
             None, None, db_last_connection, db_register_time, db_delay_time)
 
-        last_alert_time = current_device_status.last_alert if current_device_status else None
-        alert_interval = 59
         last_alert = current_device_status.last_alert if current_device_status else None
         alert_interval = 59
 
@@ -1231,7 +1227,7 @@ def update_industry_status():
                 'license': 0,
                 'shift_change': 0,
                 'others': 0,
-                'last_alert': last_alert_time,
+                'last_alert': last_alert,
                 'delayed': delayed,
                 'delay_time': delay_time,
                 'status': status,
