@@ -678,7 +678,7 @@ def calculate_logs_delay(first_log_time: Optional[datetime], data_last_connectio
         if db_last_connection:
 
             # Revisar si hubo retraso entre el primer log en los últimos 10 minutos y la última conexión según la DB
-            # Se verifica que hayan registros recientes (con db_register_time) para no tomar un falla en el ćodigo
+            # Se verifica que hayan registros recientes (con db_register_time) para no tomar un error en el ćodigo
             # como retraso
 
             # Arreglar caso en el que se missea el log reciente por poquito, produciendo un retraso falso
@@ -1034,7 +1034,12 @@ def update_industry_status():
                 db_delay_time = timedelta(0)
 
             delayed, delay_time = calculate_logs_delay(
-                first_log_times[device_name], last_connections[device_name], db_last_connection, db_register_time, db_delay_time)
+                first_log_times[device_name],
+                last_connections[device_name],
+                db_last_connection,
+                db_register_time,
+                db_delay_time
+            )
 
             if last_connections[device_name]:
                 last_connection = last_connections[device_name]
@@ -1195,7 +1200,7 @@ def update_industry_status():
 
                     message += f'{description}: {alert_info}\n' if alert_info else f'{description}\n'
 
-                    alert_args = {"alert_type": description, "gx": device,
+                    alert_args = {"alert_type": alert_type, "gx": device,
                                   "register_datetime": now, "register_date": now.date(),
                                   "description": alert_info}
                     create_alert(alert_args)
