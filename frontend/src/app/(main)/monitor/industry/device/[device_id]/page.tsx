@@ -247,6 +247,8 @@ const DevicePage = ({ params }: { params: { device_id: string } }) => {
     setUnitInactiveMutation.mutate(deviceFilters);
   };
 
+  console.log(plotData);
+
   return (
     <section className="relative mb-20">
       <BackArrow />
@@ -256,7 +258,7 @@ const DevicePage = ({ params }: { params: { device_id: string } }) => {
             <h1 className="text-5xl font-bold">
               {deviceStatus?.device_description
                 ? deviceStatus.device_description
-                : deviceStatus?.device.replace("_", " ")}
+                : deviceStatus?.device_name.replace("_", " ")}
             </h1>
             <h2 className=" bg-gray-600 text-white w-fit h-fit py-1 px-2 rounded-lg text-2xl opacity-50 font-semibold">
               {deviceStatus?.client}
@@ -378,9 +380,11 @@ const DevicePage = ({ params }: { params: { device_id: string } }) => {
           </div>
         </div>
       </div>
-      {plotData && (
+      {plotData && plotData.length > 0 && (
         <ResponsiveContainer width="100%" height={500}>
           <ScatterChart
+            width={730}
+            height={250}
             margin={{
               top: 20,
               right: 20,

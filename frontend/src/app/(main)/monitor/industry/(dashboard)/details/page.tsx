@@ -102,6 +102,7 @@ const IndustryDetailsPage = () => {
     Funcionando: number;
   }[] = [];
 
+  console.log(deviceData);
   return (
     <section>
       <div className="flex items-center">
@@ -172,10 +173,10 @@ const IndustryDetailsPage = () => {
       </div>
 
       <div className="flex flex-row gap-4 flex-wrap">
-        {deviceData?.map((device) =>
-          device.device.includes(value) &&
-          (filter == null || device.severity == Number(filter)) ? (
-            <DeviceCard key={device.device} device_status={device} />
+        {deviceData?.map((deviceStatus, i) =>
+          deviceStatus.device_name.includes(value) &&
+          (filter == null || deviceStatus.severity == Number(filter)) ? (
+            <DeviceCard key={i} device_status={deviceStatus} />
           ) : null
         )}
       </div>

@@ -103,7 +103,7 @@ const DeviceLogsPage = ({ params }: { params: { device_id: string } }) => {
 
       <div className="text-5xl mb-6">
         <h1>
-          <span className="font-bold">{deviceStatus?.device}</span>
+          <span className="font-bold">{deviceStatus?.device_name}</span>
           <span className="opacity-40"> - Logs</span>
         </h1>
       </div>

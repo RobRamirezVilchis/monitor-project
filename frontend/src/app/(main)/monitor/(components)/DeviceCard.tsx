@@ -24,7 +24,7 @@ const statusNames: { [key in StatusKey]: string } = {
 const DeviceCard = ({ device_status: device_obj }: GxCardProps) => {
   const {
     device_id,
-    device: device_name,
+    device_name: device_name,
     client,
     device_description,
     last_connection,

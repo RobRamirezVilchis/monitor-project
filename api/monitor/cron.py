@@ -1167,6 +1167,8 @@ def update_industry_status():
 
     disconnected_devices = get_devices_without_updates()
     for device in disconnected_devices:
+        client_name = device.client.name
+
         try:
             current_device_status = device.devicestatus
             db_register_time = current_device_status.last_update
@@ -1201,13 +1203,13 @@ def update_industry_status():
                 message += f'{description}: {alert_info}\n' if alert_info else f'{description}\n'
 
                 alert_args = {"alert_type": alert_type, "gx": device,
-                                "register_datetime": now, "register_date": now.date(),
-                                "description": alert_info}
+                              "register_datetime": now, "register_date": now.date(),
+                              "description": alert_info}
                 create_alert(alert_args)
 
             if alerts and os.environ.get("ALERTS") == "true":
                 send_telegram(chat="INDUSTRY_CHAT",
-                                message=message)
+                              message=message)
 
                 last_alert = now
 

@@ -47,7 +47,7 @@ export interface UnitStatus {
 
 export interface DeviceStatus {
   device_id: number;
-  device: string;
+  device_name: string;
   client: string;
   device_description: string;
   last_connection: string | null;
