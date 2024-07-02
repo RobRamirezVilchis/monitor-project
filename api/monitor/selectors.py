@@ -151,7 +151,10 @@ def get_devices_without_updates():
     now = datetime.now(tz=pytz.timezone("UTC"))
 
     devices = Device.objects.filter(
-        devicestatus__last_update__lt=(now-timedelta(minutes=55)), client__active=True)
+        devicestatus__last_connection__lt=(now-timedelta(minutes=55)),
+        devicestatus__last_update__gt=(now-timedelta(minutes=60)),
+        client__active=True
+    )
 
     return devices
 
