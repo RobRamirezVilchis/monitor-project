@@ -110,7 +110,7 @@ const ServerCard = ({
           className="z-50 absolute invisible opacity-0 bottom-full p-4 w-52 ml-4 mb-2 bg-gray-600 text-white rounded-lg shadow-lg 
       transition-opacity duration-300 delay-200 ease-in-out group-hover:visible group-hover:opacity-100"
         >
-          <p className="font-bold mb-2 opacity-60">Proyectos</p>
+          <p className="font-bold mb-2 opacity-70">Proyectos</p>
           <div className="flex flex-wrap gap-2">
             {projects.map((name, index) => (
               <div

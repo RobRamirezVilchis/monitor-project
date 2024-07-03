@@ -106,22 +106,23 @@ const UnitCard = ({ unit: unit_status }: GxCardProps) => {
       <p className="text-lg leading-7 px-2 dark:bg-gray-700 py-1 bg-gray-200 border border-gray-200 dark:border-gray-700 rounded-md">
         {description}
       </p>
-
-      <div
-        className="absolute invisible opacity-0 bottom-full mb-2 px-4 py-2 bg-gray-600 text-white rounded shadow-lg 
+      <div className="flex justify-center">
+        <div
+          className="absolute invisible opacity-0 bottom-full mb-2 px-4 py-2 bg-gray-600 text-white rounded shadow-lg 
       transition-opacity duration-300 delay-200 ease-in-out group-hover:visible group-hover:opacity-100"
-      >
-        {pending_events == 1 ? (
-          <p>{pending_events} evento pendiente</p>
-        ) : (
-          <p>{pending_events} eventos pendientes</p>
-        )}
+        >
+          {pending_events == 1 ? (
+            <p>{pending_events} evento pendiente</p>
+          ) : (
+            <p>{pending_events} eventos pendientes</p>
+          )}
 
-        {pending_status == 1 ? (
-          <p>{pending_status} status pendiente</p>
-        ) : (
-          <p>{pending_status} status pendientes</p>
-        )}
+          {pending_status == 1 ? (
+            <p>{pending_status} status pendiente</p>
+          ) : (
+            <p>{pending_status} status pendientes</p>
+          )}
+        </div>
       </div>
     </Link>
   );
