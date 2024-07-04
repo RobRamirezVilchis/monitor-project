@@ -159,6 +159,19 @@ def get_devices_without_updates():
     return devices
 
 
+def get_retail_devices_without_updates():
+    import pytz
+    now = datetime.now(tz=pytz.timezone("UTC"))
+
+    devices = Device.objects.filter(
+        retaildevicestatus__last_connection__lt=(now-timedelta(minutes=55)),
+        # retaildevicestatus__last_update__gt=(now-timedelta(minutes=60)),
+        client__active=True
+    )
+
+    return devices
+
+
 class UnitHistoryFilter(rf_filters.FilterSet):
     register_datetime = rf_filters.DateTimeFromToRangeFilter()
     description = rf_filters.CharFilter(

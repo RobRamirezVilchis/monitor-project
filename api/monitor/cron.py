@@ -164,7 +164,7 @@ def process_driving_data(response, now=None):
     else:
         logs_last_hour = pd.DataFrame([])
 
-    """ past_logs_file_path = "./monitor/past_logs.json"
+    """ past_logs_file_path = "/home/spare/Documents/monitor/monitor-project/api/monitor/past_logs.json"
     try:
         with open(past_logs_file_path, "r") as f:
             previous_past_logs = json.load(f)
@@ -932,8 +932,6 @@ def process_industry_data(response):
 
     log_counts = {"hour": hourly_log_counts, "recent": recent_log_counts}
 
-    print("Disconnection times")
-
     return log_counts, disconnection_times, last_connections, first_log_times, alerts, license_ends
 
 
@@ -1507,8 +1505,35 @@ def update_retail_status():
             else:
                 last_connection = db_last_connection
 
-            last_alert_time = current_device_status.last_alert if current_device_status else None
+            last_alert = current_device_status.last_alert if current_device_status else None
             alert_interval = 59
+
+            if delayed:
+                alerts[device_name].add("Sin conexión reciente")
+
+            # Create and send new alerts
+            if last_alert == None or now - last_alert > timedelta(minutes=alert_interval):
+                message = f'{client_name} - {device.name}:\n'
+                alert_info = ""
+
+                for description in alerts[device_name]:
+                    alert_type = get_or_create_alerttype(description)
+
+                    if description == "Desconexión de cámara":
+                        # Mandar minutos de desconexión en última hora
+                        alert_info = str(
+                            log_counts['hour'][device_name]['counts'].get('camera_connection'))
+
+                    message += f'{description}: {alert_info}\n' if alert_info else f'{description}\n'
+
+                    alert_args = {"alert_type": alert_type, "gx": device,
+                                  "register_datetime": now, "register_date": now.date(),
+                                  "description": alert_info}
+                    alert = create_alert(alert_args)
+
+                if alerts[device_name] and os.environ.get("ALERTS") == "true":
+                    send_telegram(chat="INDUSTRY_CHAT",
+                                  message=message)
 
             status_conditions = [
                 (max_cam_disc_times[device_name] >
@@ -1537,7 +1562,7 @@ def update_retail_status():
             defaults = {
                 "last_update": now,
                 "last_connection": last_connection,
-                "last_alert": last_alert_time,
+                "last_alert": last_alert,
                 "delayed": delayed,
                 "delay_time": delay_time,
                 "status": status,
@@ -1551,7 +1576,7 @@ def update_retail_status():
                 "register_datetime": now,
                 "register_date": now.date(),
                 "last_connection": last_connection,
-                "last_alert": last_alert_time,
+                "last_alert": last_alert,
                 "delayed": delayed,
                 "delay_time": delay_time,
                 "status": status,

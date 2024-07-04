@@ -487,8 +487,19 @@ type TooltipProps = {
 const CustomXAxisTick = (props: any) => {
   const { x, y, payload } = props;
   return (
-    <g className="opacity-70" transform={`translate(${x},${y})`}>
-      <text x={0} y={0} dx={5} dy={20} textAnchor="end" transform="rotate(-45)">
+    <g
+      className="text-gray-500 dark:text-gray-200"
+      transform={`translate(${x},${y})`}
+    >
+      <text
+        x={0}
+        y={0}
+        dx={5}
+        dy={20}
+        className="text-gray-500 dark:text-gray-200 fill-current"
+        textAnchor="end"
+        transform="rotate(-45)"
+      >
         {format(payload.value, "Pp")}
       </text>
     </g>
