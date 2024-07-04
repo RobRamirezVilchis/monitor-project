@@ -149,11 +149,11 @@ def process_driving_data(response, now=None):
         df_logs["Timestamp"] = df_logs["Timestamp"].dt.tz_localize('UTC')
         # Arreglar timezone
 
-        # Consider a log as delayed, if it was uploaded within the last 10 minutes, 
+        # Consider a log as delayed, if it was uploaded within the last 10 minutes,
         # but generated before that time interval
-        past_logs = df_logs[df_logs["Timestamp"] < (
-            now - timedelta(minutes=10)) & df_logs["Fecha_subida"] > (
-            now - timedelta(minutes=10))]
+        """ past_logs = df_logs[(df_logs["Timestamp"] < (
+            now - timedelta(minutes=10))) & (df_logs["Fecha_subida"] > (
+                now - timedelta(minutes=10)))] """
 
         logs_last_hour = df_logs[df_logs["Timestamp"] > (
             now - timedelta(hours=1))]
@@ -168,7 +168,7 @@ def process_driving_data(response, now=None):
     else:
         logs_last_hour = pd.DataFrame([])
 
-    past_logs_file_path = "/home/spare/Documents/monitor/monitor-project/api/monitor/past_logs.json"
+    """ past_logs_file_path = "/home/spare/Documents/monitor/monitor-project/api/monitor/past_logs.json"
     try:
         with open(past_logs_file_path, "r") as f:
             previous_past_logs = json.load(f)
@@ -177,7 +177,7 @@ def process_driving_data(response, now=None):
         df_past_logs = pd.concat([df_past_logs, past_logs], ignore_index=True)
     except FileNotFoundError:
         past_logs.to_json(past_logs_file_path,
-                          orient='records', date_format='iso')
+                          orient='records', date_format='iso') """
 
     log_types = ["total", "restart", "reboot", "start",
                  "data_validation", "source_missing",
@@ -456,7 +456,18 @@ def update_driving_status():
                 # If the unit just turned inactive, check last active status
                 # If the last status was read only ssd, override severity to 5 and priority to True
 
-                if was_unit_active:
+                last_active_status = get_unit_last_active_status(unit_obj)
+                if last_active_status:
+                    if last_active_status.status.description == "Read only SSD":
+                        severity = 5
+                        priority = True
+                        message = "Sin comunicación reciente, último mensaje fue Read only SSD"
+                        if unit_name in alerts:
+                            alerts[unit_name].append(message)
+                        else:
+                            alerts[unit_name] = [message]
+
+                """ if was_unit_active:
                     last_active_status = get_unit_last_active_status(unit_obj)
                     if last_active_status:
                         if last_active_status.status.description == "Read only SSD":
@@ -477,7 +488,7 @@ def update_driving_status():
                         if unit_name in alerts:
                             alerts[unit_name].append(message)
                         else:
-                            alerts[unit_name] = [message]
+                            alerts[unit_name] = [message] """
 
             # Get GxStatus object
             status_args = {

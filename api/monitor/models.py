@@ -174,7 +174,7 @@ class UnitHistory(models.Model):
         verbose_name_plural = "Unit histories"
 
     def __str__(self):
-        return self.register_date.strftime("%Y-%m-%d %H:%M:%S") + ' - ' + str(self.unit.name)
+        return self.register_datetime.strftime("%Y-%m-%d %H:%M:%S") + ' - ' + str(self.unit.name)
 
 
 class UnitTrip(models.Model):

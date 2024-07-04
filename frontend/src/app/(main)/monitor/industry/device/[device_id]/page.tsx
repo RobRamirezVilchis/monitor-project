@@ -260,7 +260,7 @@ const DevicePage = ({ params }: { params: { device_id: string } }) => {
                 ? deviceStatus.device_description
                 : deviceStatus?.device_name.replace("_", " ")}
             </h1>
-            <h2 className=" bg-gray-600 text-white dark:bg-gray-700  w-fit h-fit py-1 px-2 rounded-lg text-2xl opacity-50 font-semibold">
+            <h2 className=" bg-gray-600 text-white dark:text-white dark:bg-gray-700  w-fit h-fit py-1 px-2 rounded-lg text-2xl opacity-50 font-semibold">
               {deviceStatus?.client}
             </h2>
           </div>
