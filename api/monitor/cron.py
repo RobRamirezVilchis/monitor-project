@@ -147,6 +147,7 @@ def process_driving_data(response, now=None):
             lambda x: datetime.fromisoformat(x))
 
         df_logs["Timestamp"] = df_logs["Timestamp"].dt.tz_localize('UTC')
+        # df_logs["Fecha_subida"] = df_logs["Fecha_subida"].dt.tz_localize('UTC')
         # Arreglar timezone
 
         # Consider a log as delayed, if it was uploaded within the last 10 minutes,
@@ -169,12 +170,15 @@ def process_driving_data(response, now=None):
         logs_last_hour = pd.DataFrame([])
 
     """ past_logs_file_path = "/home/spare/Documents/monitor/monitor-project/api/monitor/past_logs.json"
+
     try:
         with open(past_logs_file_path, "r") as f:
             previous_past_logs = json.load(f)
 
         df_past_logs = pd.DataFrame(previous_past_logs)
         df_past_logs = pd.concat([df_past_logs, past_logs], ignore_index=True)
+        df_past_logs.to_json(past_logs_file_path,
+                             orient='records', date_format='iso')
     except FileNotFoundError:
         past_logs.to_json(past_logs_file_path,
                           orient='records', date_format='iso') """
@@ -257,18 +261,18 @@ def process_driving_data(response, now=None):
 
     severities = {}
     alerts = {}
-    for device, datos in device_dict.items():
+    for device, device_data in device_dict.items():
         disc_cameras = sum(
             [mins > 0 for cam, mins in output_cameras["ten_minutes"][device].items()])
-        if datos["Ultima_actualizacion"] != 'null':
+        if device_data["Ultima_actualizacion"] != 'null':
             last_connection = datetime.fromisoformat(
-                datos["Ultima_actualizacion"]).replace(tzinfo=pytz.utc)
+                device_data["Ultima_actualizacion"]).replace(tzinfo=pytz.utc)
         else:
             last_connection = None
 
         alert_conditions = {
             "Read only SSD": output_gx["hour"][device]["read_only_ssd"] > 0,
-            "En viaje con tres cámaras fallando": datos.get("En_viaje") and disc_cameras == 3
+            "En viaje con tres cámaras fallando": device_data.get("En_viaje") and disc_cameras == 3
         }
 
         for description, cond in alert_conditions.items():
@@ -282,37 +286,37 @@ def process_driving_data(response, now=None):
             # (Condition, Status, Description)
             (output_gx["hour"][device]["read_only_ssd"]
              > 0, 5, "Read only SSD"),
-            (datos.get("En_viaje") and disc_cameras ==
-             3, 5, "Tres cámaras fallando"),
+            (device_data.get("En_viaje") and disc_cameras >
+             2, 5, "Tres cámaras fallando"),
             (output_gx["ten_minutes"][device]["restarting_loop"]
-             and datos.get("En_viaje"), 5, "Múltiples restarts"),
+             and device_data.get("En_viaje"), 5, "Múltiples restarts"),
             (output_gx["hour"][device]["forced_reboot"]
              > 1, 5, "forced reboot (>1)"),
-            (datos.get("Estatus") == "red" and datos.get(
+            (device_data.get("Estatus") == "red" and device_data.get(
                 "En_viaje"), 5, "Sin comunicación reciente"),
-            (datos.get("Jsons_eventos_pendientes") > 100 or datos.get(
+            (device_data.get("Jsons_eventos_pendientes") > 100 or device_data.get(
                 "Jsons_status_pendientes") > 1000, 5, "Logs pendientes (>100)"),
-            (datos.get("En_viaje") and disc_cameras in {
+            (device_data.get("En_viaje") and disc_cameras in {
              1, 2}, 4, "1-2 cámaras fallando"),
             (output_gx["ten_minutes"][device]["restarting_loop"]
-             and not datos.get("En_viaje"), 4, "Múltiples restarts"),
+             and not device_data.get("En_viaje"), 4, "Múltiples restarts"),
             (output_gx["hour"][device]["forced_reboot"]
              == 1, 4, "Forced reboot reciente"),
-            (datos.get("Estatus") == "orange", 4,
+            (device_data.get("Estatus") == "orange", 4,
              "Sin comunicación reciente (< 1 día)"),
             (output_gx["hour"][device]["storage_devices"]
              > 0, 3, "Errores de memoria"),
-            (100 > datos.get("Jsons_eventos_pendientes") >
-             20 or datos.get("Jsons_status_pendientes") > 100, 3, "Logs pendientes (>20)"),
+            (100 > device_data.get("Jsons_eventos_pendientes") >
+             20 or device_data.get("Jsons_status_pendientes") > 100, 3, "Logs pendientes (>20)"),
             (output_gx["hour"][device]["total"]
              > 10, 3, "Más de 10 mensajes"),
-            (datos.get("Estatus") == "green" and (
+            (device_data.get("Estatus") == "green" and (
                 output_gx["hour"][device]["Aux"] == 0 or output_gx["hour"][device]["Ignición"] == 0), 2, "Sin AUX ni Ignición"),
-            (last_connection and not datos.get("En_viaje")
+            (last_connection and not device_data.get("En_viaje")
              and last_connection > now - timedelta(hours=2), 2, "Comunicación reciente"),
-            (datos.get("En_viaje") and last_connection > now - timedelta(hours=1)
+            (device_data.get("En_viaje") and last_connection > now - timedelta(hours=1)
              and 10 > output_gx["hour"][device]["total"] > 5, 2, "De 5 a 10 mensajes en última hora"),
-            (datos.get("En_viaje") and last_connection > now - timedelta(hours=1)
+            (device_data.get("En_viaje") and last_connection > now - timedelta(hours=1)
              and output_gx["hour"][device]["total"] < 5, 1, "Comunicación reciente"),
         ]
 

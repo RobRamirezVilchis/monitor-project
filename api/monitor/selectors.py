@@ -184,6 +184,7 @@ class UnitHistoryFilter(rf_filters.FilterSet):
             'restart',
             'reboot',
             'start',
+
             'data_validation',
             'source_missing',
             'camera_connection',

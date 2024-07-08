@@ -66,7 +66,7 @@ class UnitHistoryAdmin(admin.ModelAdmin):
 
     )
 
-    search_fields = ('unit__name', 'id')
+    search_fields = ('unit__name',)
 
     def get_client(self, obj):
         return obj.unit.client.name

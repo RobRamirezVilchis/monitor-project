@@ -895,8 +895,9 @@ class SafeDrivingLogsAPI(APIView):
     def get(self, request, unit_id, *args, **kwargs):
         unit = Unit.objects.get(id=unit_id)
         client_key = unit.client.keyname
+        client_id = unit.client.id
 
-        credentials = get_api_credentials("Safe Driving", client_key)
+        credentials = get_api_credentials("Safe Driving", client_id)
 
         # Hardcoded
         urls = {
@@ -938,6 +939,7 @@ class SafeDrivingLogsAPI(APIView):
         response, status = make_request(
             request_url, data=params, token=token)
         response = response.json()
+        print(response)
 
         if "tipo" in request.query_params:
             query_log_type = request.query_params["tipo"]
