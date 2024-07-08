@@ -147,14 +147,14 @@ def process_driving_data(response, now=None):
             lambda x: datetime.fromisoformat(x))
 
         df_logs["Timestamp"] = df_logs["Timestamp"].dt.tz_localize('UTC')
-        # df_logs["Fecha_subida"] = df_logs["Fecha_subida"].dt.tz_localize('UTC')
+        df_logs["Fecha_subida"] = df_logs["Fecha_subida"].dt.tz_localize('UTC')
         # Arreglar timezone
 
         # Consider a log as delayed, if it was uploaded within the last 10 minutes,
         # but generated before that time interval
-        """ past_logs = df_logs[(df_logs["Timestamp"] < (
+        past_logs = df_logs[(df_logs["Timestamp"] < (
             now - timedelta(minutes=10))) & (df_logs["Fecha_subida"] > (
-                now - timedelta(minutes=10)))] """
+                now - timedelta(minutes=10)))]
 
         logs_last_hour = df_logs[df_logs["Timestamp"] > (
             now - timedelta(hours=1))]
@@ -169,7 +169,7 @@ def process_driving_data(response, now=None):
     else:
         logs_last_hour = pd.DataFrame([])
 
-    """ past_logs_file_path = "/home/spare/Documents/monitor/monitor-project/api/monitor/past_logs.json"
+    past_logs_file_path = "/home/spare/Documents/monitor/monitor-project/api/monitor/past_logs.json"
 
     try:
         with open(past_logs_file_path, "r") as f:
@@ -181,7 +181,7 @@ def process_driving_data(response, now=None):
                              orient='records', date_format='iso')
     except FileNotFoundError:
         past_logs.to_json(past_logs_file_path,
-                          orient='records', date_format='iso') """
+                          orient='records', date_format='iso')
 
     log_types = ["total", "restart", "reboot", "start",
                  "data_validation", "source_missing",

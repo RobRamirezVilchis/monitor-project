@@ -1,0 +1,3034 @@
+[
+  {
+    "Unidad": "3007",
+    "Fecha_subida": "2024-04-04T14:20:11.000",
+    "Timestamp": "2024-04-04T14:07:21.000Z",
+    "Tipo": "source_missing",
+    "Error": false,
+    "Log": "{'log': 'Source id 0 has been missing for 100 batches '}"
+  },
+  {
+    "Unidad": "3007",
+    "Fecha_subida": "2024-04-04T14:20:12.000",
+    "Timestamp": "2024-04-04T14:07:23.000Z",
+    "Tipo": "source_missing",
+    "Error": false,
+    "Log": "{'log': 'Source id 0 reappeared after 123 misses '}"
+  },
+  {
+    "Unidad": "3007",
+    "Fecha_subida": "2024-04-04T14:20:14.000",
+    "Timestamp": "2024-04-04T14:07:30.000Z",
+    "Tipo": "source_missing",
+    "Error": false,
+    "Log": "{'log': 'Source id 0 has been missing for 100 batches '}"
+  },
+  {
+    "Unidad": "3007",
+    "Fecha_subida": "2024-04-04T14:20:15.000",
+    "Timestamp": "2024-04-04T14:07:33.000Z",
+    "Tipo": "source_missing",
+    "Error": false,
+    "Log": "{'log': 'Source id 0 reappeared after 145 misses '}"
+  },
+  {
+    "Unidad": "3007",
+    "Fecha_subida": "2024-04-04T14:20:16.000",
+    "Timestamp": "2024-04-04T14:08:52.000Z",
+    "Tipo": "camera_missing",
+    "Error": false,
+    "Log": "{'log': 'DISCONNECTED cameras: 1'}"
+  },
+  {
+    "Unidad": "8406",
+    "Fecha_subida": "2024-04-04T14:38:19.000",
+    "Timestamp": "2024-04-04T07:43:16.000Z",
+    "Tipo": "data_validation",
+    "Error": false,
+    "Log": "{'log': 'Data validation failed: rc 4 No checksum.json file found in current directory.\\n'}"
+  },
+  {
+    "Unidad": "8406",
+    "Fecha_subida": "2024-04-04T14:38:21.000",
+    "Timestamp": "2024-04-04T07:43:16.000Z",
+    "Tipo": "reboot",
+    "Error": false,
+    "Log": "{'log': ''}"
+  },
+  {
+    "Unidad": "8406",
+    "Fecha_subida": "2024-04-04T14:38:23.000",
+    "Timestamp": "2024-04-04T07:43:30.000Z",
+    "Tipo": "restart",
+    "Error": true,
+    "Log": "{'log': 'Restarting. Execution number: 1 Check log for details.\\n\\nNvMMLiteOpen : Block : BlockType = 279 \\nNVMEDIA: Reading vendor.tegra.display-size : status: 6 \\nNvMMLiteBlockCreate : Block : BlockType = 279 '}"
+  },
+  {
+    "Unidad": "8406",
+    "Fecha_subida": "2024-04-04T14:38:27.000",
+    "Timestamp": "2024-04-04T07:44:06.000Z",
+    "Tipo": "start",
+    "Error": false,
+    "Log": "{'log': ''}"
+  },
+  {
+    "Unidad": "8406",
+    "Fecha_subida": "2024-04-04T14:38:51.000",
+    "Timestamp": "2024-04-04T09:44:03.000Z",
+    "Tipo": "reboot",
+    "Error": false,
+    "Log": "{'log': ''}"
+  },
+  {
+    "Unidad": "8406",
+    "Fecha_subida": "2024-04-04T14:38:52.000",
+    "Timestamp": "2024-04-04T09:44:03.000Z",
+    "Tipo": "data_validation",
+    "Error": false,
+    "Log": "{'log': 'Data validation failed: rc 4 No checksum.json file found in current directory.\\n'}"
+  },
+  {
+    "Unidad": "8406",
+    "Fecha_subida": "2024-04-04T14:38:53.000",
+    "Timestamp": "2024-04-04T09:44:17.000Z",
+    "Tipo": "restart",
+    "Error": true,
+    "Log": "{'log': 'Restarting. Execution number: 1 Check log for details.\\n\\nERROR from element source: Could not open resource for reading and writing.\\nError details: gstrtspsrc.c(7469): gst_rtspsrc_retrieve_sdp (): /GstPipeline:GX_SYSTEM-pipeline/GstBin:multisrc_bin_00/GstBin:multisrc_bin_subbin_00/GstURIDecodeBin:subbin_uridecodebin_00/GstRTSPSrc:source:\\nFailed to connect. (Generic error)'}"
+  },
+  {
+    "Unidad": "8406",
+    "Fecha_subida": "2024-04-04T14:39:00.000",
+    "Timestamp": "2024-04-04T09:45:02.000Z",
+    "Tipo": "start",
+    "Error": false,
+    "Log": "{'log': ''}"
+  },
+  {
+    "Unidad": "8406",
+    "Fecha_subida": "2024-04-04T14:39:06.000",
+    "Timestamp": "2024-04-04T11:04:28.000Z",
+    "Tipo": "data_validation",
+    "Error": false,
+    "Log": "{'log': 'Data validation failed: rc 4 No checksum.json file found in current directory.\\n'}"
+  },
+  {
+    "Unidad": "8406",
+    "Fecha_subida": "2024-04-04T14:39:07.000",
+    "Timestamp": "2024-04-04T11:04:28.000Z",
+    "Tipo": "reboot",
+    "Error": false,
+    "Log": "{'log': ''}"
+  },
+  {
+    "Unidad": "8406",
+    "Fecha_subida": "2024-04-04T14:39:10.000",
+    "Timestamp": "2024-04-04T11:04:41.000Z",
+    "Tipo": "restart",
+    "Error": true,
+    "Log": "{'log': 'Restarting. Execution number: 1 Check log for details.\\n\\nNvMMLiteOpen : Block : BlockType = 279 \\nNVMEDIA: Reading vendor.tegra.display-size : status: 6 \\nNvMMLiteBlockCreate : Block : BlockType = 279 '}"
+  },
+  {
+    "Unidad": "8406",
+    "Fecha_subida": "2024-04-04T14:39:12.000",
+    "Timestamp": "2024-04-04T11:05:22.000Z",
+    "Tipo": "start",
+    "Error": false,
+    "Log": "{'log': ''}"
+  },
+  {
+    "Unidad": "8406",
+    "Fecha_subida": "2024-04-04T14:39:17.000",
+    "Timestamp": "2024-04-04T11:08:56.000Z",
+    "Tipo": "reboot",
+    "Error": false,
+    "Log": "{'log': ''}"
+  },
+  {
+    "Unidad": "8406",
+    "Fecha_subida": "2024-04-04T14:39:18.000",
+    "Timestamp": "2024-04-04T11:08:56.000Z",
+    "Tipo": "data_validation",
+    "Error": false,
+    "Log": "{'log': 'Data validation failed: rc 4 No checksum.json file found in current directory.\\n'}"
+  },
+  {
+    "Unidad": "8406",
+    "Fecha_subida": "2024-04-04T14:39:20.000",
+    "Timestamp": "2024-04-04T11:09:58.000Z",
+    "Tipo": "restart",
+    "Error": true,
+    "Log": "{'log': 'Restarting. Execution number: 4 Check log for details.\\n\\nCUDA error at /dvs/git/dirty/git-master_linux/nvutils/nvbufsurftransform/nvbufsurftransform.cpp:3506 code=-1000(NPP_CUDA_KERNEL_EXECUTION_ERROR) \"nppSetStream(prev_stream)\" \\n/dvs/git/dirty/git-master_linux/nvutils/nvbufsurftransform/nvbufsurftransform.cpp(3508) : getLastCudaError() CUDA error : Recevied NvBufSurfTransformError_Execution_Error : (30) unknown error.\\nERROR: [TRT]: [defaultAllocator.cpp::free::85] Error Code 1: Cuda Runtime (invalid argument)'}"
+  },
+  {
+    "Unidad": "8406",
+    "Fecha_subida": "2024-04-04T14:39:25.000",
+    "Timestamp": "2024-04-04T11:10:09.000Z",
+    "Tipo": "start",
+    "Error": false,
+    "Log": "{'log': ''}"
+  },
+  {
+    "Unidad": "8406",
+    "Fecha_subida": "2024-04-04T14:39:26.000",
+    "Timestamp": "2024-04-04T11:10:14.000Z",
+    "Tipo": "source_missing",
+    "Error": false,
+    "Log": "{'log': 'Source id 1 has been missing for 100 batches '}"
+  },
+  {
+    "Unidad": "8406",
+    "Fecha_subida": "2024-04-04T14:39:36.000",
+    "Timestamp": "2024-04-04T11:15:10.000Z",
+    "Tipo": "start",
+    "Error": false,
+    "Log": "{'log': ''}"
+  },
+  {
+    "Unidad": "8406",
+    "Fecha_subida": "2024-04-04T14:40:11.000",
+    "Timestamp": "2024-04-04T12:08:26.000Z",
+    "Tipo": "data_validation",
+    "Error": false,
+    "Log": "{'log': 'Data validation failed: rc 4 No checksum.json file found in current directory.\\n'}"
+  },
+  {
+    "Unidad": "8406",
+    "Fecha_subida": "2024-04-04T14:40:12.000",
+    "Timestamp": "2024-04-04T12:08:26.000Z",
+    "Tipo": "reboot",
+    "Error": false,
+    "Log": "{'log': ''}"
+  },
+  {
+    "Unidad": "8406",
+    "Fecha_subida": "2024-04-04T14:40:13.000",
+    "Timestamp": "2024-04-04T12:08:40.000Z",
+    "Tipo": "restart",
+    "Error": true,
+    "Log": "{'log': 'Restarting. Execution number: 1 Check log for details.\\n\\nNvMMLiteOpen : Block : BlockType = 279 \\nNVMEDIA: Reading vendor.tegra.display-size : status: 6 \\nNvMMLiteBlockCreate : Block : BlockType = 279 '}"
+  },
+  {
+    "Unidad": "8406",
+    "Fecha_subida": "2024-04-04T14:40:18.000",
+    "Timestamp": "2024-04-04T12:09:19.000Z",
+    "Tipo": "start",
+    "Error": false,
+    "Log": "{'log': ''}"
+  },
+  {
+    "Unidad": "8406",
+    "Fecha_subida": "2024-04-04T14:40:24.000",
+    "Timestamp": "2024-04-04T12:28:12.000Z",
+    "Tipo": "reboot",
+    "Error": false,
+    "Log": "{'log': ''}"
+  },
+  {
+    "Unidad": "8406",
+    "Fecha_subida": "2024-04-04T14:40:26.000",
+    "Timestamp": "2024-04-04T12:28:12.000Z",
+    "Tipo": "data_validation",
+    "Error": false,
+    "Log": "{'log': 'Data validation failed: rc 4 No checksum.json file found in current directory.\\n'}"
+  },
+  {
+    "Unidad": "8406",
+    "Fecha_subida": "2024-04-04T14:40:27.000",
+    "Timestamp": "2024-04-04T12:28:26.000Z",
+    "Tipo": "restart",
+    "Error": true,
+    "Log": "{'log': 'Restarting. Execution number: 1 Check log for details.\\n\\nERROR from element source: Could not open resource for reading and writing.\\nError details: gstrtspsrc.c(7469): gst_rtspsrc_retrieve_sdp (): /GstPipeline:GX_SYSTEM-pipeline/GstBin:multisrc_bin_00/GstBin:multisrc_bin_subbin_00/GstURIDecodeBin:subbin_uridecodebin_00/GstRTSPSrc:source:\\nFailed to connect. (Generic error)'}"
+  },
+  {
+    "Unidad": "8406",
+    "Fecha_subida": "2024-04-04T14:40:29.000",
+    "Timestamp": "2024-04-04T12:29:02.000Z",
+    "Tipo": "start",
+    "Error": false,
+    "Log": "{'log': ''}"
+  },
+  {
+    "Unidad": "8406",
+    "Fecha_subida": "2024-04-04T14:40:34.000",
+    "Timestamp": "2024-04-04T12:39:33.000Z",
+    "Tipo": "data_validation",
+    "Error": false,
+    "Log": "{'log': 'Data validation failed: rc 4 No checksum.json file found in current directory.\\n'}"
+  },
+  {
+    "Unidad": "8406",
+    "Fecha_subida": "2024-04-04T14:40:35.000",
+    "Timestamp": "2024-04-04T12:39:33.000Z",
+    "Tipo": "reboot",
+    "Error": false,
+    "Log": "{'log': ''}"
+  },
+  {
+    "Unidad": "8406",
+    "Fecha_subida": "2024-04-04T14:40:37.000",
+    "Timestamp": "2024-04-04T12:39:46.000Z",
+    "Tipo": "restart",
+    "Error": true,
+    "Log": "{'log': 'Restarting. Execution number: 1 Check log for details.\\n\\nERROR from element source: Could not open resource for reading and writing.\\nError details: gstrtspsrc.c(7469): gst_rtspsrc_retrieve_sdp (): /GstPipeline:GX_SYSTEM-pipeline/GstBin:multisrc_bin_00/GstBin:multisrc_bin_subbin_00/GstURIDecodeBin:subbin_uridecodebin_00/GstRTSPSrc:source:\\nFailed to connect. (Generic error)'}"
+  },
+  {
+    "Unidad": "8406",
+    "Fecha_subida": "2024-04-04T14:40:39.000",
+    "Timestamp": "2024-04-04T12:40:35.000Z",
+    "Tipo": "start",
+    "Error": false,
+    "Log": "{'log': ''}"
+  },
+  {
+    "Unidad": "8406",
+    "Fecha_subida": "2024-04-04T14:42:17.000",
+    "Timestamp": "2024-04-04T14:04:12.000Z",
+    "Tipo": "data_validation",
+    "Error": false,
+    "Log": "{'log': 'Data validation failed: rc 4 No checksum.json file found in current directory.\\n'}"
+  },
+  {
+    "Unidad": "8406",
+    "Fecha_subida": "2024-04-04T14:42:18.000",
+    "Timestamp": "2024-04-04T14:04:12.000Z",
+    "Tipo": "reboot",
+    "Error": false,
+    "Log": "{'log': ''}"
+  },
+  {
+    "Unidad": "8406",
+    "Fecha_subida": "2024-04-04T14:42:20.000",
+    "Timestamp": "2024-04-04T14:04:25.000Z",
+    "Tipo": "restart",
+    "Error": true,
+    "Log": "{'log': 'Restarting. Execution number: 1 Check log for details.\\n\\nERROR from element source: Could not open resource for reading and writing.\\nError details: gstrtspsrc.c(7469): gst_rtspsrc_retrieve_sdp (): /GstPipeline:GX_SYSTEM-pipeline/GstBin:multisrc_bin_00/GstBin:multisrc_bin_subbin_02/GstURIDecodeBin:subbin_uridecodebin_02/GstRTSPSrc:source:\\nFailed to connect. (Generic error)'}"
+  },
+  {
+    "Unidad": "8406",
+    "Fecha_subida": "2024-04-04T14:42:24.000",
+    "Timestamp": "2024-04-04T14:05:05.000Z",
+    "Tipo": "start",
+    "Error": false,
+    "Log": "{'log': ''}"
+  },
+  {
+    "Unidad": "9307",
+    "Fecha_subida": "2024-04-04T15:08:28.000",
+    "Timestamp": "2024-04-04T13:57:54.000Z",
+    "Tipo": "storage_devices",
+    "Error": false,
+    "Log": "{'log': 'NO STORAGE DEVICE FOUND'}"
+  },
+  {
+    "Unidad": "9307",
+    "Fecha_subida": "2024-04-04T15:08:30.000",
+    "Timestamp": "2024-04-04T13:58:01.000Z",
+    "Tipo": "data_validation",
+    "Error": false,
+    "Log": "{'log': 'Data validation failed: rc 4 No checksum.json file found in current directory.\\n'}"
+  },
+  {
+    "Unidad": "9307",
+    "Fecha_subida": "2024-04-04T15:08:31.000",
+    "Timestamp": "2024-04-04T13:58:01.000Z",
+    "Tipo": "reboot",
+    "Error": false,
+    "Log": "{'log': ''}"
+  },
+  {
+    "Unidad": "9307",
+    "Fecha_subida": "2024-04-04T15:08:33.000",
+    "Timestamp": "2024-04-04T13:58:15.000Z",
+    "Tipo": "restart",
+    "Error": true,
+    "Log": "{'log': 'Restarting. Execution number: 1 Check log for details.\\n\\nNvMMLiteOpen : Block : BlockType = 279 \\nNVMEDIA: Reading vendor.tegra.display-size : status: 6 \\nNvMMLiteBlockCreate : Block : BlockType = 279 '}"
+  },
+  {
+    "Unidad": "9307",
+    "Fecha_subida": "2024-04-04T15:08:35.000",
+    "Timestamp": "2024-04-04T13:58:58.000Z",
+    "Tipo": "start",
+    "Error": false,
+    "Log": "{'log': ''}"
+  },
+  {
+    "Unidad": "9339",
+    "Fecha_subida": "2024-04-04T15:04:37.000",
+    "Timestamp": "2024-04-04T01:20:29.000Z",
+    "Tipo": "data_validation",
+    "Error": false,
+    "Log": "{'log': 'Data validation failed: rc 4 No checksum.json file found in current directory.\\n'}"
+  },
+  {
+    "Unidad": "9339",
+    "Fecha_subida": "2024-04-04T15:04:39.000",
+    "Timestamp": "2024-04-04T01:20:29.000Z",
+    "Tipo": "reboot",
+    "Error": false,
+    "Log": "{'log': ''}"
+  },
+  {
+    "Unidad": "9339",
+    "Fecha_subida": "2024-04-04T15:04:40.000",
+    "Timestamp": "2024-04-04T01:20:44.000Z",
+    "Tipo": "restart",
+    "Error": true,
+    "Log": "{'log': 'Restarting. Execution number: 1 Check log for details.\\n\\nNvMMLiteOpen : Block : BlockType = 279 \\nNVMEDIA: Reading vendor.tegra.display-size : status: 6 \\nNvMMLiteBlockCreate : Block : BlockType = 279 '}"
+  },
+  {
+    "Unidad": "9339",
+    "Fecha_subida": "2024-04-04T15:04:47.000",
+    "Timestamp": "2024-04-04T01:22:11.000Z",
+    "Tipo": "start",
+    "Error": false,
+    "Log": "{'log': ''}"
+  },
+  {
+    "Unidad": "9339",
+    "Fecha_subida": "2024-04-04T15:04:48.000",
+    "Timestamp": "2024-04-04T02:44:45.000Z",
+    "Tipo": "reboot",
+    "Error": false,
+    "Log": "{'log': ''}"
+  },
+  {
+    "Unidad": "9339",
+    "Fecha_subida": "2024-04-04T15:04:50.000",
+    "Timestamp": "2024-04-04T02:44:45.000Z",
+    "Tipo": "data_validation",
+    "Error": false,
+    "Log": "{'log': 'Data validation failed: rc 4 No checksum.json file found in current directory.\\n'}"
+  },
+  {
+    "Unidad": "9339",
+    "Fecha_subida": "2024-04-04T15:04:51.000",
+    "Timestamp": "2024-04-04T02:44:59.000Z",
+    "Tipo": "restart",
+    "Error": true,
+    "Log": "{'log': 'Restarting. Execution number: 1 Check log for details.\\n\\nNvMMLiteOpen : Block : BlockType = 279 \\nNVMEDIA: Reading vendor.tegra.display-size : status: 6 \\nNvMMLiteBlockCreate : Block : BlockType = 279 '}"
+  },
+  {
+    "Unidad": "9339",
+    "Fecha_subida": "2024-04-04T15:04:53.000",
+    "Timestamp": "2024-04-04T02:45:36.000Z",
+    "Tipo": "start",
+    "Error": false,
+    "Log": "{'log': ''}"
+  },
+  {
+    "Unidad": "9339",
+    "Fecha_subida": "2024-04-04T15:04:57.000",
+    "Timestamp": "2024-04-04T02:45:41.000Z",
+    "Tipo": "source_missing",
+    "Error": false,
+    "Log": "{'log': 'Source id 1 has been missing for 100 batches '}"
+  },
+  {
+    "Unidad": "9339",
+    "Fecha_subida": "2024-04-04T15:05:01.000",
+    "Timestamp": "2024-04-04T02:46:09.000Z",
+    "Tipo": "source_missing",
+    "Error": false,
+    "Log": "{'log': 'Source id 1 has been missing for 100 batches '}"
+  },
+  {
+    "Unidad": "9339",
+    "Fecha_subida": "2024-04-04T15:05:05.000",
+    "Timestamp": "2024-04-04T02:46:45.000Z",
+    "Tipo": "source_missing",
+    "Error": false,
+    "Log": "{'log': 'Source id 1 has been missing for 100 batches '}"
+  },
+  {
+    "Unidad": "9339",
+    "Fecha_subida": "2024-04-04T15:05:09.000",
+    "Timestamp": "2024-04-04T03:08:26.000Z",
+    "Tipo": "reboot",
+    "Error": false,
+    "Log": "{'log': ''}"
+  },
+  {
+    "Unidad": "9339",
+    "Fecha_subida": "2024-04-04T15:05:10.000",
+    "Timestamp": "2024-04-04T03:08:26.000Z",
+    "Tipo": "data_validation",
+    "Error": false,
+    "Log": "{'log': 'Data validation failed: rc 4 No checksum.json file found in current directory.\\n'}"
+  },
+  {
+    "Unidad": "9339",
+    "Fecha_subida": "2024-04-04T15:05:13.000",
+    "Timestamp": "2024-04-04T03:08:41.000Z",
+    "Tipo": "restart",
+    "Error": true,
+    "Log": "{'log': 'Restarting. Execution number: 1 Check log for details.\\n\\nNvMMLiteOpen : Block : BlockType = 279 \\nNVMEDIA: Reading vendor.tegra.display-size : status: 6 \\nNvMMLiteBlockCreate : Block : BlockType = 279 '}"
+  },
+  {
+    "Unidad": "9339",
+    "Fecha_subida": "2024-04-04T15:05:15.000",
+    "Timestamp": "2024-04-04T03:09:13.000Z",
+    "Tipo": "start",
+    "Error": false,
+    "Log": "{'log': ''}"
+  },
+  {
+    "Unidad": "9347",
+    "Fecha_subida": "2024-04-04T14:32:03.000",
+    "Timestamp": "2024-04-03T19:39:16.000Z",
+    "Tipo": "reboot",
+    "Error": false,
+    "Log": "{'log': ''}"
+  },
+  {
+    "Unidad": "9347",
+    "Fecha_subida": "2024-04-04T14:32:04.000",
+    "Timestamp": "2024-04-03T19:39:16.000Z",
+    "Tipo": "data_validation",
+    "Error": false,
+    "Log": "{'log': 'Data validation failed: rc 4 No checksum.json file found in current directory.\\n'}"
+  },
+  {
+    "Unidad": "9347",
+    "Fecha_subida": "2024-04-04T14:32:06.000",
+    "Timestamp": "2024-04-03T19:39:32.000Z",
+    "Tipo": "restart",
+    "Error": true,
+    "Log": "{'log': 'Restarting. Execution number: 1 Check log for details.\\n\\nNVMEDIA: Reading vendor.tegra.display-size : status: 6 \\nNvMMLiteBlockCreate : Block : BlockType = 279 \\nNvMMLiteBlockCreate : Block : BlockType = 279 '}"
+  },
+  {
+    "Unidad": "9347",
+    "Fecha_subida": "2024-04-04T14:32:10.000",
+    "Timestamp": "2024-04-03T19:40:09.000Z",
+    "Tipo": "start",
+    "Error": false,
+    "Log": "{'log': ''}"
+  },
+  {
+    "Unidad": "9347",
+    "Fecha_subida": "2024-04-04T14:32:11.000",
+    "Timestamp": "2024-04-03T19:44:35.000Z",
+    "Tipo": "data_validation",
+    "Error": false,
+    "Log": "{'log': 'Data validation failed: rc 4 No checksum.json file found in current directory.\\n'}"
+  },
+  {
+    "Unidad": "9347",
+    "Fecha_subida": "2024-04-04T14:32:12.000",
+    "Timestamp": "2024-04-03T19:44:35.000Z",
+    "Tipo": "reboot",
+    "Error": false,
+    "Log": "{'log': ''}"
+  },
+  {
+    "Unidad": "9347",
+    "Fecha_subida": "2024-04-04T14:32:14.000",
+    "Timestamp": "2024-04-03T19:44:50.000Z",
+    "Tipo": "restart",
+    "Error": true,
+    "Log": "{'log': 'Restarting. Execution number: 1 Check log for details.\\n\\nNVMEDIA: Reading vendor.tegra.display-size : status: 6 \\nNvMMLiteBlockCreate : Block : BlockType = 279 \\nNvMMLiteBlockCreate : Block : BlockType = 279 '}"
+  },
+  {
+    "Unidad": "9347",
+    "Fecha_subida": "2024-04-04T14:32:16.000",
+    "Timestamp": "2024-04-03T20:07:00.000Z",
+    "Tipo": "data_validation",
+    "Error": false,
+    "Log": "{'log': 'Data validation failed: rc 4 No checksum.json file found in current directory.\\n'}"
+  },
+  {
+    "Unidad": "9347",
+    "Fecha_subida": "2024-04-04T14:32:17.000",
+    "Timestamp": "2024-04-03T20:07:00.000Z",
+    "Tipo": "reboot",
+    "Error": false,
+    "Log": "{'log': ''}"
+  },
+  {
+    "Unidad": "9347",
+    "Fecha_subida": "2024-04-04T14:32:19.000",
+    "Timestamp": "2024-04-03T20:07:15.000Z",
+    "Tipo": "restart",
+    "Error": true,
+    "Log": "{'log': 'Restarting. Execution number: 1 Check log for details.\\n\\nNvMMLiteOpen : Block : BlockType = 279 \\nNVMEDIA: Reading vendor.tegra.display-size : status: 6 \\nNvMMLiteBlockCreate : Block : BlockType = 279 '}"
+  },
+  {
+    "Unidad": "9347",
+    "Fecha_subida": "2024-04-04T14:32:21.000",
+    "Timestamp": "2024-04-03T20:07:59.000Z",
+    "Tipo": "start",
+    "Error": false,
+    "Log": "{'log': ''}"
+  },
+  {
+    "Unidad": "9347",
+    "Fecha_subida": "2024-04-04T14:32:28.000",
+    "Timestamp": "2024-04-03T20:08:29.000Z",
+    "Tipo": "source_missing",
+    "Error": false,
+    "Log": "{'log': 'Source id 1 has been missing for 100 batches '}"
+  },
+  {
+    "Unidad": "9347",
+    "Fecha_subida": "2024-04-04T14:32:31.000",
+    "Timestamp": "2024-04-03T22:14:21.000Z",
+    "Tipo": "reboot",
+    "Error": false,
+    "Log": "{'log': ''}"
+  },
+  {
+    "Unidad": "9347",
+    "Fecha_subida": "2024-04-04T14:32:32.000",
+    "Timestamp": "2024-04-03T22:14:21.000Z",
+    "Tipo": "data_validation",
+    "Error": false,
+    "Log": "{'log': 'Data validation failed: rc 4 No checksum.json file found in current directory.\\n'}"
+  },
+  {
+    "Unidad": "9347",
+    "Fecha_subida": "2024-04-04T14:32:33.000",
+    "Timestamp": "2024-04-03T22:14:36.000Z",
+    "Tipo": "restart",
+    "Error": true,
+    "Log": "{'log': 'Restarting. Execution number: 1 Check log for details.\\n\\nERROR from element source: Could not open resource for reading and writing.\\nError details: gstrtspsrc.c(7469): gst_rtspsrc_retrieve_sdp (): /GstPipeline:GX_SYSTEM-pipeline/GstBin:multisrc_bin_00/GstBin:multisrc_bin_subbin_00/GstURIDecodeBin:subbin_uridecodebin_00/GstRTSPSrc:source:\\nFailed to connect. (Generic error)'}"
+  },
+  {
+    "Unidad": "9409",
+    "Fecha_subida": "2024-04-04T14:39:16.000",
+    "Timestamp": "2024-04-04T14:03:01.000Z",
+    "Tipo": "forced_reboot",
+    "Error": false,
+    "Log": "{'log': 'Forced reboot due to too many pipeline restarts'}"
+  },
+  {
+    "Unidad": "9409",
+    "Fecha_subida": "2024-04-04T14:39:18.000",
+    "Timestamp": "2024-04-04T14:04:35.000Z",
+    "Tipo": "data_validation",
+    "Error": false,
+    "Log": "{'log': 'Data validation failed: rc 4 No checksum.json file found in current directory.\\n'}"
+  },
+  {
+    "Unidad": "9409",
+    "Fecha_subida": "2024-04-04T14:39:19.000",
+    "Timestamp": "2024-04-04T14:04:35.000Z",
+    "Tipo": "reboot",
+    "Error": false,
+    "Log": "{'log': ''}"
+  },
+  {
+    "Unidad": "9409",
+    "Fecha_subida": "2024-04-04T14:41:16.000",
+    "Timestamp": "2024-04-04T14:05:42.000Z",
+    "Tipo": "restart",
+    "Error": true,
+    "Log": "{'log': 'Restarting. Execution number: 69 Check log for details.\\n\\n'}"
+  },
+  {
+    "Unidad": "9409",
+    "Fecha_subida": "2024-04-04T14:41:18.000",
+    "Timestamp": "2024-04-04T14:07:20.000Z",
+    "Tipo": "forced_reboot",
+    "Error": false,
+    "Log": "{'log': 'Forced reboot due to too many pipeline restarts'}"
+  },
+  {
+    "Unidad": "9409",
+    "Fecha_subida": "2024-04-04T14:41:19.000",
+    "Timestamp": "2024-04-04T14:08:51.000Z",
+    "Tipo": "storage_devices",
+    "Error": false,
+    "Log": "{'log': 'FORMATTING PARTITION /dev/sda1 NOT MOUNTED'}"
+  },
+  {
+    "Unidad": "9409",
+    "Fecha_subida": "2024-04-04T14:41:21.000",
+    "Timestamp": "2024-04-04T14:08:56.000Z",
+    "Tipo": "data_validation",
+    "Error": false,
+    "Log": "{'log': 'Data validation failed: rc 4 No checksum.json file found in current directory.\\n'}"
+  },
+  {
+    "Unidad": "9409",
+    "Fecha_subida": "2024-04-04T14:41:22.000",
+    "Timestamp": "2024-04-04T14:08:56.000Z",
+    "Tipo": "reboot",
+    "Error": false,
+    "Log": "{'log': ''}"
+  },
+  {
+    "Unidad": "9527",
+    "Fecha_subida": "2024-04-04T14:12:48.000",
+    "Timestamp": "2024-04-04T12:53:38.000Z",
+    "Tipo": "reboot",
+    "Error": false,
+    "Log": "{'log': ''}"
+  },
+  {
+    "Unidad": "9527",
+    "Fecha_subida": "2024-04-04T14:13:16.000",
+    "Timestamp": "2024-04-04T12:53:52.000Z",
+    "Tipo": "restart",
+    "Error": true,
+    "Log": "{'log': 'Restarting. Execution number: 1 Check log for details.\\n\\nERROR from element source: Could not open resource for reading and writing.\\nError details: gstrtspsrc.c(7469): gst_rtspsrc_retrieve_sdp (): /GstPipeline:GX_SYSTEM-pipeline/GstBin:multisrc_bin_00/GstBin:multisrc_bin_subbin_00/GstURIDecodeBin:subbin_uridecodebin_00/GstRTSPSrc:source:\\nFailed to connect. (Generic error)'}"
+  },
+  {
+    "Unidad": "9527",
+    "Fecha_subida": "2024-04-04T14:14:20.000",
+    "Timestamp": "2024-04-04T12:54:44.000Z",
+    "Tipo": "start",
+    "Error": false,
+    "Log": "{'log': ''}"
+  },
+  {
+    "Unidad": "9527",
+    "Fecha_subida": "2024-04-04T14:19:26.000",
+    "Timestamp": "2024-04-04T12:54:44.000Z",
+    "Tipo": "start",
+    "Error": false,
+    "Log": "{'log': ''}"
+  },
+  {
+    "Unidad": "9527",
+    "Fecha_subida": "2024-04-04T15:02:22.000",
+    "Timestamp": "2024-04-04T13:58:42.000Z",
+    "Tipo": "reboot",
+    "Error": false,
+    "Log": "{'log': ''}"
+  },
+  {
+    "Unidad": "9527",
+    "Fecha_subida": "2024-04-04T15:02:24.000",
+    "Timestamp": "2024-04-04T13:58:42.000Z",
+    "Tipo": "data_validation",
+    "Error": false,
+    "Log": "{'log': 'Data validation failed: rc 4 No checksum.json file found in current directory.\\n'}"
+  },
+  {
+    "Unidad": "9527",
+    "Fecha_subida": "2024-04-04T15:02:25.000",
+    "Timestamp": "2024-04-04T13:58:56.000Z",
+    "Tipo": "restart",
+    "Error": true,
+    "Log": "{'log': 'Restarting. Execution number: 1 Check log for details.\\n\\nNvMMLiteOpen : Block : BlockType = 279 \\nNVMEDIA: Reading vendor.tegra.display-size : status: 6 \\nNvMMLiteBlockCreate : Block : BlockType = 279 '}"
+  },
+  {
+    "Unidad": "9527",
+    "Fecha_subida": "2024-04-04T15:02:29.000",
+    "Timestamp": "2024-04-04T13:59:33.000Z",
+    "Tipo": "start",
+    "Error": false,
+    "Log": "{'log': ''}"
+  },
+  {
+    "Unidad": "9527",
+    "Fecha_subida": "2024-04-04T15:02:30.000",
+    "Timestamp": "2024-04-04T13:59:41.000Z",
+    "Tipo": "source_missing",
+    "Error": false,
+    "Log": "{'log': 'Source id 0 has been missing for 100 batches '}"
+  },
+  {
+    "Unidad": "9531",
+    "Fecha_subida": "2024-04-04T14:10:04.000",
+    "Timestamp": "2024-04-04T13:37:05.000Z",
+    "Tipo": "reboot",
+    "Error": false,
+    "Log": "{'log': ''}"
+  },
+  {
+    "Unidad": "9531",
+    "Fecha_subida": "2024-04-04T14:10:05.000",
+    "Timestamp": "2024-04-04T13:37:05.000Z",
+    "Tipo": "data_validation",
+    "Error": false,
+    "Log": "{'log': 'Data validation failed: rc 4 No checksum.json file found in current directory.\\n'}"
+  },
+  {
+    "Unidad": "9531",
+    "Fecha_subida": "2024-04-04T14:10:07.000",
+    "Timestamp": "2024-04-04T13:37:05.000Z",
+    "Tipo": "camera_missing",
+    "Error": false,
+    "Log": "{'log': 'DISCONNECTED cameras: 1'}"
+  },
+  {
+    "Unidad": "9531",
+    "Fecha_subida": "2024-04-04T14:10:09.000",
+    "Timestamp": "2024-04-04T13:38:03.000Z",
+    "Tipo": "reboot",
+    "Error": false,
+    "Log": "{'log': ''}"
+  },
+  {
+    "Unidad": "9531",
+    "Fecha_subida": "2024-04-04T14:10:10.000",
+    "Timestamp": "2024-04-04T13:38:03.000Z",
+    "Tipo": "camera_missing",
+    "Error": false,
+    "Log": "{'log': 'DISCONNECTED cameras: 1'}"
+  },
+  {
+    "Unidad": "9531",
+    "Fecha_subida": "2024-04-04T14:10:11.000",
+    "Timestamp": "2024-04-04T13:38:03.000Z",
+    "Tipo": "data_validation",
+    "Error": false,
+    "Log": "{'log': 'Data validation failed: rc 4 No checksum.json file found in current directory.\\n'}"
+  },
+  {
+    "Unidad": "9531",
+    "Fecha_subida": "2024-04-04T14:10:12.000",
+    "Timestamp": "2024-04-04T13:39:01.000Z",
+    "Tipo": "camera_missing",
+    "Error": false,
+    "Log": "{'log': 'DISCONNECTED cameras: 1'}"
+  },
+  {
+    "Unidad": "9531",
+    "Fecha_subida": "2024-04-04T14:10:14.000",
+    "Timestamp": "2024-04-04T13:39:01.000Z",
+    "Tipo": "data_validation",
+    "Error": false,
+    "Log": "{'log': 'Data validation failed: rc 4 No checksum.json file found in current directory.\\n'}"
+  },
+  {
+    "Unidad": "9531",
+    "Fecha_subida": "2024-04-04T14:10:15.000",
+    "Timestamp": "2024-04-04T13:39:01.000Z",
+    "Tipo": "reboot",
+    "Error": false,
+    "Log": "{'log': ''}"
+  },
+  {
+    "Unidad": "9531",
+    "Fecha_subida": "2024-04-04T14:10:17.000",
+    "Timestamp": "2024-04-04T13:40:00.000Z",
+    "Tipo": "camera_missing",
+    "Error": false,
+    "Log": "{'log': 'DISCONNECTED cameras: 1'}"
+  },
+  {
+    "Unidad": "9531",
+    "Fecha_subida": "2024-04-04T14:10:18.000",
+    "Timestamp": "2024-04-04T13:40:00.000Z",
+    "Tipo": "reboot",
+    "Error": false,
+    "Log": "{'log': ''}"
+  },
+  {
+    "Unidad": "9531",
+    "Fecha_subida": "2024-04-04T14:10:19.000",
+    "Timestamp": "2024-04-04T13:40:00.000Z",
+    "Tipo": "data_validation",
+    "Error": false,
+    "Log": "{'log': 'Data validation failed: rc 4 No checksum.json file found in current directory.\\n'}"
+  },
+  {
+    "Unidad": "9531",
+    "Fecha_subida": "2024-04-04T14:10:21.000",
+    "Timestamp": "2024-04-04T13:42:28.000Z",
+    "Tipo": "reboot",
+    "Error": false,
+    "Log": "{'log': ''}"
+  },
+  {
+    "Unidad": "9531",
+    "Fecha_subida": "2024-04-04T14:10:22.000",
+    "Timestamp": "2024-04-04T13:42:28.000Z",
+    "Tipo": "camera_missing",
+    "Error": false,
+    "Log": "{'log': 'DISCONNECTED cameras: 1'}"
+  },
+  {
+    "Unidad": "9531",
+    "Fecha_subida": "2024-04-04T14:10:24.000",
+    "Timestamp": "2024-04-04T13:42:28.000Z",
+    "Tipo": "data_validation",
+    "Error": false,
+    "Log": "{'log': 'Data validation failed: rc 4 No checksum.json file found in current directory.\\n'}"
+  },
+  {
+    "Unidad": "9531",
+    "Fecha_subida": "2024-04-04T14:10:25.000",
+    "Timestamp": "2024-04-04T13:43:26.000Z",
+    "Tipo": "reboot",
+    "Error": false,
+    "Log": "{'log': ''}"
+  },
+  {
+    "Unidad": "9531",
+    "Fecha_subida": "2024-04-04T14:10:27.000",
+    "Timestamp": "2024-04-04T13:43:26.000Z",
+    "Tipo": "data_validation",
+    "Error": false,
+    "Log": "{'log': 'Data validation failed: rc 4 No checksum.json file found in current directory.\\n'}"
+  },
+  {
+    "Unidad": "9531",
+    "Fecha_subida": "2024-04-04T14:10:28.000",
+    "Timestamp": "2024-04-04T13:43:26.000Z",
+    "Tipo": "camera_missing",
+    "Error": false,
+    "Log": "{'log': 'DISCONNECTED cameras: 1'}"
+  },
+  {
+    "Unidad": "9531",
+    "Fecha_subida": "2024-04-04T14:10:30.000",
+    "Timestamp": "2024-04-04T13:44:25.000Z",
+    "Tipo": "data_validation",
+    "Error": false,
+    "Log": "{'log': 'Data validation failed: rc 4 No checksum.json file found in current directory.\\n'}"
+  },
+  {
+    "Unidad": "9531",
+    "Fecha_subida": "2024-04-04T14:10:31.000",
+    "Timestamp": "2024-04-04T13:44:25.000Z",
+    "Tipo": "reboot",
+    "Error": false,
+    "Log": "{'log': ''}"
+  },
+  {
+    "Unidad": "9531",
+    "Fecha_subida": "2024-04-04T14:10:33.000",
+    "Timestamp": "2024-04-04T13:44:25.000Z",
+    "Tipo": "camera_missing",
+    "Error": false,
+    "Log": "{'log': 'DISCONNECTED cameras: 1'}"
+  },
+  {
+    "Unidad": "9531",
+    "Fecha_subida": "2024-04-04T14:10:35.000",
+    "Timestamp": "2024-04-04T13:45:23.000Z",
+    "Tipo": "reboot",
+    "Error": false,
+    "Log": "{'log': ''}"
+  },
+  {
+    "Unidad": "9531",
+    "Fecha_subida": "2024-04-04T14:10:36.000",
+    "Timestamp": "2024-04-04T13:45:23.000Z",
+    "Tipo": "data_validation",
+    "Error": false,
+    "Log": "{'log': 'Data validation failed: rc 4 No checksum.json file found in current directory.\\n'}"
+  },
+  {
+    "Unidad": "9531",
+    "Fecha_subida": "2024-04-04T14:10:38.000",
+    "Timestamp": "2024-04-04T13:45:23.000Z",
+    "Tipo": "camera_missing",
+    "Error": false,
+    "Log": "{'log': 'DISCONNECTED cameras: 1'}"
+  },
+  {
+    "Unidad": "9531",
+    "Fecha_subida": "2024-04-04T14:10:39.000",
+    "Timestamp": "2024-04-04T13:46:21.000Z",
+    "Tipo": "camera_missing",
+    "Error": false,
+    "Log": "{'log': 'DISCONNECTED cameras: 1'}"
+  },
+  {
+    "Unidad": "9531",
+    "Fecha_subida": "2024-04-04T14:10:40.000",
+    "Timestamp": "2024-04-04T13:46:21.000Z",
+    "Tipo": "reboot",
+    "Error": false,
+    "Log": "{'log': ''}"
+  },
+  {
+    "Unidad": "9531",
+    "Fecha_subida": "2024-04-04T14:10:41.000",
+    "Timestamp": "2024-04-04T13:46:21.000Z",
+    "Tipo": "data_validation",
+    "Error": false,
+    "Log": "{'log': 'Data validation failed: rc 4 No checksum.json file found in current directory.\\n'}"
+  },
+  {
+    "Unidad": "9531",
+    "Fecha_subida": "2024-04-04T14:10:43.000",
+    "Timestamp": "2024-04-04T13:47:20.000Z",
+    "Tipo": "data_validation",
+    "Error": false,
+    "Log": "{'log': 'Data validation failed: rc 4 No checksum.json file found in current directory.\\n'}"
+  },
+  {
+    "Unidad": "9531",
+    "Fecha_subida": "2024-04-04T14:10:45.000",
+    "Timestamp": "2024-04-04T13:47:20.000Z",
+    "Tipo": "reboot",
+    "Error": false,
+    "Log": "{'log': ''}"
+  },
+  {
+    "Unidad": "9531",
+    "Fecha_subida": "2024-04-04T14:10:46.000",
+    "Timestamp": "2024-04-04T13:47:20.000Z",
+    "Tipo": "camera_missing",
+    "Error": false,
+    "Log": "{'log': 'DISCONNECTED cameras: 1'}"
+  },
+  {
+    "Unidad": "9531",
+    "Fecha_subida": "2024-04-04T14:10:48.000",
+    "Timestamp": "2024-04-04T13:48:19.000Z",
+    "Tipo": "reboot",
+    "Error": false,
+    "Log": "{'log': ''}"
+  },
+  {
+    "Unidad": "9531",
+    "Fecha_subida": "2024-04-04T14:10:50.000",
+    "Timestamp": "2024-04-04T13:48:19.000Z",
+    "Tipo": "camera_missing",
+    "Error": false,
+    "Log": "{'log': 'DISCONNECTED cameras: 1'}"
+  },
+  {
+    "Unidad": "9531",
+    "Fecha_subida": "2024-04-04T14:10:51.000",
+    "Timestamp": "2024-04-04T13:48:19.000Z",
+    "Tipo": "data_validation",
+    "Error": false,
+    "Log": "{'log': 'Data validation failed: rc 4 No checksum.json file found in current directory.\\n'}"
+  },
+  {
+    "Unidad": "9531",
+    "Fecha_subida": "2024-04-04T14:10:52.000",
+    "Timestamp": "2024-04-04T13:49:17.000Z",
+    "Tipo": "data_validation",
+    "Error": false,
+    "Log": "{'log': 'Data validation failed: rc 4 No checksum.json file found in current directory.\\n'}"
+  },
+  {
+    "Unidad": "9531",
+    "Fecha_subida": "2024-04-04T14:10:54.000",
+    "Timestamp": "2024-04-04T13:49:17.000Z",
+    "Tipo": "reboot",
+    "Error": false,
+    "Log": "{'log': ''}"
+  },
+  {
+    "Unidad": "9531",
+    "Fecha_subida": "2024-04-04T14:10:55.000",
+    "Timestamp": "2024-04-04T13:49:17.000Z",
+    "Tipo": "camera_missing",
+    "Error": false,
+    "Log": "{'log': 'DISCONNECTED cameras: 1'}"
+  },
+  {
+    "Unidad": "9531",
+    "Fecha_subida": "2024-04-04T14:10:56.000",
+    "Timestamp": "2024-04-04T13:50:20.000Z",
+    "Tipo": "camera_missing",
+    "Error": false,
+    "Log": "{'log': 'DISCONNECTED cameras: 1'}"
+  },
+  {
+    "Unidad": "9531",
+    "Fecha_subida": "2024-04-04T14:10:57.000",
+    "Timestamp": "2024-04-04T13:50:20.000Z",
+    "Tipo": "reboot",
+    "Error": false,
+    "Log": "{'log': ''}"
+  },
+  {
+    "Unidad": "9531",
+    "Fecha_subida": "2024-04-04T14:10:59.000",
+    "Timestamp": "2024-04-04T13:50:20.000Z",
+    "Tipo": "data_validation",
+    "Error": false,
+    "Log": "{'log': 'Data validation failed: rc 4 No checksum.json file found in current directory.\\n'}"
+  },
+  {
+    "Unidad": "9531",
+    "Fecha_subida": "2024-04-04T14:11:00.000",
+    "Timestamp": "2024-04-04T13:52:49.000Z",
+    "Tipo": "reboot",
+    "Error": false,
+    "Log": "{'log': ''}"
+  },
+  {
+    "Unidad": "9531",
+    "Fecha_subida": "2024-04-04T14:11:02.000",
+    "Timestamp": "2024-04-04T13:52:49.000Z",
+    "Tipo": "data_validation",
+    "Error": false,
+    "Log": "{'log': 'Data validation failed: rc 4 No checksum.json file found in current directory.\\n'}"
+  },
+  {
+    "Unidad": "9531",
+    "Fecha_subida": "2024-04-04T14:11:04.000",
+    "Timestamp": "2024-04-04T13:52:49.000Z",
+    "Tipo": "camera_missing",
+    "Error": false,
+    "Log": "{'log': 'DISCONNECTED cameras: 1'}"
+  },
+  {
+    "Unidad": "9531",
+    "Fecha_subida": "2024-04-04T14:11:05.000",
+    "Timestamp": "2024-04-04T13:53:47.000Z",
+    "Tipo": "reboot",
+    "Error": false,
+    "Log": "{'log': ''}"
+  },
+  {
+    "Unidad": "9531",
+    "Fecha_subida": "2024-04-04T14:11:07.000",
+    "Timestamp": "2024-04-04T13:53:47.000Z",
+    "Tipo": "data_validation",
+    "Error": false,
+    "Log": "{'log': 'Data validation failed: rc 4 No checksum.json file found in current directory.\\n'}"
+  },
+  {
+    "Unidad": "9531",
+    "Fecha_subida": "2024-04-04T14:11:08.000",
+    "Timestamp": "2024-04-04T13:53:47.000Z",
+    "Tipo": "camera_missing",
+    "Error": false,
+    "Log": "{'log': 'DISCONNECTED cameras: 1'}"
+  },
+  {
+    "Unidad": "9531",
+    "Fecha_subida": "2024-04-04T14:11:10.000",
+    "Timestamp": "2024-04-04T13:54:45.000Z",
+    "Tipo": "data_validation",
+    "Error": false,
+    "Log": "{'log': 'Data validation failed: rc 4 No checksum.json file found in current directory.\\n'}"
+  },
+  {
+    "Unidad": "9531",
+    "Fecha_subida": "2024-04-04T14:11:11.000",
+    "Timestamp": "2024-04-04T13:54:45.000Z",
+    "Tipo": "reboot",
+    "Error": false,
+    "Log": "{'log': ''}"
+  },
+  {
+    "Unidad": "9531",
+    "Fecha_subida": "2024-04-04T14:11:12.000",
+    "Timestamp": "2024-04-04T13:54:45.000Z",
+    "Tipo": "camera_missing",
+    "Error": false,
+    "Log": "{'log': 'DISCONNECTED cameras: 1'}"
+  },
+  {
+    "Unidad": "9531",
+    "Fecha_subida": "2024-04-04T14:11:13.000",
+    "Timestamp": "2024-04-04T14:06:48.000Z",
+    "Tipo": "data_validation",
+    "Error": false,
+    "Log": "{'log': 'Data validation failed: rc 4 No checksum.json file found in current directory.\\n'}"
+  },
+  {
+    "Unidad": "9531",
+    "Fecha_subida": "2024-04-04T14:11:15.000",
+    "Timestamp": "2024-04-04T14:06:48.000Z",
+    "Tipo": "reboot",
+    "Error": false,
+    "Log": "{'log': ''}"
+  },
+  {
+    "Unidad": "9531",
+    "Fecha_subida": "2024-04-04T14:11:16.000",
+    "Timestamp": "2024-04-04T14:06:48.000Z",
+    "Tipo": "camera_missing",
+    "Error": false,
+    "Log": "{'log': 'DISCONNECTED cameras: 1'}"
+  },
+  {
+    "Unidad": "9531",
+    "Fecha_subida": "2024-04-04T14:11:18.000",
+    "Timestamp": "2024-04-04T14:07:09.000Z",
+    "Tipo": "restart",
+    "Error": true,
+    "Log": "{'log': 'Restarting. Execution number: 1 Check log for details.\\n\\nNvMMLiteOpen : Block : BlockType = 279 \\nNVMEDIA: Reading vendor.tegra.display-size : status: 6 \\nNvMMLiteBlockCreate : Block : BlockType = 279 '}"
+  },
+  {
+    "Unidad": "9531",
+    "Fecha_subida": "2024-04-04T14:11:26.000",
+    "Timestamp": "2024-04-04T14:07:50.000Z",
+    "Tipo": "start",
+    "Error": false,
+    "Log": "{'log': ''}"
+  },
+  {
+    "Unidad": "9531",
+    "Fecha_subida": "2024-04-04T14:11:27.000",
+    "Timestamp": "2024-04-04T14:07:56.000Z",
+    "Tipo": "source_missing",
+    "Error": false,
+    "Log": "{'log': 'Source id 1 has been missing for 100 batches '}"
+  },
+  {
+    "Unidad": "9571",
+    "Fecha_subida": "2024-04-04T14:27:54.000",
+    "Timestamp": "2024-04-04T11:13:39.000Z",
+    "Tipo": "data_validation",
+    "Error": false,
+    "Log": "{'log': 'Data validation failed: rc 4 No checksum.json file found in current directory.\\n'}"
+  },
+  {
+    "Unidad": "9571",
+    "Fecha_subida": "2024-04-04T14:27:56.000",
+    "Timestamp": "2024-04-04T11:13:39.000Z",
+    "Tipo": "reboot",
+    "Error": false,
+    "Log": "{'log': ''}"
+  },
+  {
+    "Unidad": "9571",
+    "Fecha_subida": "2024-04-04T14:27:59.000",
+    "Timestamp": "2024-04-04T11:13:56.000Z",
+    "Tipo": "restart",
+    "Error": true,
+    "Log": "{'log': 'Restarting. Execution number: 1 Check log for details.\\n\\nERROR from element source: Could not open resource for reading and writing.\\nError details: gstrtspsrc.c(7469): gst_rtspsrc_retrieve_sdp (): /GstPipeline:GX_SYSTEM-pipeline/GstBin:multisrc_bin_00/GstBin:multisrc_bin_subbin_00/GstURIDecodeBin:subbin_uridecodebin_00/GstRTSPSrc:source:\\nFailed to connect. (Generic error)'}"
+  },
+  {
+    "Unidad": "9571",
+    "Fecha_subida": "2024-04-04T14:28:01.000",
+    "Timestamp": "2024-04-04T11:14:29.000Z",
+    "Tipo": "start",
+    "Error": false,
+    "Log": "{'log': ''}"
+  },
+  {
+    "Unidad": "9571",
+    "Fecha_subida": "2024-04-04T14:28:02.000",
+    "Timestamp": "2024-04-04T11:14:36.000Z",
+    "Tipo": "source_missing",
+    "Error": false,
+    "Log": "{'log': 'Source id 0 has been missing for 100 batches '}"
+  },
+  {
+    "Unidad": "9571",
+    "Fecha_subida": "2024-04-04T14:28:04.000",
+    "Timestamp": "2024-04-04T11:14:41.000Z",
+    "Tipo": "source_missing",
+    "Error": false,
+    "Log": "{'log': 'Source id 0 reappeared after 180 misses '}"
+  },
+  {
+    "Unidad": "9577",
+    "Fecha_subida": "2024-04-04T14:11:47.000",
+    "Timestamp": "2024-04-04T14:09:11.000Z",
+    "Tipo": "data_validation",
+    "Error": false,
+    "Log": "{'log': 'Data validation failed: rc 4 No checksum.json file found in current directory.\\n'}"
+  },
+  {
+    "Unidad": "9577",
+    "Fecha_subida": "2024-04-04T14:11:49.000",
+    "Timestamp": "2024-04-04T14:09:11.000Z",
+    "Tipo": "reboot",
+    "Error": false,
+    "Log": "{'log': ''}"
+  },
+  {
+    "Unidad": "9577",
+    "Fecha_subida": "2024-04-04T14:11:50.000",
+    "Timestamp": "2024-04-04T14:09:25.000Z",
+    "Tipo": "restart",
+    "Error": true,
+    "Log": "{'log': 'Restarting. Execution number: 1 Check log for details.\\n\\nNvMMLiteOpen : Block : BlockType = 279 \\nNVMEDIA: Reading vendor.tegra.display-size : status: 6 \\nNvMMLiteBlockCreate : Block : BlockType = 279 '}"
+  },
+  {
+    "Unidad": "9597",
+    "Fecha_subida": "2024-04-04T14:35:52.000",
+    "Timestamp": "2024-04-04T13:56:36.000Z",
+    "Tipo": "data_validation",
+    "Error": false,
+    "Log": "{'log': 'Data validation failed: rc 4 No checksum.json file found in current directory.\\n'}"
+  },
+  {
+    "Unidad": "9597",
+    "Fecha_subida": "2024-04-04T14:35:53.000",
+    "Timestamp": "2024-04-04T13:56:36.000Z",
+    "Tipo": "reboot",
+    "Error": false,
+    "Log": "{'log': ''}"
+  },
+  {
+    "Unidad": "9597",
+    "Fecha_subida": "2024-04-04T14:35:55.000",
+    "Timestamp": "2024-04-04T13:56:36.000Z",
+    "Tipo": "camera_missing",
+    "Error": false,
+    "Log": "{'log': 'DISCONNECTED cameras: 0 1 2'}"
+  },
+  {
+    "Unidad": "9597",
+    "Fecha_subida": "2024-04-04T14:35:56.000",
+    "Timestamp": "2024-04-04T13:56:40.000Z",
+    "Tipo": "camera_missing",
+    "Error": false,
+    "Log": "{'log': 'CONNECTED cameras: 0 1 2'}"
+  },
+  {
+    "Unidad": "9597",
+    "Fecha_subida": "2024-04-04T14:35:59.000",
+    "Timestamp": "2024-04-04T13:56:53.000Z",
+    "Tipo": "restart",
+    "Error": true,
+    "Log": "{'log': 'Restarting. Execution number: 1 Check log for details.\\n\\nERROR from element source: Could not open resource for reading and writing.\\nError details: gstrtspsrc.c(7469): gst_rtspsrc_retrieve_sdp (): /GstPipeline:GX_SYSTEM-pipeline/GstBin:multisrc_bin_00/GstBin:multisrc_bin_subbin_00/GstURIDecodeBin:subbin_uridecodebin_00/GstRTSPSrc:source:\\nFailed to connect. (Generic error)'}"
+  },
+  {
+    "Unidad": "9597",
+    "Fecha_subida": "2024-04-04T14:36:01.000",
+    "Timestamp": "2024-04-04T13:57:29.000Z",
+    "Tipo": "start",
+    "Error": false,
+    "Log": "{'log': ''}"
+  },
+  {
+    "Unidad": "9597",
+    "Fecha_subida": "2024-04-04T14:36:05.000",
+    "Timestamp": "2024-04-04T13:57:45.000Z",
+    "Tipo": "source_missing",
+    "Error": false,
+    "Log": "{'log': 'Source id 0 has been missing for 100 batches '}"
+  },
+  {
+    "Unidad": "9597",
+    "Fecha_subida": "2024-04-04T14:36:07.000",
+    "Timestamp": "2024-04-04T13:57:46.000Z",
+    "Tipo": "source_missing",
+    "Error": false,
+    "Log": "{'log': 'Source id 0 reappeared after 120 misses '}"
+  },
+  {
+    "Unidad": "9599",
+    "Fecha_subida": "2024-04-04T14:18:21.000",
+    "Timestamp": "2024-04-04T07:34:01.000Z",
+    "Tipo": "reboot",
+    "Error": false,
+    "Log": "{'log': ''}"
+  },
+  {
+    "Unidad": "9599",
+    "Fecha_subida": "2024-04-04T14:18:22.000",
+    "Timestamp": "2024-04-04T07:34:01.000Z",
+    "Tipo": "data_validation",
+    "Error": false,
+    "Log": "{'log': 'Data validation failed: rc 4 No checksum.json file found in current directory.\\n'}"
+  },
+  {
+    "Unidad": "9599",
+    "Fecha_subida": "2024-04-04T14:18:23.000",
+    "Timestamp": "2024-04-04T07:34:16.000Z",
+    "Tipo": "restart",
+    "Error": true,
+    "Log": "{'log': 'Restarting. Execution number: 1 Check log for details.\\n\\nNvMMLiteOpen : Block : BlockType = 279 \\nNVMEDIA: Reading vendor.tegra.display-size : status: 6 \\nNvMMLiteBlockCreate : Block : BlockType = 279 '}"
+  },
+  {
+    "Unidad": "9599",
+    "Fecha_subida": "2024-04-04T14:18:24.000",
+    "Timestamp": "2024-04-04T07:34:49.000Z",
+    "Tipo": "start",
+    "Error": false,
+    "Log": "{'log': ''}"
+  },
+  {
+    "Unidad": "9599",
+    "Fecha_subida": "2024-04-04T14:18:26.000",
+    "Timestamp": "2024-04-04T07:34:57.000Z",
+    "Tipo": "source_missing",
+    "Error": false,
+    "Log": "{'log': 'Source id 0 has been missing for 100 batches '}"
+  },
+  {
+    "Unidad": "9599",
+    "Fecha_subida": "2024-04-04T14:18:28.000",
+    "Timestamp": "2024-04-04T07:34:57.000Z",
+    "Tipo": "source_missing",
+    "Error": false,
+    "Log": "{'log': 'Source id 0 reappeared after 111 misses '}"
+  },
+  {
+    "Unidad": "9599",
+    "Fecha_subida": "2024-04-04T14:18:32.000",
+    "Timestamp": "2024-04-04T08:17:18.000Z",
+    "Tipo": "reboot",
+    "Error": false,
+    "Log": "{'log': ''}"
+  },
+  {
+    "Unidad": "9599",
+    "Fecha_subida": "2024-04-04T14:18:34.000",
+    "Timestamp": "2024-04-04T08:17:18.000Z",
+    "Tipo": "data_validation",
+    "Error": false,
+    "Log": "{'log': 'Data validation failed: rc 4 No checksum.json file found in current directory.\\n'}"
+  },
+  {
+    "Unidad": "9599",
+    "Fecha_subida": "2024-04-04T14:18:35.000",
+    "Timestamp": "2024-04-04T08:17:34.000Z",
+    "Tipo": "restart",
+    "Error": true,
+    "Log": "{'log': 'Restarting. Execution number: 1 Check log for details.\\n\\nNvMMLiteOpen : Block : BlockType = 279 \\nNVMEDIA: Reading vendor.tegra.display-size : status: 6 \\nNvMMLiteBlockCreate : Block : BlockType = 279 '}"
+  },
+  {
+    "Unidad": "9599",
+    "Fecha_subida": "2024-04-04T14:18:40.000",
+    "Timestamp": "2024-04-04T08:18:31.000Z",
+    "Tipo": "start",
+    "Error": false,
+    "Log": "{'log': ''}"
+  },
+  {
+    "Unidad": "9599",
+    "Fecha_subida": "2024-04-04T14:19:10.000",
+    "Timestamp": "2024-04-04T09:07:29.000Z",
+    "Tipo": "reboot",
+    "Error": false,
+    "Log": "{'log': ''}"
+  },
+  {
+    "Unidad": "9599",
+    "Fecha_subida": "2024-04-04T14:19:12.000",
+    "Timestamp": "2024-04-04T09:07:29.000Z",
+    "Tipo": "data_validation",
+    "Error": false,
+    "Log": "{'log': 'Data validation failed: rc 4 No checksum.json file found in current directory.\\n'}"
+  },
+  {
+    "Unidad": "9599",
+    "Fecha_subida": "2024-04-04T14:19:13.000",
+    "Timestamp": "2024-04-04T09:07:44.000Z",
+    "Tipo": "restart",
+    "Error": true,
+    "Log": "{'log': 'Restarting. Execution number: 1 Check log for details.\\n\\nNvMMLiteOpen : Block : BlockType = 279 \\nNVMEDIA: Reading vendor.tegra.display-size : status: 6 \\nNvMMLiteBlockCreate : Block : BlockType = 279 '}"
+  },
+  {
+    "Unidad": "9599",
+    "Fecha_subida": "2024-04-04T14:19:15.000",
+    "Timestamp": "2024-04-04T09:08:39.000Z",
+    "Tipo": "start",
+    "Error": false,
+    "Log": "{'log': ''}"
+  },
+  {
+    "Unidad": "9599",
+    "Fecha_subida": "2024-04-04T14:19:17.000",
+    "Timestamp": "2024-04-04T09:08:44.000Z",
+    "Tipo": "source_missing",
+    "Error": false,
+    "Log": "{'log': 'Source id 1 has been missing for 100 batches '}"
+  },
+  {
+    "Unidad": "9599",
+    "Fecha_subida": "2024-04-04T14:19:28.000",
+    "Timestamp": "2024-04-04T09:13:41.000Z",
+    "Tipo": "start",
+    "Error": false,
+    "Log": "{'log': ''}"
+  },
+  {
+    "Unidad": "9614",
+    "Fecha_subida": "2024-04-04T14:51:24.000",
+    "Timestamp": "2024-04-04T07:00:51.000Z",
+    "Tipo": "storage_devices",
+    "Error": false,
+    "Log": "{'log': 'FORMATTING PARTITION /dev/sda1 NOT MOUNTED'}"
+  },
+  {
+    "Unidad": "9614",
+    "Fecha_subida": "2024-04-04T14:51:26.000",
+    "Timestamp": "2024-04-04T07:00:57.000Z",
+    "Tipo": "reboot",
+    "Error": false,
+    "Log": "{'log': ''}"
+  },
+  {
+    "Unidad": "9614",
+    "Fecha_subida": "2024-04-04T14:51:27.000",
+    "Timestamp": "2024-04-04T07:00:57.000Z",
+    "Tipo": "data_validation",
+    "Error": false,
+    "Log": "{'log': 'Data validation failed: rc 4 No checksum.json file found in current directory.\\n'}"
+  },
+  {
+    "Unidad": "9614",
+    "Fecha_subida": "2024-04-04T14:51:30.000",
+    "Timestamp": "2024-04-04T12:43:01.000Z",
+    "Tipo": "reboot",
+    "Error": false,
+    "Log": "{'log': ''}"
+  },
+  {
+    "Unidad": "9614",
+    "Fecha_subida": "2024-04-04T14:51:31.000",
+    "Timestamp": "2024-04-04T12:43:01.000Z",
+    "Tipo": "data_validation",
+    "Error": false,
+    "Log": "{'log': 'Data validation failed: rc 4 No checksum.json file found in current directory.\\n'}"
+  },
+  {
+    "Unidad": "9614",
+    "Fecha_subida": "2024-04-04T14:51:34.000",
+    "Timestamp": "2024-04-04T12:43:15.000Z",
+    "Tipo": "restart",
+    "Error": true,
+    "Log": "{'log': 'Restarting. Execution number: 1 Check log for details.\\n\\nNVMEDIA: Reading vendor.tegra.display-size : status: 6 \\nNvMMLiteBlockCreate : Block : BlockType = 279 \\nNvMMLiteBlockCreate : Block : BlockType = 279 '}"
+  },
+  {
+    "Unidad": "9614",
+    "Fecha_subida": "2024-04-04T14:51:36.000",
+    "Timestamp": "2024-04-04T12:44:04.000Z",
+    "Tipo": "start",
+    "Error": false,
+    "Log": "{'log': ''}"
+  },
+  {
+    "Unidad": "CR-5705",
+    "Fecha_subida": "2024-06-05T15:24:30.000",
+    "Timestamp": "2024-06-05T15:24:27.000Z",
+    "Tipo": "camera_missing",
+    "Error": false,
+    "Log": "{'log': 'DISCONNECTED cameras: 0 1 2 3'}"
+  },
+  {
+    "Unidad": "8410",
+    "Fecha_subida": "2024-06-05T15:52:14.000",
+    "Timestamp": "2024-06-05T14:45:34.000Z",
+    "Tipo": "data_validation",
+    "Error": false,
+    "Log": "{'log': 'Data validation failed: rc 4 No checksum.json file found in current directory.\\n'}"
+  },
+  {
+    "Unidad": "8410",
+    "Fecha_subida": "2024-06-05T15:52:15.000",
+    "Timestamp": "2024-06-05T14:45:34.000Z",
+    "Tipo": "reboot",
+    "Error": false,
+    "Log": "{'log': ''}"
+  },
+  {
+    "Unidad": "8918",
+    "Fecha_subida": "2024-06-05T15:33:51.000",
+    "Timestamp": "2024-06-05T15:20:58.000Z",
+    "Tipo": "reboot",
+    "Error": false,
+    "Log": "{'log': ''}"
+  },
+  {
+    "Unidad": "8918",
+    "Fecha_subida": "2024-06-05T15:33:53.000",
+    "Timestamp": "2024-06-05T15:20:58.000Z",
+    "Tipo": "data_validation",
+    "Error": false,
+    "Log": "{'log': 'Data validation failed: rc 4 No checksum.json file found in current directory.\\n'}"
+  },
+  {
+    "Unidad": "9337",
+    "Fecha_subida": "2024-06-05T15:26:04.000",
+    "Timestamp": "2024-06-05T15:23:38.000Z",
+    "Tipo": "reboot",
+    "Error": false,
+    "Log": "{'log': ''}"
+  },
+  {
+    "Unidad": "9337",
+    "Fecha_subida": "2024-06-05T15:26:05.000",
+    "Timestamp": "2024-06-05T15:23:38.000Z",
+    "Tipo": "data_validation",
+    "Error": false,
+    "Log": "{'log': 'Data validation failed: rc 4 No checksum.json file found in current directory.\\n'}"
+  },
+  {
+    "Unidad": "9337",
+    "Fecha_subida": "2024-06-05T15:26:07.000",
+    "Timestamp": "2024-06-05T15:23:52.000Z",
+    "Tipo": "restart",
+    "Error": true,
+    "Log": "{'log': 'Restarting. Execution number: 1 Check log for details.\\n\\nNvMMLiteOpen : Block : BlockType = 279 \\nNVMEDIA: Reading vendor.tegra.display-size : status: 6 \\nNvMMLiteBlockCreate : Block : BlockType = 279 '}"
+  },
+  {
+    "Unidad": "9407",
+    "Fecha_subida": "2024-06-05T16:15:40.000",
+    "Timestamp": "2024-06-05T13:56:50.000Z",
+    "Tipo": "reboot",
+    "Error": false,
+    "Log": "{'log': ''}"
+  },
+  {
+    "Unidad": "9407",
+    "Fecha_subida": "2024-06-05T16:15:41.000",
+    "Timestamp": "2024-06-05T13:56:50.000Z",
+    "Tipo": "data_validation",
+    "Error": false,
+    "Log": "{'log': 'Data validation failed: rc 4 No checksum.json file found in current directory.\\n'}"
+  },
+  {
+    "Unidad": "9530",
+    "Fecha_subida": "2024-06-05T16:21:25.000",
+    "Timestamp": "2024-06-05T12:57:41.000Z",
+    "Tipo": "data_validation",
+    "Error": false,
+    "Log": "{'log': 'Data validation failed: rc 4 No checksum.json file found in current directory.\\n'}"
+  },
+  {
+    "Unidad": "9530",
+    "Fecha_subida": "2024-06-05T16:21:27.000",
+    "Timestamp": "2024-06-05T12:57:41.000Z",
+    "Tipo": "reboot",
+    "Error": false,
+    "Log": "{'log': ''}"
+  },
+  {
+    "Unidad": "9530",
+    "Fecha_subida": "2024-06-05T16:21:32.000",
+    "Timestamp": "2024-06-05T12:57:57.000Z",
+    "Tipo": "restart",
+    "Error": true,
+    "Log": "{'log': 'Restarting. Execution number: 1 Check log for details.\\n\\nERROR from element source: Could not open resource for reading and writing.\\nError details: gstrtspsrc.c(7469): gst_rtspsrc_retrieve_sdp (): /GstPipeline:GX_SYSTEM-pipeline/GstBin:multisrc_bin_00/GstBin:multisrc_bin_subbin_00/GstURIDecodeBin:subbin_uridecodebin_00/GstRTSPSrc:source:\\nFailed to connect. (Generic error)'}"
+  },
+  {
+    "Unidad": "9530",
+    "Fecha_subida": "2024-06-05T16:21:34.000",
+    "Timestamp": "2024-06-05T12:58:40.000Z",
+    "Tipo": "start",
+    "Error": false,
+    "Log": "{'log': ''}"
+  },
+  {
+    "Unidad": "9530",
+    "Fecha_subida": "2024-06-05T16:21:47.000",
+    "Timestamp": "2024-06-05T13:25:21.000Z",
+    "Tipo": "reboot",
+    "Error": false,
+    "Log": "{'log': ''}"
+  },
+  {
+    "Unidad": "9530",
+    "Fecha_subida": "2024-06-05T16:21:48.000",
+    "Timestamp": "2024-06-05T13:25:21.000Z",
+    "Tipo": "data_validation",
+    "Error": false,
+    "Log": "{'log': 'Data validation failed: rc 4 No checksum.json file found in current directory.\\n'}"
+  },
+  {
+    "Unidad": "9530",
+    "Fecha_subida": "2024-06-05T16:21:49.000",
+    "Timestamp": "2024-06-05T13:25:37.000Z",
+    "Tipo": "restart",
+    "Error": true,
+    "Log": "{'log': 'Restarting. Execution number: 1 Check log for details.\\n\\nERROR from element source: Could not open resource for reading and writing.\\nError details: gstrtspsrc.c(7469): gst_rtspsrc_retrieve_sdp (): /GstPipeline:GX_SYSTEM-pipeline/GstBin:multisrc_bin_00/GstBin:multisrc_bin_subbin_00/GstURIDecodeBin:subbin_uridecodebin_00/GstRTSPSrc:source:\\nFailed to connect. (Generic error)'}"
+  },
+  {
+    "Unidad": "9530",
+    "Fecha_subida": "2024-06-05T16:21:51.000",
+    "Timestamp": "2024-06-05T13:26:15.000Z",
+    "Tipo": "start",
+    "Error": false,
+    "Log": "{'log': ''}"
+  },
+  {
+    "Unidad": "9530",
+    "Fecha_subida": "2024-06-05T16:21:53.000",
+    "Timestamp": "2024-06-05T13:26:24.000Z",
+    "Tipo": "source_missing",
+    "Error": false,
+    "Log": "{'log': 'Source id 0 has been missing for 100 batches '}"
+  },
+  {
+    "Unidad": "9578",
+    "Fecha_subida": "2024-06-05T15:40:37.000",
+    "Timestamp": "2024-06-05T15:17:29.000Z",
+    "Tipo": "reboot",
+    "Error": false,
+    "Log": "{'log': ''}"
+  },
+  {
+    "Unidad": "9578",
+    "Fecha_subida": "2024-06-05T15:40:39.000",
+    "Timestamp": "2024-06-05T15:17:29.000Z",
+    "Tipo": "data_validation",
+    "Error": false,
+    "Log": "{'log': 'Data validation failed: rc 4 No checksum.json file found in current directory.\\n'}"
+  },
+  {
+    "Unidad": "9578",
+    "Fecha_subida": "2024-06-05T15:40:40.000",
+    "Timestamp": "2024-06-05T15:17:44.000Z",
+    "Tipo": "restart",
+    "Error": true,
+    "Log": "{'log': 'Restarting. Execution number: 1 Check log for details.\\n\\nERROR from element source: Could not open resource for reading and writing.\\nError details: gstrtspsrc.c(7469): gst_rtspsrc_retrieve_sdp (): /GstPipeline:GX_SYSTEM-pipeline/GstBin:multisrc_bin_00/GstBin:multisrc_bin_subbin_00/GstURIDecodeBin:subbin_uridecodebin_00/GstRTSPSrc:source:\\nFailed to connect. (Generic error)'}"
+  },
+  {
+    "Unidad": "9578",
+    "Fecha_subida": "2024-06-05T15:40:42.000",
+    "Timestamp": "2024-06-05T15:18:12.000Z",
+    "Tipo": "start",
+    "Error": false,
+    "Log": "{'log': ''}"
+  },
+  {
+    "Unidad": "9578",
+    "Fecha_subida": "2024-06-05T15:40:44.000",
+    "Timestamp": "2024-06-05T15:18:19.000Z",
+    "Tipo": "source_missing",
+    "Error": false,
+    "Log": "{'log': 'Source id 0 has been missing for 100 batches '}"
+  },
+  {
+    "Unidad": "9580",
+    "Fecha_subida": "2024-06-05T15:26:48.000",
+    "Timestamp": "2024-06-05T14:43:45.000Z",
+    "Tipo": "storage_devices",
+    "Error": false,
+    "Log": "{'log': 'FORMATTING PARTITION /dev/sda1 NOT MOUNTED'}"
+  },
+  {
+    "Unidad": "9580",
+    "Fecha_subida": "2024-06-05T15:26:50.000",
+    "Timestamp": "2024-06-05T14:43:54.000Z",
+    "Tipo": "data_validation",
+    "Error": false,
+    "Log": "{'log': 'Data validation failed: rc 4 No checksum.json file found in current directory.\\n'}"
+  },
+  {
+    "Unidad": "9580",
+    "Fecha_subida": "2024-06-05T15:26:51.000",
+    "Timestamp": "2024-06-05T14:43:54.000Z",
+    "Tipo": "reboot",
+    "Error": false,
+    "Log": "{'log': ''}"
+  },
+  {
+    "Unidad": "9580",
+    "Fecha_subida": "2024-06-05T15:26:52.000",
+    "Timestamp": "2024-06-05T14:44:08.000Z",
+    "Tipo": "restart",
+    "Error": true,
+    "Log": "{'log': 'Restarting. Execution number: 1 Check log for details.\\n\\nNvMMLiteOpen : Block : BlockType = 279 \\nNVMEDIA: Reading vendor.tegra.display-size : status: 6 \\nNvMMLiteBlockCreate : Block : BlockType = 279 '}"
+  },
+  {
+    "Unidad": "9580",
+    "Fecha_subida": "2024-06-05T15:26:54.000",
+    "Timestamp": "2024-06-05T14:44:38.000Z",
+    "Tipo": "start",
+    "Error": false,
+    "Log": "{'log': ''}"
+  },
+  {
+    "Unidad": "9580",
+    "Fecha_subida": "2024-06-05T15:26:57.000",
+    "Timestamp": "2024-06-05T15:24:10.000Z",
+    "Tipo": "storage_devices",
+    "Error": false,
+    "Log": "{'log': 'FORMATTING PARTITION /dev/sda1 NOT MOUNTED'}"
+  },
+  {
+    "Unidad": "9580",
+    "Fecha_subida": "2024-06-05T15:26:59.000",
+    "Timestamp": "2024-06-05T15:24:19.000Z",
+    "Tipo": "data_validation",
+    "Error": false,
+    "Log": "{'log': 'Data validation failed: rc 4 No checksum.json file found in current directory.\\n'}"
+  },
+  {
+    "Unidad": "9580",
+    "Fecha_subida": "2024-06-05T15:27:00.000",
+    "Timestamp": "2024-06-05T15:24:19.000Z",
+    "Tipo": "reboot",
+    "Error": false,
+    "Log": "{'log': ''}"
+  },
+  {
+    "Unidad": "9580",
+    "Fecha_subida": "2024-06-05T15:27:01.000",
+    "Timestamp": "2024-06-05T15:24:33.000Z",
+    "Tipo": "restart",
+    "Error": true,
+    "Log": "{'log': 'Restarting. Execution number: 1 Check log for details.\\n\\nNvMMLiteOpen : Block : BlockType = 279 \\nNVMEDIA: Reading vendor.tegra.display-size : status: 6 \\nNvMMLiteBlockCreate : Block : BlockType = 279 '}"
+  },
+  {
+    "Unidad": "9618",
+    "Fecha_subida": "2024-06-05T15:58:26.000",
+    "Timestamp": "2024-06-05T07:42:06.000Z",
+    "Tipo": "data_validation",
+    "Error": false,
+    "Log": "{'log': 'Data validation failed: rc 4 No checksum.json file found in current directory.\\n'}"
+  },
+  {
+    "Unidad": "9618",
+    "Fecha_subida": "2024-06-05T15:58:28.000",
+    "Timestamp": "2024-06-05T07:42:06.000Z",
+    "Tipo": "reboot",
+    "Error": false,
+    "Log": "{'log': ''}"
+  },
+  {
+    "Unidad": "9618",
+    "Fecha_subida": "2024-06-05T15:58:29.000",
+    "Timestamp": "2024-06-05T07:42:06.000Z",
+    "Tipo": "camera_missing",
+    "Error": false,
+    "Log": "{'log': 'DISCONNECTED cameras: 2'}"
+  },
+  {
+    "Unidad": "9618",
+    "Fecha_subida": "2024-06-05T15:58:30.000",
+    "Timestamp": "2024-06-05T07:42:13.000Z",
+    "Tipo": "camera_missing",
+    "Error": false,
+    "Log": "{'log': 'CONNECTED cameras: 2'}"
+  },
+  {
+    "Unidad": "9618",
+    "Fecha_subida": "2024-06-05T15:58:33.000",
+    "Timestamp": "2024-06-05T07:42:27.000Z",
+    "Tipo": "restart",
+    "Error": true,
+    "Log": "{'log': 'Restarting. Execution number: 1 Check log for details.\\n\\nERROR from element source: Could not open resource for reading and writing.\\nError details: gstrtspsrc.c(7469): gst_rtspsrc_retrieve_sdp (): /GstPipeline:GX_SYSTEM-pipeline/GstBin:multisrc_bin_00/GstBin:multisrc_bin_subbin_00/GstURIDecodeBin:subbin_uridecodebin_00/GstRTSPSrc:source:\\nFailed to connect. (Generic error)'}"
+  },
+  {
+    "Unidad": "9618",
+    "Fecha_subida": "2024-06-05T15:58:36.000",
+    "Timestamp": "2024-06-05T07:43:02.000Z",
+    "Tipo": "start",
+    "Error": false,
+    "Log": "{'log': ''}"
+  },
+  {
+    "Unidad": "6047",
+    "Fecha_subida": "2024-06-05T15:28:05.000",
+    "Timestamp": "2024-06-05T15:25:26.000Z",
+    "Tipo": "storage_devices",
+    "Error": false,
+    "Log": "{'log': 'NO STORAGE DEVICE FOUND'}"
+  },
+  {
+    "Unidad": "6047",
+    "Fecha_subida": "2024-06-05T15:28:07.000",
+    "Timestamp": "2024-06-05T15:25:32.000Z",
+    "Tipo": "data_validation",
+    "Error": false,
+    "Log": "{'log': 'Data validation failed: rc 4 No checksum.json file found in current directory.\\n'}"
+  },
+  {
+    "Unidad": "6047",
+    "Fecha_subida": "2024-06-05T15:28:08.000",
+    "Timestamp": "2024-06-05T15:25:32.000Z",
+    "Tipo": "reboot",
+    "Error": false,
+    "Log": "{'log': ''}"
+  },
+  {
+    "Unidad": "6047",
+    "Fecha_subida": "2024-06-05T15:28:11.000",
+    "Timestamp": "2024-06-05T15:25:47.000Z",
+    "Tipo": "restart",
+    "Error": true,
+    "Log": "{'log': 'Restarting. Execution number: 1 Check log for details.\\n\\nERROR from element source: Could not open resource for reading and writing.\\nError details: gstrtspsrc.c(7469): gst_rtspsrc_retrieve_sdp (): /GstPipeline:GX_SYSTEM-pipeline/GstBin:multisrc_bin_00/GstBin:multisrc_bin_subbin_00/GstURIDecodeBin:subbin_uridecodebin_00/GstRTSPSrc:source:\\nFailed to connect. (Generic error)'}"
+  },
+  {
+    "Unidad": "6047",
+    "Fecha_subida": "2024-06-05T15:28:12.000",
+    "Timestamp": "2024-06-05T15:26:43.000Z",
+    "Tipo": "start",
+    "Error": false,
+    "Log": "{'log': ''}"
+  },
+  {
+    "Unidad": "6047",
+    "Fecha_subida": "2024-06-05T15:28:16.000",
+    "Timestamp": "2024-06-05T15:27:09.000Z",
+    "Tipo": "source_missing",
+    "Error": false,
+    "Log": "{'log': 'Source id 1 has been missing for 100 batches '}"
+  },
+  {
+    "Unidad": "6047",
+    "Fecha_subida": "2024-06-05T15:28:18.000",
+    "Timestamp": "2024-06-05T15:27:11.000Z",
+    "Tipo": "source_missing",
+    "Error": false,
+    "Log": "{'log': 'Source id 1 reappeared after 123 misses '}"
+  },
+  {
+    "Unidad": "6101",
+    "Fecha_subida": "2024-06-05T15:27:54.000",
+    "Timestamp": "2024-06-05T15:27:51.000Z",
+    "Tipo": "camera_missing",
+    "Error": false,
+    "Log": "{'log': 'DISCONNECTED cameras: 0'}"
+  },
+  {
+    "Unidad": "8410",
+    "Fecha_subida": "2024-06-05T15:52:14.000",
+    "Timestamp": "2024-06-05T14:45:34.000Z",
+    "Tipo": "data_validation",
+    "Error": false,
+    "Log": "{'log': 'Data validation failed: rc 4 No checksum.json file found in current directory.\\n'}"
+  },
+  {
+    "Unidad": "8410",
+    "Fecha_subida": "2024-06-05T15:52:15.000",
+    "Timestamp": "2024-06-05T14:45:34.000Z",
+    "Tipo": "reboot",
+    "Error": false,
+    "Log": "{'log': ''}"
+  },
+  {
+    "Unidad": "8918",
+    "Fecha_subida": "2024-06-05T15:33:51.000",
+    "Timestamp": "2024-06-05T15:20:58.000Z",
+    "Tipo": "reboot",
+    "Error": false,
+    "Log": "{'log': ''}"
+  },
+  {
+    "Unidad": "8918",
+    "Fecha_subida": "2024-06-05T15:33:53.000",
+    "Timestamp": "2024-06-05T15:20:58.000Z",
+    "Tipo": "data_validation",
+    "Error": false,
+    "Log": "{'log': 'Data validation failed: rc 4 No checksum.json file found in current directory.\\n'}"
+  },
+  {
+    "Unidad": "9356",
+    "Fecha_subida": "2024-06-05T15:28:28.000",
+    "Timestamp": "2024-06-05T15:26:09.000Z",
+    "Tipo": "reboot",
+    "Error": false,
+    "Log": "{'log': ''}"
+  },
+  {
+    "Unidad": "9356",
+    "Fecha_subida": "2024-06-05T15:28:29.000",
+    "Timestamp": "2024-06-05T15:26:09.000Z",
+    "Tipo": "data_validation",
+    "Error": false,
+    "Log": "{'log': 'Data validation failed: rc 4 No checksum.json file found in current directory.\\n'}"
+  },
+  {
+    "Unidad": "9356",
+    "Fecha_subida": "2024-06-05T15:28:32.000",
+    "Timestamp": "2024-06-05T15:26:23.000Z",
+    "Tipo": "restart",
+    "Error": true,
+    "Log": "{'log': 'Restarting. Execution number: 1 Check log for details.\\n\\nNvMMLiteOpen : Block : BlockType = 279 \\nNVMEDIA: Reading vendor.tegra.display-size : status: 6 \\nNvMMLiteBlockCreate : Block : BlockType = 279 '}"
+  },
+  {
+    "Unidad": "9356",
+    "Fecha_subida": "2024-06-05T15:28:33.000",
+    "Timestamp": "2024-06-05T15:27:06.000Z",
+    "Tipo": "start",
+    "Error": false,
+    "Log": "{'log': ''}"
+  },
+  {
+    "Unidad": "9356",
+    "Fecha_subida": "2024-06-05T15:28:34.000",
+    "Timestamp": "2024-06-05T15:27:12.000Z",
+    "Tipo": "source_missing",
+    "Error": false,
+    "Log": "{'log': 'Source id 0 has been missing for 100 batches '}"
+  },
+  {
+    "Unidad": "9407",
+    "Fecha_subida": "2024-06-05T16:15:40.000",
+    "Timestamp": "2024-06-05T13:56:50.000Z",
+    "Tipo": "reboot",
+    "Error": false,
+    "Log": "{'log': ''}"
+  },
+  {
+    "Unidad": "9407",
+    "Fecha_subida": "2024-06-05T16:15:41.000",
+    "Timestamp": "2024-06-05T13:56:50.000Z",
+    "Tipo": "data_validation",
+    "Error": false,
+    "Log": "{'log': 'Data validation failed: rc 4 No checksum.json file found in current directory.\\n'}"
+  },
+  {
+    "Unidad": "9530",
+    "Fecha_subida": "2024-06-05T16:21:25.000",
+    "Timestamp": "2024-06-05T12:57:41.000Z",
+    "Tipo": "data_validation",
+    "Error": false,
+    "Log": "{'log': 'Data validation failed: rc 4 No checksum.json file found in current directory.\\n'}"
+  },
+  {
+    "Unidad": "9530",
+    "Fecha_subida": "2024-06-05T16:21:27.000",
+    "Timestamp": "2024-06-05T12:57:41.000Z",
+    "Tipo": "reboot",
+    "Error": false,
+    "Log": "{'log': ''}"
+  },
+  {
+    "Unidad": "9530",
+    "Fecha_subida": "2024-06-05T16:21:32.000",
+    "Timestamp": "2024-06-05T12:57:57.000Z",
+    "Tipo": "restart",
+    "Error": true,
+    "Log": "{'log': 'Restarting. Execution number: 1 Check log for details.\\n\\nERROR from element source: Could not open resource for reading and writing.\\nError details: gstrtspsrc.c(7469): gst_rtspsrc_retrieve_sdp (): /GstPipeline:GX_SYSTEM-pipeline/GstBin:multisrc_bin_00/GstBin:multisrc_bin_subbin_00/GstURIDecodeBin:subbin_uridecodebin_00/GstRTSPSrc:source:\\nFailed to connect. (Generic error)'}"
+  },
+  {
+    "Unidad": "9530",
+    "Fecha_subida": "2024-06-05T16:21:34.000",
+    "Timestamp": "2024-06-05T12:58:40.000Z",
+    "Tipo": "start",
+    "Error": false,
+    "Log": "{'log': ''}"
+  },
+  {
+    "Unidad": "9530",
+    "Fecha_subida": "2024-06-05T16:21:47.000",
+    "Timestamp": "2024-06-05T13:25:21.000Z",
+    "Tipo": "reboot",
+    "Error": false,
+    "Log": "{'log': ''}"
+  },
+  {
+    "Unidad": "9530",
+    "Fecha_subida": "2024-06-05T16:21:48.000",
+    "Timestamp": "2024-06-05T13:25:21.000Z",
+    "Tipo": "data_validation",
+    "Error": false,
+    "Log": "{'log': 'Data validation failed: rc 4 No checksum.json file found in current directory.\\n'}"
+  },
+  {
+    "Unidad": "9530",
+    "Fecha_subida": "2024-06-05T16:21:49.000",
+    "Timestamp": "2024-06-05T13:25:37.000Z",
+    "Tipo": "restart",
+    "Error": true,
+    "Log": "{'log': 'Restarting. Execution number: 1 Check log for details.\\n\\nERROR from element source: Could not open resource for reading and writing.\\nError details: gstrtspsrc.c(7469): gst_rtspsrc_retrieve_sdp (): /GstPipeline:GX_SYSTEM-pipeline/GstBin:multisrc_bin_00/GstBin:multisrc_bin_subbin_00/GstURIDecodeBin:subbin_uridecodebin_00/GstRTSPSrc:source:\\nFailed to connect. (Generic error)'}"
+  },
+  {
+    "Unidad": "9530",
+    "Fecha_subida": "2024-06-05T16:21:51.000",
+    "Timestamp": "2024-06-05T13:26:15.000Z",
+    "Tipo": "start",
+    "Error": false,
+    "Log": "{'log': ''}"
+  },
+  {
+    "Unidad": "9530",
+    "Fecha_subida": "2024-06-05T16:21:53.000",
+    "Timestamp": "2024-06-05T13:26:24.000Z",
+    "Tipo": "source_missing",
+    "Error": false,
+    "Log": "{'log': 'Source id 0 has been missing for 100 batches '}"
+  },
+  {
+    "Unidad": "9564",
+    "Fecha_subida": "2024-06-05T15:30:02.000",
+    "Timestamp": "2024-06-05T15:27:31.000Z",
+    "Tipo": "data_validation",
+    "Error": false,
+    "Log": "{'log': 'Data validation failed: rc 4 No checksum.json file found in current directory.\\n'}"
+  },
+  {
+    "Unidad": "9564",
+    "Fecha_subida": "2024-06-05T15:30:04.000",
+    "Timestamp": "2024-06-05T15:27:31.000Z",
+    "Tipo": "reboot",
+    "Error": false,
+    "Log": "{'log': ''}"
+  },
+  {
+    "Unidad": "9564",
+    "Fecha_subida": "2024-06-05T15:30:05.000",
+    "Timestamp": "2024-06-05T15:27:52.000Z",
+    "Tipo": "restart",
+    "Error": true,
+    "Log": "{'log': 'Restarting. Execution number: 1 Check log for details.\\n\\nERROR from element source: Could not open resource for reading and writing.\\nError details: gstrtspsrc.c(7469): gst_rtspsrc_retrieve_sdp (): /GstPipeline:GX_SYSTEM-pipeline/GstBin:multisrc_bin_00/GstBin:multisrc_bin_subbin_00/GstURIDecodeBin:subbin_uridecodebin_00/GstRTSPSrc:source:\\nFailed to connect. (Generic error)'}"
+  },
+  {
+    "Unidad": "9578",
+    "Fecha_subida": "2024-06-05T15:40:37.000",
+    "Timestamp": "2024-06-05T15:17:29.000Z",
+    "Tipo": "reboot",
+    "Error": false,
+    "Log": "{'log': ''}"
+  },
+  {
+    "Unidad": "9578",
+    "Fecha_subida": "2024-06-05T15:40:39.000",
+    "Timestamp": "2024-06-05T15:17:29.000Z",
+    "Tipo": "data_validation",
+    "Error": false,
+    "Log": "{'log': 'Data validation failed: rc 4 No checksum.json file found in current directory.\\n'}"
+  },
+  {
+    "Unidad": "9578",
+    "Fecha_subida": "2024-06-05T15:40:40.000",
+    "Timestamp": "2024-06-05T15:17:44.000Z",
+    "Tipo": "restart",
+    "Error": true,
+    "Log": "{'log': 'Restarting. Execution number: 1 Check log for details.\\n\\nERROR from element source: Could not open resource for reading and writing.\\nError details: gstrtspsrc.c(7469): gst_rtspsrc_retrieve_sdp (): /GstPipeline:GX_SYSTEM-pipeline/GstBin:multisrc_bin_00/GstBin:multisrc_bin_subbin_00/GstURIDecodeBin:subbin_uridecodebin_00/GstRTSPSrc:source:\\nFailed to connect. (Generic error)'}"
+  },
+  {
+    "Unidad": "9578",
+    "Fecha_subida": "2024-06-05T15:40:42.000",
+    "Timestamp": "2024-06-05T15:18:12.000Z",
+    "Tipo": "start",
+    "Error": false,
+    "Log": "{'log': ''}"
+  },
+  {
+    "Unidad": "9578",
+    "Fecha_subida": "2024-06-05T15:40:44.000",
+    "Timestamp": "2024-06-05T15:18:19.000Z",
+    "Tipo": "source_missing",
+    "Error": false,
+    "Log": "{'log': 'Source id 0 has been missing for 100 batches '}"
+  },
+  {
+    "Unidad": "9618",
+    "Fecha_subida": "2024-06-05T15:58:26.000",
+    "Timestamp": "2024-06-05T07:42:06.000Z",
+    "Tipo": "data_validation",
+    "Error": false,
+    "Log": "{'log': 'Data validation failed: rc 4 No checksum.json file found in current directory.\\n'}"
+  },
+  {
+    "Unidad": "9618",
+    "Fecha_subida": "2024-06-05T15:58:28.000",
+    "Timestamp": "2024-06-05T07:42:06.000Z",
+    "Tipo": "reboot",
+    "Error": false,
+    "Log": "{'log': ''}"
+  },
+  {
+    "Unidad": "9618",
+    "Fecha_subida": "2024-06-05T15:58:29.000",
+    "Timestamp": "2024-06-05T07:42:06.000Z",
+    "Tipo": "camera_missing",
+    "Error": false,
+    "Log": "{'log': 'DISCONNECTED cameras: 2'}"
+  },
+  {
+    "Unidad": "9618",
+    "Fecha_subida": "2024-06-05T15:58:30.000",
+    "Timestamp": "2024-06-05T07:42:13.000Z",
+    "Tipo": "camera_missing",
+    "Error": false,
+    "Log": "{'log': 'CONNECTED cameras: 2'}"
+  },
+  {
+    "Unidad": "9618",
+    "Fecha_subida": "2024-06-05T15:58:33.000",
+    "Timestamp": "2024-06-05T07:42:27.000Z",
+    "Tipo": "restart",
+    "Error": true,
+    "Log": "{'log': 'Restarting. Execution number: 1 Check log for details.\\n\\nERROR from element source: Could not open resource for reading and writing.\\nError details: gstrtspsrc.c(7469): gst_rtspsrc_retrieve_sdp (): /GstPipeline:GX_SYSTEM-pipeline/GstBin:multisrc_bin_00/GstBin:multisrc_bin_subbin_00/GstURIDecodeBin:subbin_uridecodebin_00/GstRTSPSrc:source:\\nFailed to connect. (Generic error)'}"
+  },
+  {
+    "Unidad": "9618",
+    "Fecha_subida": "2024-06-05T15:58:36.000",
+    "Timestamp": "2024-06-05T07:43:02.000Z",
+    "Tipo": "start",
+    "Error": false,
+    "Log": "{'log': ''}"
+  },
+  {
+    "Unidad": "8409",
+    "Fecha_subida": "2024-06-05T15:55:33.000",
+    "Timestamp": "2024-06-05T15:30:30.000Z",
+    "Tipo": "data_validation",
+    "Error": false,
+    "Log": "{'log': 'Data validation failed: rc 4 No checksum.json file found in current directory.\\n'}"
+  },
+  {
+    "Unidad": "8409",
+    "Fecha_subida": "2024-06-05T15:55:34.000",
+    "Timestamp": "2024-06-05T15:30:30.000Z",
+    "Tipo": "reboot",
+    "Error": false,
+    "Log": "{'log': ''}"
+  },
+  {
+    "Unidad": "8409",
+    "Fecha_subida": "2024-06-05T15:55:35.000",
+    "Timestamp": "2024-06-05T15:30:47.000Z",
+    "Tipo": "restart",
+    "Error": true,
+    "Log": "{'log': 'Restarting. Execution number: 1 Check log for details.\\n\\nERROR from element source: Could not open resource for reading and writing.\\nError details: gstrtspsrc.c(7469): gst_rtspsrc_retrieve_sdp (): /GstPipeline:GX_SYSTEM-pipeline/GstBin:multisrc_bin_00/GstBin:multisrc_bin_subbin_00/GstURIDecodeBin:subbin_uridecodebin_00/GstRTSPSrc:source:\\nFailed to connect. (Generic error)'}"
+  },
+  {
+    "Unidad": "8409",
+    "Fecha_subida": "2024-06-05T15:55:37.000",
+    "Timestamp": "2024-06-05T15:31:13.000Z",
+    "Tipo": "start",
+    "Error": false,
+    "Log": "{'log': ''}"
+  },
+  {
+    "Unidad": "8410",
+    "Fecha_subida": "2024-06-05T15:52:14.000",
+    "Timestamp": "2024-06-05T14:45:34.000Z",
+    "Tipo": "data_validation",
+    "Error": false,
+    "Log": "{'log': 'Data validation failed: rc 4 No checksum.json file found in current directory.\\n'}"
+  },
+  {
+    "Unidad": "8410",
+    "Fecha_subida": "2024-06-05T15:52:15.000",
+    "Timestamp": "2024-06-05T14:45:34.000Z",
+    "Tipo": "reboot",
+    "Error": false,
+    "Log": "{'log': ''}"
+  },
+  {
+    "Unidad": "8415",
+    "Fecha_subida": "2024-06-05T15:34:29.000",
+    "Timestamp": "2024-06-05T15:34:29.000Z",
+    "Tipo": "Ignici\u00f3n",
+    "Error": false,
+    "Log": "Ignici\u00f3n"
+  },
+  {
+    "Unidad": "8918",
+    "Fecha_subida": "2024-06-05T15:38:25.000",
+    "Timestamp": "2024-06-05T15:32:10.000Z",
+    "Tipo": "start",
+    "Error": false,
+    "Log": "{'log': ''}"
+  },
+  {
+    "Unidad": "8920",
+    "Fecha_subida": "2024-06-05T15:34:26.000",
+    "Timestamp": "2024-06-05T15:31:06.000Z",
+    "Tipo": "restart",
+    "Error": true,
+    "Log": "{'log': 'Restarting. Execution number: 1 Check log for details.\\n\\nNvMMLiteOpen : Block : BlockType = 279 \\nNVMEDIA: Reading vendor.tegra.display-size : status: 6 \\nNvMMLiteBlockCreate : Block : BlockType = 279 '}"
+  },
+  {
+    "Unidad": "8920",
+    "Fecha_subida": "2024-06-05T15:34:29.000",
+    "Timestamp": "2024-06-05T15:31:37.000Z",
+    "Tipo": "start",
+    "Error": false,
+    "Log": "{'log': ''}"
+  },
+  {
+    "Unidad": "9240",
+    "Fecha_subida": "2024-06-05T16:28:00.000",
+    "Timestamp": "2024-06-05T08:44:13.000Z",
+    "Tipo": "camera_missing",
+    "Error": false,
+    "Log": "{'log': 'DISCONNECTED cameras: 1'}"
+  },
+  {
+    "Unidad": "9240",
+    "Fecha_subida": "2024-06-05T16:28:09.000",
+    "Timestamp": "2024-06-05T09:03:34.000Z",
+    "Tipo": "data_validation",
+    "Error": false,
+    "Log": "{'log': 'Data validation failed: rc 4 No checksum.json file found in current directory.\\n'}"
+  },
+  {
+    "Unidad": "9240",
+    "Fecha_subida": "2024-06-05T16:28:10.000",
+    "Timestamp": "2024-06-05T09:03:34.000Z",
+    "Tipo": "reboot",
+    "Error": false,
+    "Log": "{'log': ''}"
+  },
+  {
+    "Unidad": "9240",
+    "Fecha_subida": "2024-06-05T16:28:11.000",
+    "Timestamp": "2024-06-05T09:03:34.000Z",
+    "Tipo": "camera_missing",
+    "Error": false,
+    "Log": "{'log': 'DISCONNECTED cameras: 1'}"
+  },
+  {
+    "Unidad": "9240",
+    "Fecha_subida": "2024-06-05T16:28:13.000",
+    "Timestamp": "2024-06-05T09:03:55.000Z",
+    "Tipo": "restart",
+    "Error": true,
+    "Log": "{'log': 'Restarting. Execution number: 1 Check log for details.\\n\\nERROR from element source: Could not open resource for reading and writing.\\nError details: gstrtspsrc.c(7469): gst_rtspsrc_retrieve_sdp (): /GstPipeline:GX_SYSTEM-pipeline/GstBin:multisrc_bin_00/GstBin:multisrc_bin_subbin_00/GstURIDecodeBin:subbin_uridecodebin_00/GstRTSPSrc:source:\\nFailed to connect. (Generic error)'}"
+  },
+  {
+    "Unidad": "9240",
+    "Fecha_subida": "2024-06-05T16:28:17.000",
+    "Timestamp": "2024-06-05T09:04:22.000Z",
+    "Tipo": "start",
+    "Error": false,
+    "Log": "{'log': ''}"
+  },
+  {
+    "Unidad": "9240",
+    "Fecha_subida": "2024-06-05T16:28:19.000",
+    "Timestamp": "2024-06-05T09:04:27.000Z",
+    "Tipo": "source_missing",
+    "Error": false,
+    "Log": "{'log': 'Source id 1 has been missing for 100 batches '}"
+  },
+  {
+    "Unidad": "9240",
+    "Fecha_subida": "2024-06-05T16:28:25.000",
+    "Timestamp": "2024-06-05T09:16:50.000Z",
+    "Tipo": "reboot",
+    "Error": false,
+    "Log": "{'log': ''}"
+  },
+  {
+    "Unidad": "9240",
+    "Fecha_subida": "2024-06-05T16:28:26.000",
+    "Timestamp": "2024-06-05T09:16:50.000Z",
+    "Tipo": "data_validation",
+    "Error": false,
+    "Log": "{'log': 'Data validation failed: rc 4 No checksum.json file found in current directory.\\n'}"
+  },
+  {
+    "Unidad": "9240",
+    "Fecha_subida": "2024-06-05T16:28:28.000",
+    "Timestamp": "2024-06-05T09:16:50.000Z",
+    "Tipo": "camera_missing",
+    "Error": false,
+    "Log": "{'log': 'DISCONNECTED cameras: 1'}"
+  },
+  {
+    "Unidad": "9240",
+    "Fecha_subida": "2024-06-05T16:28:29.000",
+    "Timestamp": "2024-06-05T09:17:23.000Z",
+    "Tipo": "restart",
+    "Error": true,
+    "Log": "{'log': 'Restarting. Execution number: 1 Check log for details.\\n\\nERROR from element source: Could not open resource for reading and writing.\\nError details: gstrtspsrc.c(7469): gst_rtspsrc_retrieve_sdp (): /GstPipeline:GX_SYSTEM-pipeline/GstBin:multisrc_bin_00/GstBin:multisrc_bin_subbin_00/GstURIDecodeBin:subbin_uridecodebin_00/GstRTSPSrc:source:\\nFailed to connect. (Generic error)'}"
+  },
+  {
+    "Unidad": "9240",
+    "Fecha_subida": "2024-06-05T16:28:30.000",
+    "Timestamp": "2024-06-05T10:55:55.000Z",
+    "Tipo": "data_validation",
+    "Error": false,
+    "Log": "{'log': 'Data validation failed: rc 4 No checksum.json file found in current directory.\\n'}"
+  },
+  {
+    "Unidad": "9240",
+    "Fecha_subida": "2024-06-05T16:28:31.000",
+    "Timestamp": "2024-06-05T10:55:55.000Z",
+    "Tipo": "reboot",
+    "Error": false,
+    "Log": "{'log': ''}"
+  },
+  {
+    "Unidad": "9240",
+    "Fecha_subida": "2024-06-05T16:28:33.000",
+    "Timestamp": "2024-06-05T10:55:55.000Z",
+    "Tipo": "camera_missing",
+    "Error": false,
+    "Log": "{'log': 'DISCONNECTED cameras: 1'}"
+  },
+  {
+    "Unidad": "9240",
+    "Fecha_subida": "2024-06-05T16:28:34.000",
+    "Timestamp": "2024-06-05T10:56:23.000Z",
+    "Tipo": "restart",
+    "Error": true,
+    "Log": "{'log': 'Restarting. Execution number: 1 Check log for details.\\n\\nERROR from element source: Could not open resource for reading and writing.\\nError details: gstrtspsrc.c(7469): gst_rtspsrc_retrieve_sdp (): /GstPipeline:GX_SYSTEM-pipeline/GstBin:multisrc_bin_00/GstBin:multisrc_bin_subbin_00/GstURIDecodeBin:subbin_uridecodebin_00/GstRTSPSrc:source:\\nFailed to connect. (Generic error)'}"
+  },
+  {
+    "Unidad": "9240",
+    "Fecha_subida": "2024-06-05T16:28:37.000",
+    "Timestamp": "2024-06-05T10:56:40.000Z",
+    "Tipo": "start",
+    "Error": false,
+    "Log": "{'log': ''}"
+  },
+  {
+    "Unidad": "9240",
+    "Fecha_subida": "2024-06-05T16:28:38.000",
+    "Timestamp": "2024-06-05T10:56:44.000Z",
+    "Tipo": "source_missing",
+    "Error": false,
+    "Log": "{'log': 'Source id 1 has been missing for 100 batches '}"
+  },
+  {
+    "Unidad": "9240",
+    "Fecha_subida": "2024-06-05T16:28:41.000",
+    "Timestamp": "2024-06-05T10:57:14.000Z",
+    "Tipo": "source_missing",
+    "Error": false,
+    "Log": "{'log': 'Source id 1 has been missing for 100 batches '}"
+  },
+  {
+    "Unidad": "9240",
+    "Fecha_subida": "2024-06-05T16:28:44.000",
+    "Timestamp": "2024-06-05T11:00:54.000Z",
+    "Tipo": "camera_missing",
+    "Error": false,
+    "Log": "{'log': 'DISCONNECTED cameras: 1'}"
+  },
+  {
+    "Unidad": "9240",
+    "Fecha_subida": "2024-06-05T16:28:47.000",
+    "Timestamp": "2024-06-05T11:01:41.000Z",
+    "Tipo": "start",
+    "Error": false,
+    "Log": "{'log': ''}"
+  },
+  {
+    "Unidad": "9240",
+    "Fecha_subida": "2024-06-05T16:28:53.000",
+    "Timestamp": "2024-06-05T11:05:54.000Z",
+    "Tipo": "camera_missing",
+    "Error": false,
+    "Log": "{'log': 'DISCONNECTED cameras: 1'}"
+  },
+  {
+    "Unidad": "9240",
+    "Fecha_subida": "2024-06-05T16:28:58.000",
+    "Timestamp": "2024-06-05T11:10:54.000Z",
+    "Tipo": "camera_missing",
+    "Error": false,
+    "Log": "{'log': 'DISCONNECTED cameras: 1'}"
+  },
+  {
+    "Unidad": "9240",
+    "Fecha_subida": "2024-06-05T16:29:05.000",
+    "Timestamp": "2024-06-05T11:15:54.000Z",
+    "Tipo": "camera_missing",
+    "Error": false,
+    "Log": "{'log': 'DISCONNECTED cameras: 1'}"
+  },
+  {
+    "Unidad": "9240",
+    "Fecha_subida": "2024-06-05T16:29:10.000",
+    "Timestamp": "2024-06-05T11:20:54.000Z",
+    "Tipo": "camera_missing",
+    "Error": false,
+    "Log": "{'log': 'DISCONNECTED cameras: 1'}"
+  },
+  {
+    "Unidad": "9240",
+    "Fecha_subida": "2024-06-05T16:29:17.000",
+    "Timestamp": "2024-06-05T11:25:54.000Z",
+    "Tipo": "camera_missing",
+    "Error": false,
+    "Log": "{'log': 'DISCONNECTED cameras: 1'}"
+  },
+  {
+    "Unidad": "9240",
+    "Fecha_subida": "2024-06-05T16:29:24.000",
+    "Timestamp": "2024-06-05T11:30:54.000Z",
+    "Tipo": "camera_missing",
+    "Error": false,
+    "Log": "{'log': 'DISCONNECTED cameras: 1'}"
+  },
+  {
+    "Unidad": "9240",
+    "Fecha_subida": "2024-06-05T16:29:31.000",
+    "Timestamp": "2024-06-05T11:35:54.000Z",
+    "Tipo": "camera_missing",
+    "Error": false,
+    "Log": "{'log': 'DISCONNECTED cameras: 1'}"
+  },
+  {
+    "Unidad": "9240",
+    "Fecha_subida": "2024-06-05T16:29:36.000",
+    "Timestamp": "2024-06-05T11:40:54.000Z",
+    "Tipo": "camera_missing",
+    "Error": false,
+    "Log": "{'log': 'DISCONNECTED cameras: 1'}"
+  },
+  {
+    "Unidad": "9240",
+    "Fecha_subida": "2024-06-05T16:29:45.000",
+    "Timestamp": "2024-06-05T13:30:22.000Z",
+    "Tipo": "data_validation",
+    "Error": false,
+    "Log": "{'log': 'Data validation failed: rc 4 No checksum.json file found in current directory.\\n'}"
+  },
+  {
+    "Unidad": "9240",
+    "Fecha_subida": "2024-06-05T16:29:46.000",
+    "Timestamp": "2024-06-05T13:30:22.000Z",
+    "Tipo": "reboot",
+    "Error": false,
+    "Log": "{'log': ''}"
+  },
+  {
+    "Unidad": "9240",
+    "Fecha_subida": "2024-06-05T16:29:48.000",
+    "Timestamp": "2024-06-05T13:30:22.000Z",
+    "Tipo": "camera_missing",
+    "Error": false,
+    "Log": "{'log': 'DISCONNECTED cameras: 1'}"
+  },
+  {
+    "Unidad": "9240",
+    "Fecha_subida": "2024-06-05T16:29:50.000",
+    "Timestamp": "2024-06-05T13:30:53.000Z",
+    "Tipo": "restart",
+    "Error": true,
+    "Log": "{'log': 'Restarting. Execution number: 1 Check log for details.\\n\\nERROR from element source: Could not open resource for reading and writing.\\nError details: gstrtspsrc.c(7469): gst_rtspsrc_retrieve_sdp (): /GstPipeline:GX_SYSTEM-pipeline/GstBin:multisrc_bin_00/GstBin:multisrc_bin_subbin_00/GstURIDecodeBin:subbin_uridecodebin_00/GstRTSPSrc:source:\\nFailed to connect. (Generic error)'}"
+  },
+  {
+    "Unidad": "9240",
+    "Fecha_subida": "2024-06-05T16:29:54.000",
+    "Timestamp": "2024-06-05T13:31:08.000Z",
+    "Tipo": "start",
+    "Error": false,
+    "Log": "{'log': ''}"
+  },
+  {
+    "Unidad": "9240",
+    "Fecha_subida": "2024-06-05T16:29:55.000",
+    "Timestamp": "2024-06-05T13:31:14.000Z",
+    "Tipo": "source_missing",
+    "Error": false,
+    "Log": "{'log': 'Source id 1 has been missing for 100 batches '}"
+  },
+  {
+    "Unidad": "9240",
+    "Fecha_subida": "2024-06-05T16:29:58.000",
+    "Timestamp": "2024-06-05T13:31:46.000Z",
+    "Tipo": "source_missing",
+    "Error": false,
+    "Log": "{'log': 'Source id 1 has been missing for 100 batches '}"
+  },
+  {
+    "Unidad": "9240",
+    "Fecha_subida": "2024-06-05T16:30:01.000",
+    "Timestamp": "2024-06-05T13:35:21.000Z",
+    "Tipo": "camera_missing",
+    "Error": false,
+    "Log": "{'log': 'DISCONNECTED cameras: 1'}"
+  },
+  {
+    "Unidad": "9240",
+    "Fecha_subida": "2024-06-05T16:30:04.000",
+    "Timestamp": "2024-06-05T13:36:09.000Z",
+    "Tipo": "start",
+    "Error": false,
+    "Log": "{'log': ''}"
+  },
+  {
+    "Unidad": "9240",
+    "Fecha_subida": "2024-06-05T16:30:09.000",
+    "Timestamp": "2024-06-05T13:40:21.000Z",
+    "Tipo": "camera_missing",
+    "Error": false,
+    "Log": "{'log': 'DISCONNECTED cameras: 1'}"
+  },
+  {
+    "Unidad": "9240",
+    "Fecha_subida": "2024-06-05T16:30:15.000",
+    "Timestamp": "2024-06-05T13:45:21.000Z",
+    "Tipo": "camera_missing",
+    "Error": false,
+    "Log": "{'log': 'DISCONNECTED cameras: 1'}"
+  },
+  {
+    "Unidad": "9240",
+    "Fecha_subida": "2024-06-05T16:30:22.000",
+    "Timestamp": "2024-06-05T13:50:21.000Z",
+    "Tipo": "camera_missing",
+    "Error": false,
+    "Log": "{'log': 'DISCONNECTED cameras: 1'}"
+  },
+  {
+    "Unidad": "9240",
+    "Fecha_subida": "2024-06-05T16:30:30.000",
+    "Timestamp": "2024-06-05T13:55:21.000Z",
+    "Tipo": "camera_missing",
+    "Error": false,
+    "Log": "{'log': 'DISCONNECTED cameras: 1'}"
+  },
+  {
+    "Unidad": "9240",
+    "Fecha_subida": "2024-06-05T16:30:38.000",
+    "Timestamp": "2024-06-05T14:00:21.000Z",
+    "Tipo": "camera_missing",
+    "Error": false,
+    "Log": "{'log': 'DISCONNECTED cameras: 1'}"
+  },
+  {
+    "Unidad": "9240",
+    "Fecha_subida": "2024-06-05T16:30:43.000",
+    "Timestamp": "2024-06-05T14:05:21.000Z",
+    "Tipo": "camera_missing",
+    "Error": false,
+    "Log": "{'log': 'DISCONNECTED cameras: 1'}"
+  },
+  {
+    "Unidad": "9240",
+    "Fecha_subida": "2024-06-05T16:30:51.000",
+    "Timestamp": "2024-06-05T14:10:21.000Z",
+    "Tipo": "camera_missing",
+    "Error": false,
+    "Log": "{'log': 'DISCONNECTED cameras: 1'}"
+  },
+  {
+    "Unidad": "9240",
+    "Fecha_subida": "2024-06-05T16:30:56.000",
+    "Timestamp": "2024-06-05T14:15:21.000Z",
+    "Tipo": "camera_missing",
+    "Error": false,
+    "Log": "{'log': 'DISCONNECTED cameras: 1'}"
+  },
+  {
+    "Unidad": "9240",
+    "Fecha_subida": "2024-06-05T16:31:03.000",
+    "Timestamp": "2024-06-05T14:20:21.000Z",
+    "Tipo": "camera_missing",
+    "Error": false,
+    "Log": "{'log': 'DISCONNECTED cameras: 1'}"
+  },
+  {
+    "Unidad": "9240",
+    "Fecha_subida": "2024-06-05T16:31:08.000",
+    "Timestamp": "2024-06-05T14:25:21.000Z",
+    "Tipo": "camera_missing",
+    "Error": false,
+    "Log": "{'log': 'DISCONNECTED cameras: 1'}"
+  },
+  {
+    "Unidad": "9407",
+    "Fecha_subida": "2024-06-05T16:15:40.000",
+    "Timestamp": "2024-06-05T13:56:50.000Z",
+    "Tipo": "reboot",
+    "Error": false,
+    "Log": "{'log': ''}"
+  },
+  {
+    "Unidad": "9407",
+    "Fecha_subida": "2024-06-05T16:15:41.000",
+    "Timestamp": "2024-06-05T13:56:50.000Z",
+    "Tipo": "data_validation",
+    "Error": false,
+    "Log": "{'log': 'Data validation failed: rc 4 No checksum.json file found in current directory.\\n'}"
+  },
+  {
+    "Unidad": "9529",
+    "Fecha_subida": "2024-06-05T15:34:33.000",
+    "Timestamp": "2024-06-05T15:34:22.000Z",
+    "Tipo": "storage_devices",
+    "Error": false,
+    "Log": "{'log': 'NO STORAGE DEVICE FOUND'}"
+  },
+  {
+    "Unidad": "9529",
+    "Fecha_subida": "2024-06-05T15:34:35.000",
+    "Timestamp": "2024-06-05T15:34:31.000Z",
+    "Tipo": "data_validation",
+    "Error": false,
+    "Log": "{'log': 'Data validation failed: rc 4 No checksum.json file found in current directory.\\n'}"
+  },
+  {
+    "Unidad": "9529",
+    "Fecha_subida": "2024-06-05T15:34:36.000",
+    "Timestamp": "2024-06-05T15:34:31.000Z",
+    "Tipo": "reboot",
+    "Error": false,
+    "Log": "{'log': ''}"
+  },
+  {
+    "Unidad": "9530",
+    "Fecha_subida": "2024-06-05T16:21:25.000",
+    "Timestamp": "2024-06-05T12:57:41.000Z",
+    "Tipo": "data_validation",
+    "Error": false,
+    "Log": "{'log': 'Data validation failed: rc 4 No checksum.json file found in current directory.\\n'}"
+  },
+  {
+    "Unidad": "9530",
+    "Fecha_subida": "2024-06-05T16:21:27.000",
+    "Timestamp": "2024-06-05T12:57:41.000Z",
+    "Tipo": "reboot",
+    "Error": false,
+    "Log": "{'log': ''}"
+  },
+  {
+    "Unidad": "9530",
+    "Fecha_subida": "2024-06-05T16:21:32.000",
+    "Timestamp": "2024-06-05T12:57:57.000Z",
+    "Tipo": "restart",
+    "Error": true,
+    "Log": "{'log': 'Restarting. Execution number: 1 Check log for details.\\n\\nERROR from element source: Could not open resource for reading and writing.\\nError details: gstrtspsrc.c(7469): gst_rtspsrc_retrieve_sdp (): /GstPipeline:GX_SYSTEM-pipeline/GstBin:multisrc_bin_00/GstBin:multisrc_bin_subbin_00/GstURIDecodeBin:subbin_uridecodebin_00/GstRTSPSrc:source:\\nFailed to connect. (Generic error)'}"
+  },
+  {
+    "Unidad": "9530",
+    "Fecha_subida": "2024-06-05T16:21:34.000",
+    "Timestamp": "2024-06-05T12:58:40.000Z",
+    "Tipo": "start",
+    "Error": false,
+    "Log": "{'log': ''}"
+  },
+  {
+    "Unidad": "9530",
+    "Fecha_subida": "2024-06-05T16:21:47.000",
+    "Timestamp": "2024-06-05T13:25:21.000Z",
+    "Tipo": "reboot",
+    "Error": false,
+    "Log": "{'log': ''}"
+  },
+  {
+    "Unidad": "9530",
+    "Fecha_subida": "2024-06-05T16:21:48.000",
+    "Timestamp": "2024-06-05T13:25:21.000Z",
+    "Tipo": "data_validation",
+    "Error": false,
+    "Log": "{'log': 'Data validation failed: rc 4 No checksum.json file found in current directory.\\n'}"
+  },
+  {
+    "Unidad": "9530",
+    "Fecha_subida": "2024-06-05T16:21:49.000",
+    "Timestamp": "2024-06-05T13:25:37.000Z",
+    "Tipo": "restart",
+    "Error": true,
+    "Log": "{'log': 'Restarting. Execution number: 1 Check log for details.\\n\\nERROR from element source: Could not open resource for reading and writing.\\nError details: gstrtspsrc.c(7469): gst_rtspsrc_retrieve_sdp (): /GstPipeline:GX_SYSTEM-pipeline/GstBin:multisrc_bin_00/GstBin:multisrc_bin_subbin_00/GstURIDecodeBin:subbin_uridecodebin_00/GstRTSPSrc:source:\\nFailed to connect. (Generic error)'}"
+  },
+  {
+    "Unidad": "9530",
+    "Fecha_subida": "2024-06-05T16:21:51.000",
+    "Timestamp": "2024-06-05T13:26:15.000Z",
+    "Tipo": "start",
+    "Error": false,
+    "Log": "{'log': ''}"
+  },
+  {
+    "Unidad": "9530",
+    "Fecha_subida": "2024-06-05T16:21:53.000",
+    "Timestamp": "2024-06-05T13:26:24.000Z",
+    "Tipo": "source_missing",
+    "Error": false,
+    "Log": "{'log': 'Source id 0 has been missing for 100 batches '}"
+  },
+  {
+    "Unidad": "9540",
+    "Fecha_subida": "2024-06-05T15:36:18.000",
+    "Timestamp": "2024-06-05T15:33:36.000Z",
+    "Tipo": "storage_devices",
+    "Error": false,
+    "Log": "{'log': 'NO STORAGE DEVICE FOUND'}"
+  },
+  {
+    "Unidad": "9540",
+    "Fecha_subida": "2024-06-05T15:36:20.000",
+    "Timestamp": "2024-06-05T15:33:46.000Z",
+    "Tipo": "reboot",
+    "Error": false,
+    "Log": "{'log': ''}"
+  },
+  {
+    "Unidad": "9540",
+    "Fecha_subida": "2024-06-05T15:36:21.000",
+    "Timestamp": "2024-06-05T15:33:46.000Z",
+    "Tipo": "data_validation",
+    "Error": false,
+    "Log": "{'log': 'Data validation failed: rc 4 No checksum.json file found in current directory.\\n'}"
+  },
+  {
+    "Unidad": "9540",
+    "Fecha_subida": "2024-06-05T15:36:24.000",
+    "Timestamp": "2024-06-05T15:33:59.000Z",
+    "Tipo": "restart",
+    "Error": true,
+    "Log": "{'log': 'Restarting. Execution number: 1 Check log for details.\\n\\nNvMMLiteOpen : Block : BlockType = 279 \\nNVMEDIA: Reading vendor.tegra.display-size : status: 6 \\nNvMMLiteBlockCreate : Block : BlockType = 279 '}"
+  },
+  {
+    "Unidad": "9540",
+    "Fecha_subida": "2024-06-05T15:36:26.000",
+    "Timestamp": "2024-06-05T15:34:31.000Z",
+    "Tipo": "start",
+    "Error": false,
+    "Log": "{'log': ''}"
+  },
+  {
+    "Unidad": "9549",
+    "Fecha_subida": "2024-06-05T16:16:26.000",
+    "Timestamp": "2024-06-05T15:32:01.000Z",
+    "Tipo": "source_missing",
+    "Error": false,
+    "Log": "{'log': 'Source id 0 has been missing for 100 batches '}"
+  },
+  {
+    "Unidad": "9571",
+    "Fecha_subida": "2024-06-05T15:34:29.000",
+    "Timestamp": "2024-06-05T15:34:27.000Z",
+    "Tipo": "restart",
+    "Error": true,
+    "Log": "{'log': 'Restarting. Execution number: 1 Check log for details.\\n\\nNvMMLiteOpen : Block : BlockType = 279 \\nNVMEDIA: Reading vendor.tegra.display-size : status: 6 \\nNvMMLiteBlockCreate : Block : BlockType = 279 '}"
+  },
+  {
+    "Unidad": "9578",
+    "Fecha_subida": "2024-06-05T15:40:37.000",
+    "Timestamp": "2024-06-05T15:17:29.000Z",
+    "Tipo": "reboot",
+    "Error": false,
+    "Log": "{'log': ''}"
+  },
+  {
+    "Unidad": "9578",
+    "Fecha_subida": "2024-06-05T15:40:39.000",
+    "Timestamp": "2024-06-05T15:17:29.000Z",
+    "Tipo": "data_validation",
+    "Error": false,
+    "Log": "{'log': 'Data validation failed: rc 4 No checksum.json file found in current directory.\\n'}"
+  },
+  {
+    "Unidad": "9578",
+    "Fecha_subida": "2024-06-05T15:40:40.000",
+    "Timestamp": "2024-06-05T15:17:44.000Z",
+    "Tipo": "restart",
+    "Error": true,
+    "Log": "{'log': 'Restarting. Execution number: 1 Check log for details.\\n\\nERROR from element source: Could not open resource for reading and writing.\\nError details: gstrtspsrc.c(7469): gst_rtspsrc_retrieve_sdp (): /GstPipeline:GX_SYSTEM-pipeline/GstBin:multisrc_bin_00/GstBin:multisrc_bin_subbin_00/GstURIDecodeBin:subbin_uridecodebin_00/GstRTSPSrc:source:\\nFailed to connect. (Generic error)'}"
+  },
+  {
+    "Unidad": "9578",
+    "Fecha_subida": "2024-06-05T15:40:42.000",
+    "Timestamp": "2024-06-05T15:18:12.000Z",
+    "Tipo": "start",
+    "Error": false,
+    "Log": "{'log': ''}"
+  },
+  {
+    "Unidad": "9578",
+    "Fecha_subida": "2024-06-05T15:40:44.000",
+    "Timestamp": "2024-06-05T15:18:19.000Z",
+    "Tipo": "source_missing",
+    "Error": false,
+    "Log": "{'log': 'Source id 0 has been missing for 100 batches '}"
+  },
+  {
+    "Unidad": "9578",
+    "Fecha_subida": "2024-06-05T15:40:46.000",
+    "Timestamp": "2024-06-05T15:30:25.000Z",
+    "Tipo": "data_validation",
+    "Error": false,
+    "Log": "{'log': 'Data validation failed: rc 4 No checksum.json file found in current directory.\\n'}"
+  },
+  {
+    "Unidad": "9578",
+    "Fecha_subida": "2024-06-05T15:40:48.000",
+    "Timestamp": "2024-06-05T15:30:25.000Z",
+    "Tipo": "reboot",
+    "Error": false,
+    "Log": "{'log': ''}"
+  },
+  {
+    "Unidad": "9578",
+    "Fecha_subida": "2024-06-05T15:40:50.000",
+    "Timestamp": "2024-06-05T15:30:40.000Z",
+    "Tipo": "restart",
+    "Error": true,
+    "Log": "{'log': 'Restarting. Execution number: 1 Check log for details.\\n\\nERROR from element source: Could not open resource for reading and writing.\\nError details: gstrtspsrc.c(7469): gst_rtspsrc_retrieve_sdp (): /GstPipeline:GX_SYSTEM-pipeline/GstBin:multisrc_bin_00/GstBin:multisrc_bin_subbin_00/GstURIDecodeBin:subbin_uridecodebin_00/GstRTSPSrc:source:\\nFailed to connect. (Generic error)'}"
+  },
+  {
+    "Unidad": "9578",
+    "Fecha_subida": "2024-06-05T15:40:52.000",
+    "Timestamp": "2024-06-05T15:31:18.000Z",
+    "Tipo": "start",
+    "Error": false,
+    "Log": "{'log': ''}"
+  },
+  {
+    "Unidad": "9578",
+    "Fecha_subida": "2024-06-05T15:40:53.000",
+    "Timestamp": "2024-06-05T15:31:25.000Z",
+    "Tipo": "source_missing",
+    "Error": false,
+    "Log": "{'log': 'Source id 0 has been missing for 100 batches '}"
+  },
+  {
+    "Unidad": "9578",
+    "Fecha_subida": "2024-06-05T15:40:55.000",
+    "Timestamp": "2024-06-05T15:31:29.000Z",
+    "Tipo": "source_missing",
+    "Error": false,
+    "Log": "{'log': 'Source id 0 reappeared after 160 misses '}"
+  },
+  {
+    "Unidad": "9601",
+    "Fecha_subida": "2024-06-05T15:34:28.000",
+    "Timestamp": "2024-06-05T15:34:28.000Z",
+    "Tipo": "Ignici\u00f3n",
+    "Error": false,
+    "Log": "Ignici\u00f3n"
+  },
+  {
+    "Unidad": "9618",
+    "Fecha_subida": "2024-06-05T15:58:26.000",
+    "Timestamp": "2024-06-05T07:42:06.000Z",
+    "Tipo": "data_validation",
+    "Error": false,
+    "Log": "{'log': 'Data validation failed: rc 4 No checksum.json file found in current directory.\\n'}"
+  },
+  {
+    "Unidad": "9618",
+    "Fecha_subida": "2024-06-05T15:58:28.000",
+    "Timestamp": "2024-06-05T07:42:06.000Z",
+    "Tipo": "reboot",
+    "Error": false,
+    "Log": "{'log': ''}"
+  },
+  {
+    "Unidad": "9618",
+    "Fecha_subida": "2024-06-05T15:58:29.000",
+    "Timestamp": "2024-06-05T07:42:06.000Z",
+    "Tipo": "camera_missing",
+    "Error": false,
+    "Log": "{'log': 'DISCONNECTED cameras: 2'}"
+  },
+  {
+    "Unidad": "9618",
+    "Fecha_subida": "2024-06-05T15:58:30.000",
+    "Timestamp": "2024-06-05T07:42:13.000Z",
+    "Tipo": "camera_missing",
+    "Error": false,
+    "Log": "{'log': 'CONNECTED cameras: 2'}"
+  },
+  {
+    "Unidad": "9618",
+    "Fecha_subida": "2024-06-05T15:58:33.000",
+    "Timestamp": "2024-06-05T07:42:27.000Z",
+    "Tipo": "restart",
+    "Error": true,
+    "Log": "{'log': 'Restarting. Execution number: 1 Check log for details.\\n\\nERROR from element source: Could not open resource for reading and writing.\\nError details: gstrtspsrc.c(7469): gst_rtspsrc_retrieve_sdp (): /GstPipeline:GX_SYSTEM-pipeline/GstBin:multisrc_bin_00/GstBin:multisrc_bin_subbin_00/GstURIDecodeBin:subbin_uridecodebin_00/GstRTSPSrc:source:\\nFailed to connect. (Generic error)'}"
+  },
+  {
+    "Unidad": "9618",
+    "Fecha_subida": "2024-06-05T15:58:36.000",
+    "Timestamp": "2024-06-05T07:43:02.000Z",
+    "Tipo": "start",
+    "Error": false,
+    "Log": "{'log': ''}"
+  },
+  {
+    "Unidad": "9619",
+    "Fecha_subida": "2024-06-05T15:34:30.000",
+    "Timestamp": "2024-06-05T15:34:30.000Z",
+    "Tipo": "Aux",
+    "Error": false,
+    "Log": "IGNICION OFF"
+  },
+  {
+    "Unidad": "9625",
+    "Fecha_subida": "2024-06-05T16:30:19.000",
+    "Timestamp": "2024-06-05T11:04:09.000Z",
+    "Tipo": "reboot",
+    "Error": false,
+    "Log": "{'log': ''}"
+  },
+  {
+    "Unidad": "9625",
+    "Fecha_subida": "2024-06-05T16:30:20.000",
+    "Timestamp": "2024-06-05T11:04:09.000Z",
+    "Tipo": "data_validation",
+    "Error": false,
+    "Log": "{'log': 'Data validation failed: rc 4 No checksum.json file found in current directory.\\n'}"
+  },
+  {
+    "Unidad": "9625",
+    "Fecha_subida": "2024-06-05T16:31:18.000",
+    "Timestamp": "2024-06-05T11:04:09.000Z",
+    "Tipo": "data_validation",
+    "Error": false,
+    "Log": "{'log': 'Data validation failed: rc 4 No checksum.json file found in current directory.\\n'}"
+  },
+  {
+    "Unidad": "9625",
+    "Fecha_subida": "2024-06-05T16:31:19.000",
+    "Timestamp": "2024-06-05T11:05:08.000Z",
+    "Tipo": "data_validation",
+    "Error": false,
+    "Log": "{'log': 'Data validation failed: rc 4 No checksum.json file found in current directory.\\n'}"
+  },
+  {
+    "Unidad": "9625",
+    "Fecha_subida": "2024-06-05T16:32:19.000",
+    "Timestamp": "2024-06-05T11:05:08.000Z",
+    "Tipo": "reboot",
+    "Error": false,
+    "Log": "{'log': ''}"
+  },
+  {
+    "Unidad": "9625",
+    "Fecha_subida": "2024-06-05T16:33:19.000",
+    "Timestamp": "2024-06-05T11:06:08.000Z",
+    "Tipo": "reboot",
+    "Error": false,
+    "Log": "{'log': ''}"
+  },
+  {
+    "Unidad": "9625",
+    "Fecha_subida": "2024-06-05T16:33:20.000",
+    "Timestamp": "2024-06-05T11:06:08.000Z",
+    "Tipo": "data_validation",
+    "Error": false,
+    "Log": "{'log': 'Data validation failed: rc 4 No checksum.json file found in current directory.\\n'}"
+  },
+  {
+    "Unidad": "9625",
+    "Fecha_subida": "2024-06-05T16:34:18.000",
+    "Timestamp": "2024-06-05T11:06:08.000Z",
+    "Tipo": "data_validation",
+    "Error": false,
+    "Log": "{'log': 'Data validation failed: rc 4 No checksum.json file found in current directory.\\n'}"
+  },
+  {
+    "Unidad": "Unidad",
+    "Fecha_subida": "2024-06-05T16:22:43.000",
+    "Timestamp": "2024-06-05T15:30:28.000Z",
+    "Tipo": "reboot",
+    "Error": false,
+    "Log": "{'log': ''}"
+  },
+  {
+    "Unidad": "Unidad",
+    "Fecha_subida": "2024-06-05T16:22:44.000",
+    "Timestamp": "2024-06-05T15:30:44.000Z",
+    "Tipo": "start",
+    "Error": false,
+    "Log": "{'log': ''}"
+  },
+  {
+    "Unidad": "Unidad",
+    "Fecha_subida": "2024-06-05T16:22:45.000",
+    "Timestamp": "2024-06-05T15:30:48.000Z",
+    "Tipo": "source_missing",
+    "Error": false,
+    "Log": "{'log': 'Source id 0 has been missing for 100 batches '}"
+  },
+  {
+    "Unidad": "Unidad",
+    "Fecha_subida": "2024-06-05T16:22:47.000",
+    "Timestamp": "2024-06-05T15:31:02.000Z",
+    "Tipo": "restart",
+    "Error": true,
+    "Log": "{'log': 'Restarting. Execution number: 1 Check log for details.\\n\\nERROR from element source: Could not open resource for reading and writing.\\nError details: gstrtspsrc.c(7469): gst_rtspsrc_retrieve_sdp (): /GstPipeline:GX_SYSTEM-pipeline/GstBin:multisrc_bin_00/GstBin:multisrc_bin_subbin_00/GstURIDecodeBin:subbin_uridecodebin_00/GstRTSPSrc:source:\\nFailed to connect. (Generic error)'}"
+  },
+  {
+    "Unidad": "Unidad",
+    "Fecha_subida": "2024-06-05T16:22:48.000",
+    "Timestamp": "2024-06-05T15:31:22.000Z",
+    "Tipo": "source_missing",
+    "Error": false,
+    "Log": "{'log': 'Source id 0 has been missing for 100 batches '}"
+  },
+  {
+    "Unidad": "Unidad",
+    "Fecha_subida": "2024-06-05T16:22:49.000",
+    "Timestamp": "2024-06-05T15:31:44.000Z",
+    "Tipo": "source_missing",
+    "Error": false,
+    "Log": "{'log': 'Source id 0 has been missing for 100 batches '}"
+  },
+  {
+    "Unidad": "Unidad",
+    "Fecha_subida": "2024-06-05T16:22:50.000",
+    "Timestamp": "2024-06-05T15:32:35.000Z",
+    "Tipo": "batch_dropping",
+    "Error": false,
+    "Log": "{'log': 'Batch dropping enabled. Delay: 15s.'}"
+  },
+  {
+    "Unidad": "Unidad",
+    "Fecha_subida": "2024-06-05T16:22:51.000",
+    "Timestamp": "2024-06-05T15:34:01.000Z",
+    "Tipo": "source_missing",
+    "Error": false,
+    "Log": "{'log': 'Source id 0 has been missing for 100 batches '}"
+  }
+]

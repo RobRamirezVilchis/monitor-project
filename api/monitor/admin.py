@@ -50,6 +50,7 @@ class UnitHistoryAdmin(admin.ModelAdmin):
         'register_datetime',
         'last_connection',
         # 'get_client',
+        'modified',
         'total',
         'restart',
         'start',

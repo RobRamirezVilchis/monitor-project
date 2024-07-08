@@ -169,6 +169,7 @@ class UnitHistory(models.Model):
     restarting_loop = models.BooleanField(default=False)
     on_trip = models.BooleanField("On trip", null=True, blank=True)
     status = models.ForeignKey(GxStatus, on_delete=models.CASCADE, null=True)
+    modified = models.BooleanField(default=False)
 
     class Meta:
         verbose_name_plural = "Unit histories"

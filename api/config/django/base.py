@@ -79,6 +79,8 @@ CRONJOBS = [
     ('0 * * * *', 'monitor.cron.register_severity_counts', '>> ' +
      os.path.join(BASE_DIR, 'monitor/log/debug_counts.log' + ' 2>&1 ')),
     ('*/30 * * * *', 'monitor.cron.check_severity_ratios'),
+    ('0 0 * * *', 'monitor.register_late_logs.register_logs', '>> ' +
+     os.path.join(BASE_DIR, 'monitor/log/debug_late_logs.log' + ' 2>&1 ')),
 ]
 
 INSTALLED_APPS = [
