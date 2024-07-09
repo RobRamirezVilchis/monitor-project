@@ -169,7 +169,7 @@ def process_driving_data(response, now=None):
     else:
         logs_last_hour = pd.DataFrame([])
 
-    past_logs_file_path = "/home/spare/Documents/monitor/monitor-project/api/monitor/past_logs.json"
+    past_logs_file_path = "./past_logs.json"
 
     try:
         with open(past_logs_file_path, "r") as f:

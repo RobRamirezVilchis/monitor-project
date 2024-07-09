@@ -4,22 +4,11 @@ import { es } from "date-fns/locale";
 import { DeviceStatus, RetailDeviceStatus } from "@/api/services/monitor/types";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { statusStyles, statusNames, StatusKey } from "./colors";
 
 export interface GxCardProps {
   device: RetailDeviceStatus;
 }
-type StatusKey = 1 | 3 | 5;
-const statusStyles: { [key in StatusKey]: string } = {
-  1: "bg-blue-100 border-blue-400 text-blue-900",
-  3: "bg-yellow-100 border-yellow-400 text-yellow-900",
-  5: "bg-red-100 border-red-400 text-red-900",
-};
-
-const statusNames: { [key in StatusKey]: string } = {
-  1: "Funcionando",
-  3: "Alerta",
-  5: "Crítico",
-};
 
 const RetailDeviceCard = ({ device: device_obj }: GxCardProps) => {
   const { device_id, name, client, last_connection, severity, description } =

@@ -11,7 +11,7 @@ from .selectors import get_unit
 
 from .models import GxStatus, Unit, UnitHistory, UnitTrip
 
-file_path = "/home/spare/Documents/monitor/monitor-project/api/monitor/past_logs.json"
+file_path = "./past_logs.json"
 # file_path = "/home/spare/Documents/monitor/monitor-project/api/past_logs.json"
 
 

@@ -3,40 +3,36 @@
 import {
   useCameraDisconnectionsQuery,
   useCheckDeviceWifiQuery as useDeviceWifiQuery,
-  useDeviceHistoryQuery,
-  useDeviceLastStatusChange,
-  useDeviceSeverityHistory,
-  useDeviceStatusQuery,
-  useUnitHistoryQuery,
-  useRetailDeviceStatusQuery,
-  useRetailDeviceLastStatusChange,
   useRetailDeviceHistoryQuery,
+  useRetailDeviceLastStatusChange,
   useRetailDeviceSeverityHistory,
+  useRetailDeviceStatusQuery,
 } from "@/api/queries/monitor";
 import {
   CameraDisconnection,
-  Device,
   DeviceFilters,
-  DeviceHistory,
   RetailDeviceHistory,
-  Unit,
-  UnitHistory,
 } from "@/api/services/monitor/types";
 
 import { useDataGrid, useSsrDataGrid } from "@/hooks/data-grid";
 import DataGrid from "@/ui/data-grid/DataGrid";
 import { ColumnDef } from "@/ui/data-grid/types";
 
+import { useSetDeviceInactiveMutation } from "@/api/mutations/monitor";
+import wifiError from "@/media/error-de-conexion.png";
+import { Button, Modal } from "@mantine/core";
+import { DatePickerInput } from "@mantine/dates";
+import { useDisclosure } from "@mantine/hooks";
 import {
+  differenceInDays,
   format,
   formatDistanceToNow,
   parseISO,
-  differenceInDays,
 } from "date-fns";
 import { es } from "date-fns/locale";
-import Link from "next/link";
 import Image from "next/image";
-import wifiError from "@/media/error-de-conexion.png";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import {
   CartesianGrid,
@@ -50,44 +46,17 @@ import {
   YAxis,
   ZAxis,
 } from "recharts";
-import { DatePickerInput } from "@mantine/dates";
-import { Button, Modal } from "@mantine/core";
 import {
   NameType,
   ValueType,
 } from "recharts/types/component/DefaultTooltipContent";
 import BackArrow from "../../../(components)/BackArrow";
-import { useDisclosure } from "@mantine/hooks";
-import { useSetDeviceInactiveMutation } from "@/api/mutations/monitor";
-import { useRouter } from "next/navigation";
-
-type StatusKey = 0 | 1 | 2 | 3 | 4 | 5;
-const statusStyles: { [key in StatusKey]: string } = {
-  0: "bg-gray-100 border-gray-400 text-gray-900",
-  1: "bg-blue-100 border-blue-400 text-blue-900",
-  2: "bg-green-100 border-green-400 text-green-900",
-  3: "bg-yellow-100 border-yellow-400 text-yellow-900",
-  4: "bg-orange-100 border-orange-400 text-orange-900",
-  5: "bg-red-100 border-red-400 text-red-900",
-};
-
-const statusNames: { [key in StatusKey]: string } = {
-  0: "Inactivo",
-  1: "Funcionando",
-  2: "Normal",
-  3: "Alerta",
-  4: "Fallando",
-  5: "Crítico",
-};
-
-const barColors: { [key in StatusKey]: string } = {
-  0: "#c9c9c9",
-  1: "#70bafa",
-  2: "#57d46c",
-  3: "#ffd919",
-  4: "#fca14c",
-  5: "#f74a36",
-};
+import {
+  StatusKey,
+  dotColors,
+  statusNames,
+  statusStyles,
+} from "../../../(components)/colors";
 
 const RetailDevicePage = ({ params }: { params: { device_id: string } }) => {
   const router = useRouter();
@@ -399,7 +368,7 @@ const RetailDevicePage = ({ params }: { params: { device_id: string } }) => {
               {plotData.map((entry, index) => (
                 <Cell
                   key={`cell-${index}`}
-                  fill={barColors[entry.severidad as StatusKey]}
+                  fill={dotColors[entry.severidad as StatusKey]}
                 ></Cell>
               ))}
             </Scatter>

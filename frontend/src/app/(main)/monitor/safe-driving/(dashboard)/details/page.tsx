@@ -1,57 +1,25 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
-import {
-  TextInput,
-  useCombobox,
-  Select,
-  Tooltip,
-  HoverCard,
-} from "@mantine/core";
 import { PieChart } from "@mantine/charts";
+import { HoverCard, Select, TextInput, useCombobox } from "@mantine/core";
+import { useCallback, useState } from "react";
 
 import {
-  useUnitsQuery,
   useDrivingSeverityCount,
   useSafeDrivingClientsQuery,
-  useDrivingLastUpdateQuery,
+  useUnitsQuery,
 } from "@/api/queries/monitor";
 
 import UnitCard from "../../../(components)/UnitCard";
 
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
-import { useRouter } from "next/navigation";
-import { formatDistanceToNow } from "date-fns";
-import { es } from "date-fns/locale";
-import router from "next/router";
-import { Space_Mono } from "next/font/google";
-
-type StatusKey = 0 | 1 | 2 | 3 | 4 | 5;
-const statusStyles: { [key in StatusKey]: string } = {
-  0: "bg-gray-100 border-gray-400 text-gray-900",
-  1: "bg-blue-100 border-blue-400 text-blue-900",
-  2: "bg-green-100 border-green-400 text-green-900",
-  3: "bg-yellow-100 border-yellow-400 text-yellow-900",
-  4: "bg-orange-100 border-orange-400 text-orange-900",
-  5: "bg-red-100 border-red-400 text-red-900",
-};
-const statusNames: { [key in StatusKey]: string } = {
-  0: "Inactivo",
-  1: "Funcionando",
-  2: "Normal",
-  3: "Alerta",
-  4: "Fallando",
-  5: "Crítico",
-};
-const statusColors: { [key in StatusKey]: string } = {
-  0: "gray",
-  1: "blue",
-  2: "green",
-  3: "yellow.5",
-  4: "orange",
-  5: "red",
-};
+import { useRouter, useSearchParams } from "next/navigation";
+import {
+  StatusKey,
+  pieColors,
+  statusNames,
+  statusStyles,
+} from "../../../(components)/colors";
 
 const SafeDrivingPage = () => {
   const router = useRouter();
@@ -131,7 +99,7 @@ const SafeDrivingPage = () => {
         level: i,
         name: statusNames[i as StatusKey],
         value: severityCountDict[i as StatusKey],
-        color: statusColors[i as StatusKey],
+        color: pieColors[i as StatusKey],
       });
     }
   }

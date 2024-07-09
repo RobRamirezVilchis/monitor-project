@@ -16,71 +16,37 @@ import { useDataGrid, useSsrDataGrid } from "@/hooks/data-grid";
 import DataGrid from "@/ui/data-grid/DataGrid";
 import { ColumnDef } from "@/ui/data-grid/types";
 
-import {
-  format,
-  formatDate,
-  formatDistanceToNow,
-  lightFormat,
-  parseISO,
-} from "date-fns";
+import { format, formatDistanceToNow, parseISO } from "date-fns";
 import { es } from "date-fns/locale";
-import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 //import { BarChart } from "@mantine/charts";
 import {
+  CartesianGrid,
   Cell,
+  ReferenceArea,
+  ResponsiveContainer,
+  Scatter,
+  ScatterChart,
+  Tooltip,
   XAxis,
   YAxis,
-  CartesianGrid,
-  ResponsiveContainer,
-  Tooltip,
-  ScatterChart,
-  Scatter,
   ZAxis,
-  ReferenceArea,
 } from "recharts";
 // for recharts v2.1 and above
-import {
-  ValueType,
-  NameType,
-} from "recharts/types/component/DefaultTooltipContent";
 
-import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
-import { DatePickerInput } from "@mantine/dates";
-import { Button, Modal } from "@mantine/core";
-import { useRouter } from "next/navigation";
-import BackArrow from "../../../(components)/BackArrow";
-import { useDisclosure } from "@mantine/hooks";
 import { useSetUnitInactiveMutation } from "@/api/mutations/monitor";
-import { fail } from "assert";
-import { WidthFull } from "@mui/icons-material";
-
-type StatusKey = 0 | 1 | 2 | 3 | 4 | 5;
-const statusStyles: { [key in StatusKey]: string } = {
-  0: "bg-gray-100 border-gray-400 text-gray-900",
-  1: "bg-blue-100 border-blue-400 text-blue-900",
-  2: "bg-green-100 border-green-400 text-green-900",
-  3: "bg-yellow-100 border-yellow-400 text-yellow-900",
-  4: "bg-orange-100 border-orange-400 text-orange-900",
-  5: "bg-red-100 border-red-400 text-red-900",
-};
-
-const statusNames: { [key in StatusKey]: string } = {
-  0: "Inactivo",
-  1: "Funcionando",
-  2: "Normal",
-  3: "Alerta",
-  4: "Fallando",
-  5: "Crítico",
-};
-const barColors: { [key in StatusKey]: string } = {
-  0: "#c9c9c9",
-  1: "#70bafa",
-  2: "#57d46c",
-  3: "#ffd919",
-  4: "#fca14c",
-  5: "#f74a36",
-};
+import { Button, Modal } from "@mantine/core";
+import { DatePickerInput } from "@mantine/dates";
+import { useDisclosure } from "@mantine/hooks";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useEffect, useRef, useState } from "react";
+import BackArrow from "../../../(components)/BackArrow";
+import {
+  StatusKey,
+  dotColors,
+  statusNames,
+  statusStyles,
+} from "../../../(components)/colors";
 
 const DownloadFile = (unitData: { unitId: string; unitName: string }) => {
   const reportQuery = useUnitReportQuery({
@@ -447,7 +413,7 @@ const UnitPage = ({ params }: { params: { unit_id: string } }) => {
               {plotData.map((entry, index) => (
                 <Cell
                   key={`cell-${index}`}
-                  fill={barColors[entry.severidad as StatusKey]}
+                  fill={dotColors[entry.severidad as StatusKey]}
                 ></Cell>
               ))}
             </Scatter>

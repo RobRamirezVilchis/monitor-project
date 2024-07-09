@@ -4,33 +4,13 @@ import { es } from "date-fns/locale";
 import { Unit, UnitStatus } from "@/api/services/monitor/types";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { statusStyles, statusNames, StatusKey } from "./colors";
 
 export interface GxCardProps {
   unit: UnitStatus;
 }
-type StatusKey = 0 | 1 | 2 | 3 | 4 | 5;
-const statusStyles: { [key in StatusKey]: string } = {
-  0: "bg-gray-100 border-gray-400 text-gray-900",
-  1: "bg-blue-100 border-blue-400 text-blue-900",
-  2: "bg-green-100 border-green-400 text-green-900",
-  3: "bg-yellow-100 border-yellow-400 text-yellow-900",
-  4: "bg-orange-100 border-orange-400 text-orange-900",
-  5: "bg-red-100 border-red-400 text-red-900",
-};
-
-const statusNames: { [key in StatusKey]: string } = {
-  0: "Inactivo",
-  1: "Funcionando",
-  2: "Normal",
-  3: "Alerta",
-  4: "Fallando",
-  5: "Crítico",
-};
 
 const UnitCard = ({ unit: unit_status }: GxCardProps) => {
-  const [isHovering, setIsHovering] = useState(false);
-  const router = useRouter();
-
   const {
     unit_id,
     unit,

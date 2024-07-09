@@ -1,50 +1,23 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
 import {
   useDevicesQuery,
-  useIndustryAreaPlotData,
-  useIndustryLastUpdateQuery,
   useIndustrySeverityCount,
-  useSafeDrivingAreaPlotData,
 } from "@/api/queries/monitor";
+import { useCallback, useState } from "react";
 import DeviceCard from "../../../(components)/DeviceCard";
 
-import { Checkbox, SegmentedControl, Tabs, TextInput } from "@mantine/core";
-import { AreaChart, AreaChartType, PieChart } from "@mantine/charts";
+import { PieChart } from "@mantine/charts";
+import { TextInput } from "@mantine/core";
 
-import { useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { DatePickerInput } from "@mantine/dates";
-import { formatDistanceToNow } from "date-fns";
-import { es } from "date-fns/locale";
-
-type StatusKey = 0 | 1 | 2 | 3 | 4 | 5;
-const statusStyles: { [key in StatusKey]: string } = {
-  0: "bg-gray-100 border-gray-400 text-gray-900",
-  1: "bg-blue-100 border-blue-400 text-blue-900",
-  2: "bg-green-100 border-green-400 text-green-900",
-  3: "bg-yellow-100 border-yellow-400 text-yellow-900",
-  4: "bg-orange-100 border-orange-400 text-orange-900",
-  5: "bg-red-100 border-red-400 text-red-900",
-};
-const statusNames: { [key in StatusKey]: string } = {
-  0: "Inactivo",
-  1: "Funcionando",
-  2: "Normal",
-  3: "Alerta",
-  4: "Fallando",
-  5: "Crítico",
-};
-const statusColors: { [key in StatusKey]: string } = {
-  0: "gray",
-  1: "blue",
-  2: "green",
-  3: "yellow.5",
-  4: "orange",
-  5: "red",
-};
+import { useRouter, useSearchParams } from "next/navigation";
+import {
+  StatusKey,
+  pieColors,
+  statusNames,
+  statusStyles,
+} from "../../../(components)/colors";
 
 const IndustryDetailsPage = () => {
   const router = useRouter();
@@ -89,7 +62,7 @@ const IndustryDetailsPage = () => {
         data.push({
           name: statusNames[level["severity"] as StatusKey],
           value: level["count"],
-          color: statusColors[level["severity"] as StatusKey],
+          color: pieColors[level["severity"] as StatusKey],
         });
       }
     }
