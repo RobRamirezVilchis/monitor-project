@@ -1603,6 +1603,87 @@ def update_retail_status():
             }
             create_retail_device_history(devicehistory_args)
 
+    disconnected_devices = get_retail_devices_without_updates()
+    for device in disconnected_devices:
+        client_name = device.client.name
+
+        try:
+            current_device_status = device.retaildevicestatus
+            db_register_time = current_device_status.last_update
+            db_last_connection = current_device_status.last_connection
+            db_delay_time = current_device_status.delay_time
+        except:
+            current_device_status = None
+            db_last_connection = None
+            db_register_time = None
+            db_delay_time = timedelta(0)
+
+        delayed, delay_time = calculate_logs_delay(
+            None, None, db_last_connection, db_register_time, db_delay_time)
+
+        last_alert = current_device_status.last_alert if current_device_status else None
+        alert_interval = 59
+
+        """ if delayed:
+            alerts = ["Sin comunicación reciente"]
+        else:
+            alerts = [] """
+        alerts = []
+
+        if last_alert == None or now - last_alert > timedelta(minutes=alert_interval):
+            message = f'{client_name} - {device.name}:\n'
+            alert_info = ""
+
+            for description in alerts:
+                alert_type = get_or_create_alerttype(description)
+
+                message += f'{description}: {alert_info}\n' if alert_info else f'{description}\n'
+
+                alert_args = {"alert_type": alert_type, "gx": device,
+                              "register_datetime": now, "register_date": now.date(),
+                              "description": alert_info}
+                create_alert(alert_args)
+
+            """ if alerts and os.environ.get("ALERTS") == "true":
+                send_telegram(chat="INDUSTRY_CHAT",
+                              message=message)
+
+                last_alert = now """
+
+        if (delay_time >= timedelta(
+                minutes=60)):
+
+            args = {
+                'severity': 5,
+                'description': "Sin comunicación",
+                'deployment': deployment
+            }
+            status = get_or_create_gxstatus(args)
+
+            defaults = {
+                'last_update': now,
+                'last_alert': last_alert,
+                'delayed': delayed,
+                'delay_time': delay_time,
+                'status': status,
+                'log_counts': {}
+            }
+            device_status = update_or_create_retail_device_status(
+                device=device, defaults=defaults)
+
+            devicehistory_args = {
+                'device': device,
+                'register_datetime': now,
+                'register_date': now.date(),
+                'last_connection': db_last_connection,
+                "last_alert": last_alert,
+                'delayed': delayed,
+                'delay_time': delay_time,
+                'status': status,
+                'log_counts': {}
+            }
+            create_retail_device_history(devicehistory_args)
+
 
 # Servers
 

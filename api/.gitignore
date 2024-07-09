@@ -135,3 +135,4 @@ media/
 
 # Monitor
 api/monitor/.env
+api/monitor/past_logs.json
