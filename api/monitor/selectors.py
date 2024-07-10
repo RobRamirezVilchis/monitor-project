@@ -24,8 +24,8 @@ def get_inactive_units():
     return UnitStatus.objects.filter(active=True, last_update__lte=(date_now-timedelta(minutes=30)))
 
 
-def devicestatus_list():
-    return DeviceStatus.objects.filter(device__client__active=True).order_by("-status__severity")
+def devicestatus_list(deployment_name):
+    return DeviceStatus.objects.filter(device__client__active=True, device__client__deployment__name=deployment_name).order_by("-status__severity")
 
 
 def camerastatus_list():
@@ -146,14 +146,15 @@ def get_or_create_device(args):
     return device
 
 
-def get_devices_without_updates():
+def get_industry_devices_without_updates():
     import pytz
     now = datetime.now(tz=pytz.timezone("UTC"))
 
     devices = Device.objects.filter(
         devicestatus__last_connection__lt=(now-timedelta(minutes=55)),
         devicestatus__last_update__gt=(now-timedelta(minutes=60)),
-        client__active=True
+        client__active=True,
+        client__deployment__name="Industry"
     )
 
     return devices
@@ -405,11 +406,12 @@ def get_units_problem_counts(client=None):
     return counts
 
 
-def get_devices_severity_counts(client):
+def get_devices_severity_counts(client, deployment_name):
     client_query = Q()
     if client:
         client_query = Q(device__client=client)
-    counts = DeviceStatus.objects.filter(client_query).values('status__severity') \
+    counts = DeviceStatus.objects.filter(client_query, device__client__deployment__name=deployment_name) \
+        .values('status__severity') \
         .annotate(severity=F('status__severity')) \
         .values('severity') \
         .annotate(count=Count('id')) \

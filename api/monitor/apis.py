@@ -83,7 +83,9 @@ class DeviceStatusList(APIView):
         delay_time = serializers.DurationField()
 
     def get(self, request, *args, **kwargs):
-        devices = devicestatus_list()
+        deployment_name = ' '.join(
+            map(lambda x: x.capitalize(), request.path.split("/")[4].split("-")))
+        devices = devicestatus_list(deployment_name)
 
         data = self.OutputSerializer(devices, many=True).data
 
@@ -122,8 +124,10 @@ class DeviceSeverityCount(APIView):
         count = serializers.IntegerField()
 
     def get(self, request, *args, **kwargs):
+        deployment_name = ' '.join(
+            map(lambda x: x.capitalize(), request.path.split("/")[4].split("-")))
 
-        counts = DeviceStatus.objects.values('status__severity') \
+        counts = DeviceStatus.objects.filter(device__client__deployment__name=deployment_name).values('status__severity') \
             .annotate(severity=F('status__severity')) \
             .values('severity') \
             .annotate(count=Count('id')) \
@@ -512,7 +516,8 @@ class SafeDrivingClientList(APIView):
         name = serializers.CharField()
 
     def get(self, request, *args, **kwargs):
-        clients = get_sd_clients()
+        deployment = get_or_create_deployment("Safe Driving")
+        clients = get_deployment_clients(deployment)
 
         data = self.OutputSerializer(clients, many=True).data
         return Response(data)
@@ -523,11 +528,22 @@ class IndustryClientList(APIView):
         name = serializers.CharField()
 
     def get(self, request, *args, **kwargs):
-        clients = get_industry_clients()
-        active_clients = clients.exclude(
-            name="Ternium").exclude(name="Bekaert")
+        deployment = get_or_create_deployment("Industry")
+        clients = get_deployment_clients(deployment)
 
-        data = self.OutputSerializer(active_clients, many=True).data
+        data = self.OutputSerializer(clients, many=True).data
+        return Response(data)
+
+
+class SmartBuildingsClientList(APIView):
+    class OutputSerializer(serializers.Serializer):
+        name = serializers.CharField()
+
+    def get(self, request, *args, **kwargs):
+        deployment = get_or_create_deployment("Smart Buildings")
+        clients = get_deployment_clients(deployment)
+
+        data = self.OutputSerializer(clients, many=True).data
         return Response(data)
 
 
@@ -808,8 +824,10 @@ class IndustryAreaPlotAPI(APIView):
         severity_counts = serializers.JSONField()
 
     def get(self, request, *args, **kwargs):
-        import datetime
         import pytz
+
+        deployment_name = ' '.join(
+            map(lambda x: x.capitalize(), request.path.split("/")[4].split("-")))
 
         filters_serializer = self.FiltersSerializer(data=request.query_params)
         filters_serializer.is_valid(raise_exception=True)
@@ -830,7 +848,7 @@ class IndustryAreaPlotAPI(APIView):
 
         client_name = request.query_params.get("client")
         registers = get_area_plot_data(
-            "Industry", client_name=client_name, filters=filters_serializer.validated_data)
+            deployment_name, client_name=client_name, filters=filters_serializer.validated_data)
 
         hourly_counts = {}
 
@@ -1121,6 +1139,52 @@ class IndClientCreateAPI(APIView):
 
         try:
             response = requests.post(f'https://{keyname}.industry.aivat.io/login/',
+                                     data={"username": serializer.validated_data["api_username"],
+                                           "password": serializer.validated_data["api_password"]})
+        except requests.exceptions.ConnectionError:
+            return Response({"error": "No existe endpoint para cliente"}, status=status.HTTP_400_BAD_REQUEST)
+
+        if response.status_code != 200:
+            return Response({"error": "Credenciales inválidas"}, status=status.HTTP_400_BAD_REQUEST)
+
+        password = serializer.validated_data["api_password"]
+
+        encryption = EncryptionService()
+        enc_password = encryption.encrypt(bytes(password, "utf-16"))
+
+        client, created = get_or_create_client(
+            name=serializer.validated_data["name"],
+            deployment_name="Industry",
+            keyname=keyname,
+            api_username=serializer.validated_data["api_username"],
+            defaults={
+                "api_password": enc_password
+            }
+        )
+
+        if created:
+            return Response(status=status.HTTP_201_CREATED)
+        else:
+            return Response({"error": "Cliente ya existe"}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class SBClientCreateAPI(APIView):
+    class InputSerializer(serializers.Serializer):
+        name = serializers.CharField()
+        keyname = serializers.CharField()
+        api_username = serializers.CharField()
+        api_password = serializers.CharField()
+
+    def post(self, request, *args, **kwargs):
+        import requests
+
+        serializer = self.InputSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        keyname = serializer.validated_data["keyname"]
+
+        try:
+            response = requests.post(f'https://{keyname}.sm-build.aivat.io/login/',
                                      data={"username": serializer.validated_data["api_username"],
                                            "password": serializer.validated_data["api_password"]})
         except requests.exceptions.ConnectionError:

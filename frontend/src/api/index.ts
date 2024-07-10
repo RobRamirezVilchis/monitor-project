@@ -96,6 +96,22 @@ const api = {
         severityHistory: (device_id: DeviceId) => `api/v1/monitor/retail/devices/${device_id}/severity-history/`,
 
       },
+      smartBuildings: {
+        clients: "api/v1/monitor/smart-buildings/clients/",
+        addClient: "api/v1/monitor/smart-buildings/clients/create/",
+        status: "api/v1/monitor/smart-buildings/status/",
+        lastUpdate: "api/v1/monitor/smart-buildings/last-update",
+        severityCount: "api/v1/monitor/smart-buildings/status-count/",
+        areaPlotData: "api/v1/monitor/smart-buildings/area-plot-data/",
+        deviceStatus: (device_id: DeviceId) => `api/v1/monitor/smart-buildings/devices/${device_id}/`,
+        deviceHistory: (device_id: DeviceId) => `api/v1/monitor/smart-buildings/devices/${device_id}/history/`,
+        lastStatusChange: (device_id: DeviceId) => `api/v1/monitor/smart-buildings/devices/${device_id}/last-status-change/`,
+        severityHistory: (device_id: DeviceId) => `api/v1/monitor/smart-buildings/devices/${device_id}/severity-history/`,
+        deviceLogs: (device_id: DeviceId) => `api/v1/monitor/smart-buildings/devices/${device_id}/logs/`,
+        cameraDisconnections: (device_id: DeviceId) => `api/v1/monitor/smart-buildings/devices/${device_id}/camera-disconnections/`,
+        checkWifi: (device_id: DeviceId) => `api/v1/monitor/smart-buildings/devices/${device_id}/check-wifi-connection/`,
+        setAsInactive: (device_id: DeviceId) => `api/v1/monitor/smart-buildings/devices/${device_id}/set-inactive/`,
+      },
       servers: {
         list: "api/v1/monitor/servers/list/",
         serversProjects: "api/v1/monitor/servers/server-projects/",

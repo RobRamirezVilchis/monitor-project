@@ -107,6 +107,43 @@ urlpatterns = [
                   )),
          ], "retail"))
          ),
+    path("smart-buildings/",
+         include(([
+                  path("status/", apis.DeviceStatusList.as_view(), name="status"),
+                  path("clients/", apis.SmartBuildingsClientList.as_view(),
+                       name="clients"),
+                  path("clients/create/",
+                       apis.SBClientCreateAPI.as_view(), name="client_create"),
+                  path("last-update/", apis.IndustryLastUpdateAPI.as_view(),
+                       name="last-update"),
+                  path("status-count/",
+                       apis.DeviceSeverityCount.as_view(), name="list"),
+                  path("area-plot-data/", apis.IndustryAreaPlotAPI.as_view(),
+                       name="units-area-plot"),
+
+                  path("devices/<int:device_id>/",
+                       include(([
+                           path("", apis.DeviceStatusAPI.as_view(),
+                                name="unit-status"),
+                           path("history/", apis.DeviceHistoryList.as_view(),
+                                name="history"),
+                           path("last-status-change/", apis.DeviceStatusTime.as_view(),
+                                name="last-active-status"),
+                           path("severity-history/", apis.DeviceScatterPlotAPI.as_view(),
+                                name="scatter-plot"),
+                           path("camera-disconnections/", apis.CameraDisconnectionsList.as_view(),
+                                name="camera-disconnections"),
+                           path("logs/", apis.IndustryLogsAPI.as_view(),
+                                name="device-logs"),
+                           path("check-wifi-connection/", apis.DeviceWifiProblemsAPI.as_view(),
+                                name="device-connection"),
+                           path("set-inactive/", apis.SetDeviceClientAsInactiveAPI.as_view(),
+                                name="set-inactive"),
+                       ], "device")
+                       )),
+
+                  ], "smart-retail"))
+         ),
     path("servers/",
          include(([
              path("list/", apis.ServerList.as_view(), name="list"),

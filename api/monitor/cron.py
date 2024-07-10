@@ -748,12 +748,16 @@ def calculate_logs_delay(first_log_time: Optional[datetime], data_last_connectio
     return delayed, delay_time
 
 
-def get_industry_data(client_keyname, client_id):
+def get_industry_data(client_keyname, client_id, deployment="Industry"):
 
-    login_url = f'https://{client_keyname}.industry.aivat.io/login/'
-    request_url = f'https://{client_keyname}.industry.aivat.io/stats_json/'
+    if deployment == "Industry":
+        login_url = f'https://{client_keyname}.industry.aivat.io/login/'
+        request_url = f'https://{client_keyname}.industry.aivat.io/stats_json/'
+    elif deployment == "Smart Buildings":
+        login_url = f'https://{client_keyname}.sm-build.aivat.io/login/'
+        request_url = f'https://{client_keyname}.sm-build.aivat.io/stats_json/'
 
-    credentials = get_api_credentials("Industry", client_id)
+    credentials = get_api_credentials(deployment, client_id)
 
     try:
         token = api_login(login_url, credentials)
@@ -955,10 +959,10 @@ def process_industry_data(response):
     return log_counts, disconnection_times, last_connections, first_log_times, alerts, license_ends
 
 
-def update_industry_status():
+def update_industry_status(deployment_name="Industry"):
     now = datetime.now(tz=pytz.timezone("UTC"))
 
-    deployment = get_or_create_deployment('Industry')
+    deployment = get_or_create_deployment(deployment_name)
     clients = get_deployment_clients(deployment)
 
     for client in clients:
@@ -966,7 +970,7 @@ def update_industry_status():
         client_name = client.name
         client_id = client.id
 
-        response = get_industry_data(client_keyname, client_id)
+        response = get_industry_data(client_keyname, client_id, deployment_name)
 
         """ if client_alias != "cmxws":
             continue """
@@ -1181,7 +1185,7 @@ def update_industry_status():
             }
             create_device_history(devicehistory_args)
 
-    disconnected_devices = get_devices_without_updates()
+    disconnected_devices = get_industry_devices_without_updates()
     for device in disconnected_devices:
         client_name = device.client.name
 
@@ -1452,7 +1456,6 @@ def update_retail_status():
             continue
 
         log_counts, disconnection_times, last_connections, first_log_times, alerts, license = processed_data
-        print(last_connections)
 
         camerastatus_data = []
         camerahistory_data = []
@@ -2032,8 +2035,15 @@ def update_elb_status():
                     "critical": any_critical,
                 })
 
+# Smart Buildings
+
+
+def update_buildings_status():
+    update_industry_status("Smart Buildings")
 
 # Generate daily Telegram Safe Driving Report
+
+
 def send_daily_sd_report():
     import time
 
@@ -2096,8 +2106,9 @@ def register_severity_counts():
 
     get_severity_counts = {
         "Safe Driving": get_units_severity_counts,
-        "Industry": get_devices_severity_counts,
+        "Industry": lambda client: get_devices_severity_counts(client, "Industry"),
         "Smart Retail": get_retail_devices_severity_counts,
+        "Smart Buildings": lambda client: get_devices_severity_counts(client, "Smart Buildings"),
     }
 
     for deployment_name in list(get_severity_counts.keys()):
