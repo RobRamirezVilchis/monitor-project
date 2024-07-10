@@ -1,28 +1,22 @@
 "use client";
 
-import { ReactNode, useMemo, useState } from "react";
 import {
   AppShell,
   Burger,
   Indicator,
   NavLink,
-  type NavLinkProps,
   useMantineTheme,
+  type NavLinkProps,
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import clsx from "clsx";
-import Link from "next/link";
 import Image from "next/image";
+import Link from "next/link";
+import { ReactNode, useMemo, useState } from "react";
 
-import {
-  ColorSchemeSwitchToggle,
-  ProfileFloatingMenu,
-} from "@/components/shared";
 import { Role } from "@/api/services/auth/types";
+import { ColorSchemeSwitchToggle } from "@/components/shared";
 import { useNavLink } from "@/hooks/shared";
-import { isUserInAuthorizedRoles } from "@/api/services/auth";
-import { useAuth } from "@/hooks/auth";
-import BrandForem from "@/ui/icons/BrandForem";
 import Introid from "../../media/introid_bw.png";
 
 interface NavMenuItem {
@@ -143,7 +137,7 @@ const MainLayout = ({ children }: MainLayoutProps) => {
       </AppShell.Navbar>
 
       <AppShell.Main>
-        <div className="mx-8 lg:mx-32 pb-2 md:pb-6 pt-14">{children}</div>
+        <div>{children}</div>
       </AppShell.Main>
     </AppShell>
   );
@@ -172,7 +166,7 @@ const DesktopNavLink = ({ item, onClick }: DesktopNavLinkProps) => {
       onClick={onClick}
       className="text-center"
       classNames={{
-        root: clsx("px-2 py-2.5 w-24", {}),
+        root: clsx("px-2 py-2.5 w-24 hover:bg-gray-700 ", {}),
         body: `overflow-visible ${active ? "text-gray-500" : "text-gray-300"}`,
       }}
       styles={{

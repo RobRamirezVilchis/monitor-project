@@ -47,6 +47,7 @@ import {
   statusNames,
   statusStyles,
 } from "../../../(components)/colors";
+import Breadcrumbs from "../../../(components)/Breadcrumbs";
 
 const DownloadFile = (unitData: { unitId: string; unitName: string }) => {
   const reportQuery = useUnitReportQuery({
@@ -238,8 +239,6 @@ const UnitPage = ({ params }: { params: { unit_id: string } }) => {
     statusDescription = unitStatus?.description;
   }
 
-  const element = document.getElementById("scatterplot");
-
   useEffect(() => {
     const updateWidth = () => {
       if (elementRef.current) {
@@ -259,24 +258,31 @@ const UnitPage = ({ params }: { params: { unit_id: string } }) => {
     };
   }, []);
 
-  console.log(elementWidth);
-
   const numDataPoints = plotData ? plotData.length : 0;
-  console.log();
+
   const tickLabelWidth = 20; // Approximate width of each tick label in pixels
   const maxTicks = Math.floor(elementWidth / tickLabelWidth);
   const interval = Math.max(1, Math.ceil(numDataPoints / maxTicks));
 
   return (
     <section className="relative mb-20">
-      <BackArrow />
+      {/*  <BackArrow /> */}
 
       <div className="relative flex mb-4 justify-between items-center">
-        <div className="xl:flex xl:gap-6">
-          <h1 className="text-5xl font-bold">
+        <div className="xl:flex xl:gap-6 xl:items-center">
+          {/* <h1 className="text-5xl font-bold">
             {unitStatus?.client == "Transpais" ? "Unidad" : ""}{" "}
             {unitStatus?.unit}
-          </h1>
+          </h1> */}
+          {unitStatus && (
+            <Breadcrumbs
+              links={[{ href: "/monitor/safe-driving/", name: "Safe Driving" }]}
+              pageName={`${unitStatus?.client == "Transpais" ? "Unidad" : ""} ${
+                unitStatus?.unit
+              }`}
+            ></Breadcrumbs>
+          )}
+
           <div className="md:flex justify-start items-center gap-4 mt-4 xl:mt-0">
             <div
               className={`inline-flex h-fit px-4 pt-1 pb-0.5 text-3xl font-semibold mb-2 md:mb-0
@@ -286,51 +292,62 @@ const UnitPage = ({ params }: { params: { unit_id: string } }) => {
             </div>
             <div className="flex gap-3 text-xl text-gray-500 items-center">
               <div className="shrink">{statusDescription}</div>
-              <div>|</div>
+              <div className="border-r-2 border-gray-400 dark:border-gray-600 h-8" />
               <div>Desde {timeAgo}</div>
             </div>
           </div>
         </div>
         {unitStatus?.on_trip && (
           <div className="absolute right-4 bottom-3 md:static flex items-center top-0">
-            <span className="animate-ping inline-flex h-3 w-3 rounded-full bg-blue-400 opacity-100"></span>
+            <span className="relative h-3 w-3 mb-1">
+              <span className="animate-ping h-4 w-4 absolute inline-flex rounded-full bg-sky-400 opacity-75"></span>
+              <span className="absolute inline-flex rounded-full h-4 w-4 bg-sky-400"></span>
+            </span>
             <div className="text-2xl font-semibold ml-6">En viaje</div>
           </div>
         )}
       </div>
 
       <div className="sm:flex justify-between items-end">
-        <div>
-          {inactive && unitLastActiveStatus.data && (
-            <p className="text-xl text-gray-500">
-              Último estátus activo:{" "}
-              {statusNames[unitLastActiveStatus?.data.severity as StatusKey]} -{" "}
-              {unitLastActiveStatus?.data.description}
-            </p>
-          )}
+        <div className="flex flex-col xl:flex-row gap-3 items-start xl:items-center ">
           {unitStatus && (
-            <div className="text-xl text-gray-500">
-              {unitStatus.last_connection && (
-                <p>
-                  Última conexión:{" "}
-                  {format(parseISO(unitStatus.last_connection), "Pp")}
-                </p>
-              )}
-              {unitStatus.last_connection &&
-                (unitStatus.pending_events == 1 ? (
-                  <p>{unitStatus.pending_events} evento pendiente</p>
-                ) : (
-                  <p>{unitStatus.pending_events} eventos pendientes</p>
-                ))}
-              {unitStatus.last_connection &&
-                (unitStatus.pending_status == 1 ? (
-                  <p>{unitStatus.pending_status} status pendiente</p>
-                ) : (
-                  <p>{unitStatus.pending_status} status pendientes</p>
-                ))}
+            <div className="text-gray-600 dark:text-gray-400 text-lg bg-gray-300 dark:bg-gray-800 px-3 py-1 rounded-md w-fit">
+              <p>Logs pendientes:</p>
+              <div className="flex gap-2 items-center">
+                {unitStatus.last_connection &&
+                  (unitStatus.pending_events == 1 ? (
+                    <p>{unitStatus.pending_events} evento</p>
+                  ) : (
+                    <p>{unitStatus.pending_events} eventos</p>
+                  ))}
+                <div className="border-r-2 border-gray-400 h-5" />
+                {unitStatus.last_connection && (
+                  <p>{unitStatus.pending_status} status</p>
+                )}
+              </div>
             </div>
           )}
+          <div className="text-xl text-gray-500 dark:text-gray-400">
+            {inactive && unitLastActiveStatus.data && (
+              <p>
+                Último estatus activo:{" "}
+                {statusNames[unitLastActiveStatus?.data.severity as StatusKey]}{" "}
+                - {unitLastActiveStatus?.data.description}
+              </p>
+            )}
+            {unitStatus && (
+              <div>
+                {unitStatus.last_connection && (
+                  <p>
+                    Última conexión:{" "}
+                    {format(parseISO(unitStatus.last_connection), "Pp")}
+                  </p>
+                )}
+              </div>
+            )}
+          </div>
         </div>
+
         <div className="flex mt-2 sm:mt-0 gap-2">
           {unitStatus && (
             <DownloadFile unitName={unitStatus.unit} unitId={params.unit_id} />
@@ -341,12 +358,19 @@ const UnitPage = ({ params }: { params: { unit_id: string } }) => {
         </div>
       </div>
 
-      <div className="h-[65vh] mb-20">
-        <DataGrid instance={grid} />
+      <div className="mt-4">
+        <p className="text-2xl text-gray-600 dark:text-gray-400">
+          Estatus cada diez minutos
+        </p>
+        <div className="h-[65vh] mb-20">
+          <DataGrid instance={grid} />
+        </div>
       </div>
 
       <div className=" items-center gap-8 mb-6 mt-8">
-        <p className="text-2xl opacity-60 mb-2">Gráfica de estátus </p>
+        <p className="text-2xl text-gray-600 dark:text-gray-400 mb-2">
+          Gráfica de estatus{" "}
+        </p>
         <div className="md:flex items-center gap-2">
           <p>Rango de fechas:</p>
           <div className="sm:w-80 mt-1 sm:mt-0">

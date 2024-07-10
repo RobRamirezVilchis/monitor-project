@@ -1,22 +1,20 @@
 "use client";
 
 import {
-  useDeviceLogsQuery,
-  useDeviceStatusQuery,
   useRetailDeviceLogsQuery,
   useRetailDeviceStatusQuery,
 } from "@/api/queries/monitor";
-import { login } from "@/api/services/auth";
-import { DeviceLogs, UnitHistory } from "@/api/services/monitor/types";
+import { DeviceLogs } from "@/api/services/monitor/types";
+import Breadcrumbs from "@/app/(main)/monitor/(components)/Breadcrumbs";
 import { useDataGrid, useSsrDataGrid } from "@/hooks/data-grid";
 import DataGrid from "@/ui/data-grid/DataGrid";
 import { ColumnDef } from "@/ui/data-grid/types";
+import { Checkbox } from "@mantine/core";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { format, parseISO } from "date-fns";
 import Link from "next/link";
-import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import { Checkbox } from "@mantine/core";
-import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 const DeviceLogsPage = ({ params }: { params: { device_id: string } }) => {
   const router = useRouter();
@@ -90,18 +88,19 @@ const DeviceLogsPage = ({ params }: { params: { device_id: string } }) => {
 
   return (
     <section className="relative">
-      <button
-        className="absolute hidden lg:block right-full mr-5 mt-2 opacity-40"
-        onClick={() => router.back()}
-      >
-        <ArrowBackIcon />
-      </button>
-
       <div className="text-5xl mb-6">
-        <h1>
-          <span className="font-bold">{deviceStatus?.name}</span>
-          <span className="opacity-40"> - Logs</span>
-        </h1>
+        {deviceStatus && (
+          <Breadcrumbs
+            links={[
+              { href: "/monitor/smart-retail/", name: "Smart Retail" },
+              {
+                href: `/monitor/smart-retail/device/${params.device_id}/`,
+                name: deviceStatus?.name,
+              },
+            ]}
+            pageName="Logs"
+          ></Breadcrumbs>
+        )}
       </div>
       <div className="flex justify-end">
         <Checkbox

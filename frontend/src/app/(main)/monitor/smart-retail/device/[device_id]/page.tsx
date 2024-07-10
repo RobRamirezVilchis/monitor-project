@@ -57,6 +57,7 @@ import {
   statusNames,
   statusStyles,
 } from "../../../(components)/colors";
+import Breadcrumbs from "../../../(components)/Breadcrumbs";
 
 const RetailDevicePage = ({ params }: { params: { device_id: string } }) => {
   const router = useRouter();
@@ -223,13 +224,29 @@ const RetailDevicePage = ({ params }: { params: { device_id: string } }) => {
 
   return (
     <section className="relative mb-20">
-      <BackArrow />
+      {/*  <BackArrow /> */}
       <div className="flex mb-4 justify-between items-center">
         <div className="xl:flex xl:gap-6">
-          <h1 className="text-5xl font-bold">{deviceStatus?.name}</h1>
+          <div className="md:flex gap-3 ">
+            {deviceStatus && (
+              <Breadcrumbs
+                links={[
+                  { href: "/monitor/smart-retail/", name: "Smart Retail" },
+                ]}
+                pageName={deviceStatus?.name}
+              ></Breadcrumbs>
+            )}
+
+            <h2
+              className=" bg-gray-600 text-white dark:text-white dark:bg-gray-700 mt-3 
+            md:mt-0 w-fit h-fit py-1 px-2 rounded-lg text-2xl opacity-50 font-semibold"
+            >
+              {deviceStatus?.client}
+            </h2>
+          </div>
           <div className="md:flex justify-start items-center gap-4 mt-4 xl:mt-0">
             <div
-              className={`inline-flex h-fit px-4 pt-1 pb-0.5 text-3xl font-semibold mb-2 md:mb-0
+              className={`inline-flex h-fit px-4 pt-1 pb-0.5 text-2xl font-semibold mb-2 md:mb-0
               border-2 ${color} rounded-full items-center`}
             >
               {statusNames[severity as StatusKey]}
@@ -242,7 +259,10 @@ const RetailDevicePage = ({ params }: { params: { device_id: string } }) => {
           </div>
         </div>
         {hasWifiProblems && (
-          <div className="hidden md:flex items-center gap-2 opacity-70 text-lg px-2 py-1 bg-gray-300 rounded-md  dark:text-black">
+          <div
+            className="hidden md:flex items-center gap-2 opacity-70 text-lg 
+          px-2 py-1 bg-gray-300 rounded-md  dark:text-black"
+          >
             <Image src={wifiError} width={30} alt={""}></Image>
             <p>Problemas de conexión</p>
           </div>

@@ -10,6 +10,7 @@ import { format, parseISO } from "date-fns";
 import Link from "next/link";
 import DataGrid from "@/ui/data-grid/DataGrid";
 import { useRouter } from "next/navigation";
+import Breadcrumbs from "@/app/(main)/monitor/(components)/Breadcrumbs";
 
 const UnitLogsPage = ({ params }: { params: { unit_id: string } }) => {
   const router = useRouter();
@@ -81,21 +82,35 @@ const UnitLogsPage = ({ params }: { params: { unit_id: string } }) => {
 
   return (
     <section className="relative">
-      <button
+      {/* <button
         className="absolute hidden lg:block right-full mr-5 mt-2 opacity-40"
         onClick={() => router.back()}
       >
         <ArrowBackIcon />
       </button>
-
+ */}
       <div className="text-5xl mb-6">
-        <h1>
+        {/* <h1>
           <span className="font-bold">
             {unitStatus?.client == "Transpais" ? "Unidad" : ""}{" "}
             {unitStatus?.unit}
           </span>
           <span className="opacity-40"> - Logs</span>
-        </h1>
+        </h1> */}
+        {unitStatus && (
+          <Breadcrumbs
+            links={[
+              { href: "/monitor/safe-driving/", name: "Safe Driving" },
+              {
+                href: `/monitor/safe-driving/unit/${params.unit_id}/`,
+                name: `${unitStatus?.client == "Transpais" ? "Unidad" : ""} ${
+                  unitStatus?.unit
+                }`,
+              },
+            ]}
+            pageName="Logs"
+          ></Breadcrumbs>
+        )}
       </div>
       <div className="h-[42rem]">
         <DataGrid instance={grid} />

@@ -15,6 +15,7 @@ import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { Checkbox } from "@mantine/core";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Breadcrumbs from "@/app/(main)/monitor/(components)/Breadcrumbs";
 
 const DeviceLogsPage = ({ params }: { params: { device_id: string } }) => {
   const router = useRouter();
@@ -88,24 +89,21 @@ const DeviceLogsPage = ({ params }: { params: { device_id: string } }) => {
 
   return (
     <section className="relative">
-      {/* <Link
-        href={`/monitor/industry/device/${params.device_id}`}
-        className="absolute right-full mr-5 mt-2 opacity-40"
-      >
-        <ArrowBackIcon />
-      </Link> */}
-      <button
-        className="absolute hidden lg:block right-full mr-5 mt-2 opacity-40"
-        onClick={() => router.back()}
-      >
-        <ArrowBackIcon />
-      </button>
-
-      <div className="text-5xl mb-6">
-        <h1>
-          <span className="font-bold">{deviceStatus?.device_name}</span>
-          <span className="opacity-40"> - Logs</span>
-        </h1>
+      <div className="mb-6">
+        {deviceStatus && (
+          <Breadcrumbs
+            links={[
+              { href: "/monitor/industry/", name: "Industry" },
+              {
+                href: `/monitor/industry/device/${params.device_id}/`,
+                name: deviceStatus?.device_description
+                  ? deviceStatus.device_description
+                  : deviceStatus?.device_name.replace("_", " "),
+              },
+            ]}
+            pageName="Logs"
+          ></Breadcrumbs>
+        )}
       </div>
       <div className="flex justify-end">
         <Checkbox

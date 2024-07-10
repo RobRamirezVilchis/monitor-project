@@ -1,3 +1,4 @@
+from collections import defaultdict
 from .aws_metrics import AWSUtils
 from .models import *
 from .selectors import *
@@ -1271,7 +1272,7 @@ def update_industry_status():
 
 
 # Smart Retail
-def get_retail_data(client_keyname):
+def get_retail_data(client_keyname, client_id):
     # Hardcoded
     urls = {
         "enbl": {
@@ -1282,7 +1283,7 @@ def get_retail_data(client_keyname):
     login_url = urls[client_keyname]["login"]
     request_url = urls[client_keyname]["logs"]
 
-    credentials = get_api_credentials("Smart Retail", client_keyname)
+    credentials = get_api_credentials("Smart Retail", client_id)
     if not credentials:
         return None
 
@@ -1299,6 +1300,7 @@ def get_retail_data(client_keyname):
     }
 
     response, status = make_request(request_url, time_interval, token)
+    print(response, status)
     if not (status == 200 or status == 201):
         token = api_login(login_url, credentials)
         response, status = make_request(request_url, time_interval, token)
@@ -1324,7 +1326,7 @@ def process_retail_data(response):
     first_log_times = {}
     disconnection_times = {}
 
-    alerts = set()
+    alerts = defaultdict(set)
 
     for device_name, data in response.items():
         disconnection_times[device_name] = {}
@@ -1375,7 +1377,7 @@ def process_retail_data(response):
             alert_conditions = {}
             for description, cond in alert_conditions.items():
                 if cond:
-                    alerts.add(description)
+                    alerts[device_name].add(description)
 
         hourly_log_counts[device_name]["counts"] = device_hour_counts
         recent_log_counts[device_name]["counts"] = device_recent_counts
@@ -1428,8 +1430,6 @@ def process_retail_data(response):
     log_counts = {"hour": hourly_log_counts, "recent": recent_log_counts}
     license = 0  # Placeholder
 
-    print("Disconnection times")
-    print(disconnection_times)
     return log_counts, disconnection_times, last_connections, first_log_times, alerts, license
 
 
@@ -1443,7 +1443,7 @@ def update_retail_status():
         client_alias = client.keyname
         client_name = client.name
 
-        response = get_retail_data(client_alias)
+        response = get_retail_data(client_alias, client.id)
 
         if response is not None:
             processed_data = process_retail_data(response)
@@ -1452,6 +1452,7 @@ def update_retail_status():
             continue
 
         log_counts, disconnection_times, last_connections, first_log_times, alerts, license = processed_data
+        print(last_connections)
 
         camerastatus_data = []
         camerahistory_data = []
