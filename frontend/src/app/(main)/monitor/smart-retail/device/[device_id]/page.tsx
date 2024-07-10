@@ -231,7 +231,10 @@ const RetailDevicePage = ({ params }: { params: { device_id: string } }) => {
             {deviceStatus && (
               <Breadcrumbs
                 links={[
-                  { href: "/monitor/smart-retail/", name: "Smart Retail" },
+                  {
+                    href: "/monitor/smart-retail/details/",
+                    name: "Smart Retail",
+                  },
                 ]}
                 pageName={deviceStatus?.name}
               ></Breadcrumbs>

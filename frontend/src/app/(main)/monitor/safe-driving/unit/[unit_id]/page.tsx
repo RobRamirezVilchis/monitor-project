@@ -276,7 +276,12 @@ const UnitPage = ({ params }: { params: { unit_id: string } }) => {
           </h1> */}
           {unitStatus && (
             <Breadcrumbs
-              links={[{ href: "/monitor/safe-driving/", name: "Safe Driving" }]}
+              links={[
+                {
+                  href: "/monitor/safe-driving/details/",
+                  name: "Safe Driving",
+                },
+              ]}
               pageName={`${unitStatus?.client == "Transpais" ? "Unidad" : ""} ${
                 unitStatus?.unit
               }`}
@@ -285,7 +290,7 @@ const UnitPage = ({ params }: { params: { unit_id: string } }) => {
 
           <div className="md:flex justify-start items-center gap-4 mt-4 xl:mt-0">
             <div
-              className={`inline-flex h-fit px-4 pt-1 pb-0.5 text-3xl font-semibold mb-2 md:mb-0
+              className={`inline-flex h-fit px-4 pt-1 pb-0.5 text-2xl font-semibold mb-2 md:mb-0
                     border-2 ${color} rounded-full items-center`}
             >
               {statusNames[severity as StatusKey]}

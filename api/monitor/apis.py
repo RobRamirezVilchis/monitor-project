@@ -63,7 +63,7 @@ class UnitStatusList(APIView):
     def get(self, request, *args, **kwargs):
         devices = active_unitstatus_list()
         sorted_units = sorted(
-            devices, key=lambda x: (x.status.priority, x.status.severity), reverse=True)
+            devices, key=lambda x: (x.status.priority, x.status.severity, x.unit.name), reverse=True)
 
         data = self.OutputSerializer(sorted_units, many=True).data
 

@@ -1,11 +1,11 @@
 export type StatusKey = 0 | 1 | 2 | 3 | 4 | 5;
 export const statusStyles: { [key in StatusKey]: string } = {
-  0: "bg-gray-100 dark:bg-gray-100 border-gray-500 text-gray-900",
-  1: "bg-blue-100 dark:bg-blue-100 border-blue-500 text-blue-900",
-  2: "bg-green-100 dark:bg-green-100 border-green-500 text-green-900",
-  3: "bg-yellow-100 dark:bg-yellow-100 border-yellow-500 text-yellow-900",
-  4: "bg-orange-100 dark:bg-orange-100 border-orange-500 text-orange-900",
-  5: "bg-red-100 dark:bg-red-100 border-red-500 text-red-900",
+  0: "bg-gray-100 dark:bg-gray-200 border-gray-500 text-gray-900",
+  1: "bg-blue-100 dark:bg-blue-200 border-blue-500 text-blue-900",
+  2: "bg-green-100 dark:bg-green-200 border-green-500 text-green-900",
+  3: "bg-yellow-100 dark:bg-yellow-200 border-yellow-500 text-yellow-900",
+  4: "bg-orange-100 dark:bg-orange-200 border-orange-500 text-orange-900",
+  5: "bg-red-100 dark:bg-red-200 border-red-500 text-red-900",
 };
 
 export const statusNames: { [key in StatusKey]: string } = {

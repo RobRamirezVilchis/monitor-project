@@ -8,6 +8,7 @@ import { Alert, Button, Loader } from "@mantine/core";
 import { ReactNode, useState } from "react";
 import { useForm } from "react-hook-form";
 import BackArrow from "../../(components)/BackArrow";
+import Breadcrumbs from "../../(components)/Breadcrumbs";
 
 const AddSDClientPage = () => {
   const [error, setError] = useState("");
@@ -47,20 +48,16 @@ const AddSDClientPage = () => {
 
   return (
     <section className="relative">
-      <BackArrow />
-      <h1 className="mb-8 text-5xl pr-10 ">
-        <span className="font-bold ">Safe Driving</span>
-        <span className="font-semibold text-gray-400">
-          {" "}
-          - Agregar nuevo cliente a monitorear
-        </span>
-      </h1>
+      <Breadcrumbs
+        links={[{ href: "/monitor/safe-driving/", name: "Safe Driving" }]}
+        pageName="Agregar cliente a monitorear"
+      />
 
       <form
-        className="flex flex-col items-center"
+        className="flex flex-col items-center mt-8"
         onSubmit={handleSubmit(onSubmit)}
       >
-        <div className="flex flex-col gap-6 border border-gray-300 p-6 rounded-xl max-w-[460px]">
+        <div className="flex flex-col gap-6 border border-gray-300 dark:border-gray-700 p-6 rounded-xl max-w-[460px]">
           <div className="flex flex-col gap-1 ">
             <p className="text-xl">Nombre del cliente:</p>
             <TextInput name="name" control={control} required={true} />
@@ -84,7 +81,7 @@ const AddSDClientPage = () => {
           </div>
           <div>
             <p className="text-xl font-semibold mb-2">Credenciales de API</p>
-            <div className="flex flex-col gap-3 border-2 rounded-md bg-gray-200 p-4">
+            <div className="flex flex-col gap-3 rounded-md bg-gray-200 dark:bg-gray-900 p-4">
               <div className="flex flex-col gap-1">
                 <p className="text-lg">Nombre de usuario:</p>
                 <TextInput
@@ -104,7 +101,7 @@ const AddSDClientPage = () => {
               </div>
             </div>
           </div>
-          <div className="flex gap-10">
+          <div className="flex justify-end gap-10">
             <Button type="submit" size="lg" color="green">
               Agregar
             </Button>

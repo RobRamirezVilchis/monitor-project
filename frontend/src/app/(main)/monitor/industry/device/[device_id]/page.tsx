@@ -230,7 +230,9 @@ const DevicePage = ({ params }: { params: { device_id: string } }) => {
           <div className="md:flex gap-3 ">
             {deviceStatus && (
               <Breadcrumbs
-                links={[{ href: "/monitor/industry/", name: "Industry" }]}
+                links={[
+                  { href: "/monitor/industry/details/", name: "Industry" },
+                ]}
                 pageName={
                   deviceStatus?.device_description
                     ? deviceStatus.device_description
