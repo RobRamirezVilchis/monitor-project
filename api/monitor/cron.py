@@ -1551,9 +1551,9 @@ def update_retail_status():
                                   "description": alert_info}
                     alert = create_alert(alert_args)
 
-                if alerts[device_name] and os.environ.get("ALERTS") == "true":
+                """ if alerts[device_name] and os.environ.get("ALERTS") == "true":
                     send_telegram(chat="INDUSTRY_CHAT",
-                                  message=message)
+                                  message=message) """
 
             status_conditions = [
                 (max_cam_disc_times[device_name] >
