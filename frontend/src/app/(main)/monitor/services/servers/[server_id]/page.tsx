@@ -37,6 +37,7 @@ import { useForm } from "react-hook-form";
 import { MultiSelect } from "@/ui/core";
 import { useModifyServerProjectsMutation } from "@/api/mutations/monitor";
 import { setRequestMeta } from "next/dist/server/request-meta";
+import Breadcrumbs from "../../../(components)/Breadcrumbs";
 
 const statusStyles: { [condition: string]: string } = {
   normal: "bg-blue-100 border-blue-400 text-blue-900",
@@ -262,17 +263,30 @@ const ServerPage = ({ params }: { params: { server_id: string } }) => {
           </Button>
         </form>
       </Modal>
-      <BackArrow />
+      {/* <BackArrow /> */}
       <div className="sm:flex mb-6 items-center justify-between">
         <div className="flex justify-start items-start sm:items-center">
           <h1 className="text-5xl font-bold mr-6">
-            <span className="hidden md:inline text-gray-400 dark:text-gray-600">
+            {/* <span className="hidden md:inline text-gray-400 dark:text-gray-600">
               Servidores /{" "}
             </span>
             {serverStatus && (
               <span>
                 {capitalize(serverStatus.server_name.split(splitter).join(" "))}
               </span>
+            )} */}
+            {serverStatus && (
+              <Breadcrumbs
+                links={[
+                  {
+                    href: "/monitor/services/servers/details/",
+                    name: "Servidores",
+                  },
+                ]}
+                pageName={capitalize(
+                  serverStatus.server_name.split(splitter).join(" ")
+                )}
+              />
             )}
           </h1>
           {serverStatus && (

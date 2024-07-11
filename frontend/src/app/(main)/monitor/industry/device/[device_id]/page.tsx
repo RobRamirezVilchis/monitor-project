@@ -273,7 +273,7 @@ const DevicePage = ({ params }: { params: { device_id: string } }) => {
         )}
       </div>
 
-      <div className="sm:flex justify-between items-end">
+      <div className="sm:flex justify-between items-end text-xl">
         {deviceStatus && (
           <div>
             {deviceStatus.delayed && (
@@ -293,9 +293,7 @@ const DevicePage = ({ params }: { params: { device_id: string } }) => {
                   />
                 </svg>
 
-                <p className="ml-2 text-2xl">
-                  Retraso: {deviceStatus.delay_time}
-                </p>
+                <p className="ml-2 ">Retraso: {deviceStatus.delay_time}</p>
               </div>
             )}
             {!deviceStatus.delayed && (
@@ -315,25 +313,23 @@ const DevicePage = ({ params }: { params: { device_id: string } }) => {
                   />
                 </svg>
 
-                <p className="ml-2 mt-1 text-2xl">Comunicación reciente</p>
+                <p className="ml-2 mt-1 ">Comunicación reciente</p>
               </div>
             )}
             <div>
               {daysRemaining != -1 && (
-                <p className="text-2xl text-gray-500">
+                <p className=" text-gray-500">
                   Licencia termina en {daysRemaining} días
                 </p>
               )}
               {deviceStatus.last_connection && (
-                <p className="text-2xl text-gray-500">
+                <p className=" text-gray-500">
                   Última conexión:{" "}
                   {format(parseISO(deviceStatus.last_connection), "Pp")}
                 </p>
               )}
               {!deviceStatus.last_connection && (
-                <p className="text-2xl text-gray-500">
-                  Última conexión desconocida
-                </p>
+                <p className=" text-gray-500">Última conexión desconocida</p>
               )}
             </div>
           </div>
@@ -345,16 +341,26 @@ const DevicePage = ({ params }: { params: { device_id: string } }) => {
         </div>
       </div>
 
-      <div className="h-[70vh] mb-10">
-        <DataGrid instance={grid} />
+      <div className="mt-4">
+        <p className="text-2xl text-gray-600 dark:text-gray-400">
+          Estatus cada diez minutos
+        </p>
+        <div className="h-[65vh] mb-20">
+          <DataGrid instance={grid} />
+        </div>
       </div>
-      <h3 className="text-2xl opacity-60">Desconexiones de cámaras:</h3>
+
+      <h3 className="text-2xl text-gray-600 dark:text-gray-400">
+        Desconexiones de cámaras:
+      </h3>
       <div className="h-[70vh]">
         <DataGrid instance={camerasGrid} />
       </div>
 
       <div className=" items-center gap-8 mb-6 mt-8">
-        <p className="text-2xl opacity-60 mb-2">Gráfica de estátus </p>
+        <p className="text-2xl text-gray-600 dark:text-gray-400 mb-2">
+          Gráfica de estátus{" "}
+        </p>
         <div className="flex items-center">
           <p className="hidden sm:block mr-2">Rango de fechas:</p>
           <div className="w-80 mt-1 sm:mt-0">

@@ -268,7 +268,7 @@ const UnitPage = ({ params }: { params: { unit_id: string } }) => {
     <section className="relative mb-20">
       {/*  <BackArrow /> */}
 
-      <div className="relative flex mb-4 justify-between items-center">
+      <div className="relative flex mb-6 justify-between items-center">
         <div className="xl:flex xl:gap-6 xl:items-center">
           {/* <h1 className="text-5xl font-bold">
             {unitStatus?.client == "Transpais" ? "Unidad" : ""}{" "}

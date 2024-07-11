@@ -30,6 +30,7 @@ import { ChartTooltipProps, LineChart } from "@mantine/charts";
 import { useMergedRef } from "@mantine/hooks";
 import { useState } from "react";
 import { DatePickerInput } from "@mantine/dates";
+import Breadcrumbs from "../../../(components)/Breadcrumbs";
 
 const statusStyles: { [condition: string]: string } = {
   normal: "bg-blue-100 border-blue-400 text-blue-900",
@@ -183,17 +184,28 @@ const RDSPage = ({ params }: { params: { rds_id: string } }) => {
   let splitter = new RegExp("_|-", "g");
   return (
     <section className="relative mb-20">
-      <BackArrow />
+      {/* <BackArrow /> */}
       <div className="sm:flex mb-6 items-center justify-between">
         <div className="flex justify-start items-start sm:items-center">
           <h1 className="text-5xl font-bold mr-6">
-            <span className="hidden md:inline text-gray-400 dark:text-gray-600">
+            {/*  <span className="hidden md:inline text-gray-400 dark:text-gray-600">
               Bases de datos /{" "}
             </span>
             {rdsStatus && (
               <span>
                 {capitalize(rdsStatus.name.split(splitter).join(" "))}
               </span>
+            )} */}
+            {rdsStatus && (
+              <Breadcrumbs
+                links={[
+                  {
+                    href: "/monitor/services/rds/details/",
+                    name: "Bases de datos",
+                  },
+                ]}
+                pageName={capitalize(rdsStatus.name.split(splitter).join(" "))}
+              />
             )}
           </h1>
           {rdsStatus && (

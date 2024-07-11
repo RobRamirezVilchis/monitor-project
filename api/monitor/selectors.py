@@ -623,6 +623,17 @@ def set_servers_as_inactive():
         server_status.save()
 
 
+def set_load_balancers_as_inactive():
+    from datetime import datetime, timedelta
+
+    to_inactivate = LoadBalancerStatus.objects.filter(
+        active=True, last_activity__lt=datetime.now()-timedelta(days=3))
+
+    for elb_status in to_inactivate:
+        elb_status.active = False
+        elb_status.save()
+
+
 def get_serverstatus_by_awsid(aws_id: str):
     try:
         server_status = ServerStatus.objects.get(

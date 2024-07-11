@@ -6,26 +6,17 @@ import {
   useLoadBalancerPlotQuery,
   useLoadBalancerStatusQuery,
 } from "@/api/queries/monitor";
-import BackArrow from "../../../(components)/BackArrow";
-import { format, parseISO } from "date-fns";
-import {
-  ConstructionOutlined,
-  PaymentOutlined,
-  Spa,
-} from "@mui/icons-material";
-import { Progress, SegmentedControl, Skeleton } from "@mantine/core";
+import { ServerHistory } from "@/api/services/monitor/types";
 import { useDataGrid, useSsrDataGrid } from "@/hooks/data-grid";
-import {
-  ServerHistory,
-  ServerHistoryFilters,
-  StatusHistory,
-} from "@/api/services/monitor/types";
-import { ColumnDef } from "@/ui/data-grid/types";
 import DataGrid from "@/ui/data-grid/DataGrid";
+import { ColumnDef } from "@/ui/data-grid/types";
 import { ChartTooltipProps, LineChart } from "@mantine/charts";
-import { useMergedRef } from "@mantine/hooks";
-import { useState } from "react";
+import { SegmentedControl, Skeleton } from "@mantine/core";
 import { DatePickerInput } from "@mantine/dates";
+import { format, parseISO } from "date-fns";
+import { useState } from "react";
+import BackArrow from "../../../(components)/BackArrow";
+import Breadcrumbs from "../../../(components)/Breadcrumbs";
 
 const statusStyles: { [condition: string]: string } = {
   normal: "bg-blue-100 border-blue-400 text-blue-900",
@@ -180,17 +171,28 @@ const LoadBalancerPage = ({ params }: { params: { elb_id: string } }) => {
 
   return (
     <section className="relative mb-20">
-      <BackArrow />
+      {/* <BackArrow /> */}
       <div className="sm:flex mb-6 items-center justify-between">
         <div className="flex justify-start items-start sm:items-center">
           <h1 className="text-5xl font-bold mr-6">
-            <span className="hidden md:inline text-gray-400 dark:text-gray-600">
+            {/* <span className="hidden md:inline text-gray-400 dark:text-gray-600">
               Distribuidores de carga /{" "}
             </span>
             {elbStatus && (
               <span>
                 {capitalize(elbStatus.name.split(splitter).join(" "))}
               </span>
+            )} */}
+            {elbStatus && (
+              <Breadcrumbs
+                links={[
+                  {
+                    href: "/monitor/services/load-balancers/details/",
+                    name: "Distribuidores de carga",
+                  },
+                ]}
+                pageName={capitalize(elbStatus.name.split(splitter).join(" "))}
+              />
             )}
           </h1>
           {elbStatus && (

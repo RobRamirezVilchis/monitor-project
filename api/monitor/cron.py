@@ -2037,14 +2037,16 @@ def update_elb_status():
                     "critical": any_critical,
                 })
 
-# Smart Buildings
+    set_load_balancers_as_inactive()
 
+
+# Smart Buildings
 
 def update_buildings_status():
     update_industry_status("Smart Buildings")
 
-# Generate daily Telegram Safe Driving Report
 
+# Generate daily Telegram Safe Driving Report
 
 def send_daily_sd_report():
     import time

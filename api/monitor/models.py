@@ -434,6 +434,7 @@ class LoadBalancerStatus(models.Model):
     state_reason = models.CharField(max_length=50, null=True, blank=True)
     activity_data = models.JSONField(blank=True, null=True)
     critical = models.BooleanField(default=False)
+    active = models.BooleanField(default=True)
 
     def __str__(self):
         return self.elb.name

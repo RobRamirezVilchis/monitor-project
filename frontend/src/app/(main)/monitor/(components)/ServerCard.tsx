@@ -60,10 +60,10 @@ const ServerCard = ({
       </div>
       <div className="flex flex-col gap-2">
         <div className="flex flex-col justify-center my-1 leading-none h-16">
-          <h3 className="text-2xl font-bold">
+          <h3 className="text-2xl font-bold leading-none mb-2">
             {server_name.split(splitter).join(" ")}
           </h3>
-          <p className="mt-1 text-gray-500">{aws_id}</p>
+          <p className="text-gray-500">{aws_id}</p>
         </div>
 
         <div className="flex items-center opacity-60">
