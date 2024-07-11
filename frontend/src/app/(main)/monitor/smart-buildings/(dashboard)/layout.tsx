@@ -35,7 +35,9 @@ const IndustryDashboardLayout = ({ children }: { children: ReactNode }) => {
       <Tabs value={currentTab}>
         <div className="md:flex md:items-center pb-2 mb-3 md:mb-6 justify-left 2xl:justify-between">
           <div className="md:flex md:items-center">
-            <h1 className="mb-4 md:mb-0 text-5xl font-bold pr-10 ">Industry</h1>
+            <h1 className="mb-4 md:mb-0 text-5xl font-bold pr-10 ">
+              Smart Buildings
+            </h1>
             <Tabs.List>
               <Link href="/monitor/industry/details">
                 <Tabs.Tab className="text-lg" value="details">
