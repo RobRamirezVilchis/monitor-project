@@ -146,7 +146,7 @@ def get_or_create_device(args):
     return device
 
 
-def get_industry_devices_without_updates():
+def get_devices_without_updates(deployment):
     import pytz
     now = datetime.now(tz=pytz.timezone("UTC"))
 
@@ -154,7 +154,7 @@ def get_industry_devices_without_updates():
         devicestatus__last_connection__lt=(now-timedelta(minutes=55)),
         devicestatus__last_update__gt=(now-timedelta(minutes=60)),
         client__active=True,
-        client__deployment__name="Industry"
+        client__deployment__name=deployment
     )
 
     return devices
@@ -930,7 +930,7 @@ def get_load_balancer_history(elb_id: int, filters=None):
 
 
 def retail_device_status_list():
-    return RetailDeviceStatus.objects.filter(active=True)
+    return RetailDeviceStatus.objects.filter(active=True).order_by("-status__severity")
 
 
 def get_retail_device_status(device_id):

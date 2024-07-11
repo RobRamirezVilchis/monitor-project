@@ -72,7 +72,7 @@ const ServersDetailPage = () => {
   );
 
   return (
-    <section>
+    <section className="mb-20">
       <div className="md:flex flex-wrap space-y-2 sm:space-y-0 gap-6 mb-4 items-center">
         <TextInput
           className="md:flex gap-3 items-center "

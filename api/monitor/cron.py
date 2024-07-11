@@ -1186,7 +1186,7 @@ def update_industry_status(deployment_name="Industry"):
             }
             create_device_history(devicehistory_args)
 
-    disconnected_devices = get_industry_devices_without_updates()
+    disconnected_devices = get_devices_without_updates(deployment_name)
     for device in disconnected_devices:
         client_name = device.client.name
 
