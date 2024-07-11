@@ -170,7 +170,7 @@ const DesktopNavLink = ({ item, onClick }: DesktopNavLinkProps) => {
       onClick={onClick}
       className="text-center"
       classNames={{
-        root: clsx("px-2 py-2.5 w-24 hover:bg-gray-700 ", {}),
+        root: clsx("px-2 py-2.5 w-36 hover:bg-gray-700 ", {}),
         body: `overflow-visible ${active ? "text-gray-500" : "text-gray-300"}`,
       }}
       styles={{

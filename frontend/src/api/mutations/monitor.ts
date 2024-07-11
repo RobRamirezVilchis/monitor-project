@@ -1,5 +1,5 @@
 import { createMutation } from "../helpers/createMutation";
-import { addIndustryClient, addNewProject, addSafeDrivingClient, addSmartRetailClient, modifyServerProjects, setDeviceAsInactive, setUnitAsInactive } from "../services/monitor";
+import { addIndustryClient, addNewProject, addSafeDrivingClient, addSmartBuildingsClient, addSmartRetailClient, modifyServerProjects, setDeviceAsInactive, setUnitAsInactive } from "../services/monitor";
 
 
 export const useAddSDClientMutation = createMutation({
@@ -42,3 +42,9 @@ export const useModifyServerProjectsMutation = createMutation({
   mutationKey: ["modify-projects"],
   mutationFn: (data: Parameters<typeof modifyServerProjects>[0]) => modifyServerProjects(data),
 })
+
+export const useAddSBClientMutation = createMutation({
+  mutationKey: ["add-sb-client"],
+  mutationFn: (data: Parameters<typeof addSmartBuildingsClient>[0]) => addSmartBuildingsClient(data),
+
+});

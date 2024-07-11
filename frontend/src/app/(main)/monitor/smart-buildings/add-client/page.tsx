@@ -1,6 +1,9 @@
 "use client";
 
-import { useAddIndClientMutation } from "@/api/mutations/monitor";
+import {
+  useAddIndClientMutation,
+  useAddSBClientMutation,
+} from "@/api/mutations/monitor";
 import { NewClientData } from "@/api/services/monitor/types";
 import { TextInput } from "@/ui/core";
 import { Alert, Button, Loader } from "@mantine/core";
@@ -10,7 +13,7 @@ import { useForm } from "react-hook-form";
 import BackArrow from "../../(components)/BackArrow";
 import Breadcrumbs from "../../(components)/Breadcrumbs";
 
-const AddSDClientPage = () => {
+const AddSBClientPage = () => {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
 
@@ -31,7 +34,7 @@ const AddSDClientPage = () => {
 
   const keyname = watch("keyname");
 
-  const addClientMutation = useAddIndClientMutation({
+  const addClientMutation = useAddSBClientMutation({
     onSuccess: () => {
       console.log("Success");
       setSuccess(true);
@@ -50,7 +53,7 @@ const AddSDClientPage = () => {
   return (
     <section className="relative">
       <Breadcrumbs
-        links={[{ href: "/monitor/industry/", name: "Industry" }]}
+        links={[{ href: "/monitor/smart-buildings/", name: "Smart Buildings" }]}
         pageName="Agregar cliente a monitorear"
       />
 
@@ -74,7 +77,7 @@ const AddSDClientPage = () => {
                 <div className="flex items-center gap-1">
                   <p className="text-lg text-gray-400 break-all">
                     Se buscará en el endpoint https://{keyname}
-                    .industry.aivat.io/
+                    .sm-build.aivat.io/
                   </p>
                 </div>
               )}
@@ -103,9 +106,6 @@ const AddSDClientPage = () => {
             </div>
           </div>
           <div className="flex justify-end gap-10">
-            <Button type="submit" size="lg" color="green">
-              Agregar
-            </Button>
             {!success && !addClientMutation.isLoading && error && (
               <Alert
                 color="red"
@@ -127,6 +127,9 @@ const AddSDClientPage = () => {
                 ¡Cliente agregado con éxito!
               </Alert>
             )}
+            <Button type="submit" size="lg" color="green">
+              Agregar
+            </Button>
           </div>
         </div>
       </form>
@@ -134,4 +137,4 @@ const AddSDClientPage = () => {
   );
 };
 
-export default AddSDClientPage;
+export default AddSBClientPage;

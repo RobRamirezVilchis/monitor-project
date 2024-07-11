@@ -1287,7 +1287,7 @@ class SBClientCreateAPI(APIView):
 
         client, created = get_or_create_client(
             name=serializer.validated_data["name"],
-            deployment_name="Industry",
+            deployment_name="Smart Buildings",
             keyname=keyname,
             api_username=serializer.validated_data["api_username"],
             defaults={

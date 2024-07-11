@@ -142,7 +142,7 @@ urlpatterns = [
                        ], "device")
                        )),
 
-                  ], "smart-retail"))
+                  ], "smart-buildings"))
          ),
     path("servers/",
          include(([
