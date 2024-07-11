@@ -117,10 +117,13 @@ const MainLayout = ({ children }: MainLayoutProps) => {
         </div>
 
         {/* Mobile */}
-        <div className="flex-1 flex md:hidden justify-center">
+        <div className="flex-1 flex md:hidden justify-between">
+          <div></div>
           <Link href="/">
-            <span className="h-6 text-lg font-bold">Monitor</span>
+            <span className="ml-4 h-6 text-lg font-bold">Monitor</span>
           </Link>
+
+          <ColorSchemeSwitchToggle />
         </div>
 
         {/* <ProfileFloatingMenu /> */}

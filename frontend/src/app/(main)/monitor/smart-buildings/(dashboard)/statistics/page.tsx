@@ -1,38 +1,22 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
 import {
-  useDevicesQuery,
   useIndustryAreaPlotData,
   useIndustryClientsQuery,
-  useIndustryLastUpdateQuery,
-  useIndustrySeverityCount,
-  useSafeDrivingAreaPlotData,
+  useSmartBuildingsAreaPlotData,
+  useSmartBuildingsClientsQuery,
 } from "@/api/queries/monitor";
+import { useState } from "react";
 
-import {
-  Checkbox,
-  Paper,
-  Text,
-  SegmentedControl,
-  Tabs,
-  TextInput,
-  Select,
-} from "@mantine/core";
 import {
   AreaChart,
   AreaChartType,
   ChartTooltipProps,
-  PieChart,
   getFilteredChartTooltipPayload,
 } from "@mantine/charts";
+import { Paper, SegmentedControl, Select, Text } from "@mantine/core";
 
-import { useSearchParams } from "next/navigation";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { DatePickerInput } from "@mantine/dates";
-import { formatDistanceToNow } from "date-fns";
-import { es } from "date-fns/locale";
 
 type StatusKey = 0 | 1 | 2 | 3 | 4 | 5;
 
@@ -66,12 +50,12 @@ const SmartRetailStatisticsPage = () => {
     currentDate,
   ]);
 
-  const clientsQuery = useIndustryClientsQuery({
+  const clientsQuery = useSmartBuildingsClientsQuery({
     refetchOnWindowFocus: false,
   });
   const clients = clientsQuery.data?.map((data) => data.name);
 
-  const areaPlotDataQuery = useIndustryAreaPlotData({
+  const areaPlotDataQuery = useSmartBuildingsAreaPlotData({
     variables: {
       timestamp_after: dateValue[0],
       timestamp_before: dateValue[1],

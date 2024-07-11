@@ -39,12 +39,12 @@ const IndustryDashboardLayout = ({ children }: { children: ReactNode }) => {
               Smart Buildings
             </h1>
             <Tabs.List>
-              <Link href="/monitor/industry/details">
+              <Link href="/monitor/smart-buildings/details">
                 <Tabs.Tab className="text-lg" value="details">
                   Detalles
                 </Tabs.Tab>
               </Link>
-              <Link href="/monitor/industry/statistics">
+              <Link href="/monitor/smart-buildings/statistics">
                 <Tabs.Tab className="text-lg" value="statistics">
                   Estadísticas
                 </Tabs.Tab>
