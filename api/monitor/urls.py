@@ -133,7 +133,7 @@ urlpatterns = [
                                 name="scatter-plot"),
                            path("camera-disconnections/", apis.CameraDisconnectionsList.as_view(),
                                 name="camera-disconnections"),
-                           path("logs/", apis.IndustryLogsAPI.as_view(),
+                           path("logs/", apis.SmartBuildingsLogsAPI.as_view(),
                                 name="device-logs"),
                            path("check-wifi-connection/", apis.DeviceWifiProblemsAPI.as_view(),
                                 name="device-connection"),

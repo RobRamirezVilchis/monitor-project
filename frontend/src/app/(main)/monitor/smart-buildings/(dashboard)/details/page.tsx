@@ -1,8 +1,8 @@
 "use client";
 
 import {
-  useDevicesQuery,
-  useIndustrySeverityCount,
+  useSBDevicesQuery,
+  useSmartBuildingsSeverityCount,
 } from "@/api/queries/monitor";
 import { useCallback, useState } from "react";
 import DeviceCard from "../../../(components)/DeviceCard";
@@ -19,7 +19,7 @@ import {
   statusStyles,
 } from "../../../(components)/colors";
 
-const IndustryDetailsPage = () => {
+const SmartBuildingsDetailsPage = () => {
   const router = useRouter();
   const [value, setValue] = useState("");
   const searchParams = useSearchParams();
@@ -46,12 +46,12 @@ const IndustryDetailsPage = () => {
     [searchParams]
   );
 
-  const devicesQuery = useDevicesQuery({
+  const devicesQuery = useSBDevicesQuery({
     refetchOnWindowFocus: false,
   });
   const deviceData = devicesQuery.data;
 
-  const countQuery = useIndustrySeverityCount({
+  const countQuery = useSmartBuildingsSeverityCount({
     refetchOnWindowFocus: false,
   });
 
@@ -75,7 +75,6 @@ const IndustryDetailsPage = () => {
     Funcionando: number;
   }[] = [];
 
-  console.log(deviceData);
   return (
     <section>
       <div className="flex items-center">
@@ -103,12 +102,12 @@ const IndustryDetailsPage = () => {
                     <Link
                       href={
                         filter == null
-                          ? "/monitor/industry/details?" +
+                          ? "/monitor/smart-buildings/details?" +
                             createQueryString(
                               "filter",
                               String(severity_count.severity)
                             )
-                          : "/monitor/industry/details"
+                          : "/monitor/smart-buildings/details"
                       }
                       className={`${
                         severity_count.severity == Number(filter) ||
@@ -149,7 +148,11 @@ const IndustryDetailsPage = () => {
         {deviceData?.map((deviceStatus, i) =>
           deviceStatus.device_name.includes(value) &&
           (filter == null || deviceStatus.severity == Number(filter)) ? (
-            <DeviceCard key={i} device_status={deviceStatus} />
+            <DeviceCard
+              key={i}
+              deployment="smart-buildings"
+              device_status={deviceStatus}
+            />
           ) : null
         )}
       </div>
@@ -157,4 +160,4 @@ const IndustryDetailsPage = () => {
   );
 };
 
-export default IndustryDetailsPage;
+export default SmartBuildingsDetailsPage;

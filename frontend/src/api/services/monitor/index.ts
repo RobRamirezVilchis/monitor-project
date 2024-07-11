@@ -96,21 +96,6 @@ export async function getSafeDrivingAreaPlotData(
 
 }
 
-export async function getIndustryAreaPlotData(
-  filters: AreaPlotFilters, 
-  config?: Parameters<typeof http.get>[1]
-  ) {
-  
-    const resp = await http.get<AreaPlotData[]>(
-      api.endpoints.monitor.industry.areaPlotData,
-      {
-        params: filters,
-        ...config,
-      }
-    );
-    return resp.data;
-
-}
 
 export async function getUnitStatus(
   filters: UnitFilters,
@@ -292,6 +277,22 @@ export async function addIndustryClient(
       api.endpoints.monitor.industry.addClient,
       data,
       config
+    );
+    return resp.data;
+
+}
+
+export async function getIndustryAreaPlotData(
+  filters: AreaPlotFilters, 
+  config?: Parameters<typeof http.get>[1]
+  ) {
+  
+    const resp = await http.get<AreaPlotData[]>(
+      api.endpoints.monitor.industry.areaPlotData,
+      {
+        params: filters,
+        ...config,
+      }
     );
     return resp.data;
 
@@ -846,6 +847,22 @@ export async function addSmartRetailClient(
 
 }
 
+export async function getSmartBuildingsAreaPlotData(
+  filters: AreaPlotFilters, 
+  config?: Parameters<typeof http.get>[1]
+  ) {
+  
+    const resp = await http.get<AreaPlotData[]>(
+      api.endpoints.monitor.smartBuildings.areaPlotData,
+      {
+        params: filters,
+        ...config,
+      }
+    );
+    return resp.data;
+
+}
+
 export async function getSmartRetailSeverityCount(config?: Parameters<typeof http.get>[1]) {
   
   const resp = await http.get<SeverityCount[]>(
@@ -941,6 +958,194 @@ export async function getSmartRetailClients(config?: Parameters<typeof http.get>
   );
   return resp.data;
 }
+
+
+// Smart Buildings API ----------------------------------------------------------
+
+export async function getSBDevices(config?: Parameters<typeof http.get>[1]) {
+
+  const resp = await http.get<DeviceStatus[]>(
+    api.endpoints.monitor.smartBuildings.status,
+    {
+      ...config,
+    }
+  );
+  return resp.data;
+
+}
+
+export async function getSmartBuildingsClients(config?: Parameters<typeof http.get>[1]) {
+
+  const resp = await http.get<Client[]>(
+    api.endpoints.monitor.smartBuildings.clients,
+    {
+      ...config,
+    }
+  );
+  return resp.data;
+
+}
+
+export async function addSmartBuildingsClient(
+data: NewClientData,
+config?: Parameters<typeof http.post>[2]
+) {
+
+  const resp = await http.post<NewClientData>(
+    api.endpoints.monitor.smartBuildings.addClient,
+    data,
+    config
+  );
+  return resp.data;
+
+}
+
+export async function getSBDeviceStatus(
+filters: DeviceFilters,
+config?: Parameters<typeof http.get>[1]
+) {
+
+  const resp = await http.get<DeviceStatus>(
+    api.endpoints.monitor.smartBuildings.deviceStatus(filters.device_id),
+    {
+      params: filters,
+      ...config,
+    }
+  );
+  return resp.data;
+
+}
+
+
+export async function getSBDeviceHistory(
+filters: DeviceFilters,
+config?: Parameters<typeof http.get>[1]
+) {
+
+  const resp = await http.get<Paginated<DeviceHistory>>(
+    api.endpoints.monitor.smartBuildings.deviceHistory(filters.device_id),
+    {
+      params: filters,
+      ...config,
+    }
+  );
+  return resp.data;
+
+}
+
+
+export async function getSmartBuildingsSeverityCount(config?: Parameters<typeof http.get>[1]) {
+
+  const resp = await http.get<SeverityCount[]>(
+    api.endpoints.monitor.smartBuildings.severityCount,
+    {
+      ...config,
+    }
+  );
+  return resp.data;
+
+}
+
+export async function getSmartBuildingsLastUpdate(config?: Parameters<typeof http.get>[1]) {
+
+  const resp = await http.get<LastUpdate>(
+    api.endpoints.monitor.smartBuildings.lastUpdate,
+    {
+      ...config,
+    }
+  );
+  return resp.data;
+
+}
+
+export async function getSBDeviceLastStatusChange(
+filters: DeviceFilters,
+config?: Parameters<typeof http.get>[1]
+) {
+  const resp = await http.get<LastStatusChange>(
+    api.endpoints.monitor.smartBuildings.lastStatusChange(filters.device_id),
+    {
+      params: filters,
+      ...config,
+    }
+  );
+  return resp.data;
+}
+
+export async function getSBDeviceWifiStatus(
+filters: DeviceFilters,
+config?: Parameters<typeof http.get>[1]
+) {
+  const resp = await http.get<DeviceWifiStatus>(
+    api.endpoints.monitor.smartBuildings.checkWifi(filters.device_id),
+    {
+      params: filters,
+      ...config,
+    }
+  );
+  return resp.data;
+}
+
+export async function getSmartBuildingsCameraDisconnections(
+filters: DeviceFilters,
+config?: Parameters<typeof http.get>[1]
+) {
+  const resp = await http.get<Paginated<CameraDisconnection>>(
+    api.endpoints.monitor.smartBuildings.cameraDisconnections(filters.device_id),
+    {
+      params: filters,
+      ...config,
+    }
+  );
+  return resp.data;
+}
+
+export async function setSBDeviceAsInactive(
+filters: DeviceFilters,
+config?: Parameters<typeof http.post>[2]
+) {
+
+  const resp = await http.post(
+    api.endpoints.monitor.smartBuildings.setAsInactive(filters.device_id),
+    {
+      ...config,
+    }
+  );
+  return resp.data;
+
+}
+
+export async function getSBDeviceSeverityHistory(
+filters: DeviceFilters,
+config?: Parameters<typeof http.get>[1]
+) {
+  const resp = await http.get<StatusHistory[]>(
+    api.endpoints.monitor.smartBuildings.severityHistory(filters.device_id),
+    {
+      params: filters,
+      ...config,
+    }
+  );
+  return resp.data;
+}
+
+
+export async function getSBDeviceLogs(
+filters: DeviceLogsFilters,
+config?: Parameters<typeof http.get>[1]
+) {
+  const resp = await http.get<Paginated<DeviceLogs>>(
+    api.endpoints.monitor.smartBuildings.deviceLogs(filters.device_id),
+    {
+      params: filters,
+      ...config,
+    }
+  );
+  return resp.data;
+}
+
+
+// Server Projects API ----------------------------------------------------
 
 
 export async function addNewProject(

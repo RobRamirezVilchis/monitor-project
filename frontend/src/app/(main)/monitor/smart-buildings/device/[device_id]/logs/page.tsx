@@ -3,21 +3,20 @@
 import {
   useDeviceLogsQuery,
   useDeviceStatusQuery,
+  useSBDeviceLogsQuery,
+  useSBDeviceStatusQuery,
 } from "@/api/queries/monitor";
-import { login } from "@/api/services/auth";
-import { DeviceLogs, UnitHistory } from "@/api/services/monitor/types";
+import { DeviceLogs } from "@/api/services/monitor/types";
+import Breadcrumbs from "@/app/(main)/monitor/(components)/Breadcrumbs";
 import { useDataGrid, useSsrDataGrid } from "@/hooks/data-grid";
 import DataGrid from "@/ui/data-grid/DataGrid";
 import { ColumnDef } from "@/ui/data-grid/types";
-import { format, parseISO } from "date-fns";
-import Link from "next/link";
-import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { Checkbox } from "@mantine/core";
-import { useState } from "react";
+import { format, parseISO } from "date-fns";
 import { useRouter } from "next/navigation";
-import Breadcrumbs from "@/app/(main)/monitor/(components)/Breadcrumbs";
+import { useState } from "react";
 
-const DeviceLogsPage = ({ params }: { params: { device_id: string } }) => {
+const SBDeviceLogsPage = ({ params }: { params: { device_id: string } }) => {
   const router = useRouter();
   const [showEmpty, setShowEmpty] = useState(true);
 
@@ -47,7 +46,7 @@ const DeviceLogsPage = ({ params }: { params: { device_id: string } }) => {
     },
   });
 
-  const deviceStatusQuery = useDeviceStatusQuery({
+  const deviceStatusQuery = useSBDeviceStatusQuery({
     variables: {
       device_id: params.device_id,
     },
@@ -55,7 +54,7 @@ const DeviceLogsPage = ({ params }: { params: { device_id: string } }) => {
 
   const deviceStatus = deviceStatusQuery.data;
 
-  const deviceLogsQuery = useDeviceLogsQuery({
+  const deviceLogsQuery = useSBDeviceLogsQuery({
     variables: {
       device_id: params.device_id,
       show_empty: showEmpty,
@@ -93,9 +92,9 @@ const DeviceLogsPage = ({ params }: { params: { device_id: string } }) => {
         {deviceStatus && (
           <Breadcrumbs
             links={[
-              { href: "/monitor/industry/", name: "Industry" },
+              { href: "/monitor/smart-buildings/", name: "Smart Buildings" },
               {
-                href: `/monitor/industry/device/${params.device_id}/`,
+                href: `/monitor/smart-buildings/device/${params.device_id}/`,
                 name: deviceStatus?.device_description
                   ? deviceStatus.device_description
                   : deviceStatus?.device_name.replace("_", " "),
@@ -121,7 +120,7 @@ const DeviceLogsPage = ({ params }: { params: { device_id: string } }) => {
   );
 };
 
-export default DeviceLogsPage;
+export default SBDeviceLogsPage;
 
 const cols: ColumnDef<DeviceLogs>[] = [
   {

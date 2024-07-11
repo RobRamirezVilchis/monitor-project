@@ -52,6 +52,10 @@ const MainLayout = ({ children }: MainLayoutProps) => {
       label: "Smart Retail",
       href: "/monitor/smart-retail",
     },
+    {
+      label: "Smart Buildings",
+      href: "/monitor/smart-buildings",
+    },
   ]);
 
   const visibleLinks = useMemo(() => links, [links]);

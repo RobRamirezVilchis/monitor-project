@@ -69,7 +69,7 @@ CRONJOBS = [
     ('*/10 * * * *', 'monitor.cron.update_retail_status', '>> ' +
      os.path.join(BASE_DIR, 'monitor/log/debug_ret.log' + ' 2>&1 ')),
     ('*/10 * * * *', 'monitor.cron.update_buildings_status', '>> ' +
-     os.path.join(BASE_DIR, 'monitor/log/debug_buil.log' + ' 2>&1 ')),
+     os.path.join(BASE_DIR, 'monitor/log/debug_sb.log' + ' 2>&1 ')),
     ('*/10 * * * *', 'monitor.cron.update_servers_status', '>> ' +
      os.path.join(BASE_DIR, 'monitor/log/debug_servers.log' + ' 2>&1 ')),
     ('*/10 * * * *', 'monitor.cron.update_rds_status', '>> ' +

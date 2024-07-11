@@ -7,10 +7,11 @@ import Link from "next/link";
 import { statusStyles, statusNames, StatusKey } from "./colors";
 
 export interface GxCardProps {
+  deployment: string;
   device_status: DeviceStatus;
 }
 
-const DeviceCard = ({ device_status: device_obj }: GxCardProps) => {
+const DeviceCard = ({ deployment, device_status: device_obj }: GxCardProps) => {
   const {
     device_id,
     device_name: device_name,
@@ -38,7 +39,7 @@ const DeviceCard = ({ device_status: device_obj }: GxCardProps) => {
     <Link
       className="relative pb-6 w-72  h-60 rounded-lg p-6 border-2 
       transition duration-300 shadow-md dark:border-gray-700 hover:shadow-lg"
-      href={`/monitor/industry/device/${device_id}`}
+      href={`/monitor/${deployment}/device/${device_id}`}
     >
       <div className="flex gap-3 justify-between items-end mb-2">
         <div

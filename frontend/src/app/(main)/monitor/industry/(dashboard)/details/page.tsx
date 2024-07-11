@@ -149,7 +149,11 @@ const IndustryDetailsPage = () => {
         {deviceData?.map((deviceStatus, i) =>
           deviceStatus.device_name.includes(value) &&
           (filter == null || deviceStatus.severity == Number(filter)) ? (
-            <DeviceCard key={i} device_status={deviceStatus} />
+            <DeviceCard
+              key={i}
+              deployment="industry"
+              device_status={deviceStatus}
+            />
           ) : null
         )}
       </div>

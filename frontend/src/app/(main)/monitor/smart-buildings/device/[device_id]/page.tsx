@@ -1,12 +1,12 @@
 "use client";
 
 import {
-  useCameraDisconnectionsQuery,
-  useDeviceHistoryQuery,
-  useDeviceLastStatusChange,
-  useDeviceSeverityHistory,
-  useDeviceStatusQuery,
-  useCheckDeviceWifiQuery as useDeviceWifiQuery,
+  useSBCameraDisconnectionsQuery,
+  useSBDeviceHistoryQuery,
+  useSBDeviceLastStatusChange,
+  useSBDeviceSeverityHistory,
+  useSBDeviceStatusQuery,
+  useCheckDeviceWifiQuery as useSBDeviceWifiQuery,
 } from "@/api/queries/monitor";
 import {
   CameraDisconnection,
@@ -59,7 +59,7 @@ import {
 } from "../../../(components)/colors";
 import Breadcrumbs from "../../../(components)/Breadcrumbs";
 
-const DevicePage = ({ params }: { params: { device_id: string } }) => {
+const SBDevicePage = ({ params }: { params: { device_id: string } }) => {
   const router = useRouter();
   const [error, setError] = useState("");
   const [opened, { open, close }] = useDisclosure(false);
@@ -99,7 +99,7 @@ const DevicePage = ({ params }: { params: { device_id: string } }) => {
     },
   });
 
-  const deviceStatusQuery = useDeviceStatusQuery({
+  const deviceStatusQuery = useSBDeviceStatusQuery({
     variables: {
       device_id: params.device_id,
     },
@@ -109,14 +109,14 @@ const DevicePage = ({ params }: { params: { device_id: string } }) => {
   const severity = deviceStatus?.severity;
   const color = statusStyles[severity as StatusKey];
 
-  const historyQuery = useDeviceHistoryQuery({
+  const historyQuery = useSBDeviceHistoryQuery({
     variables: {
       device_id: params.device_id,
       ...queryVariables,
     },
   });
 
-  const disconnectionsQuery = useCameraDisconnectionsQuery({
+  const disconnectionsQuery = useSBCameraDisconnectionsQuery({
     variables: {
       device_id: params.device_id,
       ...queryVariables,
@@ -128,13 +128,13 @@ const DevicePage = ({ params }: { params: { device_id: string } }) => {
     daysRemaining = differenceInDays(deviceStatus.license_end, Date());
   }
 
-  const deviceLastStatusChange = useDeviceLastStatusChange({
+  const deviceLastStatusChange = useSBDeviceLastStatusChange({
     variables: {
       device_id: params.device_id,
     },
   });
 
-  const checkWifiQuery = useDeviceWifiQuery({
+  const checkWifiQuery = useSBDeviceWifiQuery({
     variables: {
       device_id: params.device_id,
     },
@@ -199,7 +199,7 @@ const DevicePage = ({ params }: { params: { device_id: string } }) => {
     rowCount: disconnectionsQuery.data?.pagination?.count ?? 0,
   });
 
-  const deviceSeverityHistory = useDeviceSeverityHistory({
+  const deviceSeverityHistory = useSBDeviceSeverityHistory({
     variables: {
       device_id: params.device_id,
       register_datetime_after: dateValue[0],
@@ -211,7 +211,7 @@ const DevicePage = ({ params }: { params: { device_id: string } }) => {
 
   const setUnitInactiveMutation = useSetDeviceInactiveMutation({
     onSuccess: () => {
-      router.push("/monitor/industry/");
+      router.push("/monitor/smart-buildings/");
     },
     onError: (error: any, variables, context) => {
       setError(error.response.data["error"]);
@@ -231,7 +231,10 @@ const DevicePage = ({ params }: { params: { device_id: string } }) => {
             {deviceStatus && (
               <Breadcrumbs
                 links={[
-                  { href: "/monitor/industry/details/", name: "Industry" },
+                  {
+                    href: "/monitor/smart-buildings/details/",
+                    name: "Smart Buildings",
+                  },
                 ]}
                 pageName={
                   deviceStatus?.device_description
@@ -421,7 +424,7 @@ const DevicePage = ({ params }: { params: { device_id: string } }) => {
 };
 
 //export default UnitPage;
-export default DevicePage;
+export default SBDevicePage;
 
 const ConvertBool = (condition: boolean) => (condition ? "Sí" : "No");
 

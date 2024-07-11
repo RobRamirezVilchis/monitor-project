@@ -1060,6 +1060,93 @@ class IndustryLogsAPI(APIView):
         )
 
 
+class SmartBuildingsLogsAPI(APIView):
+    class OutputSerializer(serializers.Serializer):
+        device = serializers.CharField(max_length=50)
+        log_time = serializers.CharField(max_length=50)
+        log = serializers.CharField(max_length=50)
+        register_time = serializers.CharField(max_length=50)
+
+    def get(self, request, device_id, *args, **kwargs):
+        from rest_framework import status
+        import json
+
+        global request_url
+
+        device = Device.objects.get(id=device_id)
+        client_key = device.client.keyname
+        client_id = device.client.id
+
+        login_url = f'https://{client_key}.sm-build.aivat.io/login/'
+        request_url = f'https://{client_key}.sm-build.aivat.io/stats_json/'
+
+        credentials = get_api_credentials("Smart Buildings", client_id)
+        token = api_login(login_url=login_url, credentials=credentials)
+
+        if token is None:
+            return Response({"error": "invalid token"}, status=status.HTTP_400_BAD_REQUEST)
+
+        sent_interval = False
+
+        time_interval = {}
+        if 'register_time_after' in request.query_params:
+            time_interval["initial_datetime"] = request.query_params['register_time_after'][:-5]
+            sent_interval = True
+
+        if 'register_time_before' in request.query_params:
+            time_interval["final_datetime"] = request.query_params['register_time_before'][:-5]
+            sent_interval = True
+
+        if not sent_interval:
+            now = datetime.now(tz=pytz.timezone('UTC')).replace(tzinfo=None)
+            time_interval = {
+                "initial_datetime": (now - timedelta(hours=5)).isoformat(timespec="seconds"),
+                "final_datetime": now.isoformat(timespec='seconds')
+            }
+
+        response, status = make_request(
+            request_url, data=time_interval, token=token)
+        response = json.loads(response.content)
+
+        show_empty = request.query_params["show_empty"]
+
+        output = []
+
+        device_data = response[device.name]
+
+        if "device" not in request.query_params or ("device" in request.query_params and request.query_params["device"] in device.name.lower()):
+            device_logs = device_data["logs"]
+            for log in device_logs:
+                if show_empty == "false" and log["log"] == "":
+                    continue
+                output.append({"device": device.name,
+                               "register_time": log["register_time"],
+                               "log": log["log"],
+                               "log_time": f"{log['log_date']}T{log['log_time']}"})
+
+        cameras = device_data["cameras"]
+        for camera_name, logs in cameras.items():
+            if "device" in request.query_params:
+                if request.query_params["device"] not in camera_name.lower():
+                    break
+            for log in logs:
+                if show_empty == "false" and log["log"] == "":
+                    continue
+                output.append({"device": camera_name,
+                               "register_time": log["register_time"],
+                               "log": log["log"],
+                               "log_time": f"{log['log_date']}T{log['log_time']}"})
+
+        if request.query_params.get("sort") == "-register_time":
+            output.reverse()
+
+        return get_paginated_response(
+            output,
+            self.OutputSerializer,
+            request
+        )
+
+
 class DeviceWifiProblemsAPI(APIView):
     class OutputSerializer(serializers.Serializer):
         connection_problems = serializers.BooleanField()
