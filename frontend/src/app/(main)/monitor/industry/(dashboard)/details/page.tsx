@@ -75,7 +75,6 @@ const IndustryDetailsPage = () => {
     Funcionando: number;
   }[] = [];
 
-  console.log(deviceData);
   return (
     <section>
       <div className="flex items-center">
@@ -127,12 +126,9 @@ const IndustryDetailsPage = () => {
             )}
           </div>
 
-          <div className="absolute -right-96 bottom-0 hidden lg:block">
+          <div className="absolute -right-64 2xl:-right-96 bottom-0 hidden lg:block">
             <PieChart
               data={data}
-              mt={0}
-              mb={0}
-              py={0}
               size={150}
               withLabels
               withLabelsLine
@@ -147,7 +143,9 @@ const IndustryDetailsPage = () => {
 
       <div className="flex flex-row gap-4 flex-wrap">
         {deviceData?.map((deviceStatus, i) =>
-          deviceStatus.device_name.includes(value) &&
+          deviceStatus.device_name
+            .toLowerCase()
+            .includes(value.toLowerCase()) &&
           (filter == null || deviceStatus.severity == Number(filter)) ? (
             <DeviceCard
               key={i}

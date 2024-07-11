@@ -39,16 +39,18 @@ const IndustryDashboardLayout = ({ children }: { children: ReactNode }) => {
               Smart Buildings
             </h1>
             <Tabs.List>
-              <Link href="/monitor/smart-buildings/details">
-                <Tabs.Tab className="text-lg" value="details">
-                  Detalles
-                </Tabs.Tab>
-              </Link>
-              <Link href="/monitor/smart-buildings/statistics">
-                <Tabs.Tab className="text-lg" value="statistics">
-                  Estadísticas
-                </Tabs.Tab>
-              </Link>
+              <div className="flex">
+                <Link href="/monitor/smart-buildings/details">
+                  <Tabs.Tab className="text-lg" value="details">
+                    Detalles
+                  </Tabs.Tab>
+                </Link>
+                <Link href="/monitor/smart-buildings/statistics">
+                  <Tabs.Tab className="text-lg" value="statistics">
+                    Estadísticas
+                  </Tabs.Tab>
+                </Link>
+              </div>
             </Tabs.List>
             <p className="hidden 2xl:block ml-8 w-72 text-md opacity-40">
               Última actualización {timeSinceLastUpdate}

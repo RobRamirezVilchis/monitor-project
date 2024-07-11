@@ -53,7 +53,7 @@ const MainLayout = ({ children }: MainLayoutProps) => {
       href: "/monitor/smart-retail",
     },
     {
-      label: "Smart Buildings",
+      label: "Buildings",
       href: "/monitor/smart-buildings",
     },
   ]);
@@ -76,7 +76,7 @@ const MainLayout = ({ children }: MainLayoutProps) => {
       classNames={{
         root: "h-full",
         header:
-          "flex items-center gap-1 px-3 py-2 bg-dark-900 text-neutral-300 border-none",
+          "flex items-center gap-1 px-3 py-2 bg-dark-600 text-neutral-300 border-none",
         main: "h-full min-h-full",
         navbar: "border-none",
       }}
@@ -100,7 +100,7 @@ const MainLayout = ({ children }: MainLayoutProps) => {
               height={32}
               alt="Picture of the author"
             ></Image>
-            <span className="ml-2 mt-1 text-lg font-bold">Monitor</span>
+            <p className="ml-2 mt-1 text-lg font-bold">Monitor</p>
           </Link>
           <div className="flex items-center">
             <div className="mr-8">
@@ -167,40 +167,49 @@ const DesktopNavLink = ({ item, onClick }: DesktopNavLinkProps) => {
   });
 
   return (
-    <NavLink
-      component={Link}
-      href={item.href || "#"}
-      onClick={onClick}
-      className="text-center"
-      classNames={{
-        root: clsx("px-2 py-2.5 w-24 hover:bg-gray-700 ", {}),
-        body: `overflow-visible ${active ? "text-gray-500" : "text-gray-300"}`,
-      }}
-      styles={{
-        root: {
-          boxShadow: active
-            ? `inset 0 -3px ${primaryColor.background}`
-            : undefined,
-          color: active ? primaryColor.background : undefined,
-        },
-      }}
-      label={
-        <Indicator
-          disabled={!item.badgeCount}
-          label={
-            typeof item.badgeCount === "number" && item.badgeCount > 99
-              ? "99+"
-              : item.badgeCount
+    <div className={`${active ? "border-t-4 border-green-600" : ""}`}>
+      <NavLink
+        component={Link}
+        href={item.href || "#"}
+        onClick={onClick}
+        className="text-center"
+        classNames={{
+          root: clsx(
+            "px-2 py-2.5 w-24 hover:bg-gray-800 transition-colors duration-200 rounded-lg",
+            {}
+          ),
+          body: `overflow-visible ${
+            active ? "text-green-600" : "text-gray-300"
+          }`,
+        }}
+        styles={
+          {
+            /* root: {
+            boxShadow: active
+              ? `inset 0 -3px ${primaryColor.background}`
+              : undefined,
+            color: active ? primaryColor.background : undefined,
+          }, */
           }
-          color="red"
-          classNames={{
-            indicator: "py-2",
-          }}
-        >
-          {item.label}
-        </Indicator>
-      }
-    />
+        }
+        label={
+          <Indicator
+            disabled={!item.badgeCount}
+            label={
+              typeof item.badgeCount === "number" && item.badgeCount > 99
+                ? "99+"
+                : item.badgeCount
+            }
+            color="red"
+            classNames={{
+              indicator: "py-2",
+            }}
+          >
+            {item.label}
+          </Indicator>
+        }
+      />
+    </div>
   );
 };
 
