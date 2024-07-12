@@ -38,7 +38,7 @@ const DeviceCard = ({ deployment, device_status: device_obj }: GxCardProps) => {
   return (
     <Link
       className="relative pb-6 w-72  h-60 rounded-lg p-6 border-2 
-      transition duration-300 shadow-md dark:border-gray-700 hover:shadow-lg"
+      transition duration-300 shadow-md dark:border-dark-400 hover:shadow-lg"
       href={`/monitor/${deployment}/device/${device_id}`}
     >
       <div className="flex gap-3 justify-between items-end mb-2">
@@ -53,7 +53,7 @@ const DeviceCard = ({ deployment, device_status: device_obj }: GxCardProps) => {
       <div className="mb-2 ">
         <span className="ml-1 text-2xl font-bold">{client}</span>
         <span>{"   "}</span>
-        <span className="ml-1 text-xl font-bold opacity-40">
+        <span className="ml-1 text-xl font-bold text-neutral-400 dark:text-dark-200">
           {device_description ? device_description : device_name}
         </span>
       </div>
@@ -75,7 +75,7 @@ const DeviceCard = ({ deployment, device_status: device_obj }: GxCardProps) => {
         </svg>
         <p className="text-sm ml-2">{timeAgo}</p>
       </div>
-      <p className="text-lg px-2 dark:bg-gray-700 py-1 bg-gray-200 border border-gray-200 dark:border-gray-700 rounded-md">
+      <p className="text-lg px-2 dark:bg-dark-500 py-1 bg-neutral-200 rounded-md">
         {description}
       </p>
     </Link>

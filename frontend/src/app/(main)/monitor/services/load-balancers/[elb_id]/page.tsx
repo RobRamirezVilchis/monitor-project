@@ -173,7 +173,7 @@ const LoadBalancerPage = ({ params }: { params: { elb_id: string } }) => {
     <section className="relative mb-20">
       {/* <BackArrow /> */}
       <div className="sm:flex mb-6 items-center justify-between">
-        <div className="flex justify-start items-start sm:items-center">
+        <div className="sm:flex space-y-2 sm:space-y-0 justify-start items-start sm:items-center">
           <h1 className="text-5xl font-bold mr-6">
             {/* <span className="hidden md:inline text-gray-400 dark:text-gray-600">
               Distribuidores de carga /{" "}
@@ -197,7 +197,7 @@ const LoadBalancerPage = ({ params }: { params: { elb_id: string } }) => {
           </h1>
           {elbStatus && (
             <div
-              className={`px-3 py-1.5  text-2xl align-middle font-semibold 
+              className={`px-3 py-1.5 w-fit  text-2xl align-middle font-semibold 
           border-2 ${color} rounded-full`}
             >
               {elbStatus.critical ? "Crítico" : "Normal"}
@@ -216,7 +216,7 @@ const LoadBalancerPage = ({ params }: { params: { elb_id: string } }) => {
         )}
       </div>
       {elbStatus ? (
-        <div className="text-xl text-gray-500">
+        <div className="text-xl text-neutral-500 dark:text-dark-200">
           <p>
             Última actividad:{" "}
             {format(parseISO(String(elbStatus.last_activity)), "Pp")}
@@ -251,7 +251,9 @@ const LoadBalancerPage = ({ params }: { params: { elb_id: string } }) => {
         </div>
       )}
 
-      <h2 className="text-3xl opacity-60 mb-2 mt-8">Gráfica de métricas</h2>
+      <h2 className="text-3xl text-neutral-500 dark:text-dark-200 mb-2 mt-8">
+        Gráfica de métricas
+      </h2>
       <div className="md:flex items-center gap-8 mb-4 justify-between">
         <div className="mt-1 sm:mt-0">
           {metrics.length == 0 && (
@@ -263,7 +265,7 @@ const LoadBalancerPage = ({ params }: { params: { elb_id: string } }) => {
               onChange={setPlotMetric}
               data={metrics}
               classNames={{
-                root: "bg-gray-200 dark:bg-gray-800 rounded-xl",
+                root: "bg-neutral-200 dark:bg-dark-700 rounded-xl",
                 indicator: "rounded-lg",
               }}
             ></SegmentedControl>
@@ -275,7 +277,7 @@ const LoadBalancerPage = ({ params }: { params: { elb_id: string } }) => {
               orientation="vertical"
               data={metrics}
               classNames={{
-                root: "bg-gray-200 dark:bg-gray-800 rounded-xl",
+                root: "bg-neutral-200 dark:bg-dark-700 rounded-xl",
                 indicator: "rounded-lg",
               }}
             ></SegmentedControl>
@@ -306,7 +308,9 @@ const LoadBalancerPage = ({ params }: { params: { elb_id: string } }) => {
           withDots={false}
         ></LineChart>
       </Skeleton>
-      <h2 className="text-3xl opacity-60 mb-2 mt-28">Listado de métricas</h2>
+      <h2 className="text-3xl text-neutral-500 dark:text-dark-200 mb-2 mt-32">
+        Listado de métricas
+      </h2>
       <div className="h-[70vh] mt-5">
         <DataGrid instance={grid} />
       </div>
@@ -337,7 +341,7 @@ function ChartTooltip({ label, payload }: ChartTooltipProps) {
   return (
     <div>
       {payload.length && (
-        <div className="bg-white dark:bg-gray-700 p-4 rounded-md shadow-md">
+        <div className="bg-white dark:bg-dark-500 p-4 rounded-md shadow-md">
           <p className="font-bold">{metric_date}</p>
           <span>{metric_name}: </span>
           <span>{metric_value}</span>

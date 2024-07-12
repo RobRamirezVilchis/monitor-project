@@ -5,20 +5,22 @@ const Breadcrumbs = (props: {
   pageName: string | undefined;
 }) => {
   return (
-    <h1 className="flex gap-2 text-4xl font-semibold">
-      {props.links.map((link) => (
-        <>
+    <div className="sm:flex space-y-2 sm:space-y-0 gap-2 text-4xl font-semibold">
+      {props.links.map((link, i) => (
+        <h1 key={i}>
           <Link
             href={link.href}
-            className="text-gray-400 dark:text-gray-600 hover:text-gray-600 dark:hover:text-gray-400  transition-colors duration-200"
+            className="text-neutral-400 dark:text-dark-300 hover:text-neutral-600 dark:hover:text-dark-200  transition-colors duration-200"
           >
-            <p>{link.name}</p>
+            <span>{link.name}</span>
           </Link>
-          <span className="text-gray-400 dark:text-gray-600">{"/"}</span>
-        </>
+          <span className="ml-2 text-neutral-400 dark:text-dark-300">
+            {"/"}
+          </span>
+        </h1>
       ))}
-      {typeof props.pageName !== undefined && <span>{props.pageName}</span>}
-    </h1>
+      {typeof props.pageName !== undefined && <h1>{props.pageName}</h1>}
+    </div>
   );
 };
 

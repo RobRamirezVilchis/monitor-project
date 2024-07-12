@@ -258,7 +258,7 @@ const SBDevicePage = ({ params }: { params: { device_id: string } }) => {
             >
               {statusNames[severity as StatusKey]}
             </div>
-            <div className="flex gap-3 text-xl text-gray-500 items-center">
+            <div className="flex gap-3 text-xl text-neutral-500 dark:text-dark-200 items-center">
               <div className="shrink">{deviceStatus?.description}</div>
               <div>|</div>
               <div>Desde {timeAgo}</div>
@@ -276,11 +276,11 @@ const SBDevicePage = ({ params }: { params: { device_id: string } }) => {
         )}
       </div>
 
-      <div className="sm:flex justify-between items-end">
+      <div className="sm:flex justify-between items-end text-xl">
         {deviceStatus && (
-          <div>
+          <div className="text-neutral-500 dark:text-dark-200">
             {deviceStatus.delayed && (
-              <div className="flex items-center text-gray-500">
+              <div className="flex items-center ">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   fill="none"
@@ -296,13 +296,11 @@ const SBDevicePage = ({ params }: { params: { device_id: string } }) => {
                   />
                 </svg>
 
-                <p className="ml-2 text-2xl">
-                  Retraso: {deviceStatus.delay_time}
-                </p>
+                <p className="ml-2 ">Retraso: {deviceStatus.delay_time}</p>
               </div>
             )}
             {!deviceStatus.delayed && (
-              <div className="flex items-center text-gray-500">
+              <div className="flex items-center">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   fill="none"
@@ -318,27 +316,21 @@ const SBDevicePage = ({ params }: { params: { device_id: string } }) => {
                   />
                 </svg>
 
-                <p className="ml-2 mt-1 text-2xl">Comunicación reciente</p>
+                <p className="ml-2 mt-1">Comunicación reciente</p>
               </div>
             )}
-            <div>
-              {daysRemaining != -1 && (
-                <p className="text-2xl text-gray-500">
-                  Licencia termina en {daysRemaining} días
-                </p>
-              )}
-              {deviceStatus.last_connection && (
-                <p className="text-2xl text-gray-500">
-                  Última conexión:{" "}
-                  {format(parseISO(deviceStatus.last_connection), "Pp")}
-                </p>
-              )}
-              {!deviceStatus.last_connection && (
-                <p className="text-2xl text-gray-500">
-                  Última conexión desconocida
-                </p>
-              )}
-            </div>
+            {daysRemaining != -1 && (
+              <p>Licencia termina en {daysRemaining} días</p>
+            )}
+            {deviceStatus.last_connection && (
+              <p>
+                Última conexión:{" "}
+                {format(parseISO(deviceStatus.last_connection), "Pp")}
+              </p>
+            )}
+            {!deviceStatus.last_connection && (
+              <p>Última conexión desconocida</p>
+            )}
           </div>
         )}
         <div className="mt-2 sm:mt-0">
@@ -348,10 +340,15 @@ const SBDevicePage = ({ params }: { params: { device_id: string } }) => {
         </div>
       </div>
 
-      <div className="h-[70vh] mb-10">
-        <DataGrid instance={grid} />
+      <div className="mt-4">
+        <p className="text-2xl text-neutral-500 dark:text-dark-200">
+          Estatus cada diez minutos
+        </p>
+        <div className="h-[65vh] mb-20">
+          <DataGrid instance={grid} />
+        </div>
       </div>
-      <h3 className="text-2xl opacity-60">Desconexiones de cámaras:</h3>
+      <h3 className="text-2xl opacity-60">Desconexiones de cámaras</h3>
       <div className="h-[70vh]">
         <DataGrid instance={camerasGrid} />
       </div>

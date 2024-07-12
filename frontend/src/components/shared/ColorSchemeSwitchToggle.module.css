@@ -19,12 +19,12 @@
 }
 
 .track {
-    background-color: #F2C234;
-    border-color: #FAE9B1;
+    background-color: #1D2936;
+    /* border-color: #ffffff; */
 
     @mixin dark {
         background-color: #1D2936;
-        border-color: #008BE2;
+        /* border-color: #ffffff; */
     }
 }
 

@@ -45,7 +45,7 @@ const RDSCard = (rdsStatus: RDSStatus) => {
   return (
     <Link
       className="relative pb-6 w-72 md:max-lg:w-52 h-72 md:max-lg:h-72 rounded-lg p-6 border-2 
-    transition duration-300 shadow-md dark:border-gray-700 hover:shadow-lg"
+    transition duration-300 shadow-md dark:border-dark-400 hover:shadow-lg"
       href={`/monitor/services/rds/${rds_id}`}
     >
       <div
@@ -77,7 +77,7 @@ const RDSCard = (rdsStatus: RDSStatus) => {
           </svg>
           <p className="text-sm ml-1">{timeAgo}</p>
         </div>
-        <div className="text-md bg-gray-200 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 p-3 rounded-md">
+        <div className="text-md dark:bg-dark-500 bg-neutral-200 p-3 rounded-md">
           <div>
             <span>Uso de CPU: </span>
             <span>{activity_data["Uso de CPU"].toFixed(2) + "%"}</span>

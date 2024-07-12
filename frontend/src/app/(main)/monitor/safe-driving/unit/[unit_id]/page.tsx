@@ -295,9 +295,9 @@ const UnitPage = ({ params }: { params: { unit_id: string } }) => {
             >
               {statusNames[severity as StatusKey]}
             </div>
-            <div className="flex gap-3 text-xl text-gray-500 items-center">
+            <div className="flex gap-3 text-xl text-neutral-500 dark:text-dark-200 items-center">
               <div className="shrink">{statusDescription}</div>
-              <div className="border-r-2 border-gray-400 dark:border-gray-600 h-8" />
+              <div className="border-r-2 border-neutral-400 dark:border-neutral-500 h-8" />
               <div>Desde {timeAgo}</div>
             </div>
           </div>
@@ -316,7 +316,10 @@ const UnitPage = ({ params }: { params: { unit_id: string } }) => {
       <div className="sm:flex justify-between items-end">
         <div className="flex flex-col xl:flex-row gap-3 items-start xl:items-center ">
           {unitStatus && (
-            <div className="text-gray-600 dark:text-gray-400 text-lg bg-gray-300 dark:bg-gray-800 px-3 py-1 rounded-md w-fit">
+            <div
+              className="text-neutral-600 dark:text-dark-200 text-lg 
+            bg-neutral-300 dark:bg-dark-600 px-3 py-1 rounded-md w-fit"
+            >
               <p>Logs pendientes:</p>
               <div className="flex gap-2 items-center">
                 {unitStatus.last_connection &&
@@ -332,7 +335,7 @@ const UnitPage = ({ params }: { params: { unit_id: string } }) => {
               </div>
             </div>
           )}
-          <div className="text-xl text-gray-500 dark:text-gray-400">
+          <div className="text-xl text-neutral-500 dark:text-dark-300">
             {inactive && unitLastActiveStatus.data && (
               <p>
                 Último estatus activo:{" "}
@@ -364,7 +367,7 @@ const UnitPage = ({ params }: { params: { unit_id: string } }) => {
       </div>
 
       <div className="mt-4">
-        <p className="text-2xl text-gray-600 dark:text-gray-400">
+        <p className="text-2xl text-neutral-300 dark:text-dark-200">
           Estatus cada diez minutos
         </p>
         <div className="h-[65vh] mb-20">
@@ -373,7 +376,7 @@ const UnitPage = ({ params }: { params: { unit_id: string } }) => {
       </div>
 
       <div className=" items-center gap-8 mb-6 mt-8">
-        <p className="text-2xl text-gray-600 dark:text-gray-400 mb-2">
+        <p className="text-2xl text-neutral-300 dark:text-dark-200 mb-2">
           Gráfica de estatus{" "}
         </p>
         <div className="md:flex items-center gap-2">

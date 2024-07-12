@@ -186,7 +186,7 @@ const RDSPage = ({ params }: { params: { rds_id: string } }) => {
     <section className="relative mb-20">
       {/* <BackArrow /> */}
       <div className="sm:flex mb-6 items-center justify-between">
-        <div className="flex justify-start items-start sm:items-center">
+        <div className="sm:flex space-y-2 sm:space-y-0 justify-start items-start sm:items-center">
           <h1 className="text-5xl font-bold mr-6">
             {/*  <span className="hidden md:inline text-gray-400 dark:text-gray-600">
               Bases de datos /{" "}
@@ -210,7 +210,7 @@ const RDSPage = ({ params }: { params: { rds_id: string } }) => {
           </h1>
           {rdsStatus && (
             <div
-              className={`px-3 py-1.5  text-2xl align-middle font-semibold 
+              className={`px-3 py-1.5 w-fit text-2xl align-middle font-semibold 
           border-2 ${color} rounded-full`}
             >
               {rdsStatus.critical ? "Crítico" : "Normal"}
@@ -229,7 +229,7 @@ const RDSPage = ({ params }: { params: { rds_id: string } }) => {
         )}
       </div>
       {rdsStatus ? (
-        <div className="text-xl text-gray-500">
+        <div className="text-xl text-neutral-500 dark:text-dark-200">
           <p>
             Última actividad:{" "}
             {format(parseISO(String(rdsStatus.last_activity)), "Pp")}
@@ -279,21 +279,37 @@ const RDSPage = ({ params }: { params: { rds_id: string } }) => {
           <Skeleton h={20} w={300} />
         </div>
       )}
-      <h2 className="text-3xl opacity-60 mb-2 mt-8">Gráfica de métricas</h2>
+      <h2 className="text-3xl text-neutral-500 dark:text-dark-200 mb-2 mt-8">
+        Gráfica de métricas
+      </h2>
       <div className="md:flex items-center gap-8 mb-4 justify-between">
         <div className="mt-1 sm:mt-0">
           {metrics.length == 0 && (
             <Skeleton visible={metrics.length == 0} h={30} w={300} />
           )}
-          <SegmentedControl
-            value={plotMetric}
-            onChange={setPlotMetric}
-            data={metrics}
-            classNames={{
-              root: "bg-gray-200 rounded-xl",
-              indicator: "rounded-lg",
-            }}
-          ></SegmentedControl>
+          <div className="hidden sm:block">
+            <SegmentedControl
+              value={plotMetric}
+              onChange={setPlotMetric}
+              data={metrics}
+              classNames={{
+                root: "bg-neutral-200 dark:bg-dark-700 rounded-xl",
+                indicator: "rounded-lg",
+              }}
+            ></SegmentedControl>
+          </div>
+          <div className="block sm:hidden">
+            <SegmentedControl
+              value={plotMetric}
+              onChange={setPlotMetric}
+              orientation="vertical"
+              data={metrics}
+              classNames={{
+                root: "bg-neutral-200 dark:bg-dark-700 rounded-xl",
+                indicator: "rounded-lg",
+              }}
+            ></SegmentedControl>
+          </div>
         </div>
         <div className="sm:flex max-w-24 gap-2 items-center mt-2 md:mt-0">
           <p>Rango de tiempo:</p>
@@ -320,7 +336,9 @@ const RDSPage = ({ params }: { params: { rds_id: string } }) => {
           withDots={false}
         ></LineChart>
       </Skeleton>
-      <h2 className="text-3xl opacity-60 mb-2 mt-28">Listado de métricas</h2>
+      <h2 className="text-3xl text-neutral-500 dark:text-dark-200 mb-2 mt-28">
+        Listado de métricas
+      </h2>
       <div className="h-[70vh] mt-5">
         <DataGrid instance={grid} />
       </div>
@@ -354,7 +372,7 @@ function ChartTooltip({ label, payload }: ChartTooltipProps) {
   return (
     <div>
       {payload.length && (
-        <div className="bg-white dark:bg-gray-700 p-4 rounded-md shadow-md">
+        <div className="bg-white dark:bg-dark-500 p-4 rounded-md shadow-md">
           <p className="font-bold">{metric_date}</p>
           <span>{metric_name}: </span>
           <span>{metric_value}</span>

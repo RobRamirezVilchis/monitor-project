@@ -255,7 +255,7 @@ const DevicePage = ({ params }: { params: { device_id: string } }) => {
             >
               {statusNames[severity as StatusKey]}
             </div>
-            <div className="flex gap-3 text-xl text-gray-500 items-center">
+            <div className="flex gap-3 text-xl text-neutral-500 dark:text-dark-200 items-center">
               <div className="shrink">{deviceStatus?.description}</div>
               <div>|</div>
               <div>Desde {timeAgo}</div>
@@ -275,9 +275,9 @@ const DevicePage = ({ params }: { params: { device_id: string } }) => {
 
       <div className="sm:flex justify-between items-end text-xl">
         {deviceStatus && (
-          <div>
+          <div className="text-neutral-500 dark:text-dark-200">
             {deviceStatus.delayed && (
-              <div className="flex items-center text-gray-500">
+              <div className="flex items-center">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   fill="none"
@@ -297,7 +297,7 @@ const DevicePage = ({ params }: { params: { device_id: string } }) => {
               </div>
             )}
             {!deviceStatus.delayed && (
-              <div className="flex items-center text-gray-500">
+              <div className="flex items-center">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   fill="none"
@@ -316,22 +316,18 @@ const DevicePage = ({ params }: { params: { device_id: string } }) => {
                 <p className="ml-2 mt-1 ">Comunicación reciente</p>
               </div>
             )}
-            <div>
-              {daysRemaining != -1 && (
-                <p className=" text-gray-500">
-                  Licencia termina en {daysRemaining} días
-                </p>
-              )}
-              {deviceStatus.last_connection && (
-                <p className=" text-gray-500">
-                  Última conexión:{" "}
-                  {format(parseISO(deviceStatus.last_connection), "Pp")}
-                </p>
-              )}
-              {!deviceStatus.last_connection && (
-                <p className=" text-gray-500">Última conexión desconocida</p>
-              )}
-            </div>
+            {daysRemaining != -1 && (
+              <p>Licencia termina en {daysRemaining} días</p>
+            )}
+            {deviceStatus.last_connection && (
+              <p>
+                Última conexión:{" "}
+                {format(parseISO(deviceStatus.last_connection), "Pp")}
+              </p>
+            )}
+            {!deviceStatus.last_connection && (
+              <p>Última conexión desconocida</p>
+            )}
           </div>
         )}
         <div className="mt-2 sm:mt-0">
@@ -342,7 +338,7 @@ const DevicePage = ({ params }: { params: { device_id: string } }) => {
       </div>
 
       <div className="mt-4">
-        <p className="text-2xl text-gray-600 dark:text-gray-400">
+        <p className="text-2xl text-neutral-500 dark:text-dark-200">
           Estatus cada diez minutos
         </p>
         <div className="h-[65vh] mb-20">
@@ -350,15 +346,15 @@ const DevicePage = ({ params }: { params: { device_id: string } }) => {
         </div>
       </div>
 
-      <h3 className="text-2xl text-gray-600 dark:text-gray-400">
-        Desconexiones de cámaras:
+      <h3 className="text-2xl text-neutral-500 dark:text-dark-200">
+        Desconexiones de cámaras
       </h3>
       <div className="h-[70vh]">
         <DataGrid instance={camerasGrid} />
       </div>
 
       <div className=" items-center gap-8 mb-6 mt-8">
-        <p className="text-2xl text-gray-600 dark:text-gray-400 mb-2">
+        <p className="text-2xl text-neutral-500 dark:text-dark-200 mb-2">
           Gráfica de estátus{" "}
         </p>
         <div className="flex items-center">

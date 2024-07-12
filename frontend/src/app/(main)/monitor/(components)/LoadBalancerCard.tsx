@@ -50,7 +50,7 @@ const LoadBalancerCard = (loadBalancerStatus: LoadBalancerStatus) => {
   return (
     <Link
       className="relative pb-6 w-72 md:max-lg:w-52 h-72 md:max-lg:h-72 rounded-lg p-6 border-2 
-    transition duration-300 shadow-md dark:border-gray-700 hover:shadow-lg"
+    transition duration-300 shadow-md dark:border-dark-400 hover:shadow-lg"
       href={`/monitor/services/load-balancers/${elb_id}`}
     >
       <div
@@ -82,7 +82,7 @@ const LoadBalancerCard = (loadBalancerStatus: LoadBalancerStatus) => {
           </svg>
           <p className="text-sm ml-1">{timeAgo}</p>
         </div>
-        <div className="text-md bg-gray-200 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 p-3 rounded-md">
+        <div className="text-md dark:bg-dark-500 bg-neutral-200  p-3 rounded-md">
           <div>
             <span>Tiempo de respuesta: </span>
             <span>

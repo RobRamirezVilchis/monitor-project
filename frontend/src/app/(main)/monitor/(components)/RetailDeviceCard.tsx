@@ -30,7 +30,7 @@ const RetailDeviceCard = ({ device: device_obj }: GxCardProps) => {
   return (
     <Link
       className="relative pb-6 w-72 h-60 rounded-lg p-6 border-2 
-      transition duration-300 shadow-md dark:border-gray-700 hover:shadow-lg"
+      transition duration-300 shadow-md dark:border-dark-400 hover:shadow-lg"
       href={`/monitor/smart-retail/device/${device_id}`}
     >
       <div
@@ -42,7 +42,9 @@ const RetailDeviceCard = ({ device: device_obj }: GxCardProps) => {
 
       <div className="flex gap-3 mb-2 items-end">
         <h3 className="ml-1 text-2xl font-bold">{name}</h3>
-        <h2 className="font-semibold opacity-30">{client}</h2>
+        <h2 className="font-semibold text-neutral-400 dark:text-dark-200">
+          {client}
+        </h2>
       </div>
 
       <div className="flex items-center my-3">
@@ -62,7 +64,7 @@ const RetailDeviceCard = ({ device: device_obj }: GxCardProps) => {
         </svg>
         <p className="text-sm ml-2">{timeAgo}</p>
       </div>
-      <p className="text-lg px-2 dark:bg-gray-700 py-1 bg-gray-200 border border-gray-200 dark:border-gray-700 rounded-md">
+      <p className="text-lg px-2 dark:bg-dark-500 py-1 bg-gray-200 border border-gray-200 dark:border-gray-700 rounded-md">
         {description}
       </p>
     </Link>

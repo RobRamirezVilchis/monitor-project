@@ -15,7 +15,11 @@ import Link from "next/link";
 import { ReactNode, useMemo, useState } from "react";
 
 import { Role } from "@/api/services/auth/types";
-import { ColorSchemeSwitchToggle } from "@/components/shared";
+import {
+  ColorSchemeButtonToggle,
+  ColorSchemeSelectToggle,
+  ColorSchemeSwitchToggle,
+} from "@/components/shared";
 import { useNavLink } from "@/hooks/shared";
 import Introid from "../../media/introid_bw.png";
 
@@ -67,7 +71,7 @@ const MainLayout = ({ children }: MainLayoutProps) => {
       }}
       navbar={{
         width: 300,
-        breakpoint: "sm",
+        breakpoint: "lg",
         collapsed: {
           desktop: true,
           mobile: !isOpen,
@@ -86,12 +90,12 @@ const MainLayout = ({ children }: MainLayoutProps) => {
           classNames={{ root: "bg-gray-500 rounded-md" }}
           opened={isOpen}
           onClick={toggle}
-          hiddenFrom="sm"
+          hiddenFrom="md"
           size="sm"
         />
 
         {/* Desktop */}
-        <div className="flex-1 hidden md:flex justify-between items-center gap-1">
+        <div className="flex-1 hidden lg:flex justify-between items-center gap-1">
           <Link className="flex items-center" href="/monitor/safe-driving">
             <Image
               className="pr-1 border-r border-neutral-600"
@@ -104,7 +108,7 @@ const MainLayout = ({ children }: MainLayoutProps) => {
           </Link>
           <div className="flex items-center">
             <div className="mr-8">
-              <ColorSchemeSwitchToggle />
+              <ColorSchemeButtonToggle />
             </div>
             <DesktopNavLink item={serverLink} />
             <div className="border-l ml-4 h-6 border-neutral-600" />
@@ -117,13 +121,13 @@ const MainLayout = ({ children }: MainLayoutProps) => {
         </div>
 
         {/* Mobile */}
-        <div className="flex-1 flex md:hidden justify-between">
+        <div className="flex-1 flex lg:hidden justify-between">
           <div></div>
           <Link href="/">
             <span className="ml-4 h-6 text-lg font-bold">Monitor</span>
           </Link>
 
-          <ColorSchemeSwitchToggle />
+          <ColorSchemeButtonToggle />
         </div>
 
         {/* <ProfileFloatingMenu /> */}
@@ -131,7 +135,7 @@ const MainLayout = ({ children }: MainLayoutProps) => {
 
       <AppShell.Navbar>
         <div className="mx-8">
-          <div className="flex flex-col mt-4 gap-2 md:hidden">
+          <div className="flex flex-col mt-4 gap-2 lg:hidden">
             {visibleLinks.map((item) => (
               <MobileNavLink key={item.href} item={item} onClick={toggle} />
             ))}
@@ -175,7 +179,7 @@ const DesktopNavLink = ({ item, onClick }: DesktopNavLinkProps) => {
         className="text-center"
         classNames={{
           root: clsx(
-            "px-2 py-2.5 w-24 hover:bg-gray-800 transition-colors duration-200 rounded-lg",
+            "px-2 py-2.5 w-24 hover:bg-dark-400 transition-colors duration-200 rounded-lg",
             {}
           ),
           body: `overflow-visible ${
