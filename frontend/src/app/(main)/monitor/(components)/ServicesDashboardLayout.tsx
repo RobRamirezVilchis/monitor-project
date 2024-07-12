@@ -38,12 +38,7 @@ const ServicesDashboardLayout = ({ children }: { children: ReactNode }) => {
             </Tabs.List>
           </div>
           <Link href={"/monitor/services/new-project"}>
-            <Button
-              color="gray.5"
-              classNames={{ root: "dark:bg-gray-800 dark:hover:bg-gray-700" }}
-            >
-              Nuevo proyecto
-            </Button>
+            <Button color="green.7">Nuevo proyecto</Button>
           </Link>
         </div>
         <div>{children}</div>

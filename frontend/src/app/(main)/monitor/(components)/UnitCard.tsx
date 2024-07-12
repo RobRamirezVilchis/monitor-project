@@ -41,8 +41,8 @@ const UnitCard = ({ unit: unit_status }: GxCardProps) => {
     <Link
       scroll={false}
       className={`group relative pb-6 w-72 md:max-lg:w-52 h-60 md:max-lg:h-72 rounded-lg p-6 border-2 
-      transition duration-300 shadow-md dark:border-gray-700 hover:shadow-lg ${
-        priority ? "border-red-300 dark:border-red-900" : ""
+      transition duration-300 shadow-md  hover:shadow-lg ${
+        priority ? "border-red-300 dark:border-red-900" : "dark:border-dark-400"
       }`}
       href={`/monitor/safe-driving/unit/${unit_id}`}
     >

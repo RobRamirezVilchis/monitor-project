@@ -18,6 +18,7 @@ import {
 } from "@/api/queries/monitor";
 import { de } from "date-fns/locale";
 import { Label } from "recharts";
+import Breadcrumbs from "../../(components)/Breadcrumbs";
 
 const AddProjectPage = () => {
   const [error, setError] = useState("");
@@ -76,12 +77,11 @@ const AddProjectPage = () => {
 
   return (
     <section className="relative">
-      <BackArrow />
-      <h1 className="mb-4 text-5xl pr-10 ">
-        <span className="font-bold ">Servicios</span>
-        <span className="font-semibold text-gray-400"> - Nuevo proyecto</span>
-      </h1>
-      <p className="text-2xl mb-10 opacity-50">
+      <Breadcrumbs
+        links={[{ href: "/monitor/services/", name: "Servicios" }]}
+        pageName="Nuevo proyecto"
+      ></Breadcrumbs>
+      <p className="text-2xl mb-10 opacity-50 mt-4">
         Agrega un nuevo proyecto asociado a servidores, base de datos, y
         despliegue
       </p>
@@ -90,7 +90,7 @@ const AddProjectPage = () => {
         className="flex flex-col justify-center items-center"
         onSubmit={handleSubmit(onSubmit)}
       >
-        <div className="flex flex-col gap-6 border border-gray-300 p-6 rounded-xl">
+        <div className="flex flex-col gap-6 border border-gray-300 dark:border-dark-400 p-6 rounded-xl">
           <div className="gap-2 items-center">
             <p className="text-lg">Nombre del proyecto</p>
             <TextInput
