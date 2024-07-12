@@ -748,7 +748,7 @@ def calculate_logs_delay(first_log_time: Optional[datetime], data_last_connectio
     return delayed, delay_time
 
 
-def get_industry_data(client_keyname, client_id, deployment="Industry"):
+def get_industry_data(client_keyname: str, client_id: int, deployment="Industry"):
 
     if deployment == "Industry":
         login_url = f'https://{client_keyname}.industry.aivat.io/login/'
@@ -962,6 +962,11 @@ def process_industry_data(response):
 def update_industry_status(deployment_name="Industry"):
     now = datetime.now(tz=pytz.timezone("UTC"))
 
+    if deployment_name == "Industry":
+        chat_name = "INDUSTRY"
+    elif deployment_name == "Smart Buildings":
+        chat_name = "SMART_BUILDINGS"
+
     deployment = get_or_create_deployment(deployment_name)
     clients = get_deployment_clients(deployment)
 
@@ -969,7 +974,7 @@ def update_industry_status(deployment_name="Industry"):
         client_keyname = client.keyname
         client_name = client.name
         client_id = client.id
-
+        
         response = get_industry_data(
             client_keyname, client_id, deployment_name)
 
@@ -1096,7 +1101,7 @@ def update_industry_status(deployment_name="Industry"):
                     alert = create_alert(alert_args)
 
                 if alerts[device_name] and os.environ.get("ALERTS") == "true":
-                    send_telegram(chat="INDUSTRY_CHAT",
+                    send_telegram(chat=f'{chat_name}_CHAT',
                                   message=message)
 
                     last_alert = now
