@@ -64,7 +64,7 @@ const RetailDeviceCard = ({ device: device_obj }: GxCardProps) => {
         </svg>
         <p className="text-sm ml-2">{timeAgo}</p>
       </div>
-      <p className="text-lg px-2 dark:bg-dark-500 py-1 bg-gray-200 border border-gray-200 dark:border-gray-700 rounded-md">
+      <p className="text-lg px-2 dark:bg-dark-500 py-1 bg-neutral-200 border border-gray-200 dark:border-gray-700 rounded-md">
         {description}
       </p>
     </Link>

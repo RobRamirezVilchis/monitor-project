@@ -83,7 +83,7 @@ const UnitCard = ({ unit: unit_status }: GxCardProps) => {
         <p className="text-sm ml-1">{timeAgo}</p>
       </div>
 
-      <p className="text-lg leading-7 px-2 dark:bg-gray-700 py-1 bg-gray-200 border border-gray-200 dark:border-gray-700 rounded-md">
+      <p className="text-lg leading-7 px-2 dark:bg-dark-500 py-1 bg-neutral-200  border border-gray-200 dark:border-gray-700 rounded-md">
         {description}
       </p>
       <div className="flex justify-center">
