@@ -26,6 +26,22 @@ export interface NewProjectData {
   deployment: string
 }
 
+export interface EditedProjectData {
+  id: number; 
+  name: string,
+  servers: string[],
+  database_id: string | null,
+  deployment: string,
+}
+
+export interface ProjectData {
+  id: number; 
+  name: string,
+  servers: {server_id: number, aws_id: string, name: string}[],
+  database_id: string | null,
+  deployment: string,
+}
+
 export interface ModifyProjectsData {
   server_id: string,
   projects: string[]

@@ -147,17 +147,25 @@ urlpatterns = [
     path("servers/",
          include(([
              path("list/", apis.ServerList.as_view(), name="list"),
+             path("project/<int:project_id>/",
+                  apis.ProjectDataAPI.as_view(), name="project_data"),
+             path("project/<int:project_id>/edit/", apis.EditProjectAPI.as_view(),
+                  name="edit-project"),
+             path("project/<int:project_id>/delete/", apis.DeleteProjectAPI.as_view(),
+                  name="delete-project"),
              path("projects/", apis.ProjectsAPI.as_view(), name="projects"),
              path("server-projects/",
                   apis.AllServersProjectsAPI.as_view(), name="projects"),
              path("new-project/", apis.CreateProjectAPI.as_view(),
                   name="create-project"),
+
              path("status/", apis.ServerStatusListAPI.as_view(), name="status"),
              path("metric-keys/", apis.ServerMetricsAPI.as_view(), name="metrics"),
              path("regions/", apis.ServerRegionsAPI.as_view(), name="regions"),
              path("types/", apis.ServerTypesAPI.as_view(), name="types"),
              path("server/<int:server_id>/",
                  include(([
+
                      path("", apis.ServerStatusAPI.as_view(),
                           name="server-status"),
                      path("history/", apis.ServerHistoryList.as_view(),

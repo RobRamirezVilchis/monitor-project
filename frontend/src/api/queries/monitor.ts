@@ -487,6 +487,20 @@ export const useProjectsQuery = createQuery({
   queryClient: defaultQueryClient,
 });
 
+
+export const useProjectDataQuery = createQuery({
+  queryPrimaryKey: "project-data",
+  queryKeyVariables: (vars: {id: number}) => vars ? [vars] : [],
+  queryFn: (ctx, vars) => monitorService.getProjectData(vars.id, { signal: ctx.signal }),
+  cacheTime: 1000 * 60 * 5,  // 5 minutes
+  staleTime: 1000 * 60 * 3,  // 3 minutes
+  keepPreviousData: true,
+  enabled: false,
+  queryClient: defaultQueryClient,
+});
+
+
+
 export const useServersProjectsQuery = createQuery({
   queryPrimaryKey: "servers-projects",
   queryFn: (ctx) => monitorService.getServersProjects({ signal: ctx.signal }),

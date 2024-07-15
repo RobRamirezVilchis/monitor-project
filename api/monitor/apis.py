@@ -16,7 +16,7 @@ from rest_framework import status, filters
 import humanize.locale
 
 from .selectors import *
-from .services import assign_project_to_server, create_project, get_or_create_client
+from .services import assign_project_to_server, create_project, delete_project, edit_project, get_or_create_client
 from api.pagination import get_paginated_response, LimitOffsetPagination
 from .models import UnitStatus
 from .cron import api_login, make_request
@@ -2220,6 +2220,44 @@ class CreateProjectAPI(APIView):
         return Response(status=status.HTTP_200_OK)
 
 
+class EditProjectAPI(APIView):
+    class InputSerializer(serializers.Serializer):
+        id = serializers.IntegerField()
+        name = serializers.CharField()
+        servers = serializers.JSONField()
+        database_id = serializers.IntegerField(required=False, allow_null=True)
+        deployment = serializers.CharField()
+
+    def post(self, request, *args, **kwargs):
+        serializer = self.InputSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        args = {
+            "project_id": serializer.validated_data["id"],
+            "name": serializer.validated_data["name"],
+            "server_aws_ids": serializer.validated_data["servers"],
+            "deployment_name": serializer.validated_data["deployment"],
+            "database_id": serializer.validated_data.get("database_id", None)
+        }
+        print(args)
+
+        project = edit_project(
+            **args
+        )
+
+        return Response(status=status.HTTP_200_OK)
+
+
+class DeleteProjectAPI(APIView):
+
+    def post(self, request, project_id, *args, **kwargs):
+        project = delete_project(
+            project_id
+        )
+
+        return Response(status=status.HTTP_200_OK)
+
+
 class ProjectsAPI(APIView):
     class OutputSerializer(serializers.Serializer):
         id = serializers.IntegerField()
@@ -2229,6 +2267,37 @@ class ProjectsAPI(APIView):
         projects = get_projects()
 
         output = self.OutputSerializer(projects, many=True).data
+
+        return Response(output)
+
+
+class ServerSerializer(serializers.Serializer):
+    server_id = serializers.IntegerField(source="id")
+    aws_id = serializers.CharField()
+    name = serializers.CharField()
+
+    class Meta:
+        model = Server
+
+
+class ProjectDataAPI(APIView):
+
+    class OutputSerializer(serializers.Serializer):
+        id = serializers.IntegerField()
+        name = serializers.CharField()
+        servers = ServerSerializer(read_only=True, many=True)
+        database_id = serializers.SerializerMethodField()
+        deployment = serializers.CharField(source="deployment.name")
+
+        def get_database_id(self, obj):
+            if obj.database is not None:
+                return obj.database.id
+            return None
+
+    def get(self, request, project_id, *args, **kwargs):
+        project_data = get_project_data(project_id)
+
+        output = self.OutputSerializer(project_data).data
 
         return Response(output)
 

@@ -262,13 +262,33 @@ def create_project(name: str, server_aws_ids: list, deployment_name: str, databa
     project = Project(
         name=name, deployment=deployment)
 
-    print(database_id)
     if database_id:
         project.database = RDS.objects.get(id=database_id)
 
     project.save()
-    project.server.set(servers)
+    project.servers.set(servers)
     project.save()
+
+
+def edit_project(project_id, name: str, server_aws_ids: list, deployment_name: str, database_id: str):
+    servers = [Server.objects.get(aws_id=aws_id) for aws_id in server_aws_ids]
+    deployment = Deployment.objects.get(name=deployment_name)
+
+    project = Project.objects.get(id=project_id)
+    project.name = name
+    project.servers.set(servers)
+    project.deployment = deployment
+    if database_id:
+        project.database = RDS.objects.get(id=database_id)
+    else:
+        project.database = None
+
+    project.save()
+
+
+def delete_project(id):
+    project = Project.objects.get(id=id)
+    project.delete()
 
 
 def assign_project_to_server(project_id, server_id):
@@ -276,7 +296,7 @@ def assign_project_to_server(project_id, server_id):
         project = Project.objects.get(id=project_id)
         server = Server.objects.get(id=server_id)
 
-        project.server.add(server)
+        project.servers.add(server)
 
         return True
     except Project.DoesNotExist:

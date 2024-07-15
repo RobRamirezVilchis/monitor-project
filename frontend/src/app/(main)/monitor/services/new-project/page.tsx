@@ -1,23 +1,17 @@
 "use client";
 
-import {
-  useAddSDClientMutation,
-  useNewProjectMutation,
-} from "@/api/mutations/monitor";
-import { NewClientData, NewProjectData } from "@/api/services/monitor/types";
-import { TextInput, MultiSelect, Select } from "@/ui/core";
+import { useNewProjectMutation } from "@/api/mutations/monitor";
+import { NewProjectData } from "@/api/services/monitor/types";
+import { MultiSelect, Select, TextInput } from "@/ui/core";
 import { Alert, Button, Loader } from "@mantine/core";
 
-import { ReactNode, useState } from "react";
-import { useForm } from "react-hook-form";
-import BackArrow from "../../(components)/BackArrow";
 import {
   useAllRDSQuery,
   useAllServersQuery,
   useDeploymentsQuery,
 } from "@/api/queries/monitor";
-import { de } from "date-fns/locale";
-import { Label } from "recharts";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
 import Breadcrumbs from "../../(components)/Breadcrumbs";
 
 const AddProjectPage = () => {
@@ -72,6 +66,7 @@ const AddProjectPage = () => {
   const onSubmit = async (values: NewProjectData) => {
     newProjectMutation.mutate(values);
     setSuccess(false);
+    console.log(values);
   };
   const loading = newProjectMutation.isLoading;
 

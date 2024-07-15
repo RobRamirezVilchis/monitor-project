@@ -974,7 +974,7 @@ def update_industry_status(deployment_name="Industry"):
         client_keyname = client.keyname
         client_name = client.name
         client_id = client.id
-        
+
         response = get_industry_data(
             client_keyname, client_id, deployment_name)
 
@@ -1454,7 +1454,6 @@ def update_retail_status():
         client_name = client.name
 
         response = get_retail_data(client_alias, client.id)
-        print(response)
 
         if response is not None:
             processed_data = process_retail_data(response)

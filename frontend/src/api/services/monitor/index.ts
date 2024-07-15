@@ -1,4 +1,4 @@
-import { UnitStatus, SeverityCount, UnitHistory, DeviceStatus, UnitFilters, LastStatusChange, DeviceFilters, DeviceHistory, Client, CameraDisconnection, LastActiveStatus, StatusHistory, AreaPlotData, AreaPlotFilters, LastUpdate, DeviceLogsFilters, DeviceLogs, DeviceWifiStatus, UnitLogsFilters, UnitLogs, NewClientData, ServerStatus, ServerHistoryFilters, ServerHistory, MetricsKeys, ServerRegion, ServerType, ServerStatusFilters, RetailDeviceStatus, RetailDeviceHistory, UnitReportContent, RDSStatusFilters, RDSStatus, RDSHistoryFilters, RDSHistory, RDSType, RDSFilters, RDS, Server, Deployment, NewProjectData, ServerProject, Project, LoadBalancer, LoadBalancerStatusFilters, LoadBalancerStatus, LoadBalancerFilters, LoadBalancerHistoryFilters, LoadBalancerHistory, ServerFilters, ModifyProjectsData, UnitFailedTrips, UnitTrip, UnitSeverityHistoryFilters } from "./types";
+import { UnitStatus, SeverityCount, UnitHistory, DeviceStatus, UnitFilters, LastStatusChange, DeviceFilters, DeviceHistory, Client, CameraDisconnection, LastActiveStatus, StatusHistory, AreaPlotData, AreaPlotFilters, LastUpdate, DeviceLogsFilters, DeviceLogs, DeviceWifiStatus, UnitLogsFilters, UnitLogs, NewClientData, ServerStatus, ServerHistoryFilters, ServerHistory, MetricsKeys, ServerRegion, ServerType, ServerStatusFilters, RetailDeviceStatus, RetailDeviceHistory, UnitReportContent, RDSStatusFilters, RDSStatus, RDSHistoryFilters, RDSHistory, RDSType, RDSFilters, RDS, Server, Deployment, NewProjectData, ServerProject, Project, LoadBalancer, LoadBalancerStatusFilters, LoadBalancerStatus, LoadBalancerFilters, LoadBalancerHistoryFilters, LoadBalancerHistory, ServerFilters, ModifyProjectsData, UnitFailedTrips, UnitTrip, UnitSeverityHistoryFilters, ProjectData, EditedProjectData } from "./types";
 import { Id, OptionallyPaginated, Paginated } from "@/api/types";
 import { Role, User } from "../auth/types";
 import api from "../..";
@@ -1160,6 +1160,44 @@ export async function addNewProject(
     );
     return resp.data;
 
+}
+
+export async function editProject(
+  data: EditedProjectData,
+  config?: Parameters<typeof http.post>[2]
+) {
+  
+    const resp = await http.post<ProjectData>(
+      api.endpoints.monitor.servers.editProject(data.id),
+      data,
+      config
+    );
+    return resp.data;
+
+}
+
+export async function deleteProject(
+  data: {id: number},
+  config?: Parameters<typeof http.post>[2]
+) {
+  
+    const resp = await http.post<ProjectData>(
+      api.endpoints.monitor.servers.deleteProject(data.id),
+    );
+    return resp.data;
+
+}
+
+export async function getProjectData(
+  project_id: number,
+  config?: Parameters<typeof http.get>[1]
+) {
+  
+    const resp = await http.get<ProjectData>(
+      api.endpoints.monitor.servers.projectData(project_id),
+      config
+    );
+    return resp.data;
 }
 
 export async function modifyServerProjects(

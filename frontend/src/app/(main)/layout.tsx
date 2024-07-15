@@ -107,7 +107,7 @@ const MainLayout = ({ children }: MainLayoutProps) => {
             <p className="ml-2 mt-1 text-lg font-bold">Monitor</p>
           </Link>
           <div className="flex items-center">
-            <div className="mr-8">
+            <div className="mr-8 pt-1">
               <ColorSchemeButtonToggle />
             </div>
             <DesktopNavLink item={serverLink} />

@@ -330,7 +330,7 @@ class Server(models.Model):
 
 class Project(models.Model):
     name = models.CharField(max_length=50, unique=True)
-    server = models.ManyToManyField(Server, related_name="projects")
+    servers = models.ManyToManyField(Server, related_name="projects")
     database = models.ForeignKey(
         RDS, on_delete=models.DO_NOTHING, null=True, blank=True)
     deployment = models.ForeignKey(Deployment, on_delete=models.DO_NOTHING)
