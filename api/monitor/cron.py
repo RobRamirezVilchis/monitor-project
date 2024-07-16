@@ -1232,7 +1232,7 @@ def update_industry_status(deployment_name="Industry"):
                 create_alert(alert_args)
 
             if alerts and os.environ.get("ALERTS") == "true":
-                send_telegram(chat="INDUSTRY_CHAT",
+                send_telegram(chat=f'{chat_name}_CHAT',
                               message=message)
 
                 last_alert = now
