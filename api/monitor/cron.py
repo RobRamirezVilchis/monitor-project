@@ -49,7 +49,7 @@ def send_telegram(chat: str, message: str):
         shell=True)
 
 
-def send_alerts(chat, alerts):
+def send_sd_alerts(chat, alerts):
     message = ""
     for unit, descriptions in alerts.items():
         for description in descriptions:
@@ -633,7 +633,7 @@ def update_driving_status():
         bulk_create_unithistory(history_logs)
 
         if alerts_to_send and os.environ.get("ALERTS") == "true":
-            send_alerts(chat="SAFEDRIVING_CHAT", alerts=alerts_to_send)
+            send_sd_alerts(chat="SAFEDRIVING_CHAT", alerts=alerts_to_send)
 
 
 def check_inactive_units():
@@ -1741,6 +1741,7 @@ def update_servers_status():
             activity = False
 
             any_critical = False
+            critical_messages = defaultdict(list)
             for metric in metrics_to_get:
                 server_metric_values = all_metrics_data[metric.name]['MetricDataResults'][i]['Values']
                 server_metric_dates = all_metrics_data[metric.name]['MetricDataResults'][i]['Timestamps']
@@ -1757,17 +1758,25 @@ def update_servers_status():
 
                 for j in range(len(server_metric_values)):
                     critical = False
+                    metric_date = server_metric_dates[j]
+                    readable_date = metric_date.astimezone(pytz.timezone(
+                        'America/Mexico_City')).replace(tzinfo=None).isoformat(sep=" ", timespec="seconds")
 
                     if threshold is not None:
                         if to_exceed:
                             if server_metric_values[j] > threshold:
                                 critical = True
                                 any_critical = True
+                                critical_messages[readable_date].append(
+                                    f'{metric.name}: {server_metric_values[j]:.2f}')
+
                         else:
                             if server_metric_values[j] < threshold:
                                 critical = True
                                 any_critical = True
-                    metric_date = server_metric_dates[j]
+                                critical_messages[readable_date].append(
+                                    f'{metric.name}: {server_metric_values[j]:.2f}')
+
                     serverhistory_args = {
                         "server": server,
                         "last_launch": launch_time,
@@ -1810,6 +1819,16 @@ def update_servers_status():
                     "activity_data": {}
                 })
 
+            if any_critical:
+                message = f'CRÍTICO: EC2 {server.name}\n{server.aws_id}\n\n'
+                for date, messages in critical_messages.items():
+                    message += f'{date}\n'
+                    for msg in messages:
+                        message += f' {msg}\n'
+                    message += '\n'
+
+                    send_telegram(f'AWS_CHAT', message)
+
     set_servers_as_inactive()
 
 
@@ -1839,7 +1858,7 @@ def update_rds_status():
             instance_class = instance["instance_class"]
             allocated_storage = instance["allocated_storage"]
 
-            current_server_status = get_rdsstatus_by_name(name)
+            current_rds_status = get_rdsstatus_by_name(name)
 
             rds = get_or_create_rds(name, defaults={
                 "region": region, "instance_class": get_rds_type(instance_class)})
@@ -1848,6 +1867,7 @@ def update_rds_status():
             activity = False
 
             any_critical = False
+            critical_messages = defaultdict(list)
             for metric in metrics_to_get:
                 metric_values = all_metrics_data[metric.name]['MetricDataResults'][i]['Values']
                 metric_dates = all_metrics_data[metric.name]['MetricDataResults'][i]['Timestamps']
@@ -1864,18 +1884,24 @@ def update_rds_status():
 
                 for j in range(len(metric_values)):
                     critical = False
+                    metric_date = metric_dates[j]
+                    readable_date = metric_date.astimezone(pytz.timezone(
+                        'America/Mexico_City')).replace(tzinfo=None).isoformat(sep=" ", timespec="seconds")
 
                     if threshold is not None:
                         if to_exceed:
                             if metric_values[j] > threshold:
                                 critical = True
                                 any_critical = True
+                                critical_messages[readable_date].append(
+                                    f'{metric.name}: {metric_values[j]:.2f}')
                         else:
                             if metric_values[j] < threshold:
                                 critical = True
                                 any_critical = True
+                                critical_messages[readable_date].append(
+                                    f'{metric.name}: {metric_values[j]:.2f}')
 
-                    metric_date = metric_dates[j]
                     rdshistory_args = {
                         "rds": rds,
                         "register_datetime": metric_date,
@@ -1897,7 +1923,7 @@ def update_rds_status():
                     "critical": any_critical,
                 })
 
-            elif current_server_status == None:
+            elif current_rds_status == None:
                 server_status = update_or_create_rdsstatus(name, defaults={
                     "rds": rds,
                     "allocated_storage": allocated_storage,
@@ -1908,7 +1934,7 @@ def update_rds_status():
                 })
             # If the server just stopped or terminated, update the status one last time
             # with empty activity_data and the new state
-            elif activity_data == {} and current_server_status.activity_data != {}:
+            elif activity_data == {} and current_rds_status.activity_data != {}:
                 server_status = update_or_create_rdsstatus(name, defaults={
                     "rds": rds,
                     "allocated_storage": allocated_storage,
@@ -1916,6 +1942,18 @@ def update_rds_status():
                     "activity_data": {},
                     "critical": any_critical,
                 })
+
+            if any_critical:
+                message = f'CRÍTICO: RDS {rds.name}\n\n'
+                for date, messages in critical_messages.items():
+                    message += f'{date}\n'
+                    for msg in messages:
+                        message += f' {msg}\n'
+                    message += '\n'
+
+                    send_telegram(f'AWS_CHAT', message)
+
+                print(message)
 
 
 def update_elb_status():
@@ -1963,6 +2001,7 @@ def update_elb_status():
                                       now.replace(second=0, microsecond=0)-timedelta(minutes=10)]
 
             any_critical = False
+            critical_messages = defaultdict(list)
             for metric in metrics_to_get:
                 metric_values = all_metrics_data[metric.name][i]['Values']
                 metric_dates = all_metrics_data[metric.name][i]['Timestamps']
@@ -1987,17 +2026,24 @@ def update_elb_status():
 
                 for j in range(len(metric_values)):
                     critical = False
+                    metric_date = metric_dates[j]
+                    readable_date = metric_date.astimezone(pytz.timezone(
+                        'America/Mexico_City')).replace(tzinfo=None).isoformat(sep=" ", timespec="seconds")
+
                     if threshold is not None:
                         if to_exceed:
                             if metric_values[j] > threshold:
                                 critical = True
                                 any_critical = True
+                                critical_messages[readable_date].append(
+                                    f'{metric.name}: {metric_values[j]:.2f}')
                         else:
                             if metric_values[j] < threshold:
                                 critical = True
                                 any_critical = True
+                                critical_messages[readable_date].append(
+                                    f'{metric.name}: {metric_values[j]:.2f}')
 
-                    metric_date = metric_dates[j]
                     elbhistory_args = {
                         "elb": elb,
                         "register_datetime": metric_date,
@@ -2040,6 +2086,18 @@ def update_elb_status():
                     "activity_data": {},
                     "critical": any_critical,
                 })
+
+            if any_critical:
+                message = f'CRÍTICO: ELB {elb.name}\n\n'
+                for date, messages in critical_messages.items():
+                    message += f'{date}\n'
+                    for msg in messages:
+                        message += f' {msg}\n'
+                    message += '\n'
+
+                    send_telegram(f'AWS_CHAT', message)
+
+                print(message)
 
     set_load_balancers_as_inactive()
 

@@ -367,7 +367,7 @@ const UnitPage = ({ params }: { params: { unit_id: string } }) => {
       </div>
 
       <div className="mt-4">
-        <p className="text-2xl text-neutral-300 dark:text-dark-200">
+        <p className="text-2xl text-neutral-500 dark:text-dark-200">
           Estatus cada diez minutos
         </p>
         <div className="h-[65vh] mb-20">
@@ -376,7 +376,7 @@ const UnitPage = ({ params }: { params: { unit_id: string } }) => {
       </div>
 
       <div className=" items-center gap-8 mb-6 mt-8">
-        <p className="text-2xl text-neutral-300 dark:text-dark-200 mb-2">
+        <p className="text-2xl text-neutral-500 dark:text-dark-200 mb-2">
           Gráfica de estatus{" "}
         </p>
         <div className="md:flex items-center gap-2">

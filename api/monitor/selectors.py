@@ -629,9 +629,9 @@ def set_servers_as_inactive():
 
 def set_load_balancers_as_inactive():
     from datetime import datetime, timedelta
-
+    import pytz
     to_inactivate = LoadBalancerStatus.objects.filter(
-        active=True, last_activity__lt=datetime.now()-timedelta(days=3))
+        active=True, last_activity__lt=datetime.now(tz=pytz.timezone("UTC"))-timedelta(days=3))
 
     for elb_status in to_inactivate:
         elb_status.active = False
@@ -841,7 +841,7 @@ def get_rds_type(name):
 
 # Load Balancers ------------------------------------
 def get_all_elb():
-    return LoadBalancer.objects.all()
+    return LoadBalancer.objects.filter(active=True)
 
 
 def get_or_create_elb(name: str, defaults: dict):
@@ -898,7 +898,7 @@ class LoadBalancerStatusFilter(rf_filters.FilterSet):
 
 
 def get_load_balancer_status_list(filters=None):
-    all_load_balancer_status = LoadBalancerStatus.objects.all()
+    all_load_balancer_status = LoadBalancerStatus.objects.filter(active=True)
     return LoadBalancerStatusFilter(filters, all_load_balancer_status).qs
 
 
