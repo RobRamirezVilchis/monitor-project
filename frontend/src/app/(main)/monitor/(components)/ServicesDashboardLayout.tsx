@@ -155,7 +155,7 @@ const ServicesDashboardLayout = ({ children }: { children: ReactNode }) => {
           )}
           {projectDataMutation.isSuccess && projectId !== null && (
             <form
-              className="flex flex-col gap-4 bg-gray-100 p-2 rounded-md"
+              className="flex flex-col gap-4 bg-neutral-100 dark:bg-dark-500 p-2 rounded-md"
               onSubmit={handleSubmit(onSubmit)}
             >
               <TextInput name="name" control={control} label="Nombre" />
