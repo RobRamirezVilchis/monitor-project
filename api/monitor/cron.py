@@ -783,7 +783,7 @@ def get_industry_data(client_keyname: str, client_id: int, deployment="Industry"
         response = response.json()
     else:
         print(f"Status code: {status}")
-        send_telegram(f"{deployment.upper().replace(" ", "_")}_CHAT",
+        send_telegram(f"{deployment.upper().replace(' ', '_')}_CHAT",
                       message=f'ERROR de API: Código de status {status}')
         return
 
