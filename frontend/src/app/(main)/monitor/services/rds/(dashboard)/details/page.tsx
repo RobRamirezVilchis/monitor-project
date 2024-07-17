@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  useAllRDSProjectsQuery,
   useAllRDSStatusQuery,
   useRDSRegionsQuery,
   useRDSStatusQuery,
@@ -30,6 +31,14 @@ const RDSDetailPage = () => {
 
   const rdsTypesQuery = useRDSTypesQuery({});
   const rdsTypes = rdsTypesQuery.data?.map((data) => data.instance_class);
+
+  const rdsProjectsData = useAllRDSProjectsQuery({}).data;
+  let rdsProjects: { [id: number]: string[] } = {};
+  if (rdsProjectsData) {
+    for (const project of rdsProjectsData) {
+      rdsProjects[project.rds_id] = project.projects;
+    }
+  }
 
   const rdsRegionsQuery = useRDSRegionsQuery({});
   const rdsRegions = rdsRegionsQuery.data?.map((data) => data.name);
@@ -111,16 +120,21 @@ const RDSDetailPage = () => {
         </div>
       </div>
       <div className="flex flex-row gap-4 flex-wrap">
-        {rdsStatus
-          ?.sort((x) => -+x.critical)
-          ?.map(
-            (rdsStatus) =>
-              rdsStatus.name
-                .toLowerCase()
-                .includes(nameInput.toLowerCase().replace(" ", "_")) && (
-                <RDSCard key={rdsStatus.rds_id} {...rdsStatus}></RDSCard>
-              )
-          )}
+        {rdsProjectsData &&
+          rdsStatus
+            ?.sort((x) => -+x.critical)
+            ?.map(
+              (rdsStatus) =>
+                rdsStatus.name
+                  .toLowerCase()
+                  .includes(nameInput.toLowerCase().replace(" ", "_")) && (
+                  <RDSCard
+                    key={rdsStatus.rds_id}
+                    rdsStatus={rdsStatus}
+                    projects={rdsProjects[rdsStatus.rds_id]}
+                  ></RDSCard>
+                )
+            )}
       </div>
     </section>
   );

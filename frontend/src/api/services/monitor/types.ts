@@ -241,10 +241,11 @@ export interface Project {
   name: string,
 }
 
-export interface ServerProject {
+export interface ServerProjects {
   server_id: number;
   projects: string[]
 }
+
 
 export interface ServerFilters {
   server_id: string;
@@ -318,6 +319,11 @@ export interface RDSStatus {
   status: string;
   critical: boolean;
   activity_data: {[metric: string]: number};
+}
+
+export interface RDSProjects {
+  rds_id: number;
+  projects: string[]
 }
 
 export interface RDSStatusFilters {

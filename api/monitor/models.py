@@ -332,8 +332,8 @@ class Project(models.Model):
     name = models.CharField(max_length=50, unique=True)
     servers = models.ManyToManyField(Server, related_name="projects")
     database = models.ForeignKey(
-        RDS, on_delete=models.DO_NOTHING, null=True, blank=True)
-    deployment = models.ForeignKey(Deployment, on_delete=models.DO_NOTHING)
+        RDS, on_delete=models.CASCADE, null=True, blank=True, related_name="projects")
+    deployment = models.ForeignKey(Deployment, on_delete=models.CASCADE)
 
 
 class ServerMetric(models.Model):

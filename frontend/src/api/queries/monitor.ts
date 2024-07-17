@@ -333,6 +333,15 @@ export const useAllRDSStatusQuery = createQuery({
   refetchIntervalInBackground: true
 });
 
+export const useAllRDSProjectsQuery = createQuery({
+  queryPrimaryKey: "all-rds-projects",
+  queryFn: (ctx) => monitorService.getAllRDSProjects({ signal: ctx.signal }),
+  cacheTime: 1000 * 60 * 5,  // 5 minutes
+  staleTime: 1000 * 60 * 3,  // 3 minutes
+  keepPreviousData: true,
+  queryClient: defaultQueryClient,
+});
+
 export const useRDSStatusQuery = createQuery({
   queryPrimaryKey: "rds-status",
   queryKeyVariables: (vars: RDSFilters) => vars ? [vars] : [],

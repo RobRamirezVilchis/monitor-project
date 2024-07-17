@@ -132,6 +132,7 @@ const api = {
       rds: {
         list: "api/v1/monitor/rds/list/",
         status: "api/v1/monitor/rds/status/",
+        allRDSProjects: "api/v1/monitor/rds/rds-projects/",
         RDSMetricsKeys: "api/v1/monitor/rds/metric-keys/",
         RDSTypes: "api/v1/monitor/rds/types/",
         regions: "api/v1/monitor/rds/regions/",

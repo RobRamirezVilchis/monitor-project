@@ -1521,6 +1521,22 @@ class ServerProjectsList(APIView):
         return Response(output)
 
 
+class AllRDSProjectsAPI(APIView):
+    class OutputSerializer(serializers.Serializer):
+        rds_id = serializers.IntegerField(source="id")
+        projects = serializers.SlugRelatedField(
+            slug_field="name", read_only=True, many=True)
+
+    def get(self, request, *args, **kwargs):
+        rds = get_all_rds()
+        for r in rds:
+            print(r.projects)
+
+        output = self.OutputSerializer(rds, many=True).data
+
+        return Response(output)
+
+
 # RDS ---------------------------------------------------------------------------
 
 class RDSList(APIView):

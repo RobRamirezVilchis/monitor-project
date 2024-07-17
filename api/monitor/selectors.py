@@ -609,6 +609,11 @@ def get_server_projects(server_id: int):
     return Project.objects.filter(server=server)
 
 
+def get_rds_projects(rds_id: int):
+    rds = RDS.objects.get(id=rds_id)
+    return Project.objects.filter(database=rds)
+
+
 def set_projects_to_server(server_id: int, project_names: list):
     projects = Project.objects.filter(name__in=project_names)
     server = Server.objects.get(id=server_id)

@@ -161,6 +161,7 @@ urlpatterns = [
 
              path("status/", apis.ServerStatusListAPI.as_view(), name="status"),
              path("metric-keys/", apis.ServerMetricsAPI.as_view(), name="metrics"),
+
              path("regions/", apis.ServerRegionsAPI.as_view(), name="regions"),
              path("types/", apis.ServerTypesAPI.as_view(), name="types"),
              path("server/<int:server_id>/",
@@ -181,6 +182,8 @@ urlpatterns = [
          include(([
              path("list/", apis.RDSList.as_view(), name="list"),
              path("status/", apis.RDSStatusListAPI.as_view(), name="status"),
+             path("rds-projects/", apis.AllRDSProjectsAPI.as_view(),
+                  name="rds_projects"),
              path("metric-keys/", apis.RDSMetricsAPI.as_view(), name="metrics"),
              path("regions/", apis.ServerRegionsAPI.as_view(), name="regions"),
              path("types/", apis.RDSTypesAPI.as_view(), name="types"),
