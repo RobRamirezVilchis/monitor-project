@@ -355,7 +355,7 @@ const DevicePage = ({ params }: { params: { device_id: string } }) => {
 
       <div className=" items-center gap-8 mb-6 mt-8">
         <p className="text-2xl text-neutral-500 dark:text-dark-200 mb-2">
-          Gráfica de estátus{" "}
+          Gráfica de estatus{" "}
         </p>
         <div className="flex items-center">
           <p className="hidden sm:block mr-2">Rango de fechas:</p>
@@ -436,7 +436,7 @@ const CustomTooltip = ({
     return (
       <div className="custom-tooltip bg-white dark:bg-gray-800 p-4 border-2 rounded-lg">
         <p className="label">{`Hora: ${payload[0].value}`}</p>
-        <p className="label">{`Estátus: ${
+        <p className="label">{`Estatus: ${
           statusNames[Number(payload[1].value) as StatusKey]
         }`}</p>
         <p className="label">{payload[2].value}</p>
@@ -474,8 +474,8 @@ const cols: ColumnDef<DeviceHistory>[] = [
   {
     accessorKey: "severity",
     accessorFn: (row) => statusNames[row.severity as StatusKey],
-    header: "Estátus",
-    columnTitle: "Estátus",
+    header: "Estatus",
+    columnTitle: "Estatus",
     size: 120,
     enableSorting: true,
   },
@@ -483,7 +483,7 @@ const cols: ColumnDef<DeviceHistory>[] = [
     accessorKey: "description",
     accessorFn: (row) => row.description,
     header: "Descripción",
-    columnTitle: "Descripción de estátus",
+    columnTitle: "Descripción de estatus",
     size: 250,
     enableSorting: true,
   },

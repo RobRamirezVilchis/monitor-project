@@ -86,6 +86,7 @@ def get_driving_data(client_keyname, client_id):
         'America/Mexico_City')).replace(tzinfo=pytz.utc)
 
     credentials = get_api_credentials("Safe Driving", client_id)
+    print(client_keyname)
 
     # Hardcoded
     urls = {
@@ -125,6 +126,8 @@ def get_driving_data(client_keyname, client_id):
         response = response.json()
     else:
         print(f"Status code: {status}")
+        send_telegram("SAFEDRIVING_CHAT",
+                      message=f'ERROR de API: Código de status {status}')
         return
 
     return response
@@ -780,6 +783,8 @@ def get_industry_data(client_keyname: str, client_id: int, deployment="Industry"
         response = response.json()
     else:
         print(f"Status code: {status}")
+        send_telegram(f"{deployment.upper().replace(" ", "_")}_CHAT",
+                      message=f'ERROR de API: Código de status {status}')
         return
 
     return response
@@ -1310,7 +1315,7 @@ def get_retail_data(client_keyname, client_id):
     }
 
     response, status = make_request(request_url, time_interval, token)
-    print(response, status)
+
     if not (status == 200 or status == 201):
         token = api_login(login_url, credentials)
         response, status = make_request(request_url, time_interval, token)
@@ -1319,6 +1324,8 @@ def get_retail_data(client_keyname, client_id):
         response = response.json()
     else:
         print(f"Status code: {status}")
+        send_telegram("SMART_RETAIL_CHAT",
+                      message=f'ERROR de API: Código de status {status}')
         return
 
     return response

@@ -115,7 +115,7 @@ const SafeDrivingPage = () => {
   return (
     <section className="mb-28">
       <h2 className="text-2xl mb-2 md:mb-4 opacity-50">
-        Estátus general en el tiempo
+        Estatus general en el tiempo
       </h2>
       <div className="md:flex items-center mb-6 gap-4 md:gap-8 space-y-4 md:space-y-0 justify-start">
         <div className="md:flex gap-0 sm:gap-2 items-center">

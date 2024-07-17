@@ -511,7 +511,7 @@ const CustomTooltip = ({ active, payload, label }: TooltipProps) => {
         {payload[0].value && (
           <p className="label">{`Hora: ${format(payload[0].value, "Pp")}`}</p>
         )}
-        <p className="label">{`Estátus: ${
+        <p className="label">{`Estatus: ${
           statusNames[Number(payload[1].value) as StatusKey]
         }`}</p>
         {payload[1].value != "Inactivo" && (
@@ -553,8 +553,8 @@ const cols: ColumnDef<UnitHistory>[] = [
   {
     accessorKey: "severity",
     accessorFn: (row) => statusNames[row.severity as StatusKey],
-    header: "Estátus",
-    columnTitle: "Estátus",
+    header: "Estatus",
+    columnTitle: "Estatus",
     size: 120,
     enableSorting: true,
     enableMultiSort: true,

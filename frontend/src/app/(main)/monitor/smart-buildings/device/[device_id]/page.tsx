@@ -354,7 +354,7 @@ const SBDevicePage = ({ params }: { params: { device_id: string } }) => {
       </div>
 
       <div className=" items-center gap-8 mb-6 mt-8">
-        <p className="text-2xl opacity-60 mb-2">Gráfica de estátus </p>
+        <p className="text-2xl opacity-60 mb-2">Gráfica de estatus </p>
         <div className="flex items-center">
           <p className="hidden sm:block mr-2">Rango de fechas:</p>
           <div className="w-80 mt-1 sm:mt-0">
@@ -434,7 +434,7 @@ const CustomTooltip = ({
     return (
       <div className="custom-tooltip bg-white dark:bg-gray-800 p-4 border-2 rounded-lg">
         <p className="label">{`Hora: ${payload[0].value}`}</p>
-        <p className="label">{`Estátus: ${
+        <p className="label">{`Estatus: ${
           statusNames[Number(payload[1].value) as StatusKey]
         }`}</p>
         <p className="label">{payload[2].value}</p>
@@ -472,8 +472,8 @@ const cols: ColumnDef<DeviceHistory>[] = [
   {
     accessorKey: "severity",
     accessorFn: (row) => statusNames[row.severity as StatusKey],
-    header: "Estátus",
-    columnTitle: "Estátus",
+    header: "Estatus",
+    columnTitle: "Estatus",
     size: 120,
     enableSorting: true,
   },
@@ -481,7 +481,7 @@ const cols: ColumnDef<DeviceHistory>[] = [
     accessorKey: "description",
     accessorFn: (row) => row.description,
     header: "Descripción",
-    columnTitle: "Descripción de estátus",
+    columnTitle: "Descripción de estatus",
     size: 250,
     enableSorting: true,
   },
