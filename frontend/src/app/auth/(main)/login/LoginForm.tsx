@@ -11,9 +11,10 @@ import { useAuth } from "@/hooks/auth";
 import { AuthError } from "@/api/services/auth/types";
 import { getAuthErrorString } from "@/api/services/auth";
 import { TextInput, PasswordInput } from "@/ui/core";
+import Link from "next/link";
 
 const schema = z.object({
-  email: z.string().email("Ingrese un email válido"),
+  email: z.string().email("Ingrese un correo válido"),
   password: z.string().min(8, "La contraseña es necesaria (min 8 caracteres)"),
 });
 
@@ -36,19 +37,18 @@ export const LoginForm = () => {
     },
   });
 
-  const redirectTo = useMemo(() => typeof callbackUrl === "string" && callbackUrl 
-  ? callbackUrl
-  : "/", [callbackUrl]);
+  const redirectTo = useMemo(
+    () => (typeof callbackUrl === "string" && callbackUrl ? callbackUrl : "/"),
+    [callbackUrl]
+  );
 
   const onSubmit = async (values: BasicLoginData) => {
     setLoading(true);
     try {
       await login({ emailLogin: values }, { redirectTo });
-    }
-    catch (e) { 
+    } catch (e) {
       // Errors are handled by the provider and hook
-    }
-    finally {
+    } finally {
       setLoading(false);
     }
   };
@@ -57,24 +57,36 @@ export const LoginForm = () => {
     <FormProvider {...formMethods}>
       <form
         onSubmit={formMethods.handleSubmit(onSubmit)}
-        className="flex flex-col gap-2"
+        className="flex flex-col gap-4"
         noValidate // Let hook-form handle the validation
       >
-        <TextInput
-          name="email"
-          control={formMethods.control}
-          variant="filled"
-          type="email"
-          placeholder="Correo"
-          maxLength={100}
-        />
-        <PasswordInput
-          name="password"
-          control={formMethods.control}
-          variant="filled"
-          placeholder="Contraseña"
-          maxLength={150}
-        />
+        <div className="flex flex-col">
+          <p className="text-gray-600 font-semibold">Correo</p>
+          <TextInput
+            name="email"
+            control={formMethods.control}
+            variant="filled"
+            type="email"
+            maxLength={100}
+          />
+        </div>
+        <div className="flex flex-col">
+          <div className="flex justify-between items-end">
+            <p className="text-gray-600 font-semibold">Contraseña</p>
+            <Link
+              href="/auth/password-reset"
+              className="text-sm mb-0.5 text-blue-500 hover:text-gray-700 transition-all"
+            >
+              Olvidé mi contraseña
+            </Link>
+          </div>
+          <PasswordInput
+            name="password"
+            control={formMethods.control}
+            variant="filled"
+            maxLength={150}
+          />
+        </div>
         {errors ? (
           <span className="text-red-500 text-sm text-center">
             {errors.includes(AuthError.IncorrectCredentials)
@@ -83,15 +95,11 @@ export const LoginForm = () => {
           </span>
         ) : null}
         <div className="text-center">
-          <Button
-            type="submit"
-            variant="outline"
-            loading={loading}
-          >
+          <Button type="submit" variant="outline" loading={loading}>
             Iniciar sesión
           </Button>
         </div>
       </form>
     </FormProvider>
   );
-}
+};

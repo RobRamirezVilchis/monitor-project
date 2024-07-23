@@ -13,8 +13,9 @@ import jwt
 
 from users.services import UserWhitelistService
 
+
 class AccountAdapter(DefaultAccountAdapter):
-   
+
     def format_email_subject(self, subject):
         prefix = getattr(auth_settings, "EMAIL_SUBJECT_PREFIX", None)
         if prefix is None:
@@ -23,8 +24,9 @@ class AccountAdapter(DefaultAccountAdapter):
 
     def send_confirmation_mail(self, request, emailconfirmation, signup):
         frontend_url = settings.FRONTEND_URL
-        activation_url = self.get_email_confirmation_url(None, emailconfirmation)
-        
+        activation_url = self.get_email_confirmation_url(
+            None, emailconfirmation)
+
         ctx = {
             "frontend_url": frontend_url,
             "activation_url": activation_url,
@@ -34,7 +36,8 @@ class AccountAdapter(DefaultAccountAdapter):
             email_template = "email_confirmation_signup"
         else:
             email_template = "email_confirmation"
-        self.send_mail(email_template, emailconfirmation.email_address.email, ctx)
+        self.send_mail(
+            email_template, emailconfirmation.email_address.email, ctx)
 
     def get_email_confirmation_url(self, request, emailconfirmation):
         """Constructs the email confirmation (activation) url.
@@ -45,29 +48,31 @@ class AccountAdapter(DefaultAccountAdapter):
         """
         frontend_url = settings.FRONTEND_URL
         register_confirm_path = settings.FRONTEND_REGISTER_CONFIRM_PATH
-        register_confirm_path = register_confirm_path.replace("<key>", emailconfirmation.key)
+        register_confirm_path = register_confirm_path.replace(
+            "<key>", emailconfirmation.key)
         return f"{frontend_url}/{register_confirm_path}"
-    
+
     def respond_user_inactive(self, request, user):
         return exceptions.PermissionDenied("User inactive or deleted.")
 
     def respond_email_verification_sent(self, request, user):
         return Response({"detail": "Verification e-mail sent."}, status=status.HTTP_200_OK)
-    
-    # def pre_login(
-    #     self,
-    #     request,
-    #     user,
-    #     **kwargs
-    # ):
-    #     if not UserWhitelistService.is_email_whitelisted(user.email):
-    #         raise exceptions.PermissionDenied("Registration invalid.")
-    #     return super().pre_login(request, user, **kwargs)
-    
-    # def is_open_for_signup(self, request):
-    #     if not UserWhitelistService.is_email_whitelisted(request.user.email):
-    #         raise exceptions.PermissionDenied("Registration invalid.")
-    #     return True
+
+    def pre_login(
+        self,
+        request,
+        user,
+        **kwargs
+    ):
+        print("pre login")
+        if not UserWhitelistService.is_email_whitelisted(user.email):
+            raise exceptions.PermissionDenied("Registration invalid.")
+        return super().pre_login(request, user, **kwargs)
+
+    def is_open_for_signup(self, request):
+        if not UserWhitelistService.is_email_whitelisted(request.user.email):
+            raise exceptions.PermissionDenied("Registration invalid.")
+        return True
 
 
 class SocialAccountAdapter(DefaultSocialAccountAdapter):
@@ -86,15 +91,16 @@ class SocialAccountAdapter(DefaultSocialAccountAdapter):
             app = SocialApp.objects.get_current(provider, request)
 
         return app
-    
+
     def get_connect_redirect_url(self, request, socialaccount):
         """
         Returns the default URL to redirect to after successfully
         connecting a social account.
         """
-        url = reverse("api:authentication:socialaccount_connections", kwargs = { "version": "v1" })
+        url = reverse("api:authentication:socialaccount_connections",
+                      kwargs={"version": "v1"})
         return url
-    
+
     # def pre_social_login(self, request, sociallogin):
     #     if not UserWhitelistService.is_email_whitelisted(sociallogin.user.email):
     #         raise exceptions.PermissionDenied("Registration invalid.")
@@ -107,8 +113,8 @@ class SocialAccountAdapter(DefaultSocialAccountAdapter):
 
 
 class GoogleOAuth2Adapter(DefaultGoogleOAuth2Adapter):
-    
-     def complete_login(self, request, app, token, response, **kwargs):
+
+    def complete_login(self, request, app, token, response, **kwargs):
         try:
             token = response["id_token"]
             if isinstance(token, dict):

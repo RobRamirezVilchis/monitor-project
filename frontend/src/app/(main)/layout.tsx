@@ -19,6 +19,7 @@ import {
   ColorSchemeButtonToggle,
   ColorSchemeSelectToggle,
   ColorSchemeSwitchToggle,
+  ProfileFloatingMenu,
 } from "@/components/shared";
 import { useNavLink } from "@/hooks/shared";
 import Introid from "../../media/introid_bw.png";
@@ -104,7 +105,9 @@ const MainLayout = ({ children }: MainLayoutProps) => {
               height={32}
               alt="Picture of the author"
             ></Image>
-            <p className="ml-2 mt-1 text-lg font-bold">Monitor</p>
+            <p className="ml-2 mt-1 text-md font-bold tracking-wider">
+              MONITOR
+            </p>
           </Link>
           <div className="flex items-center">
             <div className="mr-8 pt-1">
@@ -130,7 +133,7 @@ const MainLayout = ({ children }: MainLayoutProps) => {
           <ColorSchemeButtonToggle />
         </div>
 
-        {/* <ProfileFloatingMenu /> */}
+        <ProfileFloatingMenu />
       </AppShell.Header>
 
       <AppShell.Navbar>

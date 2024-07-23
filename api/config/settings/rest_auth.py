@@ -24,7 +24,7 @@ REST_AUTH = {
     "PASSWORD_RESET_SERIALIZER": "authentication.serializers.CustomPasswordResetSerializer",
 
     "SESSION_LOGIN": True,
-    "USE_JWT": True,
+    "USE_JWT": False,
 
     "JWT_AUTH_COOKIE": "auth",
     "JWT_AUTH_REFRESH_COOKIE": "refresh",
@@ -36,8 +36,10 @@ REST_AUTH = {
 }
 
 SIMPLE_JWT = {
-    "ACCESS_TOKEN_LIFETIME": timedelta(seconds=env.int("ACCESS_TOKEN_LIFETIME", default=3600)), # 1 hour
-    "REFRESH_TOKEN_LIFETIME": timedelta(seconds=env.int("REFRESH_TOKEN_LIFETIME", default=2592000)), # 1 month
+    # 1 hour
+    "ACCESS_TOKEN_LIFETIME": timedelta(seconds=env.int("ACCESS_TOKEN_LIFETIME", default=3600)),
+    # 1 month
+    "REFRESH_TOKEN_LIFETIME": timedelta(seconds=env.int("REFRESH_TOKEN_LIFETIME", default=2592000)),
     "UPDATE_LAST_LOGIN": True,
 }
 
@@ -70,4 +72,5 @@ FRONTEND_REGISTER_CONFIRM_PATH = env.str("FRONTEND_REGISTER_CONFIRM_PATH")
 # params: <uid>, <token>
 FRONTEND_PASSWORD_RESET_PATH = env.str("FRONTEND_PASSWORD_RESET_PATH")
 # params: <uid>, <token>
-FRONTEND_REGISTER_PASSWORD_RESET_PATH = env.str("FRONTEND_REGISTER_PASSWORD_RESET_PATH")
+FRONTEND_REGISTER_PASSWORD_RESET_PATH = env.str(
+    "FRONTEND_REGISTER_PASSWORD_RESET_PATH")

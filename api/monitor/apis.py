@@ -1521,21 +1521,6 @@ class ServerProjectsList(APIView):
         return Response(output)
 
 
-class AllRDSProjectsAPI(APIView):
-    class OutputSerializer(serializers.Serializer):
-        rds_id = serializers.IntegerField(source="id")
-        projects = serializers.SlugRelatedField(
-            slug_field="name", read_only=True, many=True)
-
-    def get(self, request, *args, **kwargs):
-        rds = get_all_rds()
-        for r in rds:
-            print(r.projects)
-
-        output = self.OutputSerializer(rds, many=True).data
-
-        return Response(output)
-
 
 # RDS ---------------------------------------------------------------------------
 
@@ -1668,6 +1653,34 @@ class RDSTypesAPI(APIView):
         rds_types = get_rdstypes()
 
         output = self.OutputSerializer(rds_types, many=True).data
+
+        return Response(output)
+    
+class RDSProjectsList(APIView):
+    class OutputSerializer(serializers.Serializer):
+        id = serializers.IntegerField()
+        name = serializers.CharField()
+
+    def get(self, request, rds_id, *args, **kwargs):
+        projects = get_rds_projects(rds_id)
+
+        output = self.OutputSerializer(projects, many=True).data
+
+        return Response(output)
+
+
+class AllRDSProjectsAPI(APIView):
+    class OutputSerializer(serializers.Serializer):
+        rds_id = serializers.IntegerField(source="id")
+        projects = serializers.SlugRelatedField(
+            slug_field="name", read_only=True, many=True)
+
+    def get(self, request, *args, **kwargs):
+        rds = get_all_rds()
+        for r in rds:
+            print(r.projects)
+
+        output = self.OutputSerializer(rds, many=True).data
 
         return Response(output)
 
@@ -2237,6 +2250,8 @@ class CreateProjectAPI(APIView):
 
 
 class EditProjectAPI(APIView):
+    permission_classes = []
+
     class InputSerializer(serializers.Serializer):
         id = serializers.IntegerField()
         name = serializers.CharField()

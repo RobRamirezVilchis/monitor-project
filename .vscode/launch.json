@@ -11,7 +11,7 @@
       "request": "launch",
       "cwd": "${workspaceFolder}/api",
       "program": "${workspaceFolder}/api/manage.py",
-      "args": ["runserver"],
+      "args": ["runserver", "8001"],
       "django": true,
       "justMyCode": true,
       "env": {

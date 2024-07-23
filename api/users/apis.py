@@ -15,7 +15,7 @@ from authentication.serializers import GroupNameSerializer, RegisterWithoutPassw
 from authentication.forms import PasswordResetForm
 from common.utils import inline_serializer
 
-from . import listeners #? Necessary to register the listeners
+from . import listeners  # ? Necessary to register the listeners
 from .models import UserWhitelist
 from .permissions import UsersPermissions, UsersWhitelistPermissions, UserAccessPermissions, UserRolesPermissions
 from .services import UsersService, UserAccessService, UserRolesService, UserWhitelistService
@@ -23,6 +23,7 @@ from .serializers import CommonUserSerializer
 
 
 User = get_user_model()
+
 
 class UsersListApi(APIView):
     permission_classes = [IsAuthenticated, UsersPermissions]
@@ -55,7 +56,7 @@ class UsersListApi(APIView):
         filters_serializer = self.FiltersSerializer(data=request.query_params)
         filters_serializer.is_valid(raise_exception=True)
         qs = UsersService.list(
-            filters=filters_serializer.validated_data, 
+            filters=filters_serializer.validated_data,
             prefetch_related=[
                 "groups",
                 Prefetch(
@@ -66,11 +67,11 @@ class UsersListApi(APIView):
             annotate_full_name=True,
         )
         return get_paginated_response(
-            queryset         = qs,
-            serializer_class = self.OutputSerializer,
-            request          = request,
+            queryset=qs,
+            serializer_class=self.OutputSerializer,
+            request=request,
         )
-    
+
     class CreatePartialInputSerializer(serializers.Serializer):
         send_mail = serializers.BooleanField(default=True)
         roles = serializers.ListField(
@@ -83,7 +84,6 @@ class UsersListApi(APIView):
             if not all(role in UserRolesService.values for role in value):
                 raise serializers.ValidationError("Invalid roles")
             return value
-
 
     def post(self, request, *args, **kwargs):
         """
@@ -107,7 +107,8 @@ class UsersListApi(APIView):
         send_mail = other_serializer.validated_data.pop("send_mail", True)
         service = UsersService(user)
         user = service.update(other_serializer.validated_data)
-        signals.user_signed_up.send(sender=user.__class__, request=request, user=user)
+        signals.user_signed_up.send(
+            sender=user.__class__, request=request, user=user)
 
         # Send confirmation e-mail with password reset link
         if 'allauth' in settings.INSTALLED_APPS:
@@ -133,23 +134,25 @@ class UsersListApi(APIView):
         if send_mail:
             reset_form.save(**opts)
             return Response(
-                { "detail": "User confirmation e-mail sent." }, 
+                {"detail": "User confirmation e-mail sent."},
                 status=status.HTTP_201_CREATED
             )
         else:
             email, tokens = reset_form.save(**opts)
             return Response(
-                { "detail": "User confirmation e-mail sent.", "tokens": tokens }, 
+                {"detail": "User confirmation e-mail sent.", "tokens": tokens},
                 status=status.HTTP_201_CREATED
             )
-    
+
 
 class UsersDetailApi(APIView):
     permission_classes = [IsAuthenticated, UsersPermissions]
-    
+
     class UpdateInputSerializer(serializers.Serializer):
-        first_name = serializers.CharField(max_length=150, required=False, allow_blank=True)
-        last_name = serializers.CharField(max_length=150, required=False, allow_blank=True)
+        first_name = serializers.CharField(
+            max_length=150, required=False, allow_blank=True)
+        last_name = serializers.CharField(
+            max_length=150, required=False, allow_blank=True)
         roles = serializers.ListField(
             child=serializers.CharField(max_length=150),
             required=False,
@@ -159,7 +162,7 @@ class UsersDetailApi(APIView):
             if not all(role in UserRolesService.values for role in value):
                 raise serializers.ValidationError("Invalid roles")
             return value
-        
+
     class OutputSerializer(serializers.Serializer):
         id = serializers.IntegerField()
         email = serializers.EmailField()
@@ -167,7 +170,7 @@ class UsersDetailApi(APIView):
         last_name = serializers.CharField()
         roles = GroupNameSerializer(many=True, source="groups")
 
-    def patch(self, request, pk = None, *args, **kwargs):
+    def patch(self, request, pk=None, *args, **kwargs):
         """
         Updates a user.
         """
@@ -177,8 +180,8 @@ class UsersDetailApi(APIView):
         service = UsersService(user)
         user = service.update(serializer.validated_data)
         return Response(self.OutputSerializer(user).data, status=status.HTTP_200_OK)
-    
-    def delete(self, request, pk = None, *args, **kwargs):
+
+    def delete(self, request, pk=None, *args, **kwargs):
         """
         Deletes a user.
         """
@@ -216,13 +219,14 @@ class UsersWhitelistListApi(APIView):
         """
         filters_serializer = self.FiltersSerializer(data=request.query_params)
         filters_serializer.is_valid(raise_exception=True)
-        qs = UserWhitelistService.list(filters=filters_serializer.validated_data)
+        qs = UserWhitelistService.list(
+            filters=filters_serializer.validated_data)
         return get_paginated_response(
-            queryset         = qs,
-            serializer_class = self.OutputSerializer,
-            request          = request,
+            queryset=qs,
+            serializer_class=self.OutputSerializer,
+            request=request,
         )
-    
+
     class CreateInputSerializer(serializers.Serializer):
         email = serializers.EmailField(max_length=254, required=True)
         group = serializers.CharField(max_length=254, required=True)
@@ -242,7 +246,7 @@ class UsersWhitelistListApi(APIView):
 
 class UsersWhitelistDetailApi(APIView):
     permission_classes = [IsAuthenticated, UsersWhitelistPermissions]
-    
+
     class UpdateInputSerializer(serializers.Serializer):
         email = serializers.EmailField(max_length=254, required=False)
         group = serializers.CharField(max_length=254, required=False)
@@ -258,23 +262,24 @@ class UsersWhitelistDetailApi(APIView):
         group = serializers.CharField(max_length=254)
         user = CommonUserSerializer(required=False, read_only=True)
 
-    def patch(self, request, pk = None, *args, **kwargs):
+    def patch(self, request, pk=None, *args, **kwargs):
         whitelist_instance = get_object_or_404(UserWhitelist, pk=pk)
         serializer = self.UpdateInputSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
-        user = UserWhitelistService.update(whitelist_instance, serializer.validated_data)
+        user = UserWhitelistService.update(
+            whitelist_instance, serializer.validated_data)
         return Response(self.OutputSerializer(user).data, status=status.HTTP_200_OK)
-    
-    def delete(self, request, pk = None, *args, **kwargs):
+
+    def delete(self, request, pk=None, *args, **kwargs):
         whitelist_instance = get_object_or_404(UserWhitelist, pk=pk)
         UserWhitelistService.delete(
-            whitelist_instance, 
-            current_user = request.user, 
-            throw_if_self_delete = True
+            whitelist_instance,
+            current_user=request.user,
+            throw_if_self_delete=True
         )
         return Response(status=status.HTTP_204_NO_CONTENT)
-    
+
 
 class UserAccessListApi(APIView):
     permission_classes = [IsAuthenticated, UserAccessPermissions]
@@ -294,10 +299,11 @@ class UserAccessListApi(APIView):
     def get(self, request, *args, **kwargs):
         filters_serializer = self.FiltersSerializer(data=request.query_params)
         filters_serializer.is_valid(raise_exception=True)
-        qs = UserAccessService.list_grouped(filters=filters_serializer.validated_data)
+        qs = UserAccessService.list_grouped(
+            filters=filters_serializer.validated_data)
         qs = UsersService.replace_user_ids(qs, prefetch_social_accounts=True)
         return get_paginated_response(
-            queryset         = qs,
-            serializer_class = self.OutputSerializer,
-            request          = request,
+            queryset=qs,
+            serializer_class=self.OutputSerializer,
+            request=request,
         )

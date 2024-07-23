@@ -193,6 +193,8 @@ urlpatterns = [
                           name="rds-status"),
                       path("history/", apis.RDSHistoryList.as_view(),
                           name="history"),
+                      path("projects/", apis.RDSProjectsList.as_view(),
+                          name="projects"),
                   ], "rds")
                   )),
          ], "rds"))),

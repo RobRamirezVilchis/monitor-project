@@ -1,13 +1,20 @@
 import { ActionIcon, Modal, Tooltip, useMantineTheme } from "@mantine/core";
 
-import { showSuccessNotification, showErrorNotification } from "@/ui/notifications";
+import {
+  showSuccessNotification,
+  showErrorNotification,
+} from "@/ui/notifications";
 import { useAuth } from "@/hooks/auth";
 import { useConfirmDialog } from "@/hooks/shared/useConfirmDialog";
-import { useCreateUserMutation, useDeleteUserMutation, useUpdateUserMutation } from "@/api/mutations/users";
+import {
+  useCreateUserMutation,
+  useDeleteUserMutation,
+  useUpdateUserMutation,
+} from "@/api/mutations/users";
 import { User } from "@/api/services/auth/types";
 import { UserForm } from "./UserForm";
 
-import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
+import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 import { IconPencil, IconMail } from "@tabler/icons-react";
 import { useDisclosure } from "@mantine/hooks";
 
@@ -15,8 +22,7 @@ export interface ActionsProps {
   user: User;
 }
 
-export const UpdateUserAction = ({user,
-}: ActionsProps) => {
+export const UpdateUserAction = ({ user }: ActionsProps) => {
   const { user: currentUser } = useAuth({
     triggerAuthentication: false,
     skipAll: true,
@@ -29,72 +35,76 @@ export const UpdateUserAction = ({user,
       });
       close();
     },
-    onError: () => showErrorNotification({
-      message: "Ocurrió un error al actualizar el usuario. Por favor intenta de nuevo más tarde.",
-    }),
+    onError: () =>
+      showErrorNotification({
+        message:
+          "Ocurrió un error al actualizar el usuario. Por favor intenta de nuevo más tarde.",
+      }),
   });
   const theme = useMantineTheme();
 
-  return (<>
-    <Tooltip
-      label="Editar"
-    >
-      <ActionIcon
-        color={theme.primaryColor}
-        radius="xl"
-        onClick={open}
-        disabled={
-          updateUserMutation.isLoading 
-          || (!!user && !!currentUser && user.id === currentUser.id)
-        }
+  return (
+    <>
+      <Tooltip label="Editar">
+        <ActionIcon
+          color={theme.primaryColor}
+          radius="xl"
+          onClick={open}
+          disabled={
+            updateUserMutation.isLoading ||
+            (!!user && !!currentUser && user.id === currentUser.id)
+          }
+        >
+          <IconPencil className="w-5 h-5" />
+        </ActionIcon>
+      </Tooltip>
+
+      <Modal
+        opened={isOpen}
+        onClose={close}
+        size="md"
+        centered
+        title={<p className="text-xl font-semibold">Editar</p>}
       >
-        <IconPencil className="w-5 h-5" />
-      </ActionIcon>
-    </Tooltip>
+        <div className="p-4">
+          <UserForm
+            defaultValues={user}
+            onSubmit={(values) => {
+              updateUserMutation.mutate({
+                id: user.id!,
+                data: values,
+                // optimistic: true,
+              });
+            }}
+            onCancel={close}
+            loading={updateUserMutation.isLoading}
+            disabled={{
+              email: true,
+            }}
+            submitLabel="Guardar"
+            cancelLabel="Cancelar"
+          />
+        </div>
+      </Modal>
+    </>
+  );
+};
 
-    <Modal
-      opened={isOpen}
-      onClose={close}
-      size="md"
-      centered
-      title={<p className="text-xl font-semibold">Editar</p>}
-    >
-      <div className="p-4">
-        <UserForm 
-          defaultValues={user}
-          onSubmit={values => {
-            updateUserMutation.mutate({
-              id: user.id!,
-              data: values,
-              // optimistic: true,
-            });
-          }}
-          onCancel={close}
-          loading={updateUserMutation.isLoading} 
-          disabled={{
-            email: true,
-          }}
-          submitLabel="Guardar"
-          cancelLabel="Cancelar"
-        />
-      </div>
-    </Modal>
-  </>);
-}
-
-export const DeleteUserAction = ({user,
-}: ActionsProps) => {
+export const DeleteUserAction = ({ user }: ActionsProps) => {
   const { user: currentUser } = useAuth({
     triggerAuthentication: false,
     skipAll: true,
   });
   const deleteUserMutation = useDeleteUserMutation({
-    onSuccess: () => showSuccessNotification({
-      message: "Usuario eliminado correctamente.",
-    }),
-    onError: () => showErrorNotification({
-      message: "Ocurrió un error al eliminar el usuario. Por favor intenta de nuevo más tarde.",
-    }),
+    onSuccess: () =>
+      showSuccessNotification({
+        message: "Usuario eliminado correctamente.",
+      }),
+    onError: () =>
+      showErrorNotification({
+        message:
+          "Ocurrió un error al eliminar el usuario. Por favor intenta de nuevo más tarde.",
+      }),
   });
   const theme = useMantineTheme();
 
@@ -115,26 +125,23 @@ export const DeleteUserAction = ({user,
   });
 
   return (
-    <Tooltip
-      label="Eliminar"
-    >
+    <Tooltip label="Eliminar">
       <ActionIcon
         color="red"
         radius="xl"
         onClick={() => confirm()}
         disabled={
-          deleteUserMutation.isLoading 
-          || (!!user && !!currentUser && user.id === currentUser.id)
+          deleteUserMutation.isLoading ||
+          (!!user && !!currentUser && user.id === currentUser.id)
         }
       >
         <DeleteForeverIcon className="w-5 h-5" />
       </ActionIcon>
     </Tooltip>
   );
-}
+};
 
-export const SendPasswordChangeAction = ({user,
-}: ActionsProps) => {
+export const SendPasswordChangeAction = ({ user }: ActionsProps) => {
   const { user: currentUser } = useAuth({
     triggerAuthentication: false,
     skipAll: true,
@@ -146,16 +153,16 @@ export const SendPasswordChangeAction = ({user,
       });
       close();
     },
-    onError: () => showErrorNotification({
-      message: "Ocurrió un error al enviar la solicitud de cambio de contraseña. Por favor intenta de nuevo más tarde.",
-    }),
+    onError: () =>
+      showErrorNotification({
+        message:
+          "Ocurrió un error al enviar la solicitud de cambio de contraseña. Por favor intenta de nuevo más tarde.",
+      }),
   });
   const theme = useMantineTheme();
 
   return (
-    <Tooltip
-      label="Solicitar activación de cuenta"
-    >
+    <Tooltip label="Solicitar activación de cuenta">
       <ActionIcon
         color={theme.primaryColor}
         radius="xl"
@@ -167,12 +174,12 @@ export const SendPasswordChangeAction = ({user,
           });
         }}
         disabled={
-          createUserMutation.isLoading 
-          || (!!user && !!currentUser && user.id === currentUser.id)
+          createUserMutation.isLoading ||
+          (!!user && !!currentUser && user.id === currentUser.id)
         }
       >
         <IconMail className="w-5 h-5" />
       </ActionIcon>
     </Tooltip>
   );
-}
+};

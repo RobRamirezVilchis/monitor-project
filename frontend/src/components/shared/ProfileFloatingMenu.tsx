@@ -1,13 +1,11 @@
-"use client";
-
 import { Fragment, ReactNode, useMemo } from "react";
-import { 
-  ActionIcon, 
+import {
+  ActionIcon,
   Button,
-  Loader, 
+  Loader,
   Divider,
-  Paper, 
-  Popover, 
+  Paper,
+  Popover,
   Tooltip,
   NavLink,
 } from "@mantine/core";
@@ -23,12 +21,18 @@ import { useImmer } from "use-immer";
 import { useNavLink } from "@/hooks/shared";
 import { UserAvatar } from "./UserAvatar";
 
-import { IconLogin, IconLogout, IconShieldLock, IconUser, IconUsers } from "@tabler/icons-react";
+import {
+  IconLogin,
+  IconLogout,
+  IconShieldLock,
+  IconUser,
+  IconUsers,
+} from "@tabler/icons-react";
 
 interface NavMenuItem {
-  label: string,
-  href?: string,
-  icon?: ReactNode,
+  label: string;
+  href?: string;
+  icon?: ReactNode;
   rolesWhitelist?: Role[];
   rolesBlacklist?: Role[];
 }
@@ -42,10 +46,10 @@ export const ProfileFloatingMenu = () => {
   });
   const [open, { toggle, close }] = useDisclosure(false);
   const fallbackAvatarColor = useMemo(
-    () => !user?.extra?.picture ? randomColor() : "#000",
-    [user?.extra?.picture]  
+    () => (!user?.extra?.picture ? randomColor() : "#000"),
+    [user?.extra?.picture]
   );
-  
+
   const [links, setLinks] = useImmer<NavMenuItem[]>([
     {
       label: "Mi usuario",
@@ -72,10 +76,13 @@ export const ProfileFloatingMenu = () => {
     },
   ]);
   const visibleLinks = useMemo(
-    () => links.filter(link => isUserInAuthorizedRoles(user, {
-      rolesWhitelist: link.rolesWhitelist,
-      rolesBlacklist: link.rolesBlacklist,
-    })), 
+    () =>
+      links.filter((link) =>
+        isUserInAuthorizedRoles(user, {
+          rolesWhitelist: link.rolesWhitelist,
+          rolesBlacklist: link.rolesBlacklist,
+        })
+      ),
     [links, user]
   );
 
@@ -85,19 +92,15 @@ export const ProfileFloatingMenu = () => {
   };
 
   return (
-    <Popover
-      opened={open}
-      onChange={toggle}
-      shadow="md"
-    >
+    <Popover opened={open} onChange={toggle} shadow="md">
       <Popover.Target>
         <Tooltip label="Yo">
-          <ActionIcon
-            onClick={toggle}
-            radius="xl"
-            variant="transparent"
-          >
-            <UserAvatar user={user} fallbackColor={fallbackAvatarColor} solidColor />
+          <ActionIcon onClick={toggle} radius="xl" variant="transparent">
+            <UserAvatar
+              user={user}
+              fallbackColor={fallbackAvatarColor}
+              solidColor
+            />
           </ActionIcon>
         </Tooltip>
       </Popover.Target>
@@ -107,7 +110,11 @@ export const ProfileFloatingMenu = () => {
           {isAuthenticated && !loading ? (
             <>
               <div className="flex flex-col gap-3 justify-center items-center">
-                <UserAvatar user={user} fallbackColor={fallbackAvatarColor} solidColor />
+                <UserAvatar
+                  user={user}
+                  fallbackColor={fallbackAvatarColor}
+                  solidColor
+                />
                 <div className="flex flex-col gap-1 justify-center items-center">
                   <span className="text-base font-semibold">
                     {user?.first_name} {user?.last_name}
@@ -120,7 +127,7 @@ export const ProfileFloatingMenu = () => {
                 <ColorSchemeSwitchToggle />
               </div>
 
-              <Paper 
+              <Paper
                 withBorder
                 className="flex flex-col rounded-lg overflow-hidden"
               >
@@ -139,9 +146,7 @@ export const ProfileFloatingMenu = () => {
 
               <Divider />
 
-              <div
-                className="flex justify-center items-center w-full"
-              >
+              <div className="flex justify-center items-center w-full">
                 <Button
                   leftSection={<IconLogout />}
                   onClick={onLogout}
@@ -158,7 +163,7 @@ export const ProfileFloatingMenu = () => {
       </Popover.Dropdown>
     </Popover>
   );
-}
+};
 
 interface ListLinkProps {
   href: string;
@@ -167,12 +172,7 @@ interface ListLinkProps {
   onClick?: () => void;
 }
 
-const ListLink = ({ 
-  href, 
-  icon, 
-  label, 
-  onClick 
-}: ListLinkProps) => {
+const ListLink = ({ href, icon, label, onClick }: ListLinkProps) => {
   const active = useNavLink(href);
 
   return (

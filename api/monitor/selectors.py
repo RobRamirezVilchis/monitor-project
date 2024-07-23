@@ -606,7 +606,7 @@ def get_project_data(id):
 
 def get_server_projects(server_id: int):
     server = Server.objects.get(id=server_id)
-    return Project.objects.filter(server=server)
+    return server.projects.all()
 
 
 def get_rds_projects(rds_id: int):

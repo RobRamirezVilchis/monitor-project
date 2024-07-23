@@ -46,6 +46,7 @@ export function startSocialLogin(
     onError?: (error: ProviderErrors) => void;
   }
 ) {
+  console.log("client id", process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID)
   switch (provider) {
     case "google":
       // https://developers.google.com/identity/oauth2/web/guides/overview
