@@ -39,7 +39,7 @@ export const defaultConfig: HttpClientConfig = {
   withCredentials: true,
   useCSRF: true,
   useJWT: false,
-  rejectRequest: (config) => {
+  /* rejectRequest: (config) => {
     if (!hasCSRFToken(config)) {
       return {
         response: {
@@ -51,7 +51,7 @@ export const defaultConfig: HttpClientConfig = {
     }
 
     return false;
-  },
+  }, */
   onError: (error) => {
     if (error?.response?.status === 401 || error?.response?.status === 403) {
       const url = new URL("/auth/login", window.location.origin);
