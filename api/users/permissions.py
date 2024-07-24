@@ -1,61 +1,61 @@
-from common.permissions import PolicyPermissions
+from common.permission_policy.permissions import PermissionPolicy
 
 
-class UsersPermissions(PolicyPermissions):
-    policies = [
+class UsersPermissions(PermissionPolicy):
+    rules = [
         {
             "action": "get",
-            "permission": "authentication.view_user",
+            "condition": "permission:authentication.view_user",
         },
         {
             "action": "post",
-            "permission": "authentication.add_user",
+            "condition": "permission:authentication.add_user",
         },
         {
             "action": ["put", "patch"],
-            "permission": "authentication.change_user",
+            "condition": "permission:authentication.change_user",
         },
         {
             "action": "delete",
-            "permission": "authentication.delete_user",
+            "condition": "permission:authentication.delete_user",
         },
     ]
 
 
-class UserRolesPermissions(PolicyPermissions):
-    policies = [
+class UserRolesPermissions(PermissionPolicy):
+    rules = [
         {
             "action": "get",
-            "permission": "authentication.view_roles",
+            "condition": "permission:authentication.view_roles",
         },
     ]
 
 
-class UsersWhitelistPermissions(PolicyPermissions):
-    policies = [
+class UsersWhitelistPermissions(PermissionPolicy):
+    rules = [
         {
             "action": "get",
-            "permission": "users.view_userwhitelist",
+            "condition": "permission:users.view_userwhitelist",
         },
         {
             "action": "post",
-            "permission": "users.add_userwhitelist",
+            "condition": "permission:users.add_userwhitelist",
         },
         {
             "action": ["put", "patch"],
-            "permission": "users.change_userwhitelist",
+            "condition": "permission:users.change_userwhitelist",
         },
         {
             "action": "delete",
-            "permission": "users.delete_userwhitelist",
+            "condition": "permission:users.delete_userwhitelist",
         },
     ]
 
 
-class UserAccessPermissions(PolicyPermissions):
-    policies = [
+class UserAccessPermissions(PermissionPolicy):
+    rules = [
         {
             "action": "get",
-            "permission": "users.view_useraccesslog",
+            "condition": "permission:users.view_useraccesslog",
         },
     ]

@@ -1,6 +1,6 @@
 export type StatusKey = 0 | 1 | 2 | 3 | 4 | 5;
 export const statusStyles: { [key in StatusKey]: string } = {
-  0: "bg-gray-100 dark:bg-gray-200 border-gray-500 text-gray-900",
+  0: "bg-gray-200 dark:bg-gray-200 border-gray-500 text-gray-900",
   1: "bg-blue-100 dark:bg-blue-200 border-blue-500 text-blue-900",
   2: "bg-green-100 dark:bg-green-200 border-green-500 text-green-900",
   3: "bg-yellow-100 dark:bg-yellow-200 border-yellow-500 text-yellow-900",

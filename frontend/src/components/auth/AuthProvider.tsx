@@ -1,16 +1,40 @@
 "use client";
 
-import { Dispatch, ReactNode, createContext, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import {
+  Dispatch,
+  ReactNode,
+  createContext,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { isAxiosError } from "axios";
 import { useImmerReducer } from "use-immer";
 import { useRouter } from "next/navigation";
 
 import { ApiError } from "@/api/types";
-import { AuthError, User, JWTLoginInfo, LoginUserData } from "@/api/services/auth/types";
+import {
+  AuthError,
+  User,
+  JWTLoginInfo,
+  LoginUserData,
+} from "@/api/services/auth/types";
 import { AuthAction, AuthState, authReducer } from "./AuthReducer";
-import { ProviderErrors, ProviderKey, ProviderResponse, ProvidersOptions, startSocialLogin } from "@/utils/auth/oauth";
+import {
+  ProviderErrors,
+  ProviderKey,
+  ProviderResponse,
+  ProvidersOptions,
+  startSocialLogin,
+} from "@/utils/auth/oauth";
 import { useMyUserQuery } from "@/api/queries/auth";
-import { useLoginMutation, useLogoutMutation, useUnsafeSocialLoginMutation } from "@/api/mutations/auth";
+import {
+  useLoginMutation,
+  useLogoutMutation,
+  useUnsafeSocialLoginMutation,
+} from "@/api/mutations/auth";
 import api from "@/api";
 
 // Reducer ---------------------------------------------------------------------
@@ -27,22 +51,29 @@ export interface AuthContextProps {
   errors: AuthError[] | null;
   registeredHooks: number;
   dispatchAuth: Dispatch<AuthAction>;
-  emailLogin: (loginData: LoginUserData,
-    options?: { redirect?: boolean, redirectTo?: RedirectToUrl }) => Promise<User | null>;
-  socialLogin: (provider: ProviderKey,
-    type: SocialAction, 
-    options?: SocialLoginCallbacks & { 
+  emailLogin: (
+    loginData: LoginUserData,
+    options?: { redirect?: boolean; redirectTo?: RedirectToUrl }
+  ) => Promise<User | null>;
+  socialLogin: (
+    provider: ProviderKey,
+    type: SocialAction,
+    options?: SocialLoginCallbacks & {
       redirect?: boolean;
       redirectTo?: RedirectToUrl;
       providersOptions?: ProvidersOptions;
-    }) => void;
-  logout: (options?: { redirect?: boolean, redirectTo?: RedirectToUrl }) => void,
+    }
+  ) => void;
+  logout: (options?: {
+    redirect?: boolean;
+    redirectTo?: RedirectToUrl;
+  }) => void;
   refetchUser: () => void;
   lastAction: "login" | "logout" | null;
 
-  defaultRedirectTo?: RedirectToUrl,
-  defaultSetCallbackUrlParam?: boolean,
-  defaultCallbackUrlParamName?: string,
+  defaultRedirectTo?: RedirectToUrl;
+  defaultSetCallbackUrlParam?: boolean;
+  defaultCallbackUrlParamName?: string;
 }
 
 const authContextDefaults: AuthContextProps = {
@@ -64,41 +95,41 @@ const authContextDefaults: AuthContextProps = {
 
 export const AuthContext = createContext<AuthContextProps>(authContextDefaults);
 
-export type RedirectToUrl = string | URL | ((user: User | null) => string | URL);
+export type RedirectToUrl =
+  | string
+  | URL
+  | ((user: User | null) => string | URL);
 
 export function getRedirectUrl(
-  user: User | null, 
-  redirectTo: RedirectToUrl, 
+  user: User | null,
+  redirectTo: RedirectToUrl
 ): string | URL {
-  if (typeof redirectTo === "function")
-    return redirectTo(user);
-  else
-    return redirectTo;
+  if (typeof redirectTo === "function") return redirectTo(user);
+  else return redirectTo;
 }
-
 
 // Provider --------------------------------------------------------------------
 export interface AuthProviderProps {
   children: ReactNode;
-  
+
   /**
    * Default value for the useAuth hook to redirect the user
    * if authentication of authorization fails.
    * @default "/auth/login"
    */
-  defaultRedirectTo?: RedirectToUrl,
+  defaultRedirectTo?: RedirectToUrl;
   /**
    * Default value for the useAuth hook for whether if a callback url param
    * should be appended to the redirect url.
    * @default true
    */
-  defaultSetCallbackUrlParam?: boolean,
+  defaultSetCallbackUrlParam?: boolean;
   /**
-   * Default value for the useAuth hook for the name of the callback url param 
+   * Default value for the useAuth hook for the name of the callback url param
    * to set on redirect if setCallbackUrlParam is set to true.
    * @default "callbackUrl"
    */
-  defaultCallbackUrlParamName?: string,
+  defaultCallbackUrlParamName?: string;
 }
 
 export type SocialAction = "login" | "connect" | null;
@@ -107,19 +138,20 @@ export interface SocialLoginCallbacks {
   onPopupClosed?: (error: ProviderErrors) => void;
   onFinish?: (user: User | null) => void;
   onError?: (
-    error: ProviderErrors 
-    | { 
-      provider: "_"; 
-      type: "invalid_url" | "authentication_error"; 
-      payload: any;
-    }
+    error:
+      | ProviderErrors
+      | {
+          provider: "_";
+          type: "invalid_url" | "authentication_error";
+          payload: any;
+        }
   ) => void;
 }
 
 export const AuthProvider = ({
-  children, 
-  defaultRedirectTo, 
-  defaultSetCallbackUrlParam, 
+  children,
+  defaultRedirectTo,
+  defaultSetCallbackUrlParam,
   defaultCallbackUrlParamName,
 }: AuthProviderProps) => {
   const [state, dispatch] = useImmerReducer(authReducer, authReducerDefaults);
@@ -141,14 +173,24 @@ export const AuthProvider = ({
           else if (error.response?.data.type === "validation_error") {
             for (const e of error.response?.data.errors ?? []) {
               if (e.detail.includes("Incorrect value"))
-                dispatch({ type: "addError", payload: AuthError.IncorrectCredentials });
-              else if (e.detail.includes("User is already registered with this e-mail address"))
-                dispatch({ type: "addError", payload: AuthError.EmailAlreadyRegistered });
+                dispatch({
+                  type: "addError",
+                  payload: AuthError.IncorrectCredentials,
+                });
+              else if (
+                e.detail.includes(
+                  "User is already registered with this e-mail address"
+                )
+              )
+                dispatch({
+                  type: "addError",
+                  payload: AuthError.EmailAlreadyRegistered,
+                });
             }
           }
         }
       }
-    }
+    },
   });
 
   useEffect(() => {
@@ -160,12 +202,20 @@ export const AuthProvider = ({
         if (isAxiosError<ApiError>(myUserQuery.error)) {
           if (myUserQuery.error.response?.data.type === "server_error")
             dispatch({ type: "addError", payload: AuthError.ServerError });
-          else if (myUserQuery.error.response?.data.type === "validation_error") {
+          else if (
+            myUserQuery.error.response?.data.type === "validation_error"
+          ) {
             for (const error of myUserQuery.error.response?.data.errors ?? []) {
               if (error.detail.includes("E-mail is not verified"))
-                dispatch({ type: "addError", payload: AuthError.EmailNotVerified });
+                dispatch({
+                  type: "addError",
+                  payload: AuthError.EmailNotVerified,
+                });
               else
-                dispatch({ type: "addError", payload: AuthError.IncorrectCredentials });
+                dispatch({
+                  type: "addError",
+                  payload: AuthError.IncorrectCredentials,
+                });
             }
           }
         }
@@ -173,177 +223,201 @@ export const AuthProvider = ({
     }
   }, [dispatch, myUserQuery.error, myUserQuery.isError, myUserQuery.data]);
 
-  const emailLogin = useCallback(async (
-    loginData: LoginUserData,
-    options?: {
-      redirect?: boolean,
-      redirectTo?: RedirectToUrl,
-    }
-  ): Promise<User | null> => {
-    const opts: typeof options = {
-      redirect: true,
-      redirectTo: "/",
-      ...options
-    };
-    lastAction.current = "login";
-
-    dispatch({ type: "loading", payload: true });
-    let user: User | null = null;
-
-    try {
-      const resp = await loginMutation.mutateAsync(loginData);
-      if ((resp as JWTLoginInfo)?.user) {
-        user = (resp as JWTLoginInfo).user;
-        useMyUserQuery.setData(user);
+  const emailLogin = useCallback(
+    async (
+      loginData: LoginUserData,
+      options?: {
+        redirect?: boolean;
+        redirectTo?: RedirectToUrl;
       }
-      else {
-        user = await useMyUserQuery.refetch() ?? null;
-      }
-    }
-    catch {
-      console.log("Error signing in.");
-    }
+    ): Promise<User | null> => {
+      const opts: typeof options = {
+        redirect: true,
+        redirectTo: "/",
+        ...options,
+      };
+      lastAction.current = "login";
 
-    dispatch({ type: "loading", payload: false });
-    
-    if (opts.redirect && opts.redirectTo && user)
-      router.push(getRedirectUrl(user, opts.redirectTo).toString());
-
-    return user;
-  }, [dispatch, loginMutation, router]);
-
-  const socialLogin = useCallback(async (
-    provider: ProviderKey,
-    type: SocialAction, 
-    options?: SocialLoginCallbacks & { 
-      redirect?: boolean;
-      redirectTo?: RedirectToUrl;
-      providersOptions?: ProvidersOptions;
-    }
-  ) => {
-    const {
-      redirect = true,
-      redirectTo = "/",
-    } = options ?? {};
-
-    startSocialLogin(provider, {
-      providers: options?.providersOptions,
-      onError: options?.onError,
-      onPopupClosed: options?.onPopupClosed,
-      callback: async (data) => {
-        lastAction.current = "login";
-
-        dispatch({ type: "loading", payload: true });
-        const socialUrls = api.endpoints.auth.social[provider as keyof typeof api.endpoints.auth.social];
-
-        let user: User | null = null;
-
-        if (!socialUrls) {
-          dispatch({ type: "addError", payload: AuthError.ProviderNotFound });
-          const message = `No valid ${type === "connect" ? "connection" : "login"} url for the ${provider} was found.`;
-          console.error(message);
-          options?.onError?.({
-            provider: "_",
-            type: "invalid_url",
-            payload: message,
-          });
+      dispatch({ type: "loading", payload: true });
+      let user: User | null = null;
+      try {
+        const resp = await loginMutation.mutateAsync(loginData);
+        if ((resp as JWTLoginInfo)?.user) {
+          user = (resp as JWTLoginInfo).user;
+          myUserQuery.setData(user);
+        } else {
+          user = (await myUserQuery.refetch()).data ?? null;
         }
-        else {
-          let url = socialUrls.login;
+      } catch {
+        console.log("Error signing in.");
+      }
 
-          if (type === "connect")
-            url = socialUrls.connect;
+      dispatch({ type: "loading", payload: false });
+      if (opts.redirect && opts.redirectTo && user)
+        router.push(getRedirectUrl(user, opts.redirectTo).toString());
 
-          if (url) {
-            try {
-              const resp = await unsafeSocialLoginMutation.mutateAsync({ 
-                url,
-                data: getProviderLoginDataFromResponse(data),
-              });
-              if ((resp as JWTLoginInfo)?.user) {
-                user = (resp as JWTLoginInfo).user;
-                useMyUserQuery.setData(user);
+      return user;
+    },
+    [dispatch, loginMutation, router]
+  );
+
+  const socialLogin = useCallback(
+    async (
+      provider: ProviderKey,
+      type: SocialAction,
+      options?: SocialLoginCallbacks & {
+        redirect?: boolean;
+        redirectTo?: RedirectToUrl;
+        providersOptions?: ProvidersOptions;
+      }
+    ) => {
+      const { redirect = true, redirectTo = "/" } = options ?? {};
+
+      startSocialLogin(provider, {
+        providers: options?.providersOptions,
+        onError: options?.onError,
+        onPopupClosed: options?.onPopupClosed,
+        callback: async (data) => {
+          lastAction.current = "login";
+
+          dispatch({ type: "loading", payload: true });
+          const socialUrls =
+            api.endpoints.auth.social[
+              provider as keyof typeof api.endpoints.auth.social
+            ];
+
+          let user: User | null = null;
+
+          if (!socialUrls) {
+            dispatch({ type: "addError", payload: AuthError.ProviderNotFound });
+            const message = `No valid ${
+              type === "connect" ? "connection" : "login"
+            } url for the ${provider} was found.`;
+            console.error(message);
+            options?.onError?.({
+              provider: "_",
+              type: "invalid_url",
+              payload: message,
+            });
+          } else {
+            let url = socialUrls.login;
+
+            if (type === "connect") url = socialUrls.connect;
+
+            if (url) {
+              try {
+                const resp = await unsafeSocialLoginMutation.mutateAsync({
+                  url,
+                  data: getProviderLoginDataFromResponse(data),
+                });
+                if ((resp as JWTLoginInfo)?.user) {
+                  user = (resp as JWTLoginInfo).user;
+                  useMyUserQuery.setData(user);
+                } else {
+                  user = (await useMyUserQuery.refetch()) ?? null;
+                }
+              } catch (e) {
+                console.error("Error authenticating user.");
+                options?.onError?.({
+                  provider: "_",
+                  type: "authentication_error",
+                  payload: e,
+                });
               }
-              else {
-                user = await useMyUserQuery.refetch() ?? null;
-              }
-            }
-            catch (e) {
-              console.error("Error authenticating user.");
-              options?.onError?.({
-                provider: "_",
-                type: "authentication_error",
-                payload: e,
-              });
             }
           }
-        }
-      
-        dispatch({ type: "loading", payload: false });
 
-        options?.onFinish?.(user);
+          dispatch({ type: "loading", payload: false });
 
-        if (redirect && redirectTo && user)
-          router.push(getRedirectUrl(user, redirectTo).toString());
-      },
-    })
-  }, [dispatch, router, unsafeSocialLoginMutation]);
+          options?.onFinish?.(user);
 
-  const logout = useCallback(async (options?: {
-    redirect?: boolean,
-    redirectTo?: RedirectToUrl,
-  }): Promise<void> => {
-    const opts: typeof options = {
-      redirect: true,
-      redirectTo: defaultRedirectTo ?? authContextDefaults.defaultRedirectTo,
-      ...options
-    };
-    lastAction.current = "logout";
-    
-    try {
-      await logoutMutation.mutateAsync();
-    }
-    catch (e) {
-      console.error("Error.", e);
-    }
+          if (redirect && redirectTo && user)
+            router.push(getRedirectUrl(user, redirectTo).toString());
+        },
+      });
+    },
+    [dispatch, router, unsafeSocialLoginMutation]
+  );
 
-    if (opts.redirect && opts.redirectTo) {
-      router.push(getRedirectUrl(myUserQuery.data ?? null, opts.redirectTo).toString());
-    }
-  }, [defaultRedirectTo, logoutMutation, router, myUserQuery.data]);
+  const logout = useCallback(
+    async (options?: {
+      redirect?: boolean;
+      redirectTo?: RedirectToUrl;
+    }): Promise<void> => {
+      const opts: typeof options = {
+        redirect: true,
+        redirectTo: defaultRedirectTo ?? authContextDefaults.defaultRedirectTo,
+        ...options,
+      };
+      lastAction.current = "logout";
+
+      try {
+        await logoutMutation.mutateAsync();
+      } catch (e) {
+        console.error("Error.", e);
+      }
+
+      if (opts.redirect && opts.redirectTo) {
+        router.push(
+          getRedirectUrl(myUserQuery.data ?? null, opts.redirectTo).toString()
+        );
+      }
+    },
+    [defaultRedirectTo, logoutMutation, router, myUserQuery.data]
+  );
 
   const refetchUser = useCallback(() => myUserQuery.refetch(), [myUserQuery]);
 
-  const contextValue: AuthContextProps = useMemo(() => ({
-    user: myUserQuery.data ?? null,
-    loading: state.loading || myUserQuery.isLoading,
-    errors: state.errors,
-    registeredHooks: state.registeredHooks,
-    dispatchAuth: dispatch,
-    emailLogin,
-    socialLogin,
-    logout,
-    refetchUser,
-    lastAction: lastAction.current,
-    defaultRedirectTo: defaultRedirectTo ?? authContextDefaults.defaultRedirectTo,
-    defaultSetCallbackUrlParam: defaultSetCallbackUrlParam ?? authContextDefaults.defaultSetCallbackUrlParam,
-    defaultCallbackUrlParamName: defaultCallbackUrlParamName ?? authContextDefaults.defaultCallbackUrlParamName,
-  }), [myUserQuery.data, myUserQuery.isLoading, state.loading, state.errors, state.registeredHooks, dispatch, emailLogin, socialLogin, logout, refetchUser, defaultRedirectTo, defaultSetCallbackUrlParam, defaultCallbackUrlParamName]);
+  const contextValue: AuthContextProps = useMemo(
+    () => ({
+      user: myUserQuery.data ?? null,
+      loading: state.loading || myUserQuery.isLoading,
+      errors: state.errors,
+      registeredHooks: state.registeredHooks,
+      dispatchAuth: dispatch,
+      emailLogin,
+      socialLogin,
+      logout,
+      refetchUser,
+      lastAction: lastAction.current,
+      defaultRedirectTo:
+        defaultRedirectTo ?? authContextDefaults.defaultRedirectTo,
+      defaultSetCallbackUrlParam:
+        defaultSetCallbackUrlParam ??
+        authContextDefaults.defaultSetCallbackUrlParam,
+      defaultCallbackUrlParamName:
+        defaultCallbackUrlParamName ??
+        authContextDefaults.defaultCallbackUrlParamName,
+    }),
+    [
+      myUserQuery.data,
+      myUserQuery.isLoading,
+      state.loading,
+      state.errors,
+      state.registeredHooks,
+      dispatch,
+      emailLogin,
+      socialLogin,
+      logout,
+      refetchUser,
+      defaultRedirectTo,
+      defaultSetCallbackUrlParam,
+      defaultCallbackUrlParamName,
+    ]
+  );
 
   return (
-    <AuthContext.Provider value={contextValue}>
-      {children}
-    </AuthContext.Provider>
+    <AuthContext.Provider value={contextValue}>{children}</AuthContext.Provider>
   );
 };
 
 function getProviderLoginDataFromResponse(data: ProviderResponse) {
   switch (data.provider) {
-    case "google": 
+    case "google":
       return {
         code: data.code,
       };
-    default: 
+    default:
       return undefined;
   }
 }

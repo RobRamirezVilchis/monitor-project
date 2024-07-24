@@ -1,4 +1,4 @@
-import { UnitStatus, SeverityCount, UnitHistory, DeviceStatus, UnitFilters, LastStatusChange, DeviceFilters, DeviceHistory, Client, CameraDisconnection, LastActiveStatus, StatusHistory, AreaPlotData, AreaPlotFilters, LastUpdate, DeviceLogsFilters, DeviceLogs, DeviceWifiStatus, UnitLogsFilters, UnitLogs, NewClientData, ServerStatus, ServerHistoryFilters, ServerHistory, MetricsKeys, ServerRegion, ServerType, ServerStatusFilters, RetailDeviceStatus, RetailDeviceHistory, UnitReportContent, RDSStatusFilters, RDSStatus, RDSHistoryFilters, RDSHistory, RDSType, RDSFilters, RDS, Server, Deployment, NewProjectData, ServerProjects, Project, LoadBalancer, LoadBalancerStatusFilters, LoadBalancerStatus, LoadBalancerFilters, LoadBalancerHistoryFilters, LoadBalancerHistory, ServerFilters, ModifyProjectsData, UnitFailedTrips, UnitTrip, UnitSeverityHistoryFilters, ProjectData, EditedProjectData, RDSProjects } from "./types";
+import { UnitStatus, SeverityCount, UnitHistory, DeviceStatus, UnitFilters, LastStatusChange, DeviceFilters, DeviceHistory, Client, CameraDisconnection, LastActiveStatus, StatusHistory, AreaPlotData, AreaPlotFilters, LastUpdate, DeviceLogsFilters, DeviceLogs, DeviceWifiStatus, UnitLogsFilters, UnitLogs, NewClientData, ServerStatus, ServerHistoryFilters, ServerHistory, MetricsKeys, ServerRegion, ServerType, ServerStatusFilters, RetailDeviceStatus, RetailDeviceHistory, UnitReportContent, RDSStatusFilters, RDSStatus, RDSHistoryFilters, RDSHistory, RDSType, RDSFilters, RDS, Server, Deployment, NewProjectData, ServerProjects, Project, LoadBalancer, LoadBalancerStatusFilters, LoadBalancerStatus, LoadBalancerFilters, LoadBalancerHistoryFilters, LoadBalancerHistory, ServerFilters, ModifyProjectsData, UnitFailedTrips, UnitTrip, UnitSeverityHistoryFilters, ProjectData, EditedProjectData, RDSProjects, ServiceSeverityHistory } from "./types";
 import { Id, OptionallyPaginated, Paginated } from "@/api/types";
 import { Role, User } from "../auth/types";
 import api from "../..";
@@ -550,6 +550,21 @@ export async function getServerHistory(
 }
 
 
+export async function getServerSeverityHistory(
+  filters: ServerHistoryFilters,
+  config?: Parameters<typeof http.get>[1]
+) {
+    const resp = await http.get<ServiceSeverityHistory[]>(
+      api.endpoints.monitor.servers.severityHistory(filters.server_id),
+      {
+        params: filters,
+        ...config,
+      }
+    );
+    return resp.data;
+}
+
+
 export async function getServerMetricPlotData(
   filters: ServerHistoryFilters,
   config?: Parameters<typeof http.get>[1]
@@ -669,6 +684,20 @@ export async function getRDSHistory(
     return resp.data;
 }
 
+export async function getRDSSeverityHistory(
+  filters: RDSHistoryFilters,
+  config?: Parameters<typeof http.get>[1]
+) {
+    const resp = await http.get<ServiceSeverityHistory[]>(
+      api.endpoints.monitor.rds.severityHistory(filters.rds_id),
+      {
+        params: filters,
+        ...config,
+      }
+    );
+    return resp.data;
+}
+
 
 export async function getRDSMetricPlotData(
   filters: RDSHistoryFilters,
@@ -769,6 +798,22 @@ export async function getLoadBalancerHistory(
 ) {
     const resp = await http.get<Paginated<LoadBalancerHistory>>(
       api.endpoints.monitor.elb.loadBalancerHistory(filters.elb_id),
+      {
+        params: filters,
+        ...config,
+      }
+    );
+    return resp.data;
+}
+
+
+
+export async function getLoadBalancerSeverityHistory(
+  filters: LoadBalancerHistoryFilters,
+  config?: Parameters<typeof http.get>[1]
+) {
+    const resp = await http.get<ServiceSeverityHistory[]>(
+      api.endpoints.monitor.elb.severityHistory(filters.elb_id),
       {
         params: filters,
         ...config,

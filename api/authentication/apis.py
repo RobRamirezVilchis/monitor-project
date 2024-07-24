@@ -20,7 +20,7 @@ from users.services import UserWhitelistService
 from .adapter import GoogleOAuth2Adapter
 from .forms import PasswordResetForm
 from .serializers import PasswordResetKeyValidSerializer, RegisterWithoutPasswordSerializer, RegisterWithoutPasswordConfirmSerializer
-from . import listeners #? Necessary to register the listeners
+from . import listeners  # ? Necessary to register the listeners
 
 
 class GoogleLoginApi(SocialLoginView):
@@ -41,12 +41,11 @@ class GoogleConnectApi(SocialConnectView):
 
 
 class LoginApi(LoginView):
-    
+
     def pre_login(self, request, user):
-        pass
-        # if not UserWhitelistService.is_email_whitelisted(user.email):
-        #     raise exceptions.PermissionDenied("Registration invalid.")
-        # return True
+        if not UserWhitelistService.is_email_whitelisted(user.email):
+            raise exceptions.PermissionDenied("Registration invalid.")
+        return True
 
     def post(self, request, *args, **kwargs):
         self.request = request
@@ -71,7 +70,7 @@ class RegistrationKeyValidApi(VerifyEmailView):
         serializer = self.get_serializer(data=request.GET)
         serializer.is_valid(raise_exception=True)
         self.kwargs["key"] = serializer.validated_data["key"]
-        self.get_object() # If there's no error, the key is still valid
+        self.get_object()  # If there's no error, the key is still valid
         return Response({"detail": _("ok")}, status=status.HTTP_200_OK)
 
     def post(self, request, *args, **kwargs):
@@ -93,7 +92,7 @@ class PasswordResetKeyValidApi(views.APIView):
         return Response(
             {"detail": _("Ok.")},
         )
-    
+
 
 class UserApi(UserDetailsView, DestroyAPIView):
     """
@@ -106,6 +105,7 @@ class UserApi(UserDetailsView, DestroyAPIView):
 
     Returns UserModel fields.
     """
+
     def retrieve(self, request, *args, **kwargs):
         instance = self.get_object()
         UserAccessService.log_access(instance)
@@ -117,9 +117,10 @@ class UserApi(UserDetailsView, DestroyAPIView):
         service = UsersService(instance)
         service.soft_delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
-    
+
     class UpdateSerializer(serializers.Serializer):
-        first_name = serializers.CharField(max_length=150, required=False, allow_blank=True)
+        first_name = serializers.CharField(
+            max_length=150, required=False, allow_blank=True)
         last_name = serializers.CharField(max_length=150, required=False)
         password1 = serializers.CharField(required=False)
         password2 = serializers.CharField(required=False)
@@ -136,11 +137,12 @@ class UserApi(UserDetailsView, DestroyAPIView):
         def validate_username(self, username):
             username = get_adapter().clean_username(username, True)
             return username
-        
+
     def update(self, request, *args, **kwargs):
         partial = kwargs.pop("partial", False)
         instance = self.get_object()
-        serializer = self.UpdateSerializer(instance, data=request.data, partial=partial)
+        serializer = self.UpdateSerializer(
+            instance, data=request.data, partial=partial)
         serializer.is_valid(raise_exception=True)
 
         password = serializer.validated_data.pop("password", None)
@@ -150,8 +152,8 @@ class UserApi(UserDetailsView, DestroyAPIView):
             instance.save()
 
         instance, updated = model_update(
-            instance=instance, 
-            fields=serializer.validated_data.keys(), 
+            instance=instance,
+            fields=serializer.validated_data.keys(),
             data=serializer.validated_data
         )
 
@@ -175,7 +177,8 @@ class RegisterWithoutPasswordApi(RegisterView):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         user = serializer.save(self.request)
-        signals.user_signed_up.send(sender=user.__class__, request=request, user=user)
+        signals.user_signed_up.send(
+            sender=user.__class__, request=request, user=user)
 
         # Send confirmation e-mail with password reset link
         if 'allauth' in settings.INSTALLED_APPS:
@@ -199,17 +202,16 @@ class RegisterWithoutPasswordApi(RegisterView):
         }
         reset_form.save(**opts)
         return Response(
-            { "detail": "User confirmation e-mail sent." }, 
+            {"detail": "User confirmation e-mail sent."},
             status=status.HTTP_201_CREATED
         )
 
         # email, tokens = reset_form.save(**opts)
         # return Response(
-        #     { "detail": "User confirmation e-mail sent.", "tokens": tokens }, 
+        #     { "detail": "User confirmation e-mail sent.", "tokens": tokens },
         #     status=status.HTTP_201_CREATED
         # )
-      
+
 
 class RegisterWithoutPasswordConfirmApi(PasswordResetConfirmView):
     serializer_class = RegisterWithoutPasswordConfirmSerializer
-    

@@ -27,7 +27,7 @@ import { useCreateUserMutation } from "@/api/mutations/users";
 import DataGrid from "@/ui/data-grid/DataGrid";
 
 import { IconPlus } from "@tabler/icons-react";
-
+import { withAuth } from "@/components/auth/withAuth";
 
 const UsersPage = () => {
   const { dataGridState, queryVariables, dataGridConfig } = useSsrDataGrid<{
@@ -99,7 +99,7 @@ const UsersPage = () => {
   return (
     <section className="flex flex-col h-full lg:container mx-auto pb-2 md:pb-6">
       <div className="flex items-center">
-        <h1 className="text-3xl font-bold py-2 flex-1">Usuarios</h1>
+        <h1 className="text-4xl font-bold py-2 flex-1">Usuarios</h1>
 
         <div className="text-neutral-800">
           <Button
@@ -143,8 +143,7 @@ const UsersPage = () => {
     </section>
   );
 };
-
-export default UsersPage;
+export default withAuth(UsersPage);
 
 const cols: ColumnDef<User>[] = [
   {

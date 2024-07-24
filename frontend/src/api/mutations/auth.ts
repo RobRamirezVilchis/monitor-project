@@ -24,6 +24,7 @@ export const useLoginMutation = createMutation({
         jwt.setAccessToken(data.access_token);
         jwt.setRefreshToken(data.refresh_token);
       }
+
       jwt.setAccessTokenExpiration(new Date(data.access_token_expiration).toISOString());
       jwt.setRefreshTokenExpiration(new Date(data.refresh_token_expiration).toISOString());
     }

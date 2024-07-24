@@ -2,12 +2,20 @@ import { Divider } from "@mantine/core";
 import { LoginForm } from "./LoginForm";
 import SocialProviders from "./SocialProviders";
 import Link from "next/link";
-
+import Introid from "../../../../media/introid_bw.png";
+import Image from "next/image";
 
 const Login = () => {
   return (
     <>
-      <h1 className="text-center font-bold">Login</h1>
+      <div className="flex justify-center mb-10">
+        <Image
+          src={Introid}
+          width={200}
+          height={50}
+          alt="Picture of the author"
+        ></Image>
+      </div>
 
       <div className="flex flex-col gap-2">
         <LoginForm />
@@ -20,12 +28,10 @@ const Login = () => {
 
         <div className="flex flex-col gap-4 mt-4 z-10">
           <div className="text-center">
-            <Link href="/auth/password-reset" className="text-blue-500">
-              Olvidé mi contraseña
-            </Link>
-          </div>
-          <div className="text-center">
-            <Link href="/auth/register" className="text-blue-500">
+            <Link
+              href="/auth/register"
+              className="text-blue-500 hover:text-gray-600 font-semibold transition-all"
+            >
               Crear cuenta
             </Link>
           </div>
@@ -33,6 +39,6 @@ const Login = () => {
       </div>
     </>
   );
-}
+};
 
 export default Login;

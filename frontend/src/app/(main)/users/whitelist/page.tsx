@@ -6,11 +6,18 @@ import { Button, Modal } from "@mantine/core";
 import { ColumnDef } from "@/ui/data-grid/types";
 import { DeleteUserAction } from "./Actions";
 import { NewUserForm } from "./NewUserForm";
-import { Role, User } from "@/api/services/auth/types"; 
+import { Role, User } from "@/api/services/auth/types";
 import { RoleSelector } from "./RoleSelector";
-import { showSuccessNotification, showErrorNotification } from "@/ui/notifications";
+import {
+  showSuccessNotification,
+  showErrorNotification,
+} from "@/ui/notifications";
 import { useAddToWhitelistMutation } from "@/api/mutations/users";
-import { useDataGrid, usePrefetchPaginatedAdjacentQuery, useSsrDataGrid  } from "@/hooks/data-grid";
+import {
+  useDataGrid,
+  usePrefetchPaginatedAdjacentQuery,
+  useSsrDataGrid,
+} from "@/hooks/data-grid";
 import { UserAvatar } from "@/components/shared/UserAvatar";
 import { useWhitelistQuery } from "@/api/queries/users";
 import { WhitelistItem } from "@/api/services/users/types";
@@ -19,9 +26,7 @@ import DataGrid from "@/ui/data-grid/DataGrid";
 import { IconPlus } from "@tabler/icons-react";
 
 const UsersPage = () => {
-  const {
-    dataGridState, queryVariables, dataGridConfig
-  } = useSsrDataGrid({
+  const { dataGridState, queryVariables, dataGridConfig } = useSsrDataGrid({
     enableColumnFilters: false,
     defaultSorting: ["first_name"],
     queryStateOptions: {
@@ -47,9 +52,10 @@ const UsersPage = () => {
       });
       setNewUserFormOpen(false);
     },
-    onError: () => showErrorNotification({
-      message: "Error al agregar el usuario.",
-    }),
+    onError: () =>
+      showErrorNotification({
+        message: "Error al agregar el usuario.",
+      }),
   });
   const [newUserFormOpen, setNewUserFormOpen] = useState(false);
   const grid = useDataGrid<WhitelistItem>({
@@ -66,7 +72,7 @@ const UsersPage = () => {
     hideColumnFooters: true,
     enableColumnActions: true,
 
-    ...dataGridConfig as any,
+    ...(dataGridConfig as any),
     pageCount: usersWhitelistQuery.data?.pagination?.pages ?? 0,
     rowCount: usersWhitelistQuery.data?.pagination?.count ?? 0,
   });
@@ -74,9 +80,7 @@ const UsersPage = () => {
   return (
     <section className="flex flex-col h-full lg:container mx-auto pb-2 md:pb-6 px-2 md:px-4 lg:px-0">
       <div className="flex items-center">
-        <h1 className="text-3xl font-bold py-2 flex-1">
-          Usuarios
-        </h1>
+        <h1 className="text-4xl font-bold py-2 flex-1">Whitelist</h1>
 
         <div className="text-neutral-800">
           <Button
@@ -101,9 +105,9 @@ const UsersPage = () => {
         title={<p className="text-xl font-semibold">Agregar usuario</p>}
       >
         <div className="p-4">
-          <NewUserForm 
-            onSubmit={values => addToWhitelistMutation.mutate(values)} 
-            loading={addToWhitelistMutation.isLoading} 
+          <NewUserForm
+            onSubmit={(values) => addToWhitelistMutation.mutate(values)}
+            loading={addToWhitelistMutation.isLoading}
           />
         </div>
       </Modal>
@@ -112,7 +116,7 @@ const UsersPage = () => {
 };
 
 export default UsersPage;
-  
+
 const cols: ColumnDef<WhitelistItem>[] = [
   {
     id: "avatar",
@@ -120,12 +124,10 @@ const cols: ColumnDef<WhitelistItem>[] = [
     header: "",
     columnTitle: "Avatar",
     size: 48,
-    cell: ({ getValue }) => getValue<User | null>() ? (
-      <UserAvatar
-        user={getValue<User | null>()}
-        size="sm"
-      />
-    ) : null,
+    cell: ({ getValue }) =>
+      getValue<User | null>() ? (
+        <UserAvatar user={getValue<User | null>()} size="sm" />
+      ) : null,
     enableResizing: false,
   },
   {
@@ -135,9 +137,12 @@ const cols: ColumnDef<WhitelistItem>[] = [
     columnTitle: "Nombre",
     minSize: 250,
     flex: 1,
-    cell: ({ getValue }) => getValue<User | null>() 
-      ? `${getValue<User>().first_name ?? ""} ${getValue<User>().last_name ?? ""}`
-      : "No registrado",
+    cell: ({ getValue }) =>
+      getValue<User | null>()
+        ? `${getValue<User>().first_name ?? ""} ${
+            getValue<User>().last_name ?? ""
+          }`
+        : "No registrado",
   },
   {
     accessorKey: "email",
@@ -151,9 +156,11 @@ const cols: ColumnDef<WhitelistItem>[] = [
     header: "Rol",
     columnTitle: "Rol",
     minSize: 150,
-    cell: ({ row, getValue }) => <RoleSelector whitelistItem={row.original} value={getValue<Role>()} />,
+    cell: ({ row, getValue }) => (
+      <RoleSelector whitelistItem={row.original} value={getValue<Role>()} />
+    ),
     cellClassNames: {
-      root: "!p-0"
+      root: "!p-0",
     },
   },
   {
@@ -162,7 +169,7 @@ const cols: ColumnDef<WhitelistItem>[] = [
     columnTitle: "Acciones",
     size: 80,
     cellClassNames: {
-      content: "flex w-full justify-center items-center"
+      content: "flex w-full justify-center items-center",
     },
     cell: ({ row }) => (
       <>

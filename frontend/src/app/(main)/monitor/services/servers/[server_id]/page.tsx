@@ -1,43 +1,58 @@
 "use client";
 
+import { useModifyServerProjectsMutation } from "@/api/mutations/monitor";
 import {
   useMetricsKeysQuery,
   useProjectsQuery,
   useServerHistoryQuery,
   useServerPlotQuery,
   useServerProjectsQuery,
+  useServerSeverityHistoryQuery,
   useServerStatusQuery,
 } from "@/api/queries/monitor";
-import BackArrow from "../../../(components)/BackArrow";
-import { format, parseISO } from "date-fns";
-import { PaymentOutlined, Spa } from "@mui/icons-material";
+import {
+  ModifyProjectsData,
+  ScatterplotPoint,
+  ServerHistory,
+} from "@/api/services/monitor/types";
+import { useDataGrid, useSsrDataGrid } from "@/hooks/data-grid";
+import { MultiSelect } from "@/ui/core";
+import DataGrid from "@/ui/data-grid/DataGrid";
+import { ColumnDef } from "@/ui/data-grid/types";
+import { ChartTooltipProps, LineChart } from "@mantine/charts";
 import {
   Button,
   Modal,
   Progress,
   SegmentedControl,
-  Select,
   Skeleton,
-  TextInput,
 } from "@mantine/core";
-import { useDataGrid, useSsrDataGrid } from "@/hooks/data-grid";
-import {
-  ModifyProjectsData,
-  ServerHistory,
-  ServerHistoryFilters,
-  StatusHistory,
-} from "@/api/services/monitor/types";
-import { ColumnDef } from "@/ui/data-grid/types";
-import DataGrid from "@/ui/data-grid/DataGrid";
-import { ChartTooltipProps, LineChart } from "@mantine/charts";
-import { useDisclosure, useMergedRef } from "@mantine/hooks";
-import { useEffect, useState } from "react";
 import { DatePickerInput } from "@mantine/dates";
+import { useDisclosure } from "@mantine/hooks";
+import { format, parseISO } from "date-fns";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { MultiSelect } from "@/ui/core";
-import { useModifyServerProjectsMutation } from "@/api/mutations/monitor";
-import { setRequestMeta } from "next/dist/server/request-meta";
+import {
+  CartesianGrid,
+  Cell,
+  ResponsiveContainer,
+  Scatter,
+  ScatterChart,
+  Tooltip,
+  TooltipProps,
+  XAxis,
+  YAxis,
+} from "recharts";
+import {
+  NameType,
+  ValueType,
+} from "recharts/types/component/DefaultTooltipContent";
 import Breadcrumbs from "../../../(components)/Breadcrumbs";
+import {
+  dotColors,
+  StatusKey,
+  statusNames,
+} from "../../../(components)/colors";
 
 const statusStyles: { [condition: string]: string } = {
   normal: "bg-blue-100 border-blue-400 text-blue-900",
@@ -82,6 +97,9 @@ const ServerPage = ({ params }: { params: { server_id: string } }) => {
     yesterday,
     currentDate,
   ]);
+  const [scatterplotDate, setScatterplotDate] = useState<
+    [Date | null, Date | null]
+  >([yesterday, currentDate]);
 
   const { dataGridState, queryVariables, dataGridConfig } = useSsrDataGrid<{
     register_datetime: [Date | null, Date | null];
@@ -136,6 +154,22 @@ const ServerPage = ({ params }: { params: { server_id: string } }) => {
     },
   });
   let plotData = plotDataQuery.data;
+
+  const scatterplotQuery = useServerSeverityHistoryQuery({
+    variables: {
+      server_id: params.server_id,
+      register_datetime_after: scatterplotDate[0],
+      register_datetime_before: scatterplotDate[1],
+    },
+  });
+
+  let scatterplotData: ScatterplotPoint[] = [];
+  if (scatterplotQuery.data) {
+    scatterplotData = scatterplotQuery.data.map((entry) => ({
+      hour: entry.hour,
+      severity: entry.critical ? 5 : 1,
+    }));
+  }
 
   const serverProjectsData = useServerProjectsQuery({
     variables: {
@@ -421,7 +455,56 @@ const ServerPage = ({ params }: { params: { server_id: string } }) => {
         ></LineChart>
       </Skeleton>
 
-      <h2 className="text-3xl text-neutral-500 dark:text-dark-200 mb-2 mt-28">
+      <div className=" items-center gap-8 mt-32">
+        <p className="text-3xl text-neutral-500 dark:text-dark-200 mb-2">
+          Gráfica de estatus{" "}
+        </p>
+        <div className="flex items-center">
+          <p className="hidden sm:block mr-2">Rango de fechas:</p>
+          <div className="w-80 mt-1 sm:mt-0">
+            <DatePickerInput
+              type="range"
+              placeholder="Pick date"
+              value={scatterplotDate}
+              onChange={setScatterplotDate}
+            />
+          </div>
+        </div>
+      </div>
+      {scatterplotData && scatterplotData.length > 0 && (
+        <ResponsiveContainer width="100%" height={300}>
+          <ScatterChart
+            width={730}
+            height={200}
+            margin={{
+              top: 20,
+              right: 20,
+            }}
+          >
+            <CartesianGrid strokeDasharray={"3 3"} />
+            <XAxis dataKey="hour" />
+            <YAxis
+              type="number"
+              dataKey="severity"
+              domain={[0, "dataMax"]}
+              interval={0}
+              ticks={[0, 1, 2, 3, 4, 5]}
+            />
+
+            <Tooltip content={<CustomTooltip />} />
+            <Scatter data={scatterplotData} dataKey="severity" fill="#8884d8">
+              {scatterplotData.map((entry, index) => (
+                <Cell
+                  key={`cell-${index}`}
+                  fill={dotColors[entry.severity as StatusKey]}
+                ></Cell>
+              ))}
+            </Scatter>
+          </ScatterChart>
+        </ResponsiveContainer>
+      )}
+
+      <h2 className="text-3xl text-neutral-500 dark:text-dark-200 mb-2 mt-32">
         Listado de métricas
       </h2>
       <div className="h-[70vh] mt-5">
@@ -432,7 +515,28 @@ const ServerPage = ({ params }: { params: { server_id: string } }) => {
 };
 
 export default ServerPage;
-3;
+
+const ConvertBool = (condition: boolean) => (condition ? "Sí" : "No");
+
+const CustomTooltip = ({
+  active,
+  payload,
+  label,
+}: TooltipProps<ValueType, NameType>) => {
+  if (active && payload && payload.length) {
+    return (
+      <div className="custom-tooltip bg-white dark:bg-gray-800 p-4 border-2 rounded-lg">
+        <p className="label">{`Hora: ${payload[0].value}`}</p>
+        <p className="label">{`Estatus: ${
+          Number(payload[1].value) == 5 ? "Crítico" : "Normal"
+        }`}</p>
+        {/* <p className="label">{payload[2].value}</p> */}
+      </div>
+    );
+  }
+
+  return null;
+};
 
 function ChartTooltip({ label, payload }: ChartTooltipProps) {
   if (!payload) return null;

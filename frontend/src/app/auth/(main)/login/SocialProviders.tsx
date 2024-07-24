@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import { Button } from "@mantine/core";
 
@@ -15,21 +15,22 @@ const SocialProviders = () => {
   });
 
   const onSocialLogin = async (provider: ProviderKey) => {
-    login({ 
-      socialLogin: { 
+    login({
+      socialLogin: {
         provider,
         onError: (error) => {
           console.log("An error ocurred", error);
           if (error.provider === "_" && error.type === "authentication_error") {
             showErrorNotification({
               title: "Error de autenticación",
-              message: "No se pudo iniciar sesión con el proveedor seleccionado. Por favor intenta de nuevo más tarde.",
+              message:
+                "No se pudo iniciar sesión con el proveedor seleccionado. Por favor intenta de nuevo más tarde.",
             });
-          }
-          else {
+          } else {
             showErrorNotification({
               title: "Error",
-              message: "Ha ocurrido un error. Por favor intenta de nuevo más tarde.",
+              message:
+                "Ha ocurrido un error. Por favor intenta de nuevo más tarde.",
             });
           }
         },
@@ -45,13 +46,13 @@ const SocialProviders = () => {
             <Button
               key={provider.id}
               onClick={() => onSocialLogin(providerKey as ProviderKey)}
-              radius="xl"
+              radius="lg"
               classNames={{
                 root: "px-8",
-                section: "!h-2"
+                section: "!h-2 my-4",
               }}
               size="lg"
-              variant="outline"
+              variant="light"
               leftSection={getProviderLogo(providerKey as ProviderKey)}
             >
               <span>Continuar con {provider.name}</span>
@@ -61,13 +62,15 @@ const SocialProviders = () => {
       ) : null}
     </>
   );
-}
+};
 
 export default SocialProviders;
 
 function getProviderLogo(provider: ProviderKey) {
   switch (provider) {
-    case "google": return <LogoGoogle />;
-    default: return null;
+    case "google":
+      return <LogoGoogle />;
+    default:
+      return null;
   }
 }

@@ -31,16 +31,12 @@ export function isUserInAuthorizedRoles(user?: User | null, {
 export async function getMyUser(
   config?: Parameters<typeof http.get>[1]
 ) {
-  try {
     const { data } = await http.get<User | null>(
       api.endpoints.auth.user, 
       config
     );
     return data;
-  }
-  catch (error) {
-    throw error;
-  }
+
 }
 
 export async function updateMyInfo(

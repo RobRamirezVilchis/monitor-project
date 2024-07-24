@@ -606,7 +606,7 @@ def get_project_data(id):
 
 def get_server_projects(server_id: int):
     server = Server.objects.get(id=server_id)
-    return Project.objects.filter(server=server)
+    return server.projects.all()
 
 
 def get_rds_projects(rds_id: int):
@@ -719,9 +719,9 @@ class ServerHistoryFilter(rf_filters.FilterSet):
                   ]
 
 
-def get_serverhistory(args, filters=None):
+def get_serverhistory(server_id, filters=None):
     logs = ServerHistory.objects.filter(
-        server_id=args["server_id"]).order_by('register_datetime')
+        server_id=server_id).order_by('register_datetime')
 
     return ServerHistoryFilter(filters, logs).qs
 
@@ -825,9 +825,9 @@ class RDSHistoryFilter(rf_filters.FilterSet):
                   ]
 
 
-def get_rdshistory(args, filters=None):
+def get_rdshistory(rds_id: int, filters=None):
     logs = RDSHistory.objects.filter(
-        rds_id=args["rds_id"]).order_by('register_datetime')
+        rds_id=rds_id).order_by('register_datetime')
 
     return RDSHistoryFilter(filters, logs).qs
 
