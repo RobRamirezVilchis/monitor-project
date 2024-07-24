@@ -30,7 +30,7 @@ const Login = () => {
           <div className="text-center">
             <Link
               href="/auth/register"
-              className="text-gray-500 hover:text-gray-600 transition-all"
+              className="text-blue-500 hover:text-gray-600 font-semibold transition-all"
             >
               Crear cuenta
             </Link>

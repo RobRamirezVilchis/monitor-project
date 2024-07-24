@@ -12,21 +12,25 @@ import z from "zod";
 import type { RegisterUserData } from "@/api/services/auth/types";
 import { registerUser } from "@/api/services/auth";
 import { TextInput, PasswordInput, MeteredPasswordInput } from "@/ui/core";
-import { showSuccessNotification, showErrorNotification } from "@/ui/notifications";
+import {
+  showSuccessNotification,
+  showErrorNotification,
+} from "@/ui/notifications";
 
-const schema = z.object({
-  first_name: z.string().min(1, "El nombre es requerido"),
-  last_name: z.string().min(1, "El apellido es requerido"),
-  email: z.string().email("Ingrese un email válido"),
-  password1: z.string({ required_error: "La contraseña es requerida" }).regex(
-    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d@$!%*?&]{8,}$/, 
-    " "
-  ),
-  password2: z.string(),
-}).refine(({password1, password2}) => password1 === password2, {
-  message: "Las contraseñas no coinciden",
-  path: ["password2"],
-});
+const schema = z
+  .object({
+    first_name: z.string().min(1, "El nombre es requerido"),
+    last_name: z.string().min(1, "El apellido es requerido"),
+    email: z.string().email("Ingrese un email válido"),
+    password1: z
+      .string({ required_error: "La contraseña es requerida" })
+      .regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d@$!%*?&]{8,}$/, " "),
+    password2: z.string(),
+  })
+  .refine(({ password1, password2 }) => password1 === password2, {
+    message: "Las contraseñas no coinciden",
+    path: ["password2"],
+  });
 
 const Register = () => {
   const [loading, setLoading] = useState(false);
@@ -59,7 +63,8 @@ const Register = () => {
 
         showSuccessNotification({
           title: "Usuario registrado con éxito",
-          message: "Se ha enviado un correo de activación al tu bandeja de entrada.",
+          message:
+            "Se ha enviado un correo de activación al tu bandeja de entrada.",
         });
         router.push("/auth/login");
       } catch (e) {
@@ -93,7 +98,8 @@ const Register = () => {
           if (commonPassword) {
             showErrorNotification({
               title: "Contraseña muy común",
-              message: "La contraseña utilizada es muy común y es propensa a ser fácilmente descifrada, por favor intenta con una diferente.",
+              message:
+                "La contraseña utilizada es muy común y es propensa a ser fácilmente descifrada, por favor intenta con una diferente.",
             });
             return;
           }
@@ -101,7 +107,8 @@ const Register = () => {
 
         showErrorNotification({
           title: "Credenciales invalidas",
-          message: "Los datos ingresados contienen errores, por favor corrígelos.",
+          message:
+            "Los datos ingresados contienen errores, por favor corrígelos.",
         });
       } finally {
         setLoading(false);

@@ -171,6 +171,8 @@ urlpatterns = [
                           name="server-status"),
                      path("history/", apis.ServerHistoryList.as_view(),
                           name="server-history"),
+                     path("severity-history/", apis.ServerScatterPlotAPI.as_view(),
+                          name="server-scatterplot"),
                      path("projects/", apis.ServerProjectsList.as_view(),
                           name="projects"),
                      path("modify-projects/", apis.ModifyServerProjectsAPI.as_view(),
@@ -193,6 +195,8 @@ urlpatterns = [
                           name="rds-status"),
                       path("history/", apis.RDSHistoryList.as_view(),
                           name="history"),
+                      path("severity-history/", apis.RDSScatterPlotAPI.as_view(),
+                          name="scatterplot"),
                       path("projects/", apis.RDSProjectsList.as_view(),
                           name="projects"),
                   ], "rds")
@@ -210,6 +214,8 @@ urlpatterns = [
                        include(([
                            path("", apis.LoadBalancerStatusAPI.as_view(),
                                 name="status"),
+                           path("severity-history/", apis.LoadBalancerScatterPlotAPI.as_view(),
+                                name="scatterplot"),
                            path("history/", apis.LoadBalancerHistoryList.as_view(),
                                 name="history"),
                        ], "elb")

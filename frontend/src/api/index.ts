@@ -126,6 +126,7 @@ const api = {
         deleteProject: (project_id: number) => `api/v1/monitor/servers/project/${project_id}/delete/`,
         serverStatus: (server_id: string) => `api/v1/monitor/servers/server/${server_id}/`,
         serverHistory: (device_id: DeviceId) => `api/v1/monitor/servers/server/${device_id}/history/`,
+        severityHistory: (device_id: DeviceId) => `api/v1/monitor/servers/server/${device_id}/severity-history/`,
         modifyProjects: (server_id: string) => `api/v1/monitor/servers/server/${server_id}/modify-projects/`,
         serverProjects: (server_id: string) => `api/v1/monitor/servers/server/${server_id}/projects/`,
       },
@@ -138,6 +139,7 @@ const api = {
         regions: "api/v1/monitor/rds/regions/",
         RDSStatus: (server_id: string) => `api/v1/monitor/rds/db/${server_id}/`,
         RDSHistory: (device_id: DeviceId) => `api/v1/monitor/rds/db/${device_id}/history/`,
+        severityHistory: (device_id: DeviceId) => `api/v1/monitor/rds/db/${device_id}/severity-history/`,
       },
       elb: {
         list: "api/v1/monitor/load-balancers/list/",
@@ -146,6 +148,7 @@ const api = {
         regions: "api/v1/monitor/load-balancers/regions/",
         loadBalancerStatus: (elb_id: string) => `api/v1/monitor/load-balancers/elb/${elb_id}/`,
         loadBalancerHistory: (elb_id: DeviceId) => `api/v1/monitor/load-balancers/elb/${elb_id}/history/`,
+        severityHistory: (elb_id: DeviceId) => `api/v1/monitor/load-balancers/elb/${elb_id}/severity-history/`,
       }
     }
   },

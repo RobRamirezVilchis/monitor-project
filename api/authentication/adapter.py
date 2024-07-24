@@ -64,7 +64,6 @@ class AccountAdapter(DefaultAccountAdapter):
         user,
         **kwargs
     ):
-        print("pre login")
         if not UserWhitelistService.is_email_whitelisted(user.email):
             raise exceptions.PermissionDenied("Registration invalid.")
         return super().pre_login(request, user, **kwargs)

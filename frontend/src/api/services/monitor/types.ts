@@ -47,6 +47,11 @@ export interface ModifyProjectsData {
   projects: string[]
 }
 
+export type ScatterplotPoint = {
+  hour: Date;
+  severity: number;
+};
+
 export interface UnitStatus {
   unit_id: number;
   unit: string;
@@ -331,6 +336,10 @@ export interface RDSStatusFilters {
   instance_class: string | null
 }
 
+export interface ServiceSeverityHistory {
+  hour: Date,
+  critical: boolean,
+}
 
 export interface RDSHistory extends Partial<PageNumberPaginationParams> {
   rds: string,

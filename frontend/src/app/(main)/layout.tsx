@@ -105,7 +105,7 @@ const MainLayout = ({ children }: MainLayoutProps) => {
               height={32}
               alt="Picture of the author"
             ></Image>
-            <p className="ml-2 mt-1 text-md font-bold tracking-wider">
+            <p className="ml-2 mt-1 text-md font-extralight  tracking-wider">
               MONITOR
             </p>
           </Link>

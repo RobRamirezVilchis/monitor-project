@@ -1442,15 +1442,165 @@ class ServerHistoryList(APIView):
             filters_serializer.validated_data["register_datetime_before"] = end_date
             filters_serializer.validated_data["register_datetime_after"] = start_date
 
-        data = {'server_id': server_id}
         logs = get_serverhistory(
-            data, filters=filters_serializer.validated_data)[::-1]
+            server_id, filters=filters_serializer.validated_data)[::-1]
 
         return get_paginated_response(
             serializer_class=self.OutputSerializer,
             queryset=logs,
             request=request,
         )
+
+
+class ServerScatterPlotAPI(APIView):
+
+    class FiltersSerializer(serializers.Serializer):
+        register_datetime_after = serializers.DateTimeField(required=False)
+        register_datetime_before = serializers.DateTimeField(required=False)
+
+    class OutputSerializer(serializers.Serializer):
+        hour = serializers.DateTimeField()
+        critical = serializers.BooleanField()
+
+    def get(self, request, server_id, *args, **kwargs):
+        import datetime
+        import pytz
+
+        filters_serializer = self.FiltersSerializer(data=request.query_params)
+        filters_serializer.is_valid(raise_exception=True)
+
+        # Si no se especificó rango de fechas, regresar registros del último día
+        if not (filters_serializer.validated_data.get("register_datetime_after") or filters_serializer.validated_data.get("register_datetime_before")):
+            import datetime
+            import pytz
+
+            date_now = datetime.datetime.now()
+            end_date = date_now.astimezone(pytz.timezone("America/Mexico_City")).replace(
+                tzinfo=pytz.utc) + datetime.timedelta(hours=6)
+            start_date = end_date - timedelta(hours=24)
+
+            filters_serializer.validated_data["register_datetime_before"] = end_date
+            filters_serializer.validated_data["register_datetime_after"] = start_date
+
+        registers = get_serverhistory(
+            server_id, filters=filters_serializer.validated_data)
+
+        initial_time = filters_serializer.validated_data["register_datetime_after"].replace(
+            minute=0, second=0, microsecond=0)
+        final_time = filters_serializer.validated_data["register_datetime_before"]
+
+        hourly_data = []
+        time = initial_time
+        while time < final_time:
+            hour_stats = registers.filter(register_datetime__range=(
+                time, time+timedelta(hours=1)), critical=True)
+            hourly_data.append(
+                {"hour": time, "critical": len(hour_stats) > 0})
+            time += timedelta(hours=1)
+
+        data = self.OutputSerializer(hourly_data, many=True).data
+
+        return Response(data)
+
+
+class RDSScatterPlotAPI(APIView):
+    class FiltersSerializer(serializers.Serializer):
+        register_datetime_after = serializers.DateTimeField(required=False)
+        register_datetime_before = serializers.DateTimeField(required=False)
+
+    class OutputSerializer(serializers.Serializer):
+        hour = serializers.DateTimeField()
+        critical = serializers.BooleanField()
+
+    def get(self, request, rds_id, *args, **kwargs):
+        import datetime
+        import pytz
+
+        filters_serializer = self.FiltersSerializer(data=request.query_params)
+        filters_serializer.is_valid(raise_exception=True)
+
+        # Si no se especificó rango de fechas, regresar registros del último día
+        if not (filters_serializer.validated_data.get("register_datetime_after") or filters_serializer.validated_data.get("register_datetime_before")):
+            import datetime
+            import pytz
+
+            date_now = datetime.datetime.now()
+            end_date = date_now.astimezone(pytz.timezone("America/Mexico_City")).replace(
+                tzinfo=pytz.utc) + datetime.timedelta(hours=6)
+            start_date = end_date - timedelta(hours=24)
+
+            filters_serializer.validated_data["register_datetime_before"] = end_date
+            filters_serializer.validated_data["register_datetime_after"] = start_date
+
+        registers = get_rdshistory(
+            rds_id, filters=filters_serializer.validated_data)
+
+        initial_time = filters_serializer.validated_data["register_datetime_after"].replace(
+            minute=0, second=0, microsecond=0)
+        final_time = filters_serializer.validated_data["register_datetime_before"]
+
+        hourly_data = []
+        time = initial_time
+        while time < final_time:
+            hour_stats = registers.filter(register_datetime__range=(
+                time, time+timedelta(hours=1)), critical=True)
+            hourly_data.append(
+                {"hour": time, "critical": len(hour_stats) > 0})
+            time += timedelta(hours=1)
+
+        data = self.OutputSerializer(hourly_data, many=True).data
+
+        return Response(data)
+
+
+class LoadBalancerScatterPlotAPI(APIView):
+    class FiltersSerializer(serializers.Serializer):
+        register_datetime_after = serializers.DateTimeField(required=False)
+        register_datetime_before = serializers.DateTimeField(required=False)
+
+    class OutputSerializer(serializers.Serializer):
+        hour = serializers.DateTimeField()
+        critical = serializers.BooleanField()
+
+    def get(self, request, elb_id, *args, **kwargs):
+        import datetime
+        import pytz
+
+        filters_serializer = self.FiltersSerializer(data=request.query_params)
+        filters_serializer.is_valid(raise_exception=True)
+
+        # Si no se especificó rango de fechas, regresar registros del último día
+        if not (filters_serializer.validated_data.get("register_datetime_after") or filters_serializer.validated_data.get("register_datetime_before")):
+            import datetime
+            import pytz
+
+            date_now = datetime.datetime.now()
+            end_date = date_now.astimezone(pytz.timezone("America/Mexico_City")).replace(
+                tzinfo=pytz.utc) + datetime.timedelta(hours=6)
+            start_date = end_date - timedelta(hours=24)
+
+            filters_serializer.validated_data["register_datetime_before"] = end_date
+            filters_serializer.validated_data["register_datetime_after"] = start_date
+
+        registers = get_load_balancer_history(
+            elb_id, filters=filters_serializer.validated_data)
+
+        initial_time = filters_serializer.validated_data["register_datetime_after"].replace(
+            minute=0, second=0, microsecond=0)
+        final_time = filters_serializer.validated_data["register_datetime_before"]
+
+        hourly_data = []
+        time = initial_time
+        while time < final_time:
+            hour_stats = registers.filter(register_datetime__range=(
+                time, time+timedelta(hours=1)), critical=True)
+            hourly_data.append(
+                {"hour": time, "critical": len(hour_stats) > 0})
+            time += timedelta(hours=1)
+
+        data = self.OutputSerializer(hourly_data, many=True).data
+
+        return Response(data)
 
 
 class ServerMetricsAPI(APIView):
@@ -1519,7 +1669,6 @@ class ServerProjectsList(APIView):
         output = self.OutputSerializer(projects, many=True).data
 
         return Response(output)
-
 
 
 # RDS ---------------------------------------------------------------------------
@@ -1621,9 +1770,8 @@ class RDSHistoryList(APIView):
             filters_serializer.validated_data["register_datetime_before"] = end_date
             filters_serializer.validated_data["register_datetime_after"] = start_date
 
-        data = {'rds_id': rds_id}
         logs = get_rdshistory(
-            data, filters=filters_serializer.validated_data)[::-1]
+            rds_id, filters=filters_serializer.validated_data)[::-1]
 
         return get_paginated_response(
             serializer_class=self.OutputSerializer,
@@ -1655,7 +1803,8 @@ class RDSTypesAPI(APIView):
         output = self.OutputSerializer(rds_types, many=True).data
 
         return Response(output)
-    
+
+
 class RDSProjectsList(APIView):
     class OutputSerializer(serializers.Serializer):
         id = serializers.IntegerField()

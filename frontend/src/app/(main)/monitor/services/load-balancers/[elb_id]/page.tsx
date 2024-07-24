@@ -4,9 +4,10 @@ import {
   useLoadBalancerHistoryQuery,
   useLoadBalancerMetricsKeysQuery,
   useLoadBalancerPlotQuery,
+  useLoadBalancerSeverityHistoryQuery,
   useLoadBalancerStatusQuery,
 } from "@/api/queries/monitor";
-import { ServerHistory } from "@/api/services/monitor/types";
+import { ScatterplotPoint, ServerHistory } from "@/api/services/monitor/types";
 import { useDataGrid, useSsrDataGrid } from "@/hooks/data-grid";
 import DataGrid from "@/ui/data-grid/DataGrid";
 import { ColumnDef } from "@/ui/data-grid/types";
@@ -15,8 +16,23 @@ import { SegmentedControl, Skeleton } from "@mantine/core";
 import { DatePickerInput } from "@mantine/dates";
 import { format, parseISO } from "date-fns";
 import { useState } from "react";
-import BackArrow from "../../../(components)/BackArrow";
 import Breadcrumbs from "../../../(components)/Breadcrumbs";
+import {
+  CartesianGrid,
+  Cell,
+  ResponsiveContainer,
+  Scatter,
+  ScatterChart,
+  Tooltip,
+  TooltipProps,
+  XAxis,
+  YAxis,
+} from "recharts";
+import { dotColors, StatusKey } from "../../../(components)/colors";
+import {
+  NameType,
+  ValueType,
+} from "recharts/types/component/DefaultTooltipContent";
 
 const statusStyles: { [condition: string]: string } = {
   normal: "bg-blue-100 border-blue-400 text-blue-900",
@@ -43,6 +59,9 @@ const LoadBalancerPage = ({ params }: { params: { elb_id: string } }) => {
     yesterday,
     currentDate,
   ]);
+  const [scatterplotDate, setScatterplotDate] = useState<
+    [Date | null, Date | null]
+  >([yesterday, currentDate]);
 
   const { dataGridState, queryVariables, dataGridConfig } = useSsrDataGrid<{
     register_datetime: [Date | null, Date | null];
@@ -97,6 +116,22 @@ const LoadBalancerPage = ({ params }: { params: { elb_id: string } }) => {
     },
   });
   let plotData = plotDataQuery.data;
+
+  const scatterplotQuery = useLoadBalancerSeverityHistoryQuery({
+    variables: {
+      elb_id: params.elb_id,
+      register_datetime_after: scatterplotDate[0],
+      register_datetime_before: scatterplotDate[1],
+    },
+  });
+
+  let scatterplotData: ScatterplotPoint[] = [];
+  if (scatterplotQuery.data) {
+    scatterplotData = scatterplotQuery.data.map((entry) => ({
+      hour: entry.hour,
+      severity: entry.critical ? 5 : 1,
+    }));
+  }
 
   if (
     (plotMetric == "Espacio disponible" || plotMetric == "RAM disponible") &&
@@ -297,7 +332,7 @@ const LoadBalancerPage = ({ params }: { params: { elb_id: string } }) => {
         <LineChart
           tooltipProps={{
             content: ({ label, payload }) => (
-              <ChartTooltip label={label} payload={payload} />
+              <LineTooltip label={label} payload={payload} />
             ),
           }}
           h={450}
@@ -308,6 +343,56 @@ const LoadBalancerPage = ({ params }: { params: { elb_id: string } }) => {
           withDots={false}
         ></LineChart>
       </Skeleton>
+
+      <div className=" items-center gap-8 mt-32">
+        <p className="text-3xl text-neutral-500 dark:text-dark-200 mb-2">
+          Gráfica de estatus{" "}
+        </p>
+        <div className="flex items-center">
+          <p className="hidden sm:block mr-2">Rango de fechas:</p>
+          <div className="w-80 mt-1 sm:mt-0">
+            <DatePickerInput
+              type="range"
+              placeholder="Pick date"
+              value={scatterplotDate}
+              onChange={setScatterplotDate}
+            />
+          </div>
+        </div>
+      </div>
+      {scatterplotData && scatterplotData.length > 0 && (
+        <ResponsiveContainer width="100%" height={300}>
+          <ScatterChart
+            width={730}
+            height={250}
+            margin={{
+              top: 20,
+              right: 20,
+            }}
+          >
+            <CartesianGrid strokeDasharray={"3 3"} />
+            <XAxis dataKey="hour" />
+            <YAxis
+              type="number"
+              dataKey="severity"
+              domain={[0, "dataMax"]}
+              interval={0}
+              ticks={[0, 1, 2, 3, 4, 5]}
+            />
+
+            <Tooltip content={<PointTooltip />} />
+            <Scatter data={scatterplotData} dataKey="severity" fill="#8884d8">
+              {scatterplotData.map((entry, index) => (
+                <Cell
+                  key={`cell-${index}`}
+                  fill={dotColors[entry.severity as StatusKey]}
+                ></Cell>
+              ))}
+            </Scatter>
+          </ScatterChart>
+        </ResponsiveContainer>
+      )}
+
       <h2 className="text-3xl text-neutral-500 dark:text-dark-200 mb-2 mt-32">
         Listado de métricas
       </h2>
@@ -320,7 +405,26 @@ const LoadBalancerPage = ({ params }: { params: { elb_id: string } }) => {
 
 export default LoadBalancerPage;
 
-function ChartTooltip({ label, payload }: ChartTooltipProps) {
+const PointTooltip = ({
+  active,
+  payload,
+  label,
+}: TooltipProps<ValueType, NameType>) => {
+  if (active && payload && payload.length) {
+    return (
+      <div className="custom-tooltip bg-white dark:bg-gray-800 p-4 border-2 rounded-lg">
+        <p className="label">{`Hora: ${payload[0].value}`}</p>
+        <p className="label">{`Estatus: ${
+          Number(payload[1].value) == 5 ? "Crítico" : "Normal"
+        }`}</p>
+      </div>
+    );
+  }
+
+  return null;
+};
+
+function LineTooltip({ label, payload }: ChartTooltipProps) {
   if (!payload) return null;
   let metric_date, metric_value, metric_name;
   if (payload.length) {

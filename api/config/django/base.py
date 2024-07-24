@@ -227,11 +227,12 @@ REST_FRAMEWORK = {
         "rest_framework.authentication.TokenAuthentication",
         "dj_rest_auth.jwt_auth.JWTCookieAuthentication"
     ],
-    "DEFAULT_PERMISSION_CLASSES": [
-        "rest_framework.permissions.IsAuthenticated",
-    ],
+
 }
 
+'''"DEFAULT_PERMISSION_CLASSES": [
+        "rest_framework.permissions.IsAuthenticated",
+    ],'''
 
 # https://docs.djangoproject.com/en/4.1/topics/logging/
 LOGGING = {

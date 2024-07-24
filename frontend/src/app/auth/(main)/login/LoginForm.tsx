@@ -75,7 +75,7 @@ export const LoginForm = () => {
             <p className="text-gray-600 font-semibold">Contraseña</p>
             <Link
               href="/auth/password-reset"
-              className="text-sm mb-0.5 text-blue-500 hover:text-gray-700 transition-all"
+              className="text-sm mb-0.5 font-semibold text-blue-500 hover:text-gray-700 transition-all"
             >
               Olvidé mi contraseña
             </Link>

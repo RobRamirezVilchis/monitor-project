@@ -11,7 +11,11 @@ import { UserAvatar } from "@/components/shared/UserAvatar";
 import { useUsersAccessQuery } from "@/api/queries/users";
 import { ColumnDef } from "@/ui/data-grid/types";
 import { es } from "@/ui/data-grid/locales/es";
-import { useDataGrid, useSsrDataGrid, usePrefetchPaginatedAdjacentQuery } from "@/hooks/data-grid";
+import {
+  useDataGrid,
+  useSsrDataGrid,
+  usePrefetchPaginatedAdjacentQuery,
+} from "@/hooks/data-grid";
 import DataGrid from "@/ui/data-grid/DataGrid";
 
 function localDatetimeToLocalDateStr(datetime: Date | null) {
@@ -55,7 +59,10 @@ const UsersAccessPage = () => {
   const today = new Date();
   today.setHours(23, 59, 59, 999);
 
-  const usersAccessQueryParams = useQueryState<{ start_date: Date | null, end_date: Date | null }>({
+  const usersAccessQueryParams = useQueryState<{
+    start_date: Date | null;
+    end_date: Date | null;
+  }>({
     start_date: {
       defaultValue: aMonthAgo,
       parse: (value) => dateStrToDatetime(value as string, "start"),
@@ -68,13 +75,14 @@ const UsersAccessPage = () => {
     },
   });
   const [calendarOpen, setCalendarOpen] = useState(false);
-  const [dates, setDates] = useState<{ startDate: Date | null; endDate: Date | null; }>({
+  const [dates, setDates] = useState<{
+    startDate: Date | null;
+    endDate: Date | null;
+  }>({
     startDate: usersAccessQueryParams.state.start_date,
     endDate: usersAccessQueryParams.state.end_date,
   });
-  const {
-    dataGridState, queryVariables, dataGridConfig
-  } = useSsrDataGrid({
+  const { dataGridState, queryVariables, dataGridConfig } = useSsrDataGrid({
     enableColumnFilters: false,
     defaultSorting: ["first_name"],
     queryStateOptions: {
@@ -112,7 +120,7 @@ const UsersAccessPage = () => {
     hideColumnFooters: true,
     enableColumnActions: true,
 
-    ...dataGridConfig as any,
+    ...(dataGridConfig as any),
     pageCount: usersAccessQuery.data?.pagination?.pages ?? 0,
     rowCount: usersAccessQuery.data?.pagination?.count ?? 0,
   });
@@ -127,7 +135,7 @@ const UsersAccessPage = () => {
   return (
     <section className="flex flex-col h-full lg:container mx-auto pb-2 md:pb-6 px-2 md:px-4 lg:px-0">
       <div className="flex flex-col md:flex-row items-center">
-        <h1 className="text-3xl font-bold py-2 md:flex-1">
+        <h1 className="text-4xl font-bold py-2 md:flex-1">
           Acceso de Usuarios
         </h1>
 
@@ -145,23 +153,26 @@ const UsersAccessPage = () => {
               onClose: () => {
                 setCalendarOpen(false);
                 if (dates.startDate && !dates.endDate)
-                  setDates({ startDate: dates.startDate, endDate: dates.startDate });
-                
+                  setDates({
+                    startDate: dates.startDate,
+                    endDate: dates.startDate,
+                  });
+
                 setQueryDates(dates.startDate, dates.endDate);
               },
             }}
             rightSection={
-              <DateRangePresets 
+              <DateRangePresets
                 onPresetClick={([sd, ed]) => {
                   setDates({ startDate: sd, endDate: ed });
                   setQueryDates(sd, ed);
-                }} 
+                }}
                 actionIconProps={{
                   variant: "subtle",
                   color: "gray",
                 }}
                 iconProps={{
-                  className: "!w-5 !h-5"
+                  className: "!w-5 !h-5",
                 }}
               />
             }
@@ -171,7 +182,7 @@ const UsersAccessPage = () => {
         </div>
       </div>
 
-      <div className="flex-[1_0_0] overflow-y-hidden pb-1 pr-1 pl-1">
+      <div className="overflow-y-hidden pb-1 pr-1 pl-1">
         <DataGrid instance={grid} />
       </div>
     </section>
@@ -187,12 +198,10 @@ const cols: ColumnDef<UserAccess>[] = [
     header: "",
     columnTitle: "Avatar",
     size: 48,
-    cell: ({ getValue }) => getValue<User | null>() ? (
-      <UserAvatar
-        user={getValue<User>()}
-        size="sm"
-      />
-    ) : null,
+    cell: ({ getValue }) =>
+      getValue<User | null>() ? (
+        <UserAvatar user={getValue<User>()} size="sm" />
+      ) : null,
     enableResizing: false,
   },
   {
@@ -202,9 +211,12 @@ const cols: ColumnDef<UserAccess>[] = [
     columnTitle: "Nombre",
     minSize: 250,
     flex: 1,
-    cell: ({ getValue }) => getValue<User | null>() 
-      ? `${getValue<User>().first_name ?? ""} ${getValue<User>().last_name ?? ""}`
-      : "No registrado",
+    cell: ({ getValue }) =>
+      getValue<User | null>()
+        ? `${getValue<User>().first_name ?? ""} ${
+            getValue<User>().last_name ?? ""
+          }`
+        : "No registrado",
   },
   {
     id: "email",

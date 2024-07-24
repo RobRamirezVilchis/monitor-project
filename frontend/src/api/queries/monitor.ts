@@ -365,6 +365,16 @@ export const useRDSHistoryQuery = createQuery({
   queryClient: defaultQueryClient,
 });
 
+export const useRDSSeverityHistoryQuery = createQuery({
+  queryPrimaryKey: "rds-scatterplot",
+  queryKeyVariables: (vars: RDSHistoryFilters) => vars ? [vars] : [],
+  queryFn: (ctx, vars) => monitorService.getRDSSeverityHistory(vars, { signal: ctx.signal }),
+  cacheTime: 1000 * 60 * 5,  // 5 minutes
+  staleTime: 1000 * 60 * 3,  // 3 minutes
+  keepPreviousData: true,
+  queryClient: defaultQueryClient,
+});
+
 export const useRDSPlotQuery = createQuery({
   queryPrimaryKey: "rds_metric_plot",
   queryKeyVariables: (vars: RDSHistoryFilters) => vars ? [vars] : [],
@@ -442,6 +452,16 @@ export const useLoadBalancerHistoryQuery = createQuery({
   queryPrimaryKey: "elb-history",
   queryKeyVariables: (vars: LoadBalancerHistoryFilters) => vars ? [vars] : [],
   queryFn: (ctx, vars) => monitorService.getLoadBalancerHistory(vars, { signal: ctx.signal }),
+  cacheTime: 1000 * 60 * 5,  // 5 minutes
+  staleTime: 1000 * 60 * 3,  // 3 minutes
+  keepPreviousData: true,
+  queryClient: defaultQueryClient,
+});
+
+export const useLoadBalancerSeverityHistoryQuery = createQuery({
+  queryPrimaryKey: "elb-scatterplot",
+  queryKeyVariables: (vars: LoadBalancerHistoryFilters) => vars ? [vars] : [],
+  queryFn: (ctx, vars) => monitorService.getLoadBalancerSeverityHistory(vars, { signal: ctx.signal }),
   cacheTime: 1000 * 60 * 5,  // 5 minutes
   staleTime: 1000 * 60 * 3,  // 3 minutes
   keepPreviousData: true,
@@ -558,6 +578,16 @@ export const useServerHistoryQuery = createQuery({
   queryPrimaryKey: "server_history",
   queryKeyVariables: (vars: ServerHistoryFilters) => vars ? [vars] : [],
   queryFn: (ctx, vars) => monitorService.getServerHistory(vars, { signal: ctx.signal }),
+  cacheTime: 1000 * 60 * 5,  // 5 minutes
+  staleTime: 1000 * 60 * 3,  // 3 minutes
+  keepPreviousData: true,
+  queryClient: defaultQueryClient,
+});
+
+export const useServerSeverityHistoryQuery = createQuery({
+  queryPrimaryKey: "server-scatterplot",
+  queryKeyVariables: (vars: ServerHistoryFilters) => vars ? [vars] : [],
+  queryFn: (ctx, vars) => monitorService.getServerSeverityHistory(vars, { signal: ctx.signal }),
   cacheTime: 1000 * 60 * 5,  // 5 minutes
   staleTime: 1000 * 60 * 3,  // 3 minutes
   keepPreviousData: true,

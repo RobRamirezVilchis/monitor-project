@@ -19,7 +19,7 @@ interface RootLayoutProps {
 }
 
 export const metadata: Metadata = {
-  title: "App Title",
+  title: "Monitor",
   description: "Description",
   icons: [{ rel: "icon", url: "/favicon.ico" }],
 };
