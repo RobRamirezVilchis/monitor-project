@@ -10,4 +10,4 @@ const MonitorLayout = ({ children }: { children: ReactNode }) => {
   );
 };
 
-export default MonitorLayout;
+export default withAuth(MonitorLayout);

@@ -13,8 +13,7 @@ class MonitorTest(TestCase):
     def test_update_or_create_unitstatus(self):
         deployment = Deployment(name="Safe Driving")
         deployment.save()
-        client = get_client(
-            {"name": "Transpais", "deployment": deployment})
+        client = get_client("Transpais", deployment)
 
         unit = Unit(name="0000", client=client)
         unit.save()

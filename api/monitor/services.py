@@ -95,19 +95,7 @@ def update_or_create_device_status(args, retries=3, delay=1):
 
 def create_device_history(args):
     DeviceHistory.objects.create(
-        device=args['device'],
-        register_date=args['register_date'],
-        register_datetime=args['register_datetime'],
-        delayed=args['delayed'],
-        delay_time=args['delay_time'],
-        batch_dropping=args['batch_dropping'],
-        camera_connection=args['camera_connection'],
-        restart=args['restart'],
-        license=args['license'],
-        shift_change=args['shift_change'],
-        others=args['others'],
-        last_connection=args['last_connection'],
-        status=args['status']
+        **args
     )
 
 # Cameras
@@ -182,11 +170,7 @@ def update_or_create_camerastatus(args, retries=3, delay=1):
 
 def create_camerahistory(args):
     camera_history = CameraHistory.objects.create(
-        camera=args['camera'],
-        register_datetime=args['register_datetime'],
-        register_date=args['register_date'],
-        connected=args['connected'],
-        disconnection_time=args['disconnection_time'],
+        **args
     )
     return camera_history
 

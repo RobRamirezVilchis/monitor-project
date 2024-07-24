@@ -24,7 +24,7 @@ def get_inactive_units():
     return UnitStatus.objects.filter(active=True, last_update__lte=(date_now-timedelta(minutes=30)))
 
 
-def devicestatus_list(deployment_name):
+def devicestatus_list(deployment_name: str):
     return DeviceStatus.objects.filter(device__client__active=True, device__client__deployment__name=deployment_name).order_by("-status__severity")
 
 
@@ -59,24 +59,14 @@ class CameraDisconnectionsFilter(rf_filters.FilterSet):
                   ]
 
 
-def get_cameradisconnections(args, filters=None):
+def get_cameradisconnections(device_id: int, filters=None):
     logs = CameraHistory.objects.filter(
-        camera__gx_id=args['device_id'], disconnection_time__gt=timedelta(0)).order_by('register_datetime')
+        device_id=device_id, disconnection_time__gt=timedelta(0)).order_by('register_datetime')
 
     return CameraDisconnectionsFilter(filters, logs).qs
 
 
-def get_unithistory(args, filters=None):
-
-    # print(start_date, end_date)
-    logs = UnitHistory.objects.filter(
-        unit_id=args['unit_id'],
-    )
-
-    return UnitHistoryFilter(filters, logs).qs
-
-
-def get_unitstatus(unit_id):
+def get_unitstatus(unit_id: int):
     try:
         unit_status = UnitStatus.objects.get(
             unit_id=unit_id
@@ -86,27 +76,27 @@ def get_unitstatus(unit_id):
     return unit_status
 
 
-def get_device_status(device_id):
+def get_device_status(device_id: int):
     return DeviceStatus.objects.get(
         device_id=device_id,
     )
 
 
-def get_or_create_deployment(name):
+def get_or_create_deployment(name: str):
     deployment, created = Deployment.objects.get_or_create(
         name=name,
     )
     return deployment
 
 
-def get_deployment_clients(deployment):
+def get_deployment_clients(deployment: str):
     return Client.objects.filter(deployment=deployment, active=True)
 
 
-def get_client(args):
+def get_client(name: str, deployment: str):
     client = Client.objects.get(
-        name=args['name'],
-        deployment=args['deployment']
+        name=name,
+        deployment=deployment
     )
     return client
 
@@ -134,7 +124,7 @@ def get_or_create_camera(args):
     return camera_obj
 
 
-def get_device_by_id(device_id):
+def get_device_by_id(device_id: int):
     return Device.objects.get(id=device_id)
 
 
@@ -146,7 +136,7 @@ def get_or_create_device(args):
     return device
 
 
-def get_devices_without_updates(deployment):
+def get_devices_without_updates(deployment: str):
     import pytz
     now = datetime.now(tz=pytz.timezone("UTC"))
 
@@ -229,10 +219,10 @@ class UnitHistoryFilter(rf_filters.FilterSet):
                   'on_trip']
 
 
-def get_unithistory(args, filters=None):
+def get_unithistory(unit_id: int, filters=None):
 
     logs = UnitHistory.objects.filter(
-        unit_id=args['unit_id'],
+        unit_id=unit_id,
     )
 
     return UnitHistoryFilter(filters, logs).qs
@@ -264,10 +254,10 @@ class DeviceHistoryFilter(rf_filters.FilterSet):
         fields = ['register_datetime', 'status']
 
 
-def get_devicehistory(args, filters=None):
+def get_devicehistory(device_id: int, filters=None):
 
     logs = DeviceHistory.objects.filter(
-        device__id=args['device_id'],
+        device__id=device_id,
     )
     return DeviceHistoryFilter(filters, logs).qs
 
@@ -286,7 +276,7 @@ def get_industry_clients():
     return clients
 
 
-def get_or_create_alerttype(description):
+def get_or_create_alerttype(description: str):
     alert_type, created = AlertType.objects.get_or_create(
         description=description
     )
@@ -328,10 +318,10 @@ class SDScatterplotDataFilter(rf_filters.FilterSet):
         fields = ['register_datetime']
 
 
-def get_sd_scatterplot_data(args, filters=None):
+def get_sd_scatterplot_data(unit_id, filters=None):
 
     logs = UnitHistory.objects.filter(
-        unit_id=args['unit_id'],
+        unit_id=unit_id,
     )
 
     return SDScatterplotDataFilter(filters, logs).qs
@@ -356,8 +346,8 @@ class UnitTripsRangeFilter(rf_filters.FilterSet):
         return queryset
 
 
-def get_trips(args, filters=None):
-    trips = UnitTrip.objects.filter(unit_id=args['unit_id'])
+def get_trips(unit_id: int, filters=None):
+    trips = UnitTrip.objects.filter(unit_id=unit_id)
     filtered_trips = UnitTripsRangeFilter(filters, trips).qs
     return filtered_trips
 
@@ -370,10 +360,10 @@ class IndustryScatterplotDataFilter(rf_filters.FilterSet):
         fields = ['register_datetime']
 
 
-def get_ind_scatterplot_data(args, filters=None):
+def get_ind_scatterplot_data(device_id: int, filters=None):
 
     logs = DeviceHistory.objects.filter(
-        device_id=args['device_id'],
+        device_id=device_id,
     )
 
     return IndustryScatterplotDataFilter(filters, logs).qs

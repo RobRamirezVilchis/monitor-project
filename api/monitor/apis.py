@@ -215,9 +215,8 @@ class UnitHistoryList(APIView):
             filters_serializer.validated_data["register_datetime_before"] = end_date
             filters_serializer.validated_data["register_datetime_after"] = start_date
 
-        data = {'unit_id': unit_id}
         logs = get_unithistory(
-            data, filters=filters_serializer.validated_data)[::-1]
+            unit_id, filters=filters_serializer.validated_data)[::-1]
 
         # return Response(output)
         return get_paginated_response(
@@ -269,10 +268,8 @@ class DeviceHistoryList(APIView):
             filters_serializer.validated_data["register_datetime_before"] = end_date
             filters_serializer.validated_data["register_datetime_after"] = start_date
 
-        data = {'device_id': device_id}
-
         logs = get_devicehistory(
-            data, filters=filters_serializer.validated_data)[::-1]
+            device_id, filters=filters_serializer.validated_data)[::-1]
 
         return get_paginated_response(
             serializer_class=self.OutputSerializer,
@@ -300,7 +297,7 @@ class UnitReportAPI(APIView):
 
         text = f"Unidad {unit.name}\n"
 
-        history = get_unithistory({"unit_id": unit_id}, filters={
+        history = get_unithistory(unit_id, filters={
                                   "register_datetime_after": (now - timedelta(weeks=1)).isoformat()})
 
         if last_connection:
@@ -500,9 +497,8 @@ class CameraDisconnectionsList(APIView):
             filters_serializer.validated_data["register_datetime_before"] = end_date
             filters_serializer.validated_data["register_datetime_after"] = start_date
 
-        data = {'device_id': device_id}
         logs = get_cameradisconnections(
-            data, filters=filters_serializer.validated_data)[::-1]
+            device_id, filters=filters_serializer.validated_data)[::-1]
 
         return get_paginated_response(
             serializer_class=self.OutputSerializer,
@@ -597,7 +593,7 @@ class UnitScatterPlotAPI(APIView):
             filters_serializer.validated_data["register_datetime_after"] = start_date
 
         registers = get_sd_scatterplot_data(
-            {"unit_id": unit_id}, filters=filters_serializer.validated_data)
+            unit_id, filters=filters_serializer.validated_data)
 
         grouped_by_hour = {}
 
@@ -665,9 +661,7 @@ class UnitTripsAPI(APIView):
             filters_serializer.validated_data["register_datetime_before"] = end_date
             filters_serializer.validated_data["register_datetime_after"] = start_date
 
-        print(filters_serializer.validated_data)
-
-        trips = get_trips({"unit_id": unit_id},
+        trips = get_trips(unit_id,
                           filters=filters_serializer.validated_data)
 
         output = self.OutputSerializer(trips, many=True).data
@@ -706,7 +700,7 @@ class DeviceScatterPlotAPI(APIView):
             filters_serializer.validated_data["register_datetime_after"] = start_date
 
         registers = get_ind_scatterplot_data(
-            {"device_id": device_id}, filters=filters_serializer.validated_data)
+            device_id, filters=filters_serializer.validated_data)
 
         grouped_by_hour = {}
 

@@ -380,11 +380,7 @@ def update_driving_status():
 
         date_now = datetime.now(tz=pytz.timezone('UTC'))
 
-        client_args = {
-            'name': client_name,
-            'deployment': deployment
-        }
-        client = get_client(client_args)
+        client = get_client(client_name, deployment)
 
         history_logs = []
         alerts_to_send = {}
@@ -1575,11 +1571,11 @@ def update_retail_status():
                 (max_cam_disc_times[device_name] >
                  timedelta(0), 5, "Cámara desconectada"),
                 (delay_time > timedelta(minutes=20),
-                 5, "Sin comunicación reciente"),
+                 5, "Sin comunicación"),
                 (log_counts["hour"][device_name]["counts"].get(
                     "MASTER_RESTART", 0) > 0, 5, "Reinicio de máster"),
                 (timedelta(minutes=20) >= delay_time > timedelta(0), 3,
-                 "Sin comunicación reciente (<20 min)"),
+                 "Sin comunicación reciente"),
             ]
             severity = 1
             rule = "Comunicación reciente"
@@ -1620,7 +1616,7 @@ def update_retail_status():
             }
             create_retail_device_history(devicehistory_args)
 
-    disconnected_devices = get_retail_devices_without_updates()
+    '''disconnected_devices = get_retail_devices_without_updates()
     for device in disconnected_devices:
         client_name = device.client.name
 
@@ -1699,7 +1695,7 @@ def update_retail_status():
                 'status': status,
                 'log_counts': {}
             }
-            create_retail_device_history(devicehistory_args)
+            create_retail_device_history(devicehistory_args)'''
 
 
 # Servers
