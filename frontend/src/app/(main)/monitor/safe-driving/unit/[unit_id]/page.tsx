@@ -40,14 +40,13 @@ import { useDisclosure } from "@mantine/hooks";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
-import BackArrow from "../../../(components)/BackArrow";
+import Breadcrumbs from "../../../(components)/Breadcrumbs";
 import {
   StatusKey,
   dotColors,
   statusNames,
   statusStyles,
 } from "../../../(components)/colors";
-import Breadcrumbs from "../../../(components)/Breadcrumbs";
 
 const DownloadFile = (unitData: { unitId: string; unitName: string }) => {
   const reportQuery = useUnitReportQuery({
@@ -322,16 +321,14 @@ const UnitPage = ({ params }: { params: { unit_id: string } }) => {
             >
               <p>Logs pendientes:</p>
               <div className="flex gap-2 items-center">
-                {unitStatus.last_connection &&
+                {unitStatus &&
                   (unitStatus.pending_events == 1 ? (
                     <p>{unitStatus.pending_events} evento</p>
                   ) : (
                     <p>{unitStatus.pending_events} eventos</p>
                   ))}
                 <div className="border-r-2 border-gray-400 h-5" />
-                {unitStatus.last_connection && (
-                  <p>{unitStatus.pending_status} status</p>
-                )}
+                {unitStatus && <p>{unitStatus.pending_status} status</p>}
               </div>
             </div>
           )}
