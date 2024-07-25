@@ -426,14 +426,17 @@ const PointTooltip = ({
   payload,
   label,
 }: TooltipProps<ValueType, NameType>) => {
+  let metric_date, metric_value, metric_name;
+
   if (active && payload && payload.length) {
+    metric_date = format(parseISO(payload[0].payload.hour), "Pp");
+    console.log(metric_date);
     return (
-      <div className="custom-tooltip bg-white dark:bg-gray-800 p-4 border-2 rounded-lg">
-        <p className="label">{`Hora: ${payload[0].value}`}</p>
+      <div className="custom-tooltip bg-white dark:bg-dark-500 p-4 rounded-md shadow-md">
+        <p className="label font-bold">{metric_date}</p>
         <p className="label">{`Estatus: ${
           Number(payload[1].value) == 5 ? "Crítico" : "Normal"
         }`}</p>
-        {/* <p className="label">{payload[2].value}</p> */}
       </div>
     );
   }

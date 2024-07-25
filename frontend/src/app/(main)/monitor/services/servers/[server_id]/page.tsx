@@ -343,7 +343,7 @@ const ServerPage = ({ params }: { params: { server_id: string } }) => {
           </div>
         )}
       </div>
-      <div className="flex justify-between items-end">
+      <div className="sm:flex space-y-2 sm:space-y-0 justify-between items-end">
         {serverStatus ? (
           <div className="text-xl text-neutral-500 dark:text-dark-200">
             <p>
@@ -388,9 +388,10 @@ const ServerPage = ({ params }: { params: { server_id: string } }) => {
             <Skeleton h={20} w={300} />
           </div>
         )}
+
         <Button
           color="gray.5"
-          classNames={{ root: "dark:bg-gray-800 dark:hover:bg-gray-700" }}
+          classNames={{ root: "dark:bg-dark-600 dark:hover:bg-dark-500" }}
           onClick={open}
         >
           Modificar proyectos
@@ -443,7 +444,7 @@ const ServerPage = ({ params }: { params: { server_id: string } }) => {
         <LineChart
           tooltipProps={{
             content: ({ label, payload }) => (
-              <ChartTooltip label={label} payload={payload} />
+              <LineTooltip label={label} payload={payload} />
             ),
           }}
           h={450}
@@ -455,7 +456,7 @@ const ServerPage = ({ params }: { params: { server_id: string } }) => {
         ></LineChart>
       </Skeleton>
 
-      <div className=" items-center gap-8 mt-32">
+      <div className=" items-center gap-8 mt-32 mb-2">
         <p className="text-3xl text-neutral-500 dark:text-dark-200 mb-2">
           Gráfica de estatus{" "}
         </p>
@@ -471,7 +472,8 @@ const ServerPage = ({ params }: { params: { server_id: string } }) => {
           </div>
         </div>
       </div>
-      {scatterplotData && scatterplotData.length > 0 && (
+
+      <Skeleton visible={scatterplotQuery.data == undefined}>
         <ResponsiveContainer width="100%" height={300}>
           <ScatterChart
             width={730}
@@ -491,7 +493,7 @@ const ServerPage = ({ params }: { params: { server_id: string } }) => {
               ticks={[0, 1, 2, 3, 4, 5]}
             />
 
-            <Tooltip content={<CustomTooltip />} />
+            <Tooltip content={<PointTooltip />} />
             <Scatter data={scatterplotData} dataKey="severity" fill="#8884d8">
               {scatterplotData.map((entry, index) => (
                 <Cell
@@ -502,7 +504,7 @@ const ServerPage = ({ params }: { params: { server_id: string } }) => {
             </Scatter>
           </ScatterChart>
         </ResponsiveContainer>
-      )}
+      </Skeleton>
 
       <h2 className="text-3xl text-neutral-500 dark:text-dark-200 mb-2 mt-32">
         Listado de métricas
@@ -518,19 +520,22 @@ export default ServerPage;
 
 const ConvertBool = (condition: boolean) => (condition ? "Sí" : "No");
 
-const CustomTooltip = ({
+const PointTooltip = ({
   active,
   payload,
   label,
 }: TooltipProps<ValueType, NameType>) => {
+  let metric_date, metric_value, metric_name;
+
   if (active && payload && payload.length) {
+    metric_date = format(parseISO(payload[0].payload.hour), "Pp");
+    console.log(metric_date);
     return (
-      <div className="custom-tooltip bg-white dark:bg-gray-800 p-4 border-2 rounded-lg">
-        <p className="label">{`Hora: ${payload[0].value}`}</p>
+      <div className="custom-tooltip bg-white dark:bg-dark-500 p-4 rounded-md shadow-md">
+        <p className="label font-bold">{metric_date}</p>
         <p className="label">{`Estatus: ${
           Number(payload[1].value) == 5 ? "Crítico" : "Normal"
         }`}</p>
-        {/* <p className="label">{payload[2].value}</p> */}
       </div>
     );
   }
@@ -538,7 +543,7 @@ const CustomTooltip = ({
   return null;
 };
 
-function ChartTooltip({ label, payload }: ChartTooltipProps) {
+function LineTooltip({ label, payload }: ChartTooltipProps) {
   if (!payload) return null;
   let metric_date, metric_value, metric_name;
   if (payload.length) {

@@ -1,32 +1,25 @@
 "use client";
 
-import { ReactNode, useEffect, useState } from "react";
-import "@mantine/charts/styles.css";
-import { Alert, Button, Modal, Tabs } from "@mantine/core";
-import { usePathname, useRouter } from "next/navigation";
-import Link from "next/link";
-import { useDisclosure } from "@mantine/hooks";
-import {
-  useAllRDSQuery,
-  useAllServersQuery,
-  useDeploymentsQuery,
-  useProjectDataQuery,
-  useProjectsQuery,
-  useServersProjectsQuery,
-} from "@/api/queries/monitor";
-import { useForm } from "react-hook-form";
-import {
-  EditedProjectData,
-  NewProjectData,
-  ProjectData,
-} from "@/api/services/monitor/types";
-import { MultiSelect, Select, TextInput } from "@/ui/core";
 import {
   useDeleteProjectMutation,
   useEditProjectMutation,
   useProjectDataMutation,
 } from "@/api/mutations/monitor";
-import { setErrorMap } from "zod";
+import {
+  useAllRDSQuery,
+  useAllServersQuery,
+  useDeploymentsQuery,
+  useProjectsQuery,
+} from "@/api/queries/monitor";
+import { EditedProjectData } from "@/api/services/monitor/types";
+import { MultiSelect, Select, TextInput } from "@/ui/core";
+import "@mantine/charts/styles.css";
+import { Alert, Button, Modal, Tabs } from "@mantine/core";
+import { useDisclosure } from "@mantine/hooks";
+import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
+import { ReactNode, useState } from "react";
+import { useForm } from "react-hook-form";
 
 type EditedProject = {
   name: string;
@@ -273,7 +266,14 @@ const ServicesDashboardLayout = ({ children }: { children: ReactNode }) => {
             </Tabs.List>
           </div>
           <div className="flex gap-3 sm:max-xl:flex-col">
-            <Button onClick={open} className="w-fit" color="gray.6">
+            <Button
+              onClick={open}
+              className="w-fit"
+              classNames={{
+                root: "dark:bg-neutral-700 hover:dark:bg-neutral-600 transition-colors",
+              }}
+              color="gray.6"
+            >
               Modificar proyecto
             </Button>
             <Link href={"/monitor/services/new-project"}>

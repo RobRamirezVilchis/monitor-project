@@ -222,8 +222,6 @@ REST_FRAMEWORK = {
     "DEFAULT_PAGINATION_CLASS": "api.pagination.PageNumberPagination",
     # "PAGE_SIZE": 25,
     "DEFAULT_SCHEMA_CLASS": "api.openapi.AutoSchema",
-
-
 }
 '''"DEFAULT_AUTHENTICATION_CLASSES": [
         "rest_framework.authentication.SessionAuthentication",
