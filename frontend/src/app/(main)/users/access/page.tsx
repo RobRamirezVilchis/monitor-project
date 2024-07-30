@@ -17,6 +17,7 @@ import {
   usePrefetchPaginatedAdjacentQuery,
 } from "@/hooks/data-grid";
 import DataGrid from "@/ui/data-grid/DataGrid";
+import { withAuth } from "@/components/auth/withAuth";
 
 function localDatetimeToLocalDateStr(datetime: Date | null) {
   return datetime ? formatDate(datetime, "yyyy-MM-dd") : "";
@@ -189,7 +190,7 @@ const UsersAccessPage = () => {
   );
 };
 
-export default UsersAccessPage;
+export default withAuth(UsersAccessPage, { rolesWhitelist: ["Admin"] });
 
 const cols: ColumnDef<UserAccess>[] = [
   {

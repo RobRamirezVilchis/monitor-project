@@ -64,12 +64,13 @@ class AccountAdapter(DefaultAccountAdapter):
         user,
         **kwargs
     ):
-        if not UserWhitelistService.is_email_whitelisted(user.email):
+        # not UserWhitelistService.is_email_whitelisted(user.email):
+        if not user.email.endswith("@introid.com"):
             raise exceptions.PermissionDenied("Registration invalid.")
         return super().pre_login(request, user, **kwargs)
 
-    def is_open_for_signup(self, request):
-        if not UserWhitelistService.is_email_whitelisted(request.user.email):
+    def is_open_for_signup(self, request, sociallogin):
+        if not UserWhitelistService.is_email_whitelisted(sociallogin.user.email):
             raise exceptions.PermissionDenied("Registration invalid.")
         return True
 
@@ -100,15 +101,18 @@ class SocialAccountAdapter(DefaultSocialAccountAdapter):
                       kwargs={"version": "v1"})
         return url
 
-    # def pre_social_login(self, request, sociallogin):
-    #     if not UserWhitelistService.is_email_whitelisted(sociallogin.user.email):
-    #         raise exceptions.PermissionDenied("Registration invalid.")
-    #     return True
+    def pre_social_login(self, request, sociallogin):
+        # not UserWhitelistService.is_email_whitelisted(sociallogin.user.email):
+        print("running pre social login")
+        if not sociallogin.user.email.endswith("@introid.com"):
+            raise exceptions.PermissionDenied("Registration invalid.")
+        return True
 
-    # def is_open_for_signup(self, request, sociallogin):
-    #     if not UserWhitelistService.is_email_whitelisted(sociallogin.user.email):
-    #         raise exceptions.PermissionDenied("Registration invalid.")
-    #     return True
+    def is_open_for_signup(self, request, sociallogin):
+        # not UserWhitelistService.is_email_whitelisted(sociallogin.user.email):
+        if not sociallogin.user.email.endswith("@introid.com"):
+            raise exceptions.PermissionDenied("Registration invalid.")
+        return True
 
 
 class GoogleOAuth2Adapter(DefaultGoogleOAuth2Adapter):

@@ -312,9 +312,9 @@ export const AuthProvider = ({
                 });
                 if ((resp as JWTLoginInfo)?.user) {
                   user = (resp as JWTLoginInfo).user;
-                  useMyUserQuery.setData(user);
+                  myUserQuery.setData(user);
                 } else {
-                  user = (await useMyUserQuery.refetch()) ?? null;
+                  user = (await myUserQuery.refetch()).data ?? null;
                 }
               } catch (e) {
                 console.error("Error authenticating user.");

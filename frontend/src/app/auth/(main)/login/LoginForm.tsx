@@ -61,7 +61,9 @@ export const LoginForm = () => {
         noValidate // Let hook-form handle the validation
       >
         <div className="flex flex-col">
-          <p className="text-gray-600 font-semibold">Correo</p>
+          <p className="text-neutral-600 dark:text-neutral-400 font-semibold">
+            Correo
+          </p>
           <TextInput
             name="email"
             control={formMethods.control}
@@ -72,7 +74,9 @@ export const LoginForm = () => {
         </div>
         <div className="flex flex-col">
           <div className="flex justify-between items-end">
-            <p className="text-gray-600 font-semibold">Contraseña</p>
+            <p className="text-neutral-600 dark:text-neutral-400 font-semibold">
+              Contraseña
+            </p>
             <Link
               href="/auth/password-reset"
               className="text-sm mb-0.5 font-semibold text-blue-500 hover:text-gray-700 transition-all"

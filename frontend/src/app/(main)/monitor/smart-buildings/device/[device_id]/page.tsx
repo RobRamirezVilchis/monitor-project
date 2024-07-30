@@ -340,22 +340,18 @@ const SBDevicePage = ({ params }: { params: { device_id: string } }) => {
         </div>
       </div>
 
-      <div className="mt-4">
+      <div className="mt-4 mb-20">
         <p className="text-2xl text-neutral-500 dark:text-dark-200">
           Estatus cada diez minutos
         </p>
-        <div className="h-[65vh] mb-20">
+        <div className="h-[65vh] ">
           <DataGrid instance={grid} />
         </div>
       </div>
-      <h3 className="text-2xl opacity-60">Desconexiones de cámaras</h3>
-      <div className="h-[70vh]">
-        <DataGrid instance={camerasGrid} />
-      </div>
 
-      <div className=" items-center gap-8 mb-6 mt-8">
+      <div className="mb-6">
         <p className="text-2xl opacity-60 mb-2">Gráfica de estatus </p>
-        <div className="flex items-center">
+        <div className="flex items-center mb-6">
           <p className="hidden sm:block mr-2">Rango de fechas:</p>
           <div className="w-80 mt-1 sm:mt-0">
             <DatePickerInput
@@ -366,41 +362,49 @@ const SBDevicePage = ({ params }: { params: { device_id: string } }) => {
             />
           </div>
         </div>
-      </div>
-      {plotData && plotData.length > 0 && (
-        <ResponsiveContainer width="100%" height={500}>
-          <ScatterChart
-            width={730}
-            height={250}
-            margin={{
-              top: 20,
-              right: 20,
-              bottom: 120,
-            }}
-          >
-            <CartesianGrid strokeDasharray={"3 3"} />
-            <XAxis dataKey="hora" />
-            <YAxis
-              type="number"
-              dataKey="severidad"
-              domain={[0, "dataMax"]}
-              interval={0}
-              ticks={[0, 1, 2, 3, 4, 5]}
-            />
-            <ZAxis dataKey="descripcion" />
+        {plotData && plotData.length > 0 && (
+          <ResponsiveContainer width="100%" height={500}>
+            <ScatterChart
+              width={730}
+              height={250}
+              margin={{
+                top: 20,
+                right: 20,
+                bottom: 120,
+              }}
+            >
+              <CartesianGrid strokeDasharray={"3 3"} />
+              <XAxis dataKey="hora" />
+              <YAxis
+                type="number"
+                dataKey="severidad"
+                domain={[0, "dataMax"]}
+                interval={0}
+                ticks={[0, 1, 2, 3, 4, 5]}
+              />
+              <ZAxis dataKey="descripcion" />
 
-            <Tooltip content={<CustomTooltip />} />
-            <Scatter data={plotData} dataKey="severidad" fill="#8884d8">
-              {plotData.map((entry, index) => (
-                <Cell
-                  key={`cell-${index}`}
-                  fill={dotColors[entry.severidad as StatusKey]}
-                ></Cell>
-              ))}
-            </Scatter>
-          </ScatterChart>
-        </ResponsiveContainer>
-      )}
+              <Tooltip content={<CustomTooltip />} />
+              <Scatter data={plotData} dataKey="severidad" fill="#8884d8">
+                {plotData.map((entry, index) => (
+                  <Cell
+                    key={`cell-${index}`}
+                    fill={dotColors[entry.severidad as StatusKey]}
+                  ></Cell>
+                ))}
+              </Scatter>
+            </ScatterChart>
+          </ResponsiveContainer>
+        )}
+      </div>
+
+      <div className="mb-20">
+        <h3 className="text-2xl opacity-60">Desconexiones de cámaras</h3>
+        <div className="h-[70vh]">
+          <DataGrid instance={camerasGrid} />
+        </div>
+      </div>
+
       <Button onClick={open} color="red.9" size="md">
         Detener monitoreo
       </Button>
@@ -432,7 +436,7 @@ const CustomTooltip = ({
 }: TooltipProps<ValueType, NameType>) => {
   if (active && payload && payload.length) {
     return (
-      <div className="custom-tooltip bg-white dark:bg-gray-800 p-4 border-2 rounded-lg">
+      <div className="custom-tooltip bg-white dark:bg-dark-500 p-4 rounded-md shadow-md">
         <p className="label">{`Hora: ${payload[0].value}`}</p>
         <p className="label">{`Estatus: ${
           statusNames[Number(payload[1].value) as StatusKey]

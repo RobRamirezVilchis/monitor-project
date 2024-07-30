@@ -28,6 +28,7 @@ register_converter(ApiVersionConverter, "api_version")
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("api/<api_version:version>/", include(("api.urls", "api"))),
+    # path("api/<api_version:version>/auth/", include("authentication.urls")),
 
     # path("api/<api_version:version>/", include("...")),
     # re_path(r"api/(?P<version>[v1|v2|...]+)/", include("...")),
@@ -36,5 +37,6 @@ urlpatterns = [
 if settings.USE_OPENAPI_SCHEMA:
     urlpatterns += [
         path("api/schema/", SpectacularAPIView.as_view(), name="schema"),
-        path("api/swagger/", SpectacularSwaggerView.as_view(url_name="schema"), name="swagger"),
+        path("api/swagger/",
+             SpectacularSwaggerView.as_view(url_name="schema"), name="swagger"),
     ]

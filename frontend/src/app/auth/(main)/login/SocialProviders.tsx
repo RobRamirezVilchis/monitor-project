@@ -41,17 +41,18 @@ const SocialProviders = () => {
   return (
     <>
       {providersInfo ? (
-        <div className="flex flex-col gap-1 items-center mt-2">
+        <div className="flex flex-col gap-1 items-center">
           {Object.entries(providersInfo).map(([providerKey, provider]) => (
             <Button
               key={provider.id}
               onClick={() => onSocialLogin(providerKey as ProviderKey)}
               radius="lg"
               classNames={{
-                root: "px-8",
+                root: "px-8 bg-dark-400 text-neutral-200 hover:bg-dark-500 transition-all",
                 section: "!h-2 my-4",
               }}
               size="lg"
+              //color="gray.3"
               variant="light"
               leftSection={getProviderLogo(providerKey as ProviderKey)}
             >

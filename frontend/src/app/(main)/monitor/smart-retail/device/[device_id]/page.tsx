@@ -338,17 +338,20 @@ const RetailDevicePage = ({ params }: { params: { device_id: string } }) => {
         </div>
       </div>
 
-      <div className="mt-4">
+      <div className="mt-4 mb-20">
         <p className="text-2xl text-neutral-500 dark:text-dark-200">
           Estatus cada diez minutos
         </p>
-        <div className="h-[65vh] mb-20">
+        <div className="h-[65vh] ">
           <DataGrid instance={grid} />
         </div>
       </div>
-      {/* <h3 className="text-2xl opacity-60">Desconexiones de cámaras:</h3>
-      <div className="h-[70vh]">
-        <DataGrid instance={camerasGrid} />
+
+      {/* <div>
+        <h3 className="text-2xl opacity-60">Desconexiones de cámaras:</h3>
+        <div className="h-[70vh]">
+          <DataGrid instance={camerasGrid} />
+        </div>
       </div> */}
 
       <div className=" items-center gap-8 mb-6 mt-8">
@@ -430,7 +433,7 @@ const CustomTooltip = ({
 }: TooltipProps<ValueType, NameType>) => {
   if (active && payload && payload.length) {
     return (
-      <div className="custom-tooltip bg-white dark:bg-gray-800 p-4 border-2 rounded-lg">
+      <div className="custom-tooltip bg-white dark:bg-dark-500 p-4 rounded-md shadow-md">
         <p className="label">{`Hora: ${payload[0].value}`}</p>
         <p className="label">{`Estatus: ${
           statusNames[Number(payload[1].value) as StatusKey]

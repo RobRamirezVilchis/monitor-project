@@ -6,13 +6,7 @@ interface MainAuthLayoutPops {
 }
 
 const MainAuthLayout = ({ children }: MainAuthLayoutPops) => {
-  return (
-    <div className="h-full grid place-items-center ">
-      <Paper className="p-6" withBorder>
-        {children}
-      </Paper>
-    </div>
-  );
+  return <div className="h-full grid place-items-center ">{children}</div>;
 };
 
 export default MainAuthLayout;

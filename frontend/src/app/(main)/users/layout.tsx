@@ -10,6 +10,4 @@ const UsersLayout = ({ children }: { children: ReactNode }) => {
   );
 };
 
-export default withAuth(UsersLayout, {
-  rolesWhitelist: ["Admin"],
-});
+export default withAuth(UsersLayout);

@@ -24,6 +24,7 @@ import { WhitelistItem } from "@/api/services/users/types";
 import DataGrid from "@/ui/data-grid/DataGrid";
 
 import { IconPlus } from "@tabler/icons-react";
+import { withAuth } from "@/components/auth/withAuth";
 
 const UsersPage = () => {
   const { dataGridState, queryVariables, dataGridConfig } = useSsrDataGrid({
@@ -115,7 +116,7 @@ const UsersPage = () => {
   );
 };
 
-export default UsersPage;
+export default withAuth(UsersPage, { rolesWhitelist: ["Admin"] });
 
 const cols: ColumnDef<WhitelistItem>[] = [
   {

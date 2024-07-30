@@ -1,4 +1,7 @@
 # from allauth.socialaccount.providers.google.views import GoogleOAuth2Adapter
+from . import listeners  # ? Necessary to register the listeners
+from .serializers import PasswordResetKeyValidSerializer, RegisterWithoutPasswordSerializer, RegisterWithoutPasswordConfirmSerializer
+from .forms import PasswordResetForm
 from allauth.account import app_settings as allauth_account_settings, signals
 from allauth.account.adapter import get_adapter
 from allauth.utils import email_address_exists, get_username_max_length
@@ -18,9 +21,6 @@ from users.services import UsersService, UserAccessService
 
 from users.services import UserWhitelistService
 from .adapter import GoogleOAuth2Adapter
-from .forms import PasswordResetForm
-from .serializers import PasswordResetKeyValidSerializer, RegisterWithoutPasswordSerializer, RegisterWithoutPasswordConfirmSerializer
-from . import listeners  # ? Necessary to register the listeners
 
 
 class GoogleLoginApi(SocialLoginView):

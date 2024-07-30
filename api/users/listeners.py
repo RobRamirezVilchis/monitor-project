@@ -8,6 +8,7 @@ from .services import UsersService
 
 logger = logging.getLogger("core")
 
+
 @receiver(user_signed_up)
 def on_user_signed_up(sender, request, user, **kwargs):
     try:
@@ -19,6 +20,7 @@ def on_user_signed_up(sender, request, user, **kwargs):
         user.groups.add(whitelist_user.group)
         user.save()
     except:
-        logger.warn(f"User {user.email} signed up but they are not whitelisted!")
+        logger.warn(
+            f"User {user.email} signed up but they are not whitelisted!")
         # service = UsersService(user)
         # service.soft_delete()

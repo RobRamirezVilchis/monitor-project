@@ -504,7 +504,7 @@ const CustomXAxisTick = (props: any) => {
 const CustomTooltip = ({ active, payload, label }: TooltipProps) => {
   if (active && payload && payload.length) {
     return (
-      <div className="custom-tooltip bg-white dark:bg-gray-800 p-4 border-2 rounded-lg">
+      <div className="custom-tooltip bg-white dark:bg-dark-500 p-4 rounded-md shadow-md">
         {payload[0].value && (
           <p className="label">{`Hora: ${format(payload[0].value, "Pp")}`}</p>
         )}
