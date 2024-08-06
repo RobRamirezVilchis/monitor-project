@@ -52,11 +52,11 @@ const RombergDashboardLayout = ({ children }: { children: ReactNode }) => {
               Última actualización {timeSinceLastUpdate}
             </p>
           </div>
-          <div className="mt-2 md:mt-0 ml-0 md:ml-4 mr-0 2xl:mr-16">
+          {/* <div className="mt-2 md:mt-0 ml-0 md:ml-4 mr-0 2xl:mr-16">
             <Link href={"/monitor/safe-driving/romberg"}>
               <Button color="green.7">Agregar cliente</Button>
             </Link>
-          </div>
+          </div> */}
         </div>
         <div>{children}</div>
       </Tabs>
