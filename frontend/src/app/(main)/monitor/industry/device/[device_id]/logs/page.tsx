@@ -5,7 +5,7 @@ import {
   useDeviceStatusQuery,
 } from "@/api/queries/monitor";
 import { login } from "@/api/services/auth";
-import { DeviceLogs, UnitHistory } from "@/api/services/monitor/types";
+import { DeviceLog, UnitHistory } from "@/api/services/monitor/types";
 import { useDataGrid, useSsrDataGrid } from "@/hooks/data-grid";
 import DataGrid from "@/ui/data-grid/DataGrid";
 import { ColumnDef } from "@/ui/data-grid/types";
@@ -63,7 +63,7 @@ const DeviceLogsPage = ({ params }: { params: { device_id: string } }) => {
     },
   });
 
-  const grid = useDataGrid<DeviceLogs>({
+  const grid = useDataGrid<DeviceLog>({
     data: deviceLogsQuery.data?.data || [],
     columns: cols,
     rowNumberingMode: "static",
@@ -123,7 +123,7 @@ const DeviceLogsPage = ({ params }: { params: { device_id: string } }) => {
 
 export default DeviceLogsPage;
 
-const cols: ColumnDef<DeviceLogs>[] = [
+const cols: ColumnDef<DeviceLog>[] = [
   {
     accessorKey: "device",
     accessorFn: (row) => row.device,

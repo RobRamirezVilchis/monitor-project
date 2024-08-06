@@ -1423,10 +1423,11 @@ class RombergDeviceStatusTime(APIView):
 
 class RombergLogsAPI(APIView):
     class OutputSerializer(serializers.Serializer):
-        device = serializers.CharField(max_length=50)
-        log_time = serializers.CharField(max_length=50)
-        log = serializers.CharField(max_length=50)
-        register_time = serializers.CharField(max_length=50)
+        fecha_subida = serializers.CharField(
+            max_length=50, source="Fecha_subida")
+        timestamp = serializers.CharField(max_length=50, source="Timestamp")
+        tipo = serializers.CharField(max_length=50, source="Tipo")
+        log = serializers.CharField(max_length=50, source="Log")
 
     def get(self, request, device_id, *args, **kwargs):
         global request_url
@@ -1436,71 +1437,118 @@ class RombergLogsAPI(APIView):
         client_key = device.client.keyname
         client_id = device.client.id
 
-        """ login_url = f'https://{client_key}.retail.aivat.io/login/'
-        request_url = f'https://{client_key}.retail.aivat.io/itw_logs/'
+        login_url = f'https://{client_key}.introid.com/login/'
+        request_url = f'https://{client_key}.introid.com/romberg/range_logs/'
 
-        credentials = get_api_credentials("Smart Retail", client_id)
+        credentials = get_api_credentials("Romberg", client_id)
+        if credentials is None:
+            return
+
         token = api_login(login_url=login_url, credentials=credentials)
 
-        sent_interval = False
+        now = datetime.now(tz=pytz.timezone('UTC'))
+        params = {
+            "start": (now - timedelta(days=1)).isoformat(timespec="seconds"),
+            "end": now.isoformat(timespec='seconds')
+        }
 
-        time_interval = {}
-        if 'register_time_after' in request.query_params:
-            time_interval["initial_datetime"] = request.query_params['register_time_after'][:-5]
-            sent_interval = True
+        if 'timestamp_after' in request.query_params:
+            params["start"] = request.query_params['timestamp_after'][:-5]
 
-        if 'register_time_before' in request.query_params:
-            time_interval["final_datetime"] = request.query_params['register_time_before'][:-5]
-            sent_interval = True
+        if 'timestamp_before' in request.query_params:
+            params["end"] = request.query_params['timestamp_before'][:-5]
 
-        if not sent_interval:
-            now = datetime.now(tz=pytz.timezone('UTC')).replace(tzinfo=None)
-            time_interval = {
-                "initial_datetime": (now - timedelta(hours=5)).isoformat(timespec="seconds"),
-                "final_datetime": now.isoformat(timespec='seconds')
-            }
+        params["device"] = device.name
 
+        token = api_login(login_url, credentials=credentials)
         response, status = make_request(
-            request_url, data=time_interval, token=token)
-        response = json.loads(response.content)
+            request_url, data=params, token=token)
+        response = response.json()
+        print(response)
 
-        show_empty = request.query_params["show_empty"]
+        if "tipo" in request.query_params:
+            query_log_type = request.query_params["tipo"]
+            response = list(filter(lambda log: query_log_type.lower()
+                                   in log["Tipo"], response))
 
-        output = []
-
-        device_data = response[device.name]
-
-        if "device" not in request.query_params or ("device" in request.query_params and request.query_params["device"] in device.name.lower()):
-            device_logs = device_data["logs"]
-            for log in device_logs:
-                if show_empty == "false" and log["log"] == "":
-                    continue
-                output.append({"device": device.name,
-                               "register_time": log["register_time"],
-                               "log": log["log"],
-                               "log_time": f"{log['log_date']}T{log['log_time']}"})
-
-        cameras = device_data["cameras"]
-        for camera_name, logs in cameras.items():
-            if "device" in request.query_params:
-                if request.query_params["device"] not in camera_name.lower():
-                    break
-            for log in logs:
-                if show_empty == "false" and log["log"] == "":
-                    continue
-                output.append({"device": camera_name,
-                               "register_time": log["register_time"],
-                               "log": log["log"],
-                               "log_time": f"{log['log_date']}T{log['log_time']}"})
-
-        if request.query_params.get("sort") == "-register_time":
-            output.reverse()
+        response.reverse()
 
         return get_paginated_response(
-            output,
+            response,
             self.OutputSerializer,
             request
-        ) """
+        )
+
+
+class SafeDrivingLogsAPI(APIView):
+    class OutputSerializer(serializers.Serializer):
+        unidad = serializers.CharField(max_length=50, source="Unidad")
+        fecha_subida = serializers.CharField(
+            max_length=50, source="Fecha_subida")
+        timestamp = serializers.CharField(max_length=50, source="Timestamp")
+        tipo = serializers.CharField(max_length=50, source="Tipo")
+        log = serializers.CharField(max_length=50, source="Log")
+
+    def get(self, request, unit_id, *args, **kwargs):
+        unit = Unit.objects.get(id=unit_id)
+        client_key = unit.client.keyname
+        client_id = unit.client.id
+
+        credentials = get_api_credentials("Safe Driving", client_id)
+
+        # Hardcoded
+        urls = {
+            "tp": {
+                "login": 'https://tp.introid.com/login/',
+                "logs": 'https://tp.introid.com/range_logs/'
+            },
+            "cmx": {
+                "login": 'https://cmx.safe-d.aivat.io/login/',
+                "logs": 'https://cmx.safe-d.aivat.io/cemex/range_logs/'
+            },
+            "trm": {
+                "login": 'https://trm.safe-d.aivat.io/login/',
+                "logs": 'https://trm.safe-d.aivat.io/ternium/range_logs/'
+            }
+        }
+        if client_key in urls:
+            login_url = urls[client_key]["login"]
+            request_url = urls[client_key]["logs"]
+        else:
+            login_url = f'https://{client_key}.safe-d.aivat.io/login/'
+            request_url = f'https://{client_key}.safe-d.aivat.io/range_logs/'
+
+        now = datetime.now(tz=pytz.timezone('UTC'))
+        params = {
+            "start": (now - timedelta(days=1)).isoformat(timespec="seconds"),
+            "end": now.isoformat(timespec='seconds')
+        }
+
+        if 'timestamp_after' in request.query_params:
+            params["start"] = request.query_params['timestamp_after'][:-5]
+
+        if 'timestamp_before' in request.query_params:
+            params["end"] = request.query_params['timestamp_before'][:-5]
+
+        params["unit"] = unit.name
+
+        token = api_login(login_url, credentials=credentials)
+        response, status = make_request(
+            request_url, data=params, token=token)
+        response = response.json()
+
+        if "tipo" in request.query_params:
+            query_log_type = request.query_params["tipo"]
+            response = list(filter(lambda log: query_log_type.lower()
+                                   in log["Tipo"], response))
+
+        response.reverse()
+
+        return get_paginated_response(
+            response,
+            self.OutputSerializer,
+            request
+        )
 
 
 class RombergDeviceHistoryList(APIView):
@@ -2958,3 +3006,19 @@ class ModifyServerProjectsAPI(APIView):
         set_projects_to_server(server_id, projects)
 
         return Response(status=status.HTTP_200_OK)
+
+
+'''
+Gx Models
+'''
+class GxModelAPI(APIView):
+    class OutputSerializer(serializers.Serializer):
+        name = serializers.CharField()
+
+    def get(self, request, gx_id, *args, **kwargs):
+        gx = get_gx(gx_id)
+        model_name = gx.model.name
+
+        data = self.OutputSerializer({"name": model_name}).data
+
+        return Response(data)

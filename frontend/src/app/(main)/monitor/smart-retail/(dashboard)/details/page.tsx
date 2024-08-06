@@ -19,7 +19,7 @@ import {
   pieColors,
 } from "../../../(components)/colors";
 
-const IndustryDetailsPage = () => {
+const RetailDetailsPage = () => {
   const router = useRouter();
   const [value, setValue] = useState("");
   const searchParams = useSearchParams();
@@ -149,4 +149,4 @@ const IndustryDetailsPage = () => {
   );
 };
 
-export default IndustryDetailsPage;
+export default RetailDetailsPage;

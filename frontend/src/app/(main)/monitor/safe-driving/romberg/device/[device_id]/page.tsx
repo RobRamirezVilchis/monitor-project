@@ -3,6 +3,7 @@
 import {
   useCheckDeviceWifiQuery as useDeviceWifiQuery,
   useGxMetricThresholdsQuery,
+  useGxModelQuery,
   useGxRecordsQuery,
   useRombergDeviceHistoryQuery,
   useRombergDeviceLastStatusChange,
@@ -261,7 +262,7 @@ const RombergDevicePage = ({ params }: { params: { device_id: string } }) => {
   });
 
   const recordsList = recordsQuery.data;
-  console.log(recordsList);
+
   const recordsGrid = useDataGrid<GxRecord>({
     data: recordsQuery.data || [],
     columns: recordsGridCols,
@@ -298,6 +299,10 @@ const RombergDevicePage = ({ params }: { params: { device_id: string } }) => {
     (th) => th.metric_name == selectedMetric
   );
 
+  /* const gxModelQuery = useGxModelQuery({
+    variables: { gx_id: Number(params.device_id) },
+  }); */
+
   const setUnitInactiveMutation = useSetDeviceInactiveMutation({
     onSuccess: () => {
       router.push("/monitor/smart-retail/");
@@ -331,39 +336,51 @@ const RombergDevicePage = ({ params }: { params: { device_id: string } }) => {
               onChange={setRecordsDateValue}
             />
           </div>
-          <SegmentedControl
-            value={selectedMetric}
-            onChange={setSelectedMetric}
-            data={records.map((r) => r.name)}
-          ></SegmentedControl>
-          <Skeleton visible={recordsList == undefined}>
-            <LineChart
-              tooltipProps={{
-                content: ({ label, payload }) => (
-                  <LineTooltip label={label} payload={payload} />
-                ),
-              }}
-              h={250}
-              data={recordsList as Record<string, any>[]}
-              dataKey="register_time"
-              series={[{ name: "avg_value", color: "green.6" }]}
-              curveType="linear"
-              withDots={false}
-              referenceLines={
-                threshold
-                  ? [
-                      {
-                        y: threshold.threshold,
-                        label: "Crítico",
-                        color: "red.6",
-                      },
-                    ]
-                  : []
-              }
-            ></LineChart>
-          </Skeleton>
+          {thresholdsQuery.data && (
+            <SegmentedControl
+              value={selectedMetric}
+              onChange={setSelectedMetric}
+              data={thresholdsQuery.data.map((r) => r.metric_name)}
+            ></SegmentedControl>
+          )}
+          {recordsList && recordsList?.length > 0 ? (
+            <>
+              <Skeleton visible={recordsList == undefined}>
+                <LineChart
+                  tooltipProps={{
+                    content: ({ label, payload }) => (
+                      <LineTooltip label={label} payload={payload} />
+                    ),
+                  }}
+                  h={250}
+                  data={recordsList as Record<string, any>[]}
+                  dataKey="register_time"
+                  series={[{ name: "avg_value", color: "green.6" }]}
+                  curveType="linear"
+                  withDots={false}
+                  referenceLines={
+                    threshold
+                      ? [
+                          {
+                            y: threshold.threshold,
+                            label: "Crítico",
+                            color: "red.6",
+                          },
+                        ]
+                      : []
+                  }
+                ></LineChart>
+              </Skeleton>
 
-          <DataGrid instance={recordsGrid}></DataGrid>
+              <div className="h-[65vh] ">
+                <DataGrid instance={recordsGrid} />
+              </div>
+            </>
+          ) : (
+            <p className="opacity-70 text-center ">
+              No existen métricas registradas de este dispositivo.
+            </p>
+          )}
         </div>
       </Drawer>
       {/*  <BackArrow /> */}
@@ -442,7 +459,7 @@ const RombergDevicePage = ({ params }: { params: { device_id: string } }) => {
       <div className="sm:flex justify-between items-end text-xl">
         {deviceStatus && (
           <div className="text-neutral-500 dark:text-dark-200">
-            {deviceStatus.delayed && (
+            {deviceStatus.delayed ? (
               <div className="flex items-center">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -450,7 +467,7 @@ const RombergDevicePage = ({ params }: { params: { device_id: string } }) => {
                   viewBox="0 0 20 20"
                   strokeWidth="1.5"
                   stroke="currentColor"
-                  className="w-4 h-4"
+                  className="w-5 h-4"
                 >
                   <path
                     strokeLinecap="round"
@@ -461,8 +478,7 @@ const RombergDevicePage = ({ params }: { params: { device_id: string } }) => {
 
                 <p className="ml-2 ">Retraso: {deviceStatus.delay_time}</p>
               </div>
-            )}
-            {!deviceStatus.delayed && (
+            ) : (
               <div className="flex items-center">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -482,6 +498,7 @@ const RombergDevicePage = ({ params }: { params: { device_id: string } }) => {
                 <p className="ml-2 mt-1 ">Comunicación reciente</p>
               </div>
             )}
+
             <div>
               {daysRemaining != -1 && (
                 <p>Licencia termina en {daysRemaining} días</p>
@@ -498,11 +515,11 @@ const RombergDevicePage = ({ params }: { params: { device_id: string } }) => {
             </div>
           </div>
         )}
-        {/* <div className="mt-2 sm:mt-0">
+        <div className="mt-2 sm:mt-0">
           <Link href={`${params.device_id}/logs`}>
             <Button size="md">Consultar logs</Button>
           </Link>
-        </div> */}
+        </div>
       </div>
 
       <div className="mt-4 mb-20">

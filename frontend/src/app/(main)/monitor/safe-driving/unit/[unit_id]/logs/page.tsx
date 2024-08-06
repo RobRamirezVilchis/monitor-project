@@ -1,7 +1,7 @@
 "use client";
 
 import { useUnitLogsQuery, useUnitStatusQuery } from "@/api/queries/monitor";
-import { UnitLogs } from "@/api/services/monitor/types";
+import { UnitLog } from "@/api/services/monitor/types";
 import { useDataGrid, useSsrDataGrid } from "@/hooks/data-grid";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 
@@ -56,7 +56,7 @@ const UnitLogsPage = ({ params }: { params: { unit_id: string } }) => {
     },
   });
 
-  const grid = useDataGrid<UnitLogs>({
+  const grid = useDataGrid<UnitLog>({
     data: unitLogsQuery.data?.data || [],
     columns: cols,
     rowNumberingMode: "static",
@@ -121,7 +121,7 @@ const UnitLogsPage = ({ params }: { params: { unit_id: string } }) => {
 
 export default UnitLogsPage;
 
-const cols: ColumnDef<UnitLogs>[] = [
+const cols: ColumnDef<UnitLog>[] = [
   {
     accessorKey: "fecha_subida",
     accessorFn: (row) => format(parseISO(row.fecha_subida), "Pp"),

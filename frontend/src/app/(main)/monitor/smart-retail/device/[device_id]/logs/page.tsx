@@ -4,7 +4,7 @@ import {
   useRetailDeviceLogsQuery,
   useRetailDeviceStatusQuery,
 } from "@/api/queries/monitor";
-import { DeviceLogs } from "@/api/services/monitor/types";
+import { DeviceLog } from "@/api/services/monitor/types";
 import Breadcrumbs from "@/app/(main)/monitor/(components)/Breadcrumbs";
 import { useDataGrid, useSsrDataGrid } from "@/hooks/data-grid";
 import DataGrid from "@/ui/data-grid/DataGrid";
@@ -62,7 +62,7 @@ const DeviceLogsPage = ({ params }: { params: { device_id: string } }) => {
     },
   });
 
-  const grid = useDataGrid<DeviceLogs>({
+  const grid = useDataGrid<DeviceLog>({
     data: deviceLogsQuery.data?.data || [],
     columns: cols,
     rowNumberingMode: "static",
@@ -120,7 +120,7 @@ const DeviceLogsPage = ({ params }: { params: { device_id: string } }) => {
 
 export default DeviceLogsPage;
 
-const cols: ColumnDef<DeviceLogs>[] = [
+const cols: ColumnDef<DeviceLog>[] = [
   {
     accessorKey: "device",
     accessorFn: (row) => row.device,

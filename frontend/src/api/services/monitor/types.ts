@@ -212,7 +212,7 @@ export interface DeviceLogsFilters extends Partial<PageNumberPaginationParams>{
   //register_time_after: string;
 }
 
-export interface DeviceLogs {
+export interface DeviceLog {
   device: string;
   log_date: string;
   log_time: string;
@@ -226,7 +226,7 @@ export interface UnitLogsFilters extends Partial<PageNumberPaginationParams>{
   //register_time_after: string;
 }
 
-export interface UnitLogs {
+export interface UnitLog {
   unidad: string;
   fecha_subida: string;
   timestamp: string;
@@ -510,4 +510,10 @@ export interface GxRecord {
 export interface GxMetricThreshold {
   metric_name: string,
   threshold: number,
+}
+
+
+// Models ----------------------------------------------
+export interface GxModel {
+  name: string,
 }

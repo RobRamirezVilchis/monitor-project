@@ -53,6 +53,8 @@ class Gx(models.Model):
     name = models.CharField("Nombre", max_length=50)
     description = models.CharField(max_length=50, null=True)
     client = models.ForeignKey(Client, on_delete=models.CASCADE)
+    model = models.ForeignKey(
+        GxModel, on_delete=models.CASCADE, default=GxModel.get_default_pk)
 
     def __str__(self):
         return self.name

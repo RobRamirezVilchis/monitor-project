@@ -10,7 +10,11 @@ def get_deployments():
     return Deployment.objects.all()
 
 
-def get_unit(unit_id):
+def get_gx(gx_id: int):
+    return Gx.objects.get(id=gx_id)
+
+
+def get_unit(unit_id: int):
     return Unit.objects.get(id=unit_id)
 
 
@@ -89,8 +93,8 @@ def get_or_create_deployment(name: str):
     return deployment
 
 
-def get_deployment_clients(deployment: Deployment):
-    return Client.objects.filter(deployment=deployment, active=True)
+def get_deployment_clients(deployment_name: str):
+    return Client.objects.filter(deployment__name=deployment_name, active=True)
 
 
 def get_client(name: str, deployment: str):

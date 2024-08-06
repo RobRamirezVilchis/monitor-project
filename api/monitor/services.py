@@ -309,8 +309,10 @@ def create_romberg_device_history(args):
     )
 
 
-def get_or_create_gx_metric(name):
-    metric, created = GxMetric.objects.get_or_create(metric_name=name)
+def get_or_create_gx_metric(name, model_name):
+    model = GxModel.objects.get(name=model_name)
+    metric, created = GxMetric.objects.get_or_create(
+        metric_name=name, gx_model=model)
     return metric
 
 
@@ -324,7 +326,8 @@ def create_gx_records(gx: Gx, records: list):
         metric_name = record["Tipo_unidad"]
 
         if metric_name not in metrics:
-            metrics[metric_name] = get_or_create_gx_metric(metric_name)
+            metrics[metric_name] = get_or_create_gx_metric(
+                metric_name, model_name=gx.model.name)
 
         metric = metrics[metric_name]
 

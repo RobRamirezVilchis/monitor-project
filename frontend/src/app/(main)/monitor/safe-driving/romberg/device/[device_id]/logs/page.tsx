@@ -3,8 +3,10 @@
 import {
   useRetailDeviceLogsQuery,
   useRetailDeviceStatusQuery,
+  useRombergDeviceLogsQuery,
+  useRombergDeviceStatusQuery,
 } from "@/api/queries/monitor";
-import { DeviceLogs } from "@/api/services/monitor/types";
+import { DeviceLog, UnitLog } from "@/api/services/monitor/types";
 import Breadcrumbs from "@/app/(main)/monitor/(components)/Breadcrumbs";
 import { useDataGrid, useSsrDataGrid } from "@/hooks/data-grid";
 import DataGrid from "@/ui/data-grid/DataGrid";
@@ -16,15 +18,19 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
-const DeviceLogsPage = ({ params }: { params: { device_id: string } }) => {
+const RombergDeviceLogsPage = ({
+  params,
+}: {
+  params: { device_id: string };
+}) => {
   const router = useRouter();
   const [showEmpty, setShowEmpty] = useState(true);
 
   const { dataGridState, queryVariables, dataGridConfig } = useSsrDataGrid<{
     name: string;
-    register_time: [Date | null, Date | null];
+    timestamp: [Date | null, Date | null];
   }>({
-    defaultSorting: ["register_time"],
+    defaultSorting: ["register_datetime"],
     queryStateOptions: {
       navigateOptions: {
         scroll: false,
@@ -32,7 +38,7 @@ const DeviceLogsPage = ({ params }: { params: { device_id: string } }) => {
       history: "replace",
     },
     transform: {
-      register_time: (key, value) => {
+      timestamp: (key, value) => {
         if (!value) return {};
         const result: any = {};
         if (value[0]) {
@@ -46,7 +52,7 @@ const DeviceLogsPage = ({ params }: { params: { device_id: string } }) => {
     },
   });
 
-  const deviceStatusQuery = useRetailDeviceStatusQuery({
+  const deviceStatusQuery = useRombergDeviceStatusQuery({
     variables: {
       device_id: params.device_id,
     },
@@ -54,15 +60,14 @@ const DeviceLogsPage = ({ params }: { params: { device_id: string } }) => {
 
   const deviceStatus = deviceStatusQuery.data;
 
-  const deviceLogsQuery = useRetailDeviceLogsQuery({
+  const deviceLogsQuery = useRombergDeviceLogsQuery({
     variables: {
       device_id: params.device_id,
-      show_empty: showEmpty,
       ...queryVariables,
     },
   });
 
-  const grid = useDataGrid<DeviceLogs>({
+  const grid = useDataGrid<UnitLog>({
     data: deviceLogsQuery.data?.data || [],
     columns: cols,
     rowNumberingMode: "static",
@@ -92,23 +97,15 @@ const DeviceLogsPage = ({ params }: { params: { device_id: string } }) => {
         {deviceStatus && (
           <Breadcrumbs
             links={[
-              { href: "/monitor/smart-retail/", name: "Smart Retail" },
+              { href: "/monitor/safe-driving/romberg", name: "Romberg" },
               {
-                href: `/monitor/smart-retail/device/${params.device_id}/`,
-                name: deviceStatus?.name,
+                href: `/monitor/safe-driving/romberg/device/${params.device_id}/`,
+                name: deviceStatus?.device_description,
               },
             ]}
             pageName="Logs"
           ></Breadcrumbs>
         )}
-      </div>
-      <div className="flex justify-end">
-        <Checkbox
-          size="md"
-          label={"Mostrar logs vacíos"}
-          checked={showEmpty}
-          onChange={(event) => setShowEmpty(event.currentTarget.checked)}
-        />
       </div>
 
       <div className="h-[42rem]">
@@ -118,45 +115,45 @@ const DeviceLogsPage = ({ params }: { params: { device_id: string } }) => {
   );
 };
 
-export default DeviceLogsPage;
+export default RombergDeviceLogsPage;
 
-const cols: ColumnDef<DeviceLogs>[] = [
+const cols: ColumnDef<UnitLog>[] = [
   {
-    accessorKey: "device",
-    accessorFn: (row) => row.device,
-    header: "Device",
-    columnTitle: "Device",
-    minSize: 150,
-    enableSorting: true,
-    //filterVariant: "datetime-range",
-    enableMultiSort: true,
-  },
-  {
-    accessorKey: "register_time",
-    accessorFn: (row) => format(parseISO(row.register_time), "Pp"),
-    header: "Register time",
-    columnTitle: "Register time",
-    minSize: 250,
-    enableSorting: true,
+    accessorKey: "fecha_subida",
+    accessorFn: (row) => format(parseISO(row.fecha_subida), "Pp"),
+    header: "Fecha de subida",
+    columnTitle: "Fecha de subida",
+    minSize: 200,
+    //enableSorting: true,
     filterVariant: "datetime-range",
     enableMultiSort: true,
   },
   {
-    accessorKey: "log_time",
-    accessorFn: (row) => format(parseISO(row.log_time), "Pp"),
-    header: "Log time",
-    columnTitle: "Log time",
-    minSize: 250,
-    enableSorting: false,
+    accessorKey: "timestamp",
+    accessorFn: (row) => format(parseISO(row.timestamp), "Pp"),
+    header: "Fecha de generación",
+    columnTitle: "Timestamp",
+    minSize: 200,
+    //enableSorting: true,
+    filterVariant: "datetime-range",
+    enableMultiSort: true,
+  },
+  {
+    accessorKey: "tipo",
+    accessorFn: (row) => row.tipo,
+    header: "Tipo",
+    columnTitle: "Tipo",
+    minSize: 150,
+    enableSorting: true,
     //filterVariant: "datetime-range",
-    //enableMultiSort: true,
   },
   {
     accessorKey: "log",
-    accessorFn: (row) => (row.log == "" ? "Vacío" : row.log),
+    accessorFn: (row) => row.log,
     header: "Log",
     columnTitle: "Log",
-    minSize: 500,
-    enableSorting: false,
+    minSize: 700,
+    enableSorting: true,
+    //filterVariant: "datetime-range",
   },
 ];

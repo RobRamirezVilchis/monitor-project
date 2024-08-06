@@ -350,7 +350,7 @@ def process_driving_data(response, now=None):
 def update_driving_status():
 
     deployment = get_or_create_deployment('Safe Driving')
-    clients = get_deployment_clients(deployment=deployment)
+    clients = get_deployment_clients('Safe Driving')
 
     for client in clients:
         client_name = client.name
@@ -967,7 +967,7 @@ def update_industry_status(deployment_name="Industry"):
         chat_name = "SMART_BUILDINGS"
 
     deployment = get_or_create_deployment(deployment_name)
-    clients = get_deployment_clients(deployment)
+    clients = get_deployment_clients(deployment_name)
 
     for client in clients:
         client_keyname = client.keyname
@@ -1448,7 +1448,7 @@ def update_retail_status():
     now = datetime.now(tz=pytz.timezone("UTC"))
 
     deployment = get_or_create_deployment('Smart Retail')
-    clients = get_deployment_clients(deployment)
+    clients = get_deployment_clients('Smart Retail')
 
     for client in clients:
         client_alias = client.keyname
@@ -1890,7 +1890,7 @@ def update_romberg_status():
     local_tz = pytz.timezone("America/Mexico_City")
 
     deployment = get_or_create_deployment('Romberg')
-    clients = get_deployment_clients(deployment=deployment)
+    clients = get_deployment_clients('Romberg')
 
     for client in clients:
         client_keyname = client.keyname
@@ -1968,7 +1968,9 @@ def update_romberg_status():
 
             current_metrics = {}
             for metric_name, metric_data in most_recent_metrics.items():
-                metric = get_or_create_gx_metric(metric_name)
+                metric = get_or_create_gx_metric(
+                    metric_name, model_name=device.model.name)
+
                 average = metric_data["Valor_promedio"]
                 critical = False
                 if metric.threshold is not None:

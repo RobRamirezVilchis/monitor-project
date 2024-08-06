@@ -5,6 +5,15 @@ from . import apis
 
 urlpatterns = [
     path("deployments/", apis.DeploymentList.as_view(), name="deployments"),
+    path("gx-models/",
+         include(([
+             path("<int:gx_id>/",
+                  include(([
+                      path("", apis.GxModelAPI.as_view(),
+                           name="gx_model"),
+                  ], "device_data")))
+         ], "gx_models")),
+         ),
     path("records/",
          include(([
              path("<int:device_id>/",
@@ -183,8 +192,8 @@ urlpatterns = [
                                 name="scatter-plot"),
                            # path("camera-disconnections/", apis.CameraDisconnectionsList.as_view(),
                            #     name="camera-disconnections"),
-                           # path("logs/", apis.RombergLogsAPI.as_view(),
-                           #     name="device-logs"),
+                           path("logs/", apis.RombergLogsAPI.as_view(),
+                               name="device-logs"),
                            # path("check-wifi-connection/", apis.DeviceWifiProblemsAPI.as_view(),
                            #     name="device-connection"),
                            # path("set-inactive/", apis.SetDeviceClientAsInactiveAPI.as_view(),

@@ -1,4 +1,4 @@
-import { UnitStatus, SeverityCount, UnitHistory, DeviceStatus, UnitFilters, LastStatusChange, DeviceFilters, DeviceHistory, Client, CameraDisconnection, LastActiveStatus, StatusHistory, AreaPlotData, AreaPlotFilters, LastUpdate, DeviceLogsFilters, DeviceLogs, DeviceWifiStatus, UnitLogsFilters, UnitLogs, NewClientData, ServerStatus, ServerHistoryFilters, ServerHistory, MetricsKeys, ServerRegion, ServerType, ServerStatusFilters, RetailDeviceStatus, RetailDeviceHistory, UnitReportContent, RDSStatusFilters, RDSStatus, RDSHistoryFilters, RDSHistory, RDSType, RDSFilters, RDS, Server, Deployment, NewProjectData, ServerProjects, Project, LoadBalancer, LoadBalancerStatusFilters, LoadBalancerStatus, LoadBalancerFilters, LoadBalancerHistoryFilters, LoadBalancerHistory, ServerFilters, ModifyProjectsData, UnitFailedTrips, UnitTrip, UnitSeverityHistoryFilters, ProjectData, EditedProjectData, RDSProjects, ServiceSeverityHistory, RombergDeviceHistory, RombergDeviceStatus, GxRecordFilters, GxRecord, GxFilter, GxMetricThreshold } from "./types";
+import { UnitStatus, SeverityCount, UnitHistory, DeviceStatus, UnitFilters, LastStatusChange, DeviceFilters, DeviceHistory, Client, CameraDisconnection, LastActiveStatus, StatusHistory, AreaPlotData, AreaPlotFilters, LastUpdate, DeviceLogsFilters, DeviceLog, DeviceWifiStatus, UnitLogsFilters, UnitLog, NewClientData, ServerStatus, ServerHistoryFilters, ServerHistory, MetricsKeys, ServerRegion, ServerType, ServerStatusFilters, RetailDeviceStatus, RetailDeviceHistory, UnitReportContent, RDSStatusFilters, RDSStatus, RDSHistoryFilters, RDSHistory, RDSType, RDSFilters, RDS, Server, Deployment, NewProjectData, ServerProjects, Project, LoadBalancer, LoadBalancerStatusFilters, LoadBalancerStatus, LoadBalancerFilters, LoadBalancerHistoryFilters, LoadBalancerHistory, ServerFilters, ModifyProjectsData, UnitFailedTrips, UnitTrip, UnitSeverityHistoryFilters, ProjectData, EditedProjectData, RDSProjects, ServiceSeverityHistory, RombergDeviceHistory, RombergDeviceStatus, GxRecordFilters, GxRecord, GxFilter, GxMetricThreshold, GxModel } from "./types";
 import { Id, OptionallyPaginated, Paginated } from "@/api/types";
 import { Role, User } from "../auth/types";
 import api from "../..";
@@ -431,7 +431,7 @@ export async function getUnitLogs(
   filters: UnitLogsFilters,
   config?: Parameters<typeof http.get>[1]
 ) {
-    const resp = await http.get<Paginated<UnitLogs>>(
+    const resp = await http.get<Paginated<UnitLog>>(
       api.endpoints.monitor.driving.unitLogs(filters.unit_id),
       {
         params: filters,
@@ -445,7 +445,7 @@ export async function getDeviceLogs(
   filters: DeviceLogsFilters,
   config?: Parameters<typeof http.get>[1]
 ) {
-    const resp = await http.get<Paginated<DeviceLogs>>(
+    const resp = await http.get<Paginated<DeviceLog>>(
       api.endpoints.monitor.industry.deviceLogs(filters.device_id),
       {
         params: filters,
@@ -934,7 +934,7 @@ export async function getRetailDeviceLogs(
   filters: DeviceLogsFilters,
   config?: Parameters<typeof http.get>[1]
 ) {
-    const resp = await http.get<Paginated<DeviceLogs>>(
+    const resp = await http.get<Paginated<DeviceLog>>(
       api.endpoints.monitor.retail.deviceLogs(filters.device_id),
       {
         params: filters,
@@ -1191,7 +1191,7 @@ export async function getSBDeviceLogs(
 filters: DeviceLogsFilters,
 config?: Parameters<typeof http.get>[1]
 ) {
-  const resp = await http.get<Paginated<DeviceLogs>>(
+  const resp = await http.get<Paginated<DeviceLog>>(
     api.endpoints.monitor.smartBuildings.deviceLogs(filters.device_id),
     {
       params: filters,
@@ -1325,6 +1325,19 @@ export async function getRombergClients(config?: Parameters<typeof http.get>[1])
   return resp.data;
 }
 
+export async function getRombergDeviceLogs(
+  filters: DeviceFilters,
+  config?: Parameters<typeof http.get>[1]
+) {
+    const resp = await http.get<Paginated<UnitLog>>(
+      api.endpoints.monitor.romberg.deviceLogs(filters.device_id),
+      {
+        params: filters,
+        ...config,
+      }
+    );
+    return resp.data;
+}
 
 
 // Server Projects API ----------------------------------------------------
@@ -1416,6 +1429,20 @@ export async function getGxMetricThresholds(
 ) {
     const resp = await http.get<GxMetricThreshold[]>(
       api.endpoints.monitor.records.thresholds(filters.gx_id),
+      {
+        ...config,
+      }
+    );
+    return resp.data;
+}
+
+// Models -----------------------------------------------------
+export async function getGxModel( 
+  filters: GxFilter,
+  config?: Parameters<typeof http.get>[1]
+) {
+    const resp = await http.get<GxModel>(
+      api.endpoints.monitor.models.model(filters.gx_id),
       {
         ...config,
       }

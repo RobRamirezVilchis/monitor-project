@@ -409,3 +409,5 @@ admin.site.register(RombergDeviceHistory, RombergDeviceHistoryAdmin)
 
 admin.site.register(GxMetric)
 admin.site.register(GxRecord, GxRecordsAdmin)
+
+admin.site.register(GxModel)

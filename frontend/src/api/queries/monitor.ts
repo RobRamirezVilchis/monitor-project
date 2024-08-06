@@ -872,7 +872,7 @@ export const useSBDeviceLogsQuery = createQuery({
 });
 
 
-// Smart Retail API ----------------------------------------
+// Romberg API ----------------------------------------
 export const useRombergStatusQuery = createQuery({
   queryPrimaryKey: "romberg-devices",
   queryFn: (ctx, vars) => monitorService.getRombergStatus({ signal: ctx.signal }),
@@ -886,7 +886,7 @@ export const useRombergStatusQuery = createQuery({
 
 
 export const useRombergDeviceStatusQuery = createQuery({
-  queryPrimaryKey: "retail-device",
+  queryPrimaryKey: "romberg-device",
   queryKeyVariables: (vars: DeviceFilters) => vars ? [vars] : [],
   queryFn: (ctx, vars) => monitorService.getRombergDeviceStatus(vars, { signal: ctx.signal }),
   cacheTime: 1000 * 60 * 5,  // 5 minutes
@@ -898,7 +898,7 @@ export const useRombergDeviceStatusQuery = createQuery({
 });
 
 export const useRombergSeverityCount = createQuery({
-  queryPrimaryKey: "retail_severity_count",
+  queryPrimaryKey: "romberg_severity_count",
   queryFn: (ctx, vars) => monitorService.getRombergSeverityCount({ signal: ctx.signal }),
   cacheTime: 1000 * 60 * 5,  // 5 minutes
   staleTime: 1000 * 60 * 3,  // 3 minutes
@@ -910,7 +910,7 @@ export const useRombergSeverityCount = createQuery({
 
 
 export const useRombergDeviceLastStatusChange = createQuery({
-  queryPrimaryKey: "retail-last-status-change",
+  queryPrimaryKey: "romberg-last-status-change",
   queryKeyVariables: (vars: DeviceFilters) => vars ? [vars] : [],
   queryFn: (ctx, vars) => monitorService.getRombergDeviceLastStatusChange(vars, { signal: ctx.signal }),
   cacheTime: 1000 * 60 * 5,  // 5 minutes
@@ -919,15 +919,15 @@ export const useRombergDeviceLastStatusChange = createQuery({
   queryClient: defaultQueryClient,
 });
 
-/* export const useRombergDeviceLogsQuery = createQuery({
-  queryPrimaryKey: "retail-logs",
-  queryKeyVariables: (vars: DeviceLogsFilters) => vars ? [vars] : [],
+export const useRombergDeviceLogsQuery = createQuery({
+  queryPrimaryKey: "romberg-logs",
+  queryKeyVariables: (vars: DeviceFilters) => vars ? [vars] : [],
   queryFn: (ctx, vars) => monitorService.getRombergDeviceLogs(vars, { signal: ctx.signal }),
   cacheTime: 1000 * 60 * 5,  // 5 minutes
   staleTime: 1000 * 60 * 3,  // 3 minutes
   keepPreviousData: true,
   queryClient: defaultQueryClient,
-}); */
+});
 
 
 export const useRombergDeviceHistoryQuery = createQuery({
@@ -989,6 +989,19 @@ export const useGxMetricThresholdsQuery = createQuery({
   queryPrimaryKey: "gx-thresholds",
   queryKeyVariables: (vars: GxFilter) => vars ? [vars] : [],
   queryFn: (ctx, vars) => monitorService.getGxMetricThresholds(vars, { signal: ctx.signal }),
+  cacheTime: 1000 * 60 * 5,  // 5 minutes
+  staleTime: 1000 * 60 * 3,  // 3 minutes
+  keepPreviousData: true,
+  queryClient: defaultQueryClient,
+});
+
+
+
+// Gx Models -------------------------------------------------------------------------
+export const useGxModelQuery = createQuery({
+  queryPrimaryKey: "gx-model-query",
+  queryKeyVariables: (vars: GxFilter) => vars ? [vars] : [],
+  queryFn: (ctx, vars) => monitorService.getGxModel(vars, { signal: ctx.signal }),
   cacheTime: 1000 * 60 * 5,  // 5 minutes
   staleTime: 1000 * 60 * 3,  // 3 minutes
   keepPreviousData: true,

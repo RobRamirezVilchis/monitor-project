@@ -49,9 +49,12 @@ const api = {
     },
     monitor: {
       deployments: "api/v1/monitor/deployments/",
+      models: {
+        model: (gx_id: number) => `api/v1/monitor/models/${gx_id}/`,
+      },
       records: {
-        list: (device_id: number) => `api/v1/monitor/records/${device_id}/`,
-        thresholds: (device_id: number) => `api/v1/monitor/records/${device_id}/thresholds/`
+        list: (gx_id: number) => `api/v1/monitor/records/${gx_id}/`,
+        thresholds: (gx_id: number) => `api/v1/monitor/records/${gx_id}/thresholds/`
       },
       driving: {
         clients: "api/v1/monitor/driving/clients/",
@@ -127,6 +130,7 @@ const api = {
         deviceHistory: (device_id: DeviceId) => `api/v1/monitor/romberg/devices/${device_id}/history/`,
         lastStatusChange: (device_id: DeviceId) => `api/v1/monitor/romberg/devices/${device_id}/last-status-change/`,
         severityHistory: (device_id: DeviceId) => `api/v1/monitor/romberg/devices/${device_id}/severity-history/`,
+        deviceLogs: (device_id: DeviceId) => `api/v1/monitor/romberg/devices/${device_id}/logs/`,
       },
       servers: {
         list: "api/v1/monitor/servers/list/",
