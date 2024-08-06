@@ -1,4 +1,4 @@
-import { UnitStatus, SeverityCount, UnitHistory, DeviceStatus, UnitFilters, LastStatusChange, DeviceFilters, DeviceHistory, Client, CameraDisconnection, LastActiveStatus, StatusHistory, AreaPlotData, AreaPlotFilters, LastUpdate, DeviceLogsFilters, DeviceLogs, DeviceWifiStatus, UnitLogsFilters, UnitLogs, NewClientData, ServerStatus, ServerHistoryFilters, ServerHistory, MetricsKeys, ServerRegion, ServerType, ServerStatusFilters, RetailDeviceStatus, RetailDeviceHistory, UnitReportContent, RDSStatusFilters, RDSStatus, RDSHistoryFilters, RDSHistory, RDSType, RDSFilters, RDS, Server, Deployment, NewProjectData, ServerProjects, Project, LoadBalancer, LoadBalancerStatusFilters, LoadBalancerStatus, LoadBalancerFilters, LoadBalancerHistoryFilters, LoadBalancerHistory, ServerFilters, ModifyProjectsData, UnitFailedTrips, UnitTrip, UnitSeverityHistoryFilters, ProjectData, EditedProjectData, RDSProjects, ServiceSeverityHistory } from "./types";
+import { UnitStatus, SeverityCount, UnitHistory, DeviceStatus, UnitFilters, LastStatusChange, DeviceFilters, DeviceHistory, Client, CameraDisconnection, LastActiveStatus, StatusHistory, AreaPlotData, AreaPlotFilters, LastUpdate, DeviceLogsFilters, DeviceLogs, DeviceWifiStatus, UnitLogsFilters, UnitLogs, NewClientData, ServerStatus, ServerHistoryFilters, ServerHistory, MetricsKeys, ServerRegion, ServerType, ServerStatusFilters, RetailDeviceStatus, RetailDeviceHistory, UnitReportContent, RDSStatusFilters, RDSStatus, RDSHistoryFilters, RDSHistory, RDSType, RDSFilters, RDS, Server, Deployment, NewProjectData, ServerProjects, Project, LoadBalancer, LoadBalancerStatusFilters, LoadBalancerStatus, LoadBalancerFilters, LoadBalancerHistoryFilters, LoadBalancerHistory, ServerFilters, ModifyProjectsData, UnitFailedTrips, UnitTrip, UnitSeverityHistoryFilters, ProjectData, EditedProjectData, RDSProjects, ServiceSeverityHistory, RombergDeviceHistory, RombergDeviceStatus, GxRecordFilters, GxRecord, GxFilter, GxMetricThreshold } from "./types";
 import { Id, OptionallyPaginated, Paginated } from "@/api/types";
 import { Role, User } from "../auth/types";
 import api from "../..";
@@ -904,22 +904,6 @@ export async function addSmartRetailClient(
 
 }
 
-export async function getSmartBuildingsAreaPlotData(
-  filters: AreaPlotFilters, 
-  config?: Parameters<typeof http.get>[1]
-  ) {
-  
-    const resp = await http.get<AreaPlotData[]>(
-      api.endpoints.monitor.smartBuildings.areaPlotData,
-      {
-        params: filters,
-        ...config,
-      }
-    );
-    return resp.data;
-
-}
-
 export async function getSmartRetailSeverityCount(config?: Parameters<typeof http.get>[1]) {
   
   const resp = await http.get<SeverityCount[]>(
@@ -1054,6 +1038,22 @@ config?: Parameters<typeof http.post>[2]
     config
   );
   return resp.data;
+
+}
+
+export async function getSmartBuildingsAreaPlotData(
+  filters: AreaPlotFilters, 
+  config?: Parameters<typeof http.get>[1]
+  ) {
+  
+    const resp = await http.get<AreaPlotData[]>(
+      api.endpoints.monitor.smartBuildings.areaPlotData,
+      {
+        params: filters,
+        ...config,
+      }
+    );
+    return resp.data;
 
 }
 
@@ -1202,6 +1202,131 @@ config?: Parameters<typeof http.get>[1]
 }
 
 
+// Romberg API ------------------------------------------------------------
+export async function getRombergStatus(config?: Parameters<typeof http.get>[1]) {
+
+  const resp = await http.get<RombergDeviceStatus[]>(
+    api.endpoints.monitor.romberg.status,
+    {
+      ...config,
+    }
+  );
+  return resp.data;
+
+}
+
+
+export async function getRombergDeviceStatus(filters: DeviceFilters, config?: Parameters<typeof http.get>[1]) {
+
+  const resp = await http.get<RombergDeviceStatus>(
+    api.endpoints.monitor.romberg.deviceStatus(filters.device_id),
+    {
+      params: filters,
+      ...config,
+    }
+  );
+  return resp.data;
+
+}
+
+export async function addRombergClient(
+  data: NewClientData,
+  config?: Parameters<typeof http.post>[2]
+) {
+  
+    const resp = await http.post<NewClientData>(
+      api.endpoints.monitor.romberg.addClient,
+      data,
+      config
+    );
+    return resp.data;
+
+}
+
+export async function getRombergAreaPlotData(
+  filters: AreaPlotFilters, 
+  config?: Parameters<typeof http.get>[1]
+  ) {
+  
+    const resp = await http.get<AreaPlotData[]>(
+      api.endpoints.monitor.romberg.areaPlotData,
+      {
+        params: filters,
+        ...config,
+      }
+    );
+    return resp.data;
+
+}
+
+export async function getRombergSeverityCount(config?: Parameters<typeof http.get>[1]) {
+  
+  const resp = await http.get<SeverityCount[]>(
+    api.endpoints.monitor.romberg.severityCount,
+    {
+      ...config,
+    }
+  );
+  return resp.data;
+
+}
+
+export async function getRombergDeviceLastStatusChange(
+  filters: DeviceFilters,
+  config?: Parameters<typeof http.get>[1]
+) {
+    const resp = await http.get<LastStatusChange>(
+      api.endpoints.monitor.romberg.lastStatusChange(filters.device_id),
+      {
+        params: filters,
+        ...config,
+      }
+    );
+    return resp.data;
+}
+
+export async function getRombergDeviceHistory(
+  filters: DeviceFilters,
+  config?: Parameters<typeof http.get>[1]
+) {
+ 
+    const resp = await http.get<Paginated<RombergDeviceHistory>>(
+      api.endpoints.monitor.romberg.deviceHistory(filters.device_id),
+      {
+        params: filters,
+        ...config,
+      }
+    );
+    return resp.data;
+
+}
+
+export async function getRombergDeviceSeverityHistory(
+  filters: DeviceFilters,
+  config?: Parameters<typeof http.get>[1]
+) {
+    const resp = await http.get<StatusHistory[]>(
+      api.endpoints.monitor.romberg.severityHistory(filters.device_id),
+      {
+        params: filters,
+        ...config,
+      }
+    );
+    return resp.data;
+}
+
+export async function getRombergClients(config?: Parameters<typeof http.get>[1]) {
+  const resp = await http.get<Client[]>(
+    api.endpoints.monitor.romberg.clients,
+    {
+      ...config,
+    }
+  );
+  return resp.data;
+}
+
+
+
 // Server Projects API ----------------------------------------------------
 
 
@@ -1267,4 +1392,33 @@ export async function modifyServerProjects(
     config
   );
   return resp.data;
+}
+
+
+// Records ---------------------------
+export async function getGxRecords( 
+  filters: GxRecordFilters,
+  config?: Parameters<typeof http.get>[1]
+) {
+    const resp = await http.get<GxRecord[]>(
+      api.endpoints.monitor.records.list(filters.gx_id),
+      {
+        params: filters,
+        ...config,
+      }
+    );
+    return resp.data;
+}
+
+export async function getGxMetricThresholds( 
+  filters: GxFilter,
+  config?: Parameters<typeof http.get>[1]
+) {
+    const resp = await http.get<GxMetricThreshold[]>(
+      api.endpoints.monitor.records.thresholds(filters.gx_id),
+      {
+        ...config,
+      }
+    );
+    return resp.data;
 }

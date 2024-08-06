@@ -89,7 +89,7 @@ def get_or_create_deployment(name: str):
     return deployment
 
 
-def get_deployment_clients(deployment: str):
+def get_deployment_clients(deployment: Deployment):
     return Client.objects.filter(deployment=deployment, active=True)
 
 
@@ -260,20 +260,6 @@ def get_devicehistory(device_id: int, filters=None):
         device__id=device_id,
     )
     return DeviceHistoryFilter(filters, logs).qs
-
-
-def get_sd_clients():
-    clients = Client.objects.filter(
-        deployment=Deployment.objects.get(name="Safe Driving"))
-
-    return clients
-
-
-def get_industry_clients():
-    clients = Client.objects.filter(
-        deployment=Deployment.objects.get(name="Industry"))
-
-    return clients
 
 
 def get_or_create_alerttype(description: str):
@@ -996,13 +982,6 @@ def get_retail_devices_severity_counts(client):
     return counts
 
 
-def get_retail_clients():
-    clients = Client.objects.filter(
-        deployment=Deployment.objects.get(name="Smart Retail"))
-
-    return clients
-
-
 def get_or_create_open_trip(unit: Unit, start_datetime: datetime):
 
     trip, created = UnitTrip.objects.get_or_create(
@@ -1020,3 +999,120 @@ def get_unit_failed_trips(unit: Unit):
         latest_active_end_datetime_subquery))
 
     return trips
+
+
+'''
+Romberg
+'''
+
+
+def get_or_create_romberg_device(client_id, name, description):
+    device, created = RombergDevice.objects.get_or_create(
+        client_id=client_id,
+        name=name,
+        defaults={
+            "description": description
+        }
+    )
+    return device
+
+
+def get_romberg_device_status(device_id):
+    return RombergDeviceStatus.objects.get(device_id=device_id)
+
+
+def get_all_romberg_device_status():
+    return RombergDeviceStatus.objects.filter(active=True).order_by("-status__severity")
+
+
+class RombergDeviceHistoryFilter(rf_filters.FilterSet):
+    register_datetime = rf_filters.DateTimeFromToRangeFilter()
+    description = rf_filters.CharFilter(
+        field_name='status__description', lookup_expr="icontains")
+    sort = rf_filters.OrderingFilter(
+        fields=(
+            'register_datetime',
+            ('status__severity', 'severity'),
+            'last_connection',
+            'delayed',
+            'delay_time',
+            'status',
+        )
+    )
+
+    class Meta:
+        model = RombergDeviceHistory
+        fields = ['register_datetime', 'status']
+
+
+def get_romberg_device_history(args, filters=None):
+
+    logs = RombergDeviceHistory.objects.filter(
+        device__id=args['device_id'],
+    )
+    return RombergDeviceHistoryFilter(filters, logs).qs
+
+
+class RombergScatterplotDataFilter(rf_filters.FilterSet):
+    register_datetime = rf_filters.DateFromToRangeFilter()
+
+    class Meta:
+        model = RombergDeviceHistory
+        fields = ['register_datetime']
+
+
+def get_romberg_scatterplot_data(args, filters=None):
+
+    logs = RombergDeviceHistory.objects.filter(
+        device_id=args['device_id'],
+    )
+
+    return RombergScatterplotDataFilter(filters, logs).qs
+
+
+def get_romberg_devices_severity_counts(client):
+    client_query = Q()
+    if client:
+        client_query = Q(device__client=client)
+    counts = RombergDeviceStatus.objects.filter(client_query, active=True).values('status__severity') \
+        .annotate(severity=F('status__severity')) \
+        .values('severity') \
+        .annotate(count=Count('id')) \
+        .order_by('-severity')
+
+    return counts
+
+
+def get_romberg_clients():
+    clients = Client.objects.filter(
+        deployment=Deployment.objects.get(name="Romberg"))
+
+    return clients
+
+
+class GxRecordsFilter(rf_filters.FilterSet):
+    metric_name = rf_filters.CharFilter(
+        field_name='metric__metric_name', lookup_expr="exact")
+    register_time = rf_filters.DateTimeFromToRangeFilter()
+    sort = rf_filters.OrderingFilter(
+        fields=(
+            'log_time',
+        )
+    )
+
+    class Meta:
+        model = GxRecord
+        fields = ['register_time', 'metric_name']
+
+
+def get_gxrecords(gx_id: int, filters=None):
+
+    logs = GxRecord.objects.filter(
+        gx_id=gx_id,
+    ).order_by('-register_time')
+
+    return GxRecordsFilter(filters, logs).qs
+
+
+def get_gx_metrics():
+    return GxMetric.objects.all()

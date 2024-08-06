@@ -38,6 +38,17 @@ class GxStatus(models.Model):
         return f'{str(self.severity)} - {self.description}' if self.description else '-'
 
 
+class GxModel(models.Model):
+    name = models.CharField(max_length=50)
+
+    @classmethod
+    def get_default_pk(cls):
+        gx_model, created = cls.objects.get_or_create(
+            name='Orin',
+        )
+        return gx_model.pk
+
+
 class Gx(models.Model):
     name = models.CharField("Nombre", max_length=50)
     description = models.CharField(max_length=50, null=True)
@@ -45,6 +56,31 @@ class Gx(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class GxMetric(models.Model):
+    metric_name = models.CharField(max_length=50)
+    key = models.CharField(max_length=50, null=True, blank=True)
+    threshold = models.FloatField(null=True, blank=True)
+    to_exceed = models.BooleanField(default=True)
+    gx_model = models.ForeignKey(
+        GxModel, on_delete=models.CASCADE, default=GxModel.get_default_pk)
+
+    def __str__(self):
+        return self.metric_name
+
+
+class GxRecord(models.Model):
+    gx = models.ForeignKey(Gx, on_delete=models.CASCADE)
+    metric = models.ForeignKey(GxMetric, on_delete=models.CASCADE)
+    register_time = models.DateTimeField(
+        auto_now=False, auto_now_add=False)
+    log_time = models.DateTimeField(
+        auto_now=False, auto_now_add=False)
+    avg_value = models.FloatField()
+    max_value = models.IntegerField()
+    min_value = models.IntegerField()
+    critical = models.BooleanField(default=False)
 
 
 class Unit(Gx):
@@ -277,6 +313,45 @@ class RetailDeviceHistory(models.Model):
         return self.device.name
 
 
+class RombergDevice(Gx):
+    def __str__(self):
+        return str(self.name)
+
+
+class RombergDeviceStatus(models.Model):
+    device = models.ForeignKey(RombergDevice, on_delete=models.CASCADE)
+    last_update = models.DateTimeField(auto_now=False, auto_now_add=False)
+    last_detection = models.DateTimeField(auto_now=False, auto_now_add=False)
+    last_activity = models.DateTimeField(auto_now=False, auto_now_add=False)
+    last_alert = models.DateTimeField(null=True, blank=True)
+    delayed = models.BooleanField(default=False)
+    delay_time = models.DurationField(default=timedelta(0))
+    records = models.JSONField()
+    log_counts = models.JSONField()
+    status = models.ForeignKey(GxStatus, on_delete=models.CASCADE)
+    active = models.BooleanField(default=True)
+
+    class Meta:
+        verbose_name_plural = "Romberg device status"
+
+
+class RombergDeviceHistory(models.Model):
+    device = models.ForeignKey(RombergDevice, on_delete=models.CASCADE)
+    register_datetime = models.DateTimeField(
+        auto_now=False, auto_now_add=False)
+    register_date = models.DateField(db_index=True)
+    last_detection = models.DateTimeField(auto_now=False, auto_now_add=False)
+    last_activity = models.DateTimeField(auto_now=False, auto_now_add=False)
+    last_alert = models.DateTimeField(null=True, blank=True)
+    log_counts = models.JSONField()
+    status = models.ForeignKey(GxStatus, on_delete=models.CASCADE)
+    delayed = models.BooleanField(default=False)
+    delay_time = models.DurationField(default=timedelta(0))
+
+    class Meta:
+        verbose_name_plural = "Romberg device histories"
+
+
 class SeverityCount(models.Model):
     deployment = models.ForeignKey(Deployment, on_delete=models.CASCADE)
     client = models.ForeignKey(Client, null=True, on_delete=models.CASCADE)
@@ -304,6 +379,8 @@ class RDSInstanceClass(models.Model):
     def __str__(self):
         return self.name
 
+# AWS Services -----------------------------------------------------
+
 
 class RDS(models.Model):
     name = models.CharField(max_length=50)
@@ -316,7 +393,6 @@ class RDS(models.Model):
         return f'{self.id} - {self.name}'
 
 
-# AWS Services -----------------------------------------------------
 class Server(models.Model):
     name = models.CharField(max_length=50)
     server_type = models.CharField(max_length=50)

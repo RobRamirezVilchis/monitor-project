@@ -49,6 +49,10 @@ const api = {
     },
     monitor: {
       deployments: "api/v1/monitor/deployments/",
+      records: {
+        list: (device_id: number) => `api/v1/monitor/records/${device_id}/`,
+        thresholds: (device_id: number) => `api/v1/monitor/records/${device_id}/thresholds/`
+      },
       driving: {
         clients: "api/v1/monitor/driving/clients/",
         addClient: "api/v1/monitor/driving/clients/create/",
@@ -111,6 +115,18 @@ const api = {
         cameraDisconnections: (device_id: DeviceId) => `api/v1/monitor/smart-buildings/devices/${device_id}/camera-disconnections/`,
         checkWifi: (device_id: DeviceId) => `api/v1/monitor/smart-buildings/devices/${device_id}/check-wifi-connection/`,
         setAsInactive: (device_id: DeviceId) => `api/v1/monitor/smart-buildings/devices/${device_id}/set-inactive/`,
+      },
+      romberg: {
+        clients: "api/v1/monitor/romberg/clients/",
+        addClient: "api/v1/monitor/romberg/clients/create/",
+        status: "api/v1/monitor/romberg/status/",
+        lastUpdate: "api/v1/monitor/romberg/last-update",
+        severityCount: "api/v1/monitor/romberg/status-count/",
+        areaPlotData: "api/v1/monitor/romberg/area-plot-data/",
+        deviceStatus: (device_id: DeviceId) => `api/v1/monitor/romberg/devices/${device_id}/`,
+        deviceHistory: (device_id: DeviceId) => `api/v1/monitor/romberg/devices/${device_id}/history/`,
+        lastStatusChange: (device_id: DeviceId) => `api/v1/monitor/romberg/devices/${device_id}/last-status-change/`,
+        severityHistory: (device_id: DeviceId) => `api/v1/monitor/romberg/devices/${device_id}/severity-history/`,
       },
       servers: {
         list: "api/v1/monitor/servers/list/",

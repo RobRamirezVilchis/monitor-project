@@ -73,8 +73,7 @@ def api_login(login_url, credentials):
 def make_request(request_url, data, token):
     headers = {"Authorization": f"Token {token}"}
     r = requests.get(request_url, data=data, headers=headers)
-    # print(r.status_code)
-    # print(r.text)
+
     return r, r.status_code
 
 
@@ -86,7 +85,6 @@ def get_driving_data(client_keyname, client_id):
         'America/Mexico_City')).replace(tzinfo=pytz.utc)
 
     credentials = get_api_credentials("Safe Driving", client_id)
-    print(client_keyname)
 
     # Hardcoded
     urls = {
@@ -813,12 +811,12 @@ def process_industry_data(response):
     last_connections = {}
     # First log received within the threshold time window, for each device
     first_log_times = {}
-    disconnection_times = {}
+    camera_disc_times = {}
 
     alerts = {}
 
     for device_name, data in response.items():
-        disconnection_times[device_name] = {}
+        camera_disc_times[device_name] = {}
 
         last_connections[device_name] = None
         first_log_times[device_name] = None
@@ -897,9 +895,9 @@ def process_industry_data(response):
         cam_hour_counts = {}
         cam_recent_counts = {}
         for camera_name, camera_logs in cameras_data.items():
-            disconnection_times[device_name][camera_name] = {}
+            camera_disc_times[device_name][camera_name] = {}
             for interval in ["hour", "recent"]:
-                disconnection_times[device_name][camera_name][interval] = timedelta(
+                camera_disc_times[device_name][camera_name][interval] = timedelta(
                     0)
 
             for log in camera_logs:
@@ -911,7 +909,7 @@ def process_industry_data(response):
                 log_msg = log["log"]
 
                 if log["log"].startswith("Desconectada"):
-                    disconnection_times[device_name][camera_name]["hour"] += timedelta(
+                    camera_disc_times[device_name][camera_name]["hour"] += timedelta(
                         minutes=2)
 
                 # Check if the log arrived at the server within the last 10 minutes
@@ -923,7 +921,7 @@ def process_industry_data(response):
                     first_log_times[device_name] = first_log_time
 
                     if log["log"].startswith("Desconectada"):
-                        disconnection_times[device_name][camera_name]["recent"] += timedelta(
+                        camera_disc_times[device_name][camera_name]["recent"] += timedelta(
                             minutes=2)
                 else:
                     intervals = [cam_hour_counts]
@@ -938,7 +936,7 @@ def process_industry_data(response):
         # Prevent an error in case there were no logs and the list is empty
         try:
             max_cam_disc_time = max([camera_data["recent"]
-                                    for name, camera_data in disconnection_times[device_name].items()])
+                                    for name, camera_data in camera_disc_times[device_name].items()])
         except ValueError:
             max_cam_disc_time = timedelta(0)
 
@@ -957,7 +955,7 @@ def process_industry_data(response):
 
     log_counts = {"hour": hourly_log_counts, "recent": recent_log_counts}
 
-    return log_counts, disconnection_times, last_connections, first_log_times, alerts, license_ends
+    return log_counts, camera_disc_times, last_connections, first_log_times, alerts, license_ends
 
 
 def update_industry_status(deployment_name="Industry"):
@@ -1364,7 +1362,7 @@ def process_retail_data(response):
         device_recent_counts = {}
         for log in device_logs:
             register_time = datetime.fromisoformat(
-                log["register_time"][:-1]).replace(tzinfo=pytz.utc)
+                log["register_time"][:-1]).replace(tzinfo=pytz.utc)  # UTC
             log_time = datetime.fromisoformat(f'{log["log_date"]}T{log["log_time"]}').replace(
                 tzinfo=pytz.utc)
 
@@ -1696,6 +1694,406 @@ def update_retail_status():
                 'log_counts': {}
             }
             create_retail_device_history(devicehistory_args)'''
+
+
+'''
+Romberg
+'''
+
+
+def get_romberg_logs(client_keyname, client_id):
+    now = datetime.now(tz=pytz.timezone('UTC')).astimezone(pytz.timezone(
+        'America/Mexico_City')).replace(tzinfo=pytz.utc)
+
+    credentials = get_api_credentials("Romberg", client_id)
+
+    # Hardcoded
+    urls = {
+        "tp": {
+            "login": 'https://tp.introid.com/login/',
+            "logs": 'https://tp.introid.com/romberg/logs/',
+            "records": 'https://tp.introid.com/romberg/records/'
+        },
+    }
+    if client_keyname in urls:
+        login_url = urls[client_keyname]["login"]
+        logs_url = urls[client_keyname]["logs"]
+    else:
+        print("No endpoint found")
+        return
+
+    try:
+        token = api_login(login_url, credentials)
+    except requests.exceptions.ConnectionError:
+        print("Connection error")
+        return
+
+    response, status = make_request(logs_url, {"minutes": 60}, token=token)
+    if status == 401:
+        token = api_login(login_url, credentials)
+        response, status = make_request(
+            logs_url, {"minutes": 60}, token=token)
+
+    if status == 200 or status == 201:
+        response = response.json()
+    else:
+        print(f"Status code: {status}")
+        send_telegram("SAFEDRIVING_CHAT",
+                      message=f'ERROR de API ROMBERG: Código de status {status}')
+        return
+
+    return response
+
+
+def get_romberg_records(client_keyname, client_id, minutes=10):
+    now = datetime.now(tz=pytz.timezone('UTC')).astimezone(pytz.timezone(
+        'America/Mexico_City')).replace(tzinfo=pytz.utc)
+
+    credentials = get_api_credentials("Romberg", client_id)
+
+    # Hardcoded
+    urls = {
+        "tp": {
+            "login": 'https://tp.introid.com/login/',
+            "logs": 'https://tp.introid.com/romberg/logs/',
+            "records": 'https://tp.introid.com/romberg/records/'
+        },
+    }
+    if client_keyname in urls:
+        login_url = urls[client_keyname]["login"]
+        records_url = urls[client_keyname]["records"]
+    else:
+        print("No endpoint found")
+        return
+
+    try:
+        token = api_login(login_url, credentials)
+    except requests.exceptions.ConnectionError:
+        print("Connection error")
+        return
+
+    response, status = make_request(
+        records_url, {"minutes": minutes}, token=token)
+    if status == 401:
+        token = api_login(login_url, credentials)
+        response, status = make_request(
+            records_url, {"minutes": 60}, token=token)
+
+    if status == 200 or status == 201:
+        response = response.json()
+    elif status != 401 or status != 403:
+        print(f"Status code: {status}")
+        send_telegram("SAFEDRIVING_CHAT",
+                      message=f'ERROR de API ROMBERG: Código de status {status}')
+        return
+
+    return response
+
+
+def process_romberg_data(response, now=None):
+    if not now:
+        now = datetime.now(tz=pytz.timezone('UTC')).astimezone(pytz.timezone(
+            'America/Mexico_City')).replace(tzinfo=pytz.utc)
+
+    logs = response["logs"]
+    devices = response["devices"]
+
+    with open("./romberg_logs.json", "w") as f:
+        json.dump(response, f)
+
+    df_logs = pd.DataFrame(logs)
+
+    if not df_logs.empty:
+        df_logs["Timestamp"] = df_logs["Timestamp"].apply(
+            lambda x: datetime.fromisoformat(x))
+        df_logs["Fecha_subida"] = df_logs["Fecha_subida"].apply(
+            lambda x: datetime.fromisoformat(x))
+
+        df_logs["Timestamp"] = df_logs["Timestamp"].dt.tz_localize('UTC')
+        df_logs["Fecha_subida"] = df_logs["Fecha_subida"].dt.tz_localize('UTC')
+
+        logs_last_hour = df_logs[df_logs["Timestamp"] > (
+            now - timedelta(hours=1))]
+
+        # logs_last_hour = logs_last_hour.loc[(logs_last_hour["Tipo"] != "Aux") &
+        #                                        (logs_last_hour["Tipo"] != "Ignición")]
+
+    else:
+        logs_last_hour = pd.DataFrame([])
+
+    devices_data = {dev["ID"]: {k: v for k, v in dev.items() if k != "ID"}
+                    for dev in devices}
+
+    recent_threshold = 10  # Minutes
+    log_counts = {"hour": defaultdict(lambda: defaultdict(
+        int)), "recent": defaultdict(lambda: defaultdict(int))}
+
+    # First log received within the threshold time window, for each device
+    first_log_times = {}
+
+    camera_disc_times = {interval: {device: {0: timedelta(0), 1: timedelta(0)}
+                                    for device in devices_data.keys()}
+                         for interval in ["hour", "recent"]}
+
+    '''
+    Generate counts of log types in two intervals: an hour ago, and 10 minutes ago 
+    '''
+    for i in range(len(logs_last_hour)):
+        log = logs_last_hour.iloc[i]
+        device_id = log["ID"]
+        log_type = log["Tipo"]
+        log_content = log["Log"]
+        log_time = log["Timestamp"]
+
+        recent = log_time > now - timedelta(minutes=recent_threshold)
+        if recent:
+            intervals = ["hour", "recent"]
+            if device_id not in first_log_times or (device_id in first_log_times and first_log_times[device_id] > log_time):
+                first_log_times[device_id] = log_time
+        else:
+            intervals = ["hour"]
+
+        if device_id not in devices_data.keys():
+            continue
+
+        for interval in intervals:
+            log_counts[interval][device_id][log_type] += 1
+
+            if log_type == "camera_missing":
+                cameras_num = log["Log"][:-2].split(":")[2].split()
+                if log_content.split()[1] == "'DISCONNECTED":
+                    for camera in cameras_num:
+                        camera_disc_times[interval][device_id][int(
+                            camera)] += timedelta(minutes=2)
+
+    '''
+    Generate alerts
+    '''
+    alerts = defaultdict(set)
+    for device_id, device_data in devices_data.items():
+
+        alert_conditions = {
+        }
+
+        for description, cond in alert_conditions.items():
+            if cond:
+                if device_id not in alerts:
+                    alerts[device_id] = set([description])
+                else:
+                    alerts[device_id].add(description)
+
+    return devices_data, log_counts, camera_disc_times, first_log_times, alerts
+
+
+def update_romberg_status():
+    now = datetime.now(tz=pytz.timezone("UTC"))
+    local_tz = pytz.timezone("America/Mexico_City")
+
+    deployment = get_or_create_deployment('Romberg')
+    clients = get_deployment_clients(deployment=deployment)
+
+    for client in clients:
+        client_keyname = client.keyname
+        client_name = client.name
+        client_id = client.id
+
+        logs_response = get_romberg_logs(client_keyname, client_id)
+        metrics_response = get_romberg_records(client_keyname, client_id)
+
+        records = defaultdict(list)
+        if metrics_response:
+            for log in metrics_response['logs']:
+
+                localized_upload_time = local_tz.localize(
+                    datetime.fromisoformat(log["Fecha_subida"]))
+                utc_upload_time = localized_upload_time.astimezone(pytz.utc)
+                localized_log_time = local_tz.localize(
+                    datetime.fromisoformat(log["Timestamp"]))
+                utc_log_time = localized_log_time.astimezone(pytz.utc)
+
+                log["Fecha_subida"] = utc_upload_time
+                log["Timestamp"] = utc_log_time
+                records[log['ID']].append(log)
+
+        if logs_response is not None:
+            processed_data = process_romberg_data(logs_response)
+
+            devices_data, log_counts, camera_disc_times, first_log_times, alerts = processed_data
+        else:
+            print(now.isoformat(), "- No data")
+
+        camerastatus_data = []
+        camerahistory_data = []
+
+        hour_cam_disc = camera_disc_times["hour"]
+        recent_cam_dics = camera_disc_times["recent"]
+        for device_name, camera_disc in recent_cam_dics.items():
+            device = get_or_create_romberg_device(
+                client_id, device_name, devices_data[device_name]["Dispositivo"])
+
+            for camera_name, recent_disc_time in camera_disc.items():
+                hour_disc_time = hour_cam_disc[device_name].get(camera_name, 0)
+                camera_args = {
+                    'name': camera_name,
+                    'gx': device
+                }
+                camera = get_or_create_camera(camera_args)
+                camerastatus_data.append({
+                    'camera': camera,
+                    'connected': recent_disc_time == timedelta(0),
+                    'last_update': now,
+                    'disconnection_time': hour_disc_time
+                })
+                camerahistory_data.append({
+                    'camera': camera,
+                    'register_datetime': now,
+                    'register_date': now.date(),
+                    'connected': recent_disc_time == timedelta(0),
+                    'disconnection_time': recent_disc_time
+                })
+        bulk_update_camerastatus(camerastatus_data)
+        bulk_create_camerahistory(camerahistory_data)
+
+        for device_name, device_data in devices_data.items():
+            device_description = device_data["Dispositivo"]
+            device = get_or_create_romberg_device(
+                client_id, device_name, device_description)
+
+            create_gx_records(device, records[device_name])
+            most_recent_metrics = defaultdict(
+                lambda: {"Timestamp": datetime.min.replace(tzinfo=pytz.utc)})
+            for record in records[device_name]:
+                if record["Timestamp"] > most_recent_metrics[record["Tipo_unidad"]]["Timestamp"]:
+                    most_recent_metrics[record["Tipo_unidad"]] = record
+
+            current_metrics = {}
+            for metric_name, metric_data in most_recent_metrics.items():
+                metric = get_or_create_gx_metric(metric_name)
+                average = metric_data["Valor_promedio"]
+                critical = False
+                if metric.threshold is not None:
+                    if metric.to_exceed and average > metric.threshold:
+                        critical = True
+                    elif not metric.to_exceed and average < metric.threshold:
+                        critical = True
+
+                current_metrics[metric_name] = {
+                    "value": average, "critical": critical}
+
+            disc_cameras = sum(
+                [mins.seconds > 0 for cam, mins in camera_disc_times["recent"][device_name].items()])
+            last_activity = local_tz.localize(datetime.fromisoformat(
+                device_data["Última actividad"])).astimezone(pytz.utc)
+            last_detection = local_tz.localize(datetime.fromisoformat(
+                device_data["Última detección"])).astimezone(pytz.utc)
+
+            try:
+                current_device_status = get_romberg_device_status(
+                    device_id=device.id)
+                db_register_time = current_device_status.last_update
+                db_last_connection = current_device_status.last_activity
+                db_delay_time = current_device_status.delay_time
+            except:
+                current_device_status = None
+                db_last_connection = None
+                db_register_time = None
+                db_delay_time = timedelta(0)
+
+            delayed, delay_time = calculate_logs_delay(
+                first_log_times.get(device_name, None), last_activity, db_last_connection, db_register_time, db_delay_time)
+
+            last_alert = current_device_status.last_alert if current_device_status else None
+            alert_interval = 59
+
+            if delay_time > timedelta(hours=5):
+                alerts[device_name].add("Sin conexión reciente")
+
+            # Create and send new alerts
+            if last_alert == None or now - last_alert > timedelta(minutes=alert_interval):
+                message = f'{client_name} - {device.name}:\n'
+                alert_info = ""
+
+                for description in alerts[device_name]:
+                    alert_type = get_or_create_alerttype(description)
+
+                    if description == "Desconexión de cámara":
+                        # Mandar minutos de desconexión en última hora
+                        alert_info = str(
+                            log_counts['hour'][device_name]['counts'].get('camera_connection'))
+
+                    message += f'{description}: {alert_info}\n' if alert_info else f'{description}\n'
+
+                    alert_args = {"alert_type": alert_type, "gx": device,
+                                  "register_datetime": now, "register_date": now.date(),
+                                  "description": alert_info}
+                    alert = create_alert(alert_args)
+
+            status_conditions = [
+                (log_counts["hour"][device_name].get("read_only_ssd", 0)
+                 > 0, 5, "Read only SSD"),
+                (disc_cameras >
+                 1, 5, "Dos cámaras fallando"),
+                (log_counts["recent"][device_name].get(
+                    "restart", 0) > 1, 5, "Múltiples reinicios"),
+                (log_counts["hour"][device_name].get("forced_reboot", 0)
+                 > 1, 5, "forced reboot (>1)"),
+                (delay_time > timedelta(hours=5), 5, "Sin comunicación"),
+                (disc_cameras == 1, 4, "Una cámara fallando"),
+                (log_counts["recent"][device_name].get(
+                    "restart", 0) == 1, 4, "Reinicio"),
+                (log_counts["hour"][device_name].get("forced_reboot", 0)
+                 == 1, 4, "Forced reboot reciente"),
+                (log_counts["recent"][device_name].get("storage_devices", 0)
+                 > 5, 3, "Errores de memoria"),
+                (last_activity > now - timedelta(hours=5),
+                 1, "Comunicación reciente"),
+            ]
+            severity = 0
+            rule = ""
+            for condition, status, description in status_conditions:
+                if condition:
+                    severity = status
+                    rule = description
+
+            gxstatus_args = {
+                'severity': severity,
+                'description': rule,
+                'deployment': deployment
+            }
+            status = get_or_create_gxstatus(gxstatus_args)
+
+            defaults = {
+                "last_update": now,
+                "last_activity": last_activity,
+                "last_detection": last_detection,
+                "last_alert": last_alert,
+                "delayed": delayed,
+                "delay_time": delay_time,
+                "status": status,
+                "log_counts": log_counts["hour"][device_name],
+                "records": current_metrics,
+            }
+            device_status = update_or_create_romberg_device_status(
+                device=device, defaults=defaults)
+
+            devicehistory_args = {
+                "device": device,
+                "register_datetime": now,
+                "register_date": now.date(),
+                "last_activity": last_activity,
+                "last_detection": last_detection,
+                "last_alert": last_alert,
+                "delayed": delayed,
+                "delay_time": delay_time,
+                "status": status,
+                "log_counts": log_counts["recent"][device_name],
+            }
+            create_romberg_device_history(devicehistory_args)
+
+            print(device_description, severity, rule)
+
+            # print(device.name, device.description)
+            # print(delayed, delay_time)
 
 
 # Servers
@@ -2178,6 +2576,7 @@ def register_severity_counts():
         "Industry": lambda client: get_devices_severity_counts(client, "Industry"),
         "Smart Retail": get_retail_devices_severity_counts,
         "Smart Buildings": lambda client: get_devices_severity_counts(client, "Smart Buildings"),
+        "Romberg": get_romberg_devices_severity_counts,
     }
 
     for deployment_name in list(get_severity_counts.keys()):

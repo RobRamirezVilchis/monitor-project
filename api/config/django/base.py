@@ -70,6 +70,8 @@ CRONJOBS = [
      os.path.join(BASE_DIR, 'monitor/log/debug_ret.log' + ' 2>&1 ')),
     ('*/10 * * * *', 'monitor.cron.update_buildings_status', '>> ' +
      os.path.join(BASE_DIR, 'monitor/log/debug_sb.log' + ' 2>&1 ')),
+    ('*/10 * * * *', 'monitor.cron.update_romberg_status', '>> ' +
+     os.path.join(BASE_DIR, 'monitor/log/debug_romberg.log' + ' 2>&1 ')),
     ('*/10 * * * *', 'monitor.cron.update_servers_status', '>> ' +
      os.path.join(BASE_DIR, 'monitor/log/debug_servers.log' + ' 2>&1 ')),
     ('*/10 * * * *', 'monitor.cron.update_rds_status', '>> ' +
@@ -227,8 +229,8 @@ REST_FRAMEWORK = {
         "rest_framework.authentication.SessionAuthentication",
         "rest_framework.authentication.TokenAuthentication",
         "dj_rest_auth.jwt_auth.JWTCookieAuthentication"
-    ],'''
-'''"DEFAULT_PERMISSION_CLASSES": [
+    ],
+    "DEFAULT_PERMISSION_CLASSES": [
         "rest_framework.permissions.IsAuthenticated",
     ],'''
 

@@ -311,6 +311,60 @@ class ServerMetricAdmin(admin.ModelAdmin):
     )
 
 
+class RombergDeviceStatusAdmin(admin.ModelAdmin):
+    list_display = (
+        'id',
+        'device',
+        'get_device_description',
+        'last_activity',
+        'last_detection',
+        'status',
+        'delayed',
+        'delay_time',
+        'log_counts',
+        'records',
+    )
+
+    search_fields = ('device__name',)
+
+    def get_device_description(self, obj):
+        return obj.device.description
+
+    get_device_description.short_description = 'Descriptión'
+    get_device_description.admin_order_field = 'device__description'
+
+
+class RombergDeviceHistoryAdmin(admin.ModelAdmin):
+    list_display = (
+        'device',
+        'get_device_description',
+        'register_datetime',
+        'last_activity',
+        'status',
+        'delayed',
+        'delay_time',
+        'log_counts',
+    )
+
+    search_fields = ('device__name',)
+
+    def get_device_description(self, obj):
+        return obj.device.description
+
+    get_device_description.short_description = 'Description'
+    get_device_description.admin_order_field = 'device__description'
+
+
+class GxRecordsAdmin(admin.ModelAdmin):
+    list_display = (
+        'gx',
+        'metric',
+        'avg_value',
+        'max_value',
+        'min_value',
+    )
+
+
 admin.site.register(Unit, UnitAdmin)
 admin.site.register(UnitStatus, UnitStatusAdmin)
 admin.site.register(UnitTrip, UnitTripAdmin)
@@ -349,3 +403,9 @@ admin.site.register(LoadBalancerHistory, ELBHistoryAdmin)
 
 admin.site.register(RetailDeviceStatus, RetailDeviceStatusAdmin)
 admin.site.register(RetailDeviceHistory, RetailDeviceHistoryAdmin)
+
+admin.site.register(RombergDeviceStatus, RombergDeviceStatusAdmin)
+admin.site.register(RombergDeviceHistory, RombergDeviceHistoryAdmin)
+
+admin.site.register(GxMetric)
+admin.site.register(GxRecord, GxRecordsAdmin)

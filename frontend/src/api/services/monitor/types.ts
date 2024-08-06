@@ -443,10 +443,71 @@ export interface RetailDeviceSeverityHistoryFilters {
   register_datetime_before: Date | null,
 }
 
+// Romberg
+export interface RombergDeviceStatus {
+  device_id: number,
+  device_name: string,
+  device_description: string,
+  client: string,
+  last_update: string | null,
+  last_activity: string | null,
+  delayed: boolean,
+  delay_time: string,
+  severity: number,
+  description: string, 
+  log_counts: {[logType: string]: number},
+  records: {[name: string]: {value: number, critical:boolean}}
+  license_end: string | null,
+}
+
+export interface RombergDeviceHistory extends Partial<PageNumberPaginationParams> {
+  device_id: number,
+  name: string,
+  client: string,
+  register_datetime: string | null,
+  last_update: string | null,
+  last_activity: string | null,
+  delayed: boolean,
+  delay_time: string,
+  severity: number,
+  description: string, 
+  log_counts: {[logType: string]: number},
+}
+
 export interface UnitReportContent {
   content: string
 }
 
 export interface UnitFailedTrips {
   trips: number;
+}
+
+
+// Records ----------------------------------------------
+export interface GxFilter {
+  gx_id: number,
+}
+
+export interface GxRecordFilters {
+  gx_id: number,
+  metric_name?: string,
+  register_time_after: Date | null,
+  register_time_before: Date | null,
+  
+}
+
+export interface GxRecord {
+  gx_id: number,
+  metric: string,
+  register_time: string,
+  log_time: string,
+  avg_value: number,
+  max_value: number,
+  min_value: number,
+  critical: boolean,
+}
+
+export interface GxMetricThreshold {
+  metric_name: string,
+  threshold: number,
 }

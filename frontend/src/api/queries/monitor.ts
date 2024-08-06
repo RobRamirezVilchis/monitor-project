@@ -1,7 +1,7 @@
 import defaultQueryClient from "../clients/defaultQueryClient";
 import { createQuery } from "../helpers/createQuery";
 import * as monitorService from "../services/monitor";
-import { AreaPlotFilters, DeviceFilters, DeviceLogsFilters, DeviceSeverityHistoryFilters, LoadBalancerFilters, LoadBalancerHistoryFilters, LoadBalancerStatusFilters, RDSFilters, RDSHistoryFilters, RDSStatusFilters, RetailDeviceSeverityHistoryFilters, ServerFilters, ServerHistoryFilters, ServerStatusFilters, UnitFilters, UnitLogsFilters, UnitSeverityHistoryFilters } from "../services/monitor/types";
+import { AreaPlotFilters, DeviceFilters, DeviceLogsFilters, DeviceSeverityHistoryFilters, GxFilter, GxRecordFilters, LoadBalancerFilters, LoadBalancerHistoryFilters, LoadBalancerStatusFilters, RDSFilters, RDSHistoryFilters, RDSStatusFilters, RetailDeviceSeverityHistoryFilters, ServerFilters, ServerHistoryFilters, ServerStatusFilters, UnitFilters, UnitLogsFilters, UnitSeverityHistoryFilters } from "../services/monitor/types";
 
 
 export const useDeploymentsQuery = createQuery({
@@ -865,6 +865,130 @@ export const useSBDeviceLogsQuery = createQuery({
   queryPrimaryKey: "device-logs",
   queryKeyVariables: (vars: DeviceLogsFilters) => vars ? [vars] : [],
   queryFn: (ctx, vars) => monitorService.getSBDeviceLogs(vars, { signal: ctx.signal }),
+  cacheTime: 1000 * 60 * 5,  // 5 minutes
+  staleTime: 1000 * 60 * 3,  // 3 minutes
+  keepPreviousData: true,
+  queryClient: defaultQueryClient,
+});
+
+
+// Smart Retail API ----------------------------------------
+export const useRombergStatusQuery = createQuery({
+  queryPrimaryKey: "retail-devices",
+  queryFn: (ctx, vars) => monitorService.getRombergStatus({ signal: ctx.signal }),
+  cacheTime: 1000 * 60 * 5,  // 5 minutes
+  staleTime: 1000 * 60 * 3,  // 3 minutes
+  keepPreviousData: true,
+  queryClient: defaultQueryClient,
+  refetchInterval: 60000,
+  refetchIntervalInBackground: true
+});
+
+
+export const useRombergDeviceStatusQuery = createQuery({
+  queryPrimaryKey: "retail-device",
+  queryKeyVariables: (vars: DeviceFilters) => vars ? [vars] : [],
+  queryFn: (ctx, vars) => monitorService.getRombergDeviceStatus(vars, { signal: ctx.signal }),
+  cacheTime: 1000 * 60 * 5,  // 5 minutes
+  staleTime: 1000 * 60 * 3,  // 3 minutes
+  keepPreviousData: true,
+  queryClient: defaultQueryClient,
+  refetchInterval: 60000,
+  refetchIntervalInBackground: true
+});
+
+export const useRombergSeverityCount = createQuery({
+  queryPrimaryKey: "retail_severity_count",
+  queryFn: (ctx, vars) => monitorService.getRombergSeverityCount({ signal: ctx.signal }),
+  cacheTime: 1000 * 60 * 5,  // 5 minutes
+  staleTime: 1000 * 60 * 3,  // 3 minutes
+  keepPreviousData: true,
+  queryClient: defaultQueryClient,
+  refetchInterval: 60000,
+  refetchIntervalInBackground: true
+});
+
+
+export const useRombergDeviceLastStatusChange = createQuery({
+  queryPrimaryKey: "retail-last-status-change",
+  queryKeyVariables: (vars: DeviceFilters) => vars ? [vars] : [],
+  queryFn: (ctx, vars) => monitorService.getRombergDeviceLastStatusChange(vars, { signal: ctx.signal }),
+  cacheTime: 1000 * 60 * 5,  // 5 minutes
+  staleTime: 1000 * 60 * 3,  // 3 minutes
+  keepPreviousData: true,
+  queryClient: defaultQueryClient,
+});
+
+/* export const useRombergDeviceLogsQuery = createQuery({
+  queryPrimaryKey: "retail-logs",
+  queryKeyVariables: (vars: DeviceLogsFilters) => vars ? [vars] : [],
+  queryFn: (ctx, vars) => monitorService.getRombergDeviceLogs(vars, { signal: ctx.signal }),
+  cacheTime: 1000 * 60 * 5,  // 5 minutes
+  staleTime: 1000 * 60 * 3,  // 3 minutes
+  keepPreviousData: true,
+  queryClient: defaultQueryClient,
+}); */
+
+
+export const useRombergDeviceHistoryQuery = createQuery({
+  queryPrimaryKey: "retail-device-history",
+  queryKeyVariables: (vars: DeviceFilters) => vars ? [vars] : [],
+  queryFn: (ctx, vars) => monitorService.getRombergDeviceHistory(vars, { signal: ctx.signal }),
+  cacheTime: 1000 * 60 * 5,  // 5 minutes
+  staleTime: 1000 * 60 * 3,  // 3 minutes
+  keepPreviousData: true,
+  queryClient: defaultQueryClient,
+});
+
+export const useRombergDeviceSeverityHistory = createQuery({
+  queryPrimaryKey: "severity-history",
+  queryKeyVariables: (vars: RetailDeviceSeverityHistoryFilters) => vars ? [vars] : [],
+  queryFn: (ctx, vars) => monitorService.getRombergDeviceSeverityHistory(vars, { signal: ctx.signal }),
+  cacheTime: 1000 * 60 * 5,  // 5 minutes
+  staleTime: 1000 * 60 * 3,  // 3 minutes
+  keepPreviousData: true,
+  queryClient: defaultQueryClient,
+});
+
+export const useRombergAreaPlotData = createQuery({
+  queryPrimaryKey: "retail-area-plot-data",
+  queryKeyVariables: (vars: AreaPlotFilters) => vars ? [vars] : [],
+  queryFn: (ctx, vars) => monitorService.getRombergAreaPlotData(vars, { signal: ctx.signal }),
+  cacheTime: 1000 * 60 * 5,  // 5 minutes
+  staleTime: 1000 * 60 * 3,  // 3 minutes
+  keepPreviousData: true,
+  queryClient: defaultQueryClient,
+});
+
+
+export const useRombergClientsQuery = createQuery({
+  queryPrimaryKey: "smart-retail-clients",
+  //queryKeyVariables: (vars: UsersFilters) => vars ? [vars] : [],
+  queryFn: (ctx, vars) => monitorService.getRombergClients({ signal: ctx.signal }),
+  cacheTime: 1000 * 60 * 5,  // 5 minutes
+  staleTime: 1000 * 60 * 3,  // 3 minutes
+  keepPreviousData: true,
+  queryClient: defaultQueryClient,
+});
+
+
+
+// Records --------------------------------------------------------------------
+
+export const useGxRecordsQuery = createQuery({
+  queryPrimaryKey: "gx-records-query",
+  queryKeyVariables: (vars: GxRecordFilters) => vars ? [vars] : [],
+  queryFn: (ctx, vars) => monitorService.getGxRecords(vars, { signal: ctx.signal }),
+  cacheTime: 1000 * 60 * 5,  // 5 minutes
+  staleTime: 1000 * 60 * 3,  // 3 minutes
+  keepPreviousData: true,
+  queryClient: defaultQueryClient,
+});
+
+export const useGxMetricThresholdsQuery = createQuery({
+  queryPrimaryKey: "gx-thresholds",
+  queryKeyVariables: (vars: GxFilter) => vars ? [vars] : [],
+  queryFn: (ctx, vars) => monitorService.getGxMetricThresholds(vars, { signal: ctx.signal }),
   cacheTime: 1000 * 60 * 5,  // 5 minutes
   staleTime: 1000 * 60 * 3,  // 3 minutes
   keepPreviousData: true,

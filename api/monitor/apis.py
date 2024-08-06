@@ -512,8 +512,7 @@ class SafeDrivingClientList(APIView):
         name = serializers.CharField()
 
     def get(self, request, *args, **kwargs):
-        deployment = get_or_create_deployment("Safe Driving")
-        clients = get_deployment_clients(deployment)
+        clients = get_deployment_clients("Safe Driving")
 
         data = self.OutputSerializer(clients, many=True).data
         return Response(data)
@@ -524,8 +523,7 @@ class IndustryClientList(APIView):
         name = serializers.CharField()
 
     def get(self, request, *args, **kwargs):
-        deployment = get_or_create_deployment("Industry")
-        clients = get_deployment_clients(deployment)
+        clients = get_deployment_clients("Industry")
 
         data = self.OutputSerializer(clients, many=True).data
         return Response(data)
@@ -536,8 +534,7 @@ class SmartBuildingsClientList(APIView):
         name = serializers.CharField()
 
     def get(self, request, *args, **kwargs):
-        deployment = get_or_create_deployment("Smart Buildings")
-        clients = get_deployment_clients(deployment)
+        clients = get_deployment_clients("Smart Buildings")
 
         data = self.OutputSerializer(clients, many=True).data
         return Response(data)
@@ -556,7 +553,7 @@ class DrivingDailyReportAPI(APIView):
         description = serializers.CharField(source='status.description')
 
     def get(self, request, *args, **kwargs):
-        clients = get_industry_clients()
+        clients = get_deployment_clients("Industry")
 
         data = self.OutputSerializer(clients, many=True).data
         return Response(data)
@@ -951,7 +948,6 @@ class SafeDrivingLogsAPI(APIView):
         response, status = make_request(
             request_url, data=params, token=token)
         response = response.json()
-        print(response)
 
         if "tipo" in request.query_params:
             query_log_type = request.query_params["tipo"]
@@ -1319,6 +1315,479 @@ class SetDeviceClientAsInactiveAPI(APIView):
             return Response(data={"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
         return Response(status=status.HTTP_200_OK)
+
+
+# Romberg
+class RombergDeviceStatusList(APIView):
+    class OutputSerializer(serializers.Serializer):
+        device_id = serializers.IntegerField(source="device.id")
+        device_name = serializers.CharField(source='device.name')
+        device_description = serializers.CharField(source='device.description')
+        client = serializers.CharField(source="device.client.name")
+        # last_update = serializers.DateTimeField()
+        # last_detection = serializers.DateTimeField()
+        last_activity = serializers.DateTimeField()
+        # last_alert = serializers.DateTimeField()
+        # delayed = serializers.BooleanField()
+        # delay_time = serializers.DurationField()
+        records = serializers.JSONField()
+        # log_counts = serializers.JSONField()
+        severity = serializers.IntegerField(source='status.severity')
+        description = serializers.CharField(source='status.description')
+
+    def get(self, request, *args, **kwargs):
+        status = get_all_romberg_device_status()
+
+        data = self.OutputSerializer(status, many=True).data
+
+        return Response(data)
+
+
+class RombergDeviceSeverityCount(APIView):
+
+    class OutputSerializer(serializers.Serializer):
+        severity = serializers.IntegerField()
+        count = serializers.IntegerField()
+
+    def get(self, request, *args, **kwargs):
+
+        counts = RombergDeviceStatus.objects.filter(active=True).values('status__severity') \
+            .annotate(severity=F('status__severity')) \
+            .values('severity') \
+            .annotate(count=Count('id')) \
+            .order_by('-severity')
+
+        # Serialize the result
+        serializer = self.OutputSerializer(counts, many=True)
+        return Response(serializer.data)
+
+
+class RombergDeviceStatusAPI(APIView):
+    class OutputSerializer(serializers.Serializer):
+        device_name = serializers.CharField(source='device.name')
+        device_description = serializers.CharField(source='device.description')
+        client = serializers.CharField(source="device.client.name")
+        last_update = serializers.DateTimeField()
+        last_detection = serializers.DateTimeField()
+        last_activity = serializers.DateTimeField()
+        last_alert = serializers.DateTimeField()
+        delayed = serializers.BooleanField()
+        delay_time = serializers.DurationField()
+        records = serializers.JSONField()
+        log_counts = serializers.JSONField()
+        severity = serializers.IntegerField(source='status.severity')
+        description = serializers.CharField(source='status.description')
+        active = serializers.BooleanField()
+
+    def get(self, request, device_id, *args, **kwargs):
+        device_status = get_romberg_device_status(device_id)
+
+        output = self.OutputSerializer(device_status).data
+        return Response(output)
+
+
+class RombergDeviceStatusTime(APIView):
+    class OutputSerializer(serializers.Serializer):
+        register_datetime = serializers.DateTimeField()
+
+    def get(self, request, device_id, *args, **kwargs):
+        device_histories_with_next_severity = RombergDeviceHistory.objects.filter(
+            device_id=device_id,
+        ).annotate(
+            next_severity=Window(
+                expression=Lead('status__severity'),
+                partition_by=[F('device_id')],
+                order_by=F('register_datetime').desc()
+            )
+        )
+
+        severity_changes = device_histories_with_next_severity.filter(
+            # Excludes the last record for each unit, as it has no "next" record
+            next_severity__isnull=False,
+            # Optional: Exclude records with no severity to avoid comparing None values
+            status__severity__isnull=False
+        ).exclude(
+            status__severity=F('next_severity')
+        )
+
+        if not severity_changes:
+            first_register = device_histories_with_next_severity[len(
+                device_histories_with_next_severity)-1]
+            output = self.OutputSerializer(first_register).data
+            return Response(output)
+        else:
+            last_change = severity_changes[0]
+            output = self.OutputSerializer(last_change).data
+            return Response(output)
+
+
+class RombergLogsAPI(APIView):
+    class OutputSerializer(serializers.Serializer):
+        device = serializers.CharField(max_length=50)
+        log_time = serializers.CharField(max_length=50)
+        log = serializers.CharField(max_length=50)
+        register_time = serializers.CharField(max_length=50)
+
+    def get(self, request, device_id, *args, **kwargs):
+        global request_url
+        import json
+
+        device = RombergDevice.objects.get(id=device_id)
+        client_key = device.client.keyname
+        client_id = device.client.id
+
+        """ login_url = f'https://{client_key}.retail.aivat.io/login/'
+        request_url = f'https://{client_key}.retail.aivat.io/itw_logs/'
+
+        credentials = get_api_credentials("Smart Retail", client_id)
+        token = api_login(login_url=login_url, credentials=credentials)
+
+        sent_interval = False
+
+        time_interval = {}
+        if 'register_time_after' in request.query_params:
+            time_interval["initial_datetime"] = request.query_params['register_time_after'][:-5]
+            sent_interval = True
+
+        if 'register_time_before' in request.query_params:
+            time_interval["final_datetime"] = request.query_params['register_time_before'][:-5]
+            sent_interval = True
+
+        if not sent_interval:
+            now = datetime.now(tz=pytz.timezone('UTC')).replace(tzinfo=None)
+            time_interval = {
+                "initial_datetime": (now - timedelta(hours=5)).isoformat(timespec="seconds"),
+                "final_datetime": now.isoformat(timespec='seconds')
+            }
+
+        response, status = make_request(
+            request_url, data=time_interval, token=token)
+        response = json.loads(response.content)
+
+        show_empty = request.query_params["show_empty"]
+
+        output = []
+
+        device_data = response[device.name]
+
+        if "device" not in request.query_params or ("device" in request.query_params and request.query_params["device"] in device.name.lower()):
+            device_logs = device_data["logs"]
+            for log in device_logs:
+                if show_empty == "false" and log["log"] == "":
+                    continue
+                output.append({"device": device.name,
+                               "register_time": log["register_time"],
+                               "log": log["log"],
+                               "log_time": f"{log['log_date']}T{log['log_time']}"})
+
+        cameras = device_data["cameras"]
+        for camera_name, logs in cameras.items():
+            if "device" in request.query_params:
+                if request.query_params["device"] not in camera_name.lower():
+                    break
+            for log in logs:
+                if show_empty == "false" and log["log"] == "":
+                    continue
+                output.append({"device": camera_name,
+                               "register_time": log["register_time"],
+                               "log": log["log"],
+                               "log_time": f"{log['log_date']}T{log['log_time']}"})
+
+        if request.query_params.get("sort") == "-register_time":
+            output.reverse()
+
+        return get_paginated_response(
+            output,
+            self.OutputSerializer,
+            request
+        ) """
+
+
+class RombergDeviceHistoryList(APIView):
+    class FiltersSerializer(serializers.Serializer):
+        register_datetime_after = serializers.DateTimeField(required=False)
+        register_datetime_before = serializers.DateTimeField(required=False)
+        sort = serializers.CharField(required=False)
+        description = serializers.CharField(required=False)
+
+    class OutputSerializer(serializers.Serializer):
+        device_id = serializers.IntegerField(source='device.id')
+        device_name = serializers.CharField(source='device.name')
+        device_description = serializers.CharField(source='device.description')
+        register_datetime = serializers.DateTimeField()
+        last_activity = serializers.DateTimeField()
+        last_detection = serializers.DateTimeField()
+        delayed = serializers.BooleanField()
+        delay_time = serializers.DurationField()
+        log_counts = serializers.JSONField()
+        severity = serializers.IntegerField(source='status.severity')
+        description = serializers.CharField(source='status.description')
+
+    def get(self, request, device_id, *args, **kwargs):
+
+        filters_serializer = self.FiltersSerializer(data=request.query_params)
+        filters_serializer.is_valid(raise_exception=True)
+
+        # Si no se especificó rango de fechas, regresar registros del último día
+        if not (filters_serializer.validated_data.get("register_datetime_after") or filters_serializer.validated_data.get("register_datetime_before")):
+            import datetime
+            import pytz
+
+            date_now = datetime.datetime.now()
+            end_date = date_now.astimezone(pytz.timezone("America/Mexico_City")).replace(
+                tzinfo=pytz.utc) + datetime.timedelta(hours=6)
+            start_date = end_date - timedelta(hours=24)
+
+            filters_serializer.validated_data["register_datetime_before"] = end_date
+            filters_serializer.validated_data["register_datetime_after"] = start_date
+
+        data = {'device_id': device_id}
+
+        logs = get_romberg_device_history(
+            data, filters=filters_serializer.validated_data)[::-1]
+
+        return get_paginated_response(
+            serializer_class=self.OutputSerializer,
+            queryset=logs,
+            request=request,
+        )
+
+
+class RombergClientCreateAPI(APIView):
+    class InputSerializer(serializers.Serializer):
+        name = serializers.CharField()
+        keyname = serializers.CharField()
+        api_username = serializers.CharField()
+        api_password = serializers.CharField()
+
+    def post(self, request, *args, **kwargs):
+        import requests
+
+        serializer = self.InputSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        keyname = serializer.validated_data["keyname"]
+
+        password = serializer.validated_data["api_password"]
+
+        encryption = EncryptionService()
+        enc_password = encryption.encrypt(bytes(password, "utf-16"))
+
+        client, created = get_or_create_client(
+            name=serializer.validated_data["name"],
+            keyname=keyname,
+            deployment_name="Smart Retail",
+            defaults={
+                "api_username": serializer.validated_data["api_username"],
+                "api_password": enc_password
+            }
+        )
+
+        if created:
+            return Response(status=status.HTTP_201_CREATED)
+        else:
+            return Response({"error": "Cliente ya existe"}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class RombergDeviceScatterPlotAPI(APIView):
+    class FiltersSerializer(serializers.Serializer):
+        register_datetime_after = serializers.DateTimeField(required=False)
+        register_datetime_before = serializers.DateTimeField(required=False)
+
+    class OutputSerializer(serializers.Serializer):
+        hora = serializers.DateTimeField()
+        severidad = serializers.IntegerField()
+        descripcion = serializers.CharField()
+
+    def get(self, request, device_id, *args, **kwargs):
+        import datetime
+        import pytz
+
+        filters_serializer = self.FiltersSerializer(data=request.query_params)
+        filters_serializer.is_valid(raise_exception=True)
+
+        # Si no se especificó rango de fechas, regresar registros del último día
+        if not (filters_serializer.validated_data.get("register_datetime_after") or filters_serializer.validated_data.get("register_datetime_before")):
+            import datetime
+            import pytz
+
+            date_now = datetime.datetime.now()
+            end_date = date_now.astimezone(pytz.timezone("America/Mexico_City")).replace(
+                tzinfo=pytz.utc) + datetime.timedelta(hours=6)
+            start_date = end_date - timedelta(hours=24)
+
+            filters_serializer.validated_data["register_datetime_before"] = end_date
+            filters_serializer.validated_data["register_datetime_after"] = start_date
+
+        registers = get_romberg_scatterplot_data(
+            {"device_id": device_id}, filters=filters_serializer.validated_data)
+
+        grouped_by_hour = {}
+
+        descriptions = {}
+        for register in registers:
+            hour = (register.register_datetime -
+                    timedelta(hours=6)).replace(tzinfo=None).isoformat(timespec="hours", sep=' ') + "h"
+            severity = register.status.severity
+            description = register.status.description
+
+            if hour not in grouped_by_hour:
+                grouped_by_hour[hour] = [severity]
+            else:
+                grouped_by_hour[hour].append(severity)
+
+            if severity in descriptions:
+                descriptions[severity].append(description)
+            else:
+                descriptions[severity] = [description]
+
+        output = []
+        for date, severities in grouped_by_hour.items():
+            most_common_severity = max(set(severities), key=severities.count)
+            most_common_description = max(
+                set(descriptions[most_common_severity]), key=descriptions[most_common_severity].count)
+            output.append({"hora": date,
+                           "severidad": most_common_severity,
+                           "descripcion": most_common_description})
+
+        data = self.OutputSerializer(output, many=True).data
+
+        return Response(data)
+
+
+class RombergAreaPlotAPI(APIView):
+    class FiltersSerializer(serializers.Serializer):
+        timestamp_after = serializers.DateTimeField(required=False)
+        timestamp_before = serializers.DateTimeField(required=False)
+
+    class OutputSerializer(serializers.Serializer):
+        timestamp = serializers.DateTimeField()
+        severity_counts = serializers.JSONField()
+
+    def get(self, request, *args, **kwargs):
+        import datetime
+        import pytz
+
+        filters_serializer = self.FiltersSerializer(data=request.query_params)
+        filters_serializer.is_valid(raise_exception=True)
+
+        severity_keys = list(range(6))
+        timezone = pytz.timezone("America/Mexico_City")
+
+        # Si no se especificó rango de fechas, regresar registros del último día
+        if not (filters_serializer.validated_data.get("timestamp_after") or
+                filters_serializer.validated_data.get("timestamp_before")):
+
+            date_now = datetime.datetime.now()
+            end_date = date_now.astimezone(timezone).replace(
+                tzinfo=pytz.utc) + datetime.timedelta(hours=6)
+            start_date = end_date - timedelta(hours=24)
+
+            filters_serializer.validated_data["timestamp_before"] = end_date
+            filters_serializer.validated_data["timestamp_after"] = start_date
+
+        client_name = request.query_params.get("client")
+        registers = get_area_plot_data(
+            "Romberg", client_name=client_name, filters=filters_serializer.validated_data)
+
+        hourly_counts = {}
+
+        if not client_name:
+
+            for register in registers:
+
+                # Agrupar registros de diferentes clientes, por hora
+                if register.timestamp in hourly_counts:
+                    for k, v in register.severity_counts.items():
+                        if k in hourly_counts[register.timestamp]:
+                            hourly_counts[register.timestamp][k] += v
+                        else:
+                            hourly_counts[register.timestamp][k] = v
+
+                else:
+                    hourly_counts[register.timestamp] = register.severity_counts
+
+            registers = []
+            for timestamp, counts in hourly_counts.items():
+                registers.append(
+                    {"timestamp": timestamp, "severity_counts": counts})
+
+            for register in registers:
+                register["timestamp"] = register["timestamp"].astimezone(pytz.timezone("America/Mexico_City")).replace(
+                    tzinfo=None).isoformat(timespec="hours", sep=' ') + "h"
+        else:
+            for register in registers:
+                register.timestamp = register.timestamp.astimezone(pytz.timezone("America/Mexico_City")).replace(
+                    tzinfo=None).isoformat(timespec="hours", sep=' ') + "h"
+
+        data = self.OutputSerializer(registers, many=True).data
+
+        return Response(data)
+
+
+class RombergClientList(APIView):
+    class OutputSerializer(serializers.Serializer):
+        name = serializers.CharField()
+
+    def get(self, request, *args, **kwargs):
+        clients = get_deployment_clients("Romberg")
+
+        data = self.OutputSerializer(clients, many=True).data
+        return Response(data)
+
+
+class GxRecordsAPI(APIView):
+    class FiltersSerializer(serializers.Serializer):
+        register_time_after = serializers.DateTimeField(required=False)
+        register_time_before = serializers.DateTimeField(required=False)
+        sort = serializers.CharField(required=False)
+        metric_name = serializers.CharField(required=False)
+
+    class OutputSerializer(serializers.Serializer):
+        metric = serializers.CharField()
+        register_time = serializers.DateTimeField()
+        log_time = serializers.DateTimeField()
+        avg_value = serializers.FloatField()
+        max_value = serializers.IntegerField()
+        min_value = serializers.IntegerField()
+        critical = serializers.BooleanField()
+
+    def get(self, request, device_id, *args, **kwargs):
+
+        filters_serializer = self.FiltersSerializer(data=request.query_params)
+        filters_serializer.is_valid(raise_exception=True)
+
+        # Si no se especificó rango de fechas, regresar registros del último día
+        if not (filters_serializer.validated_data.get("register_time_after") or filters_serializer.validated_data.get("register_datetime_before")):
+            import datetime
+            import pytz
+
+            date_now = datetime.datetime.now()
+            end_date = date_now.astimezone(pytz.timezone("America/Mexico_City")).replace(
+                tzinfo=pytz.utc) + datetime.timedelta(hours=6)
+            start_date = end_date - timedelta(days=1)
+
+            filters_serializer.validated_data["register_time_before"] = end_date
+            filters_serializer.validated_data["register_time_after"] = start_date
+
+        records = get_gxrecords(
+            device_id, filters=filters_serializer.validated_data)
+
+        output = self.OutputSerializer(records, many=True).data
+
+        return Response(output)
+
+
+class GxMetricThresholdsAPI(APIView):
+    class OutputSerializer(serializers.Serializer):
+        metric_name = serializers.CharField()
+        threshold = serializers.FloatField()
+
+    def get(self, request, device_id, *args, **kwargs):
+        metrics = get_gx_metrics()
+        print(metrics)
+        data = self.OutputSerializer(metrics, many=True).data
+        return Response(data)
 
 
 # Servers ----------------------------------------------------------------------
@@ -2348,7 +2817,7 @@ class SmartRetailClientList(APIView):
         name = serializers.CharField()
 
     def get(self, request, *args, **kwargs):
-        clients = get_retail_clients().filter(active=True)
+        clients = get_deployment_clients("Smart Retail")
 
         data = self.OutputSerializer(clients, many=True).data
         return Response(data)

@@ -3,6 +3,7 @@
 import {
   AppShell,
   Burger,
+  HoverCard,
   Indicator,
   NavLink,
   useMantineTheme,
@@ -23,10 +24,13 @@ import {
 } from "@/components/shared";
 import { useNavLink } from "@/hooks/shared";
 import Introid from "../../media/introid_bw.png";
+import fonts from "@/ui/fonts";
+import { string } from "zod";
 
 interface NavMenuItem {
   label: string;
   href?: string;
+  children?: { label: string; href: string }[];
   rolesWhitelist?: Role[];
   rolesBlacklist?: Role[];
   badgeCount?: number;
@@ -47,7 +51,10 @@ const MainLayout = ({ children }: MainLayoutProps) => {
   const [links, setLinks] = useState<NavMenuItem[]>([
     {
       label: "Safe Driving",
-      href: "/monitor/safe-driving",
+      children: [
+        { label: "Safe Driving", href: "/monitor/safe-driving" },
+        { label: "Romberg", href: "/monitor/safe-driving/romberg/" },
+      ],
     },
     {
       label: "Industry",
@@ -105,7 +112,12 @@ const MainLayout = ({ children }: MainLayoutProps) => {
               height={32}
               alt="Picture of the author"
             ></Image>
-            <p className="ml-2 mt-1 text-md font-extralight  tracking-wider">
+            <p
+              className={clsx(
+                fonts.ubuntu.className,
+                "ml-3 h-6 mb-1 text-lg text-white font-medium tracking-wider"
+              )}
+            >
               MONITOR
             </p>
           </Link>
@@ -117,7 +129,13 @@ const MainLayout = ({ children }: MainLayoutProps) => {
             <div className="border-l ml-4 h-6 border-neutral-600" />
             <div className="flex gap-2 items-center mx-4">
               {visibleLinks.map((item) => (
-                <DesktopNavLink key={item.href} item={item} />
+                <>
+                  {item.href ? (
+                    <DesktopNavLink key={item.href} item={item} />
+                  ) : (
+                    <DropdownNavLink key={item.href} item={item} />
+                  )}
+                </>
               ))}
             </div>
           </div>
@@ -127,7 +145,14 @@ const MainLayout = ({ children }: MainLayoutProps) => {
         <div className="flex-1 flex lg:hidden justify-between">
           <div></div>
           <Link href="/">
-            <span className="ml-4 h-6 text-lg font-bold">Monitor</span>
+            <span
+              className={clsx(
+                fonts.ubuntu.className,
+                "ml-4 h-6 text-lg font-bold"
+              )}
+            >
+              Monitor
+            </span>
           </Link>
 
           <ColorSchemeButtonToggle />
@@ -217,6 +242,73 @@ const DesktopNavLink = ({ item, onClick }: DesktopNavLinkProps) => {
         }
       />
     </div>
+  );
+};
+
+const DropdownNavLink = ({ item, onClick }: DesktopNavLinkProps) => {
+  const theme = useMantineTheme();
+  const active = useNavLink(item.href || "#");
+  const primaryColor = theme.variantColorResolver({
+    color: theme.primaryColor,
+    theme: theme,
+    variant: "filled",
+  });
+
+  return (
+    <HoverCard>
+      <HoverCard.Target>
+        <div className="cursor-default  text-sm px-2 py-2.5 w-24 hover:bg-dark-400 transition-colors duration-200 rounded-lg">
+          {item.label}
+        </div>
+      </HoverCard.Target>
+      <HoverCard.Dropdown className="bg-dark-400 border-none">
+        {item.children?.map((child) => (
+          <div className={`${active ? "border-t-4 border-green-600" : ""}`}>
+            <NavLink
+              component={Link}
+              href={child.href || "#"}
+              onClick={onClick}
+              className="text-center"
+              classNames={{
+                root: clsx(
+                  "px-2 py-2.5 w-24 hover:bg-dark-600 transition-colors duration-200 rounded-lg",
+                  {}
+                ),
+                body: `overflow-visible ${
+                  active ? "text-green-600" : "text-gray-300"
+                }`,
+              }}
+              styles={
+                {
+                  /* root: {
+            boxShadow: active
+              ? `inset 0 -3px ${primaryColor.background}`
+              : undefined,
+            color: active ? primaryColor.background : undefined,
+          }, */
+                }
+              }
+              label={
+                <Indicator
+                  disabled={!item.badgeCount}
+                  label={
+                    typeof item.badgeCount === "number" && item.badgeCount > 99
+                      ? "99+"
+                      : item.badgeCount
+                  }
+                  color="red"
+                  classNames={{
+                    indicator: "py-2",
+                  }}
+                >
+                  {child.label}
+                </Indicator>
+              }
+            />
+          </div>
+        ))}
+      </HoverCard.Dropdown>
+    </HoverCard>
   );
 };
 

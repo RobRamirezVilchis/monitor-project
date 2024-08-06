@@ -98,7 +98,10 @@ def create_device_history(args):
         **args
     )
 
-# Cameras
+
+'''
+Cameras
+'''
 
 
 def bulk_update_camerastatus(status_list):
@@ -285,3 +288,66 @@ def assign_project_to_server(project_id, server_id):
         return True
     except Project.DoesNotExist:
         return False
+
+
+'''
+Romberg
+'''
+
+
+def update_or_create_romberg_device_status(device, defaults):
+    device_status, created = RombergDeviceStatus.objects.update_or_create(
+        device=device,
+        defaults={**defaults}
+    )
+    return device_status
+
+
+def create_romberg_device_history(args):
+    device_history = RombergDeviceHistory.objects.create(
+        **args
+    )
+
+
+def get_or_create_gx_metric(name):
+    metric, created = GxMetric.objects.get_or_create(metric_name=name)
+    return metric
+
+
+def create_gx_records(gx: Gx, records: list):
+    new_records = []
+    metrics = {}
+
+    for record in records:
+        upload_time = record["Fecha_subida"]
+        generation_time = record["Timestamp"]
+        metric_name = record["Tipo_unidad"]
+
+        if metric_name not in metrics:
+            metrics[metric_name] = get_or_create_gx_metric(metric_name)
+
+        metric = metrics[metric_name]
+
+        average = float(record["Valor_promedio"])
+        maximum = int(record["Valor_maximo"])
+        minimum = int(record["Valor_minimo"])
+
+        critical = False
+        if metric.threshold:
+            if metric.to_exceed and average > metric.threshold:
+                critical = True
+            elif not metric.to_exceed and average < metric.threshold:
+                critical = True
+
+        new_records.append(GxRecord(
+            gx=gx,
+            register_time=upload_time,
+            log_time=generation_time,
+            metric=metric,
+            critical=critical,
+            avg_value=average,
+            max_value=maximum,
+            min_value=minimum
+        ))
+
+    GxRecord.objects.bulk_create(new_records)

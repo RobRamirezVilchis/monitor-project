@@ -5,6 +5,17 @@ from . import apis
 
 urlpatterns = [
     path("deployments/", apis.DeploymentList.as_view(), name="deployments"),
+    path("records/",
+         include(([
+             path("<int:device_id>/",
+                  include(([
+                      path("", apis.GxRecordsAPI.as_view(),
+                           name="records_list"),
+                      path("thresholds/", apis.GxMetricThresholdsAPI.as_view(),
+                           name="thresholds"),
+                  ], "device data")))
+         ], "records")),
+         ),
     path("driving/",
          include(([
              path("status/", apis.UnitStatusList.as_view(), name="status"),
@@ -143,6 +154,45 @@ urlpatterns = [
                        )),
 
                   ], "smart-buildings"))
+         ),
+    path("romberg/",
+         include(([
+                  path("status/", apis.RombergDeviceStatusList.as_view(),
+                       name="status"),
+                  path("clients/", apis.RombergClientList.as_view(),
+                       name="clients"),
+                  path("clients/create/",
+                       apis.RombergClientCreateAPI.as_view(), name="client_create"),
+                  path("last-update/", apis.IndustryLastUpdateAPI.as_view(),
+                       name="last-update"),
+                  path("status-count/",
+                       apis.RombergDeviceSeverityCount.as_view(), name="list"),
+                  path("area-plot-data/", apis.IndustryAreaPlotAPI.as_view(),
+                       name="area-plot"),
+
+                  path("devices/<int:device_id>/",
+                       include(([
+                           path("", apis.RombergDeviceStatusAPI.as_view(),
+                                name="status"),
+
+                           path("history/", apis.RombergDeviceHistoryList.as_view(),
+                                name="history"),
+                           path("last-status-change/", apis.RombergDeviceStatusTime.as_view(),
+                                name="last-status-change"),
+                           path("severity-history/", apis.RombergDeviceScatterPlotAPI.as_view(),
+                                name="scatter-plot"),
+                           # path("camera-disconnections/", apis.CameraDisconnectionsList.as_view(),
+                           #     name="camera-disconnections"),
+                           # path("logs/", apis.RombergLogsAPI.as_view(),
+                           #     name="device-logs"),
+                           # path("check-wifi-connection/", apis.DeviceWifiProblemsAPI.as_view(),
+                           #     name="device-connection"),
+                           # path("set-inactive/", apis.SetDeviceClientAsInactiveAPI.as_view(),
+                           #     name="set-inactive"),
+                       ], "device")
+                       )),
+
+                  ], "romberg"))
          ),
     path("servers/",
          include(([
