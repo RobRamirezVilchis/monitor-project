@@ -51,6 +51,7 @@ const MainLayout = ({ children }: MainLayoutProps) => {
   const [links, setLinks] = useState<NavMenuItem[]>([
     {
       label: "Safe Driving",
+      href: "/monitor/safe-driving",
       children: [
         { label: "Safe Driving", href: "/monitor/safe-driving" },
         { label: "Romberg", href: "/monitor/safe-driving/romberg/" },
@@ -130,10 +131,10 @@ const MainLayout = ({ children }: MainLayoutProps) => {
             <div className="flex gap-2 items-center mx-4">
               {visibleLinks.map((item) => (
                 <>
-                  {item.href ? (
-                    <DesktopNavLink key={item.href} item={item} />
-                  ) : (
+                  {item.children ? (
                     <DropdownNavLink key={item.href} item={item} />
+                  ) : (
+                    <DesktopNavLink key={item.href} item={item} />
                   )}
                 </>
               ))}
@@ -257,16 +258,21 @@ const DropdownNavLink = ({ item, onClick }: DesktopNavLinkProps) => {
   return (
     <HoverCard>
       <HoverCard.Target>
-        <div className="cursor-default  text-sm px-2 py-2.5 w-24 hover:bg-dark-400 transition-colors duration-200 rounded-lg">
-          {item.label}
+        <div
+          className={`cursor-default duration-20 text-center ${
+            active ? "border-t-4 text-green-600 border-green-600" : ""
+          }`}
+        >
+          <p
+            className={`cursor-default  text-sm px-2 py-2.5 w-24 hover:bg-dark-400 transition-colors duration-200 rounded-lg `}
+          >
+            {item.label}
+          </p>
         </div>
       </HoverCard.Target>
       <HoverCard.Dropdown className="bg-dark-400 border-none">
         {item.children?.map((child, i) => (
-          <div
-            key={i}
-            className={`${active ? "border-t-4 border-green-600" : ""}`}
-          >
+          <div key={i}>
             <NavLink
               component={Link}
               href={child.href || "#"}
@@ -277,9 +283,7 @@ const DropdownNavLink = ({ item, onClick }: DesktopNavLinkProps) => {
                   "px-2 py-2.5 w-24 hover:bg-dark-600 transition-colors duration-200 rounded-lg",
                   {}
                 ),
-                body: `overflow-visible ${
-                  active ? "text-green-600" : "text-gray-300"
-                }`,
+                body: `overflow-visible text-gray-300`,
               }}
               styles={
                 {

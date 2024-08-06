@@ -874,7 +874,7 @@ export const useSBDeviceLogsQuery = createQuery({
 
 // Smart Retail API ----------------------------------------
 export const useRombergStatusQuery = createQuery({
-  queryPrimaryKey: "retail-devices",
+  queryPrimaryKey: "romberg-devices",
   queryFn: (ctx, vars) => monitorService.getRombergStatus({ signal: ctx.signal }),
   cacheTime: 1000 * 60 * 5,  // 5 minutes
   staleTime: 1000 * 60 * 3,  // 3 minutes
