@@ -262,8 +262,11 @@ const DropdownNavLink = ({ item, onClick }: DesktopNavLinkProps) => {
         </div>
       </HoverCard.Target>
       <HoverCard.Dropdown className="bg-dark-400 border-none">
-        {item.children?.map((child) => (
-          <div className={`${active ? "border-t-4 border-green-600" : ""}`}>
+        {item.children?.map((child, i) => (
+          <div
+            key={i}
+            className={`${active ? "border-t-4 border-green-600" : ""}`}
+          >
             <NavLink
               component={Link}
               href={child.href || "#"}

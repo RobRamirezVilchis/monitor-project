@@ -414,8 +414,9 @@ const RombergDevicePage = ({ params }: { params: { device_id: string } }) => {
         )}
       </div>
       <div className="flex gap-3 mb-2">
-        {records.map((rec) => (
+        {records.map((rec, i) => (
           <div
+            key={i}
             className={` border-1   py-1.5 px-2 rounded-lg
               ${
                 rec.critical
