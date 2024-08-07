@@ -1,6 +1,9 @@
 "use client";
 
-import { useModifyServerProjectsMutation } from "@/api/mutations/monitor";
+import {
+  useModifyServerProjectsMutation,
+  useModifyServerThresholdsMutation,
+} from "@/api/mutations/monitor";
 import {
   useMetricsKeysQuery,
   useProjectsQuery,
@@ -9,14 +12,16 @@ import {
   useServerProjectsQuery,
   useServerSeverityHistoryQuery,
   useServerStatusQuery,
+  useServerThresholdsQuery,
 } from "@/api/queries/monitor";
 import {
   ModifyProjectsData,
   ScatterplotPoint,
   ServerHistory,
+  ServiceMetricThreshold,
 } from "@/api/services/monitor/types";
 import { useDataGrid, useSsrDataGrid } from "@/hooks/data-grid";
-import { MultiSelect } from "@/ui/core";
+import { Checkbox, MultiSelect, NumberInput } from "@/ui/core";
 import DataGrid from "@/ui/data-grid/DataGrid";
 import { ColumnDef } from "@/ui/data-grid/types";
 import { ChartTooltipProps, LineChart } from "@mantine/charts";
@@ -53,6 +58,7 @@ import {
   StatusKey,
   statusNames,
 } from "../../../(components)/colors";
+import { showSuccessNotification } from "@/ui/notifications";
 
 const statusStyles: { [condition: string]: string } = {
   normal: "bg-blue-100 border-blue-400 text-blue-900",
@@ -71,6 +77,10 @@ const capitalize = (text: string) => {
 const ServerPage = ({ params }: { params: { server_id: string } }) => {
   const [plotMetric, setPlotMetric] = useState("Uso de CPU");
   const [opened, { open, close }] = useDisclosure(false);
+  const [
+    thresholdsModalOpened,
+    { open: thresholdsModalOpen, close: thresholdsModalClose },
+  ] = useDisclosure(false);
   const [assignedProjects, setProjects] = useState<string[]>([]);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
@@ -92,6 +102,13 @@ const ServerPage = ({ params }: { params: { server_id: string } }) => {
       projects: [],
     },
   });
+
+  const {
+    handleSubmit: handleSubmitThresholds,
+    watch: watchThresholds,
+    control: controlThresholds,
+    reset: resetThresholds,
+  } = useForm<{ [key: string]: any }>();
 
   const [dateValue, setDateValue] = useState<[Date | null, Date | null]>([
     yesterday,
@@ -269,6 +286,36 @@ const ServerPage = ({ params }: { params: { server_id: string } }) => {
 
   let splitter = new RegExp("_|-", "g");
 
+  const thresholdsQuery = useServerThresholdsQuery({});
+
+  const thresholdsMutation = useModifyServerThresholdsMutation({
+    onSuccess: () => {
+      showSuccessNotification({
+        message: "Se guardaron los nuevos valores con éxito",
+      });
+    },
+    onError: () => {},
+  });
+
+  const submitNewThresholds = async (values: { [key: string]: any }) => {
+    let data: ServiceMetricThreshold[] = [];
+
+    thresholdsQuery.data?.forEach((th) => {
+      data.push({
+        name: th.name,
+        to_exceed: values[`${th.name}_toExceed`],
+        ...(values[`${th.name}_enabled`]
+          ? {
+              value: values[`${th.name}_value`],
+            }
+          : {
+              value: null,
+            }),
+      });
+    });
+    thresholdsMutation.mutate(data);
+  };
+
   return (
     <section className="relative mb-20">
       <Modal
@@ -295,6 +342,66 @@ const ServerPage = ({ params }: { params: { server_id: string } }) => {
           <Button type="submit" color="green.6">
             Aceptar
           </Button>
+        </form>
+      </Modal>
+      <Modal
+        centered
+        opened={thresholdsModalOpened}
+        onClose={thresholdsModalClose}
+        title="Modificar criterios"
+        classNames={{ title: "text-xl font-semibold" }}
+      >
+        <form onSubmit={handleSubmitThresholds(submitNewThresholds)}>
+          <p className="opacity-80 mb-3">
+            Aquí puedes modificar los valores a partir de los cuales se
+            considera una métrica como crítica.
+          </p>
+
+          <div className="flex justify-center">
+            <div className="flex flex-col gap-3 items-center  mb-3">
+              <div className="ml-3 grid grid-cols-5 place-items-center gap-y-2 gap-x-2 items-end">
+                <div></div>
+                <div></div>
+                <div></div>
+                <div className="flex items-center">
+                  <p className=" truncate overflow-hidden">Sobrepasar</p>
+                </div>
+                <div className="flex items-center">
+                  <p className="truncate">Habilitado</p>
+                </div>
+                {thresholdsQuery.data?.map((th) => (
+                  <>
+                    <div className="flex col-span-2 items-center">
+                      <p>{th.name}</p>
+                    </div>
+                    <NumberInput
+                      name={`${th.name}_value`}
+                      control={controlThresholds}
+                      classNames={{ root: "w-20" }}
+                      placeholder=""
+                      value={th.value}
+                      disabled={!watchThresholds(`${th.name}_enabled`)}
+                    ></NumberInput>
+                    <Checkbox
+                      name={`${th.name}_toExceed`}
+                      control={controlThresholds}
+                      disabled={!watchThresholds(`${th.name}_enabled`)}
+                      classNames={{ root: "" }}
+                    ></Checkbox>
+                    <Checkbox
+                      name={`${th.name}_enabled`}
+                      control={controlThresholds}
+                      color="green.6"
+                    ></Checkbox>
+                  </>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          <div className="flex justify-end">
+            <Button type="submit">Aceptar</Button>
+          </div>
         </form>
       </Modal>
       {/* <BackArrow /> */}
@@ -388,14 +495,32 @@ const ServerPage = ({ params }: { params: { server_id: string } }) => {
             <Skeleton h={20} w={300} />
           </div>
         )}
+        <div className="flex gap-2">
+          {thresholdsQuery.data && (
+            <Button
+              onClick={() => {
+                const currentValues: { [key: string]: any } = {};
 
-        <Button
-          color="gray.5"
-          classNames={{ root: "dark:bg-dark-600 dark:hover:bg-dark-500" }}
-          onClick={open}
-        >
-          Modificar proyectos
-        </Button>
+                thresholdsQuery.data.map((th) => {
+                  currentValues[`${th.name}_value`] = th.value;
+                  currentValues[`${th.name}_toExceed`] = th.to_exceed;
+                  currentValues[`${th.name}_enabled`] = th.value !== null;
+                });
+                resetThresholds(currentValues);
+                thresholdsModalOpen();
+              }}
+            >
+              Modificar criterios
+            </Button>
+          )}
+          <Button
+            color="gray.5"
+            classNames={{ root: "dark:bg-dark-600 dark:hover:bg-dark-500" }}
+            onClick={open}
+          >
+            Modificar proyectos
+          </Button>
+        </div>
       </div>
 
       <h2 className="text-3xl text-neutral-500 dark:text-dark-200 mb-2 mt-8">

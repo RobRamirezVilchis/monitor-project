@@ -50,11 +50,12 @@ const api = {
     monitor: {
       deployments: "api/v1/monitor/deployments/",
       models: {
-        model: (gx_id: number) => `api/v1/monitor/models/${gx_id}/`,
+        model: (gx_id: number) => `api/v1/monitor/gx-models/${gx_id}/`,
       },
       records: {
         list: (gx_id: number) => `api/v1/monitor/records/${gx_id}/`,
-        thresholds: (gx_id: number) => `api/v1/monitor/records/${gx_id}/thresholds/`
+        thresholds: (gx_id: number) => `api/v1/monitor/records/${gx_id}/thresholds/`,
+        modifyThresholds: (gx_id: number) => `api/v1/monitor/records/${gx_id}/modify-thresholds/`
       },
       driving: {
         clients: "api/v1/monitor/driving/clients/",
@@ -131,6 +132,7 @@ const api = {
         lastStatusChange: (device_id: DeviceId) => `api/v1/monitor/romberg/devices/${device_id}/last-status-change/`,
         severityHistory: (device_id: DeviceId) => `api/v1/monitor/romberg/devices/${device_id}/severity-history/`,
         deviceLogs: (device_id: DeviceId) => `api/v1/monitor/romberg/devices/${device_id}/logs/`,
+        setAsInactive: (device_id: DeviceId) => `api/v1/monitor/romberg/devices/${device_id}/set-inactive/`,
       },
       servers: {
         list: "api/v1/monitor/servers/list/",
@@ -141,6 +143,8 @@ const api = {
         metricsKeys: "api/v1/monitor/servers/metric-keys/",
         serverTypes: "api/v1/monitor/servers/types/",
         regions: "api/v1/monitor/servers/regions/",
+        thresholds: "api/v1/monitor/servers/thresholds/",
+        modifyThresholds: "api/v1/monitor/servers/modify-thresholds/",
         projectData: (project_id: number) => `api/v1/monitor/servers/project/${project_id}/`,
         editProject: (project_id: number) => `api/v1/monitor/servers/project/${project_id}/edit/`,
         deleteProject: (project_id: number) => `api/v1/monitor/servers/project/${project_id}/delete/`,
@@ -157,6 +161,8 @@ const api = {
         RDSMetricsKeys: "api/v1/monitor/rds/metric-keys/",
         RDSTypes: "api/v1/monitor/rds/types/",
         regions: "api/v1/monitor/rds/regions/",
+        thresholds: "api/v1/monitor/rds/thresholds/",
+        modifyThresholds: "api/v1/monitor/rds/modify-thresholds/",
         RDSStatus: (server_id: string) => `api/v1/monitor/rds/db/${server_id}/`,
         RDSHistory: (device_id: DeviceId) => `api/v1/monitor/rds/db/${device_id}/history/`,
         severityHistory: (device_id: DeviceId) => `api/v1/monitor/rds/db/${device_id}/severity-history/`,
@@ -166,6 +172,8 @@ const api = {
         status: "api/v1/monitor/load-balancers/status/",
         metricsKeys: "api/v1/monitor/load-balancers/metric-keys/",
         regions: "api/v1/monitor/load-balancers/regions/",
+        thresholds: "api/v1/monitor/load-balancers/thresholds/",
+        modifyThresholds: "api/v1/monitor/load-balancers/modify-thresholds/",
         loadBalancerStatus: (elb_id: string) => `api/v1/monitor/load-balancers/elb/${elb_id}/`,
         loadBalancerHistory: (elb_id: DeviceId) => `api/v1/monitor/load-balancers/elb/${elb_id}/history/`,
         severityHistory: (elb_id: DeviceId) => `api/v1/monitor/load-balancers/elb/${elb_id}/severity-history/`,

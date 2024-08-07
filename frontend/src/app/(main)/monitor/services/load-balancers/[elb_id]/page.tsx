@@ -6,13 +6,19 @@ import {
   useLoadBalancerPlotQuery,
   useLoadBalancerSeverityHistoryQuery,
   useLoadBalancerStatusQuery,
+  useLoadBalancerThresholdsQuery,
+  useRDSThresholdsQuery,
 } from "@/api/queries/monitor";
-import { ScatterplotPoint, ServerHistory } from "@/api/services/monitor/types";
+import {
+  ScatterplotPoint,
+  ServerHistory,
+  ServiceMetricThreshold,
+} from "@/api/services/monitor/types";
 import { useDataGrid, useSsrDataGrid } from "@/hooks/data-grid";
 import DataGrid from "@/ui/data-grid/DataGrid";
 import { ColumnDef } from "@/ui/data-grid/types";
 import { ChartTooltipProps, LineChart } from "@mantine/charts";
-import { SegmentedControl, Skeleton } from "@mantine/core";
+import { Button, Modal, SegmentedControl, Skeleton } from "@mantine/core";
 import { DatePickerInput } from "@mantine/dates";
 import { format, parseISO } from "date-fns";
 import { useState } from "react";
@@ -33,6 +39,11 @@ import {
   NameType,
   ValueType,
 } from "recharts/types/component/DefaultTooltipContent";
+import { useForm } from "react-hook-form";
+import { useDisclosure } from "@mantine/hooks";
+import { useModifyELBThresholdsMutation } from "@/api/mutations/monitor";
+import { showSuccessNotification } from "@/ui/notifications";
+import { Checkbox, NumberInput } from "@/ui/core";
 
 const statusStyles: { [condition: string]: string } = {
   normal: "bg-blue-100 border-blue-400 text-blue-900",
@@ -50,6 +61,17 @@ const capitalize = (text: string) => {
 
 const LoadBalancerPage = ({ params }: { params: { elb_id: string } }) => {
   const [plotMetric, setPlotMetric] = useState("Cantidad de peticiones");
+  const [
+    thresholdsModalOpened,
+    { open: thresholdsModalOpen, close: thresholdsModalClose },
+  ] = useDisclosure(false);
+
+  const {
+    handleSubmit: handleSubmitThresholds,
+    watch: watchThresholds,
+    control: controlThresholds,
+    reset: resetThresholds,
+  } = useForm<{ [key: string]: any }>();
 
   const currentDate = new Date();
   let yesterday = new Date();
@@ -204,9 +226,99 @@ const LoadBalancerPage = ({ params }: { params: { elb_id: string } }) => {
 
   let splitter = new RegExp("_|-", "g");
 
+  const thresholdsQuery = useLoadBalancerThresholdsQuery({});
+
+  const thresholdsMutation = useModifyELBThresholdsMutation({
+    onSuccess: () => {
+      showSuccessNotification({
+        message: "Se guardaron los nuevos valores con éxito",
+      });
+    },
+    onError: () => {},
+  });
+
+  const submitNewThresholds = async (values: { [key: string]: any }) => {
+    let data: ServiceMetricThreshold[] = [];
+
+    thresholdsQuery.data?.forEach((th) => {
+      data.push({
+        name: th.name,
+        to_exceed: values[`${th.name}_toExceed`],
+        ...(values[`${th.name}_enabled`]
+          ? {
+              value: values[`${th.name}_value`],
+            }
+          : {
+              value: null,
+            }),
+      });
+    });
+    thresholdsMutation.mutate(data);
+  };
+
   return (
     <section className="relative mb-20">
-      {/* <BackArrow /> */}
+      <Modal
+        centered
+        opened={thresholdsModalOpened}
+        onClose={thresholdsModalClose}
+        title="Modificar criterios"
+        classNames={{ title: "text-xl font-semibold" }}
+        size={"lg"}
+      >
+        <form onSubmit={handleSubmitThresholds(submitNewThresholds)}>
+          <p className="opacity-80 mb-3">
+            Aquí puedes modificar los valores a partir de los cuales se
+            considera una métrica como crítica.
+          </p>
+
+          <div className="flex justify-center">
+            <div className="flex flex-col gap-3 items-center  mb-3">
+              <div className="ml-3 grid grid-cols-5 place-items-center gap-y-2 gap-x-2 items-end">
+                <div></div>
+                <div></div>
+                <div></div>
+                <div className="flex items-center">
+                  <p className="">Sobrepasar</p>
+                </div>
+                <div className="flex items-center">
+                  <p className="">Habilitado</p>
+                </div>
+                {thresholdsQuery.data?.map((th) => (
+                  <>
+                    <div className="flex col-span-2 items-center">
+                      <p>{th.name}</p>
+                    </div>
+                    <NumberInput
+                      name={`${th.name}_value`}
+                      control={controlThresholds}
+                      classNames={{ root: "w-20" }}
+                      placeholder=""
+                      value={th.value}
+                      disabled={!watchThresholds(`${th.name}_enabled`)}
+                    ></NumberInput>
+                    <Checkbox
+                      name={`${th.name}_toExceed`}
+                      control={controlThresholds}
+                      disabled={!watchThresholds(`${th.name}_enabled`)}
+                      classNames={{ root: "" }}
+                    ></Checkbox>
+                    <Checkbox
+                      name={`${th.name}_enabled`}
+                      control={controlThresholds}
+                      color="green.6"
+                    ></Checkbox>
+                  </>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          <div className="flex justify-end">
+            <Button type="submit">Aceptar</Button>
+          </div>
+        </form>
+      </Modal>
       <div className="sm:flex mb-6 items-center justify-between">
         <div className="sm:flex space-y-2 sm:space-y-0 justify-start items-start sm:items-center">
           <h1 className="text-5xl font-bold mr-6">
@@ -250,41 +362,62 @@ const LoadBalancerPage = ({ params }: { params: { elb_id: string } }) => {
           </div>
         )}
       </div>
-      {elbStatus ? (
-        <div className="text-xl text-neutral-500 dark:text-dark-200">
-          <p>
-            Última actividad:{" "}
-            {format(parseISO(String(elbStatus.last_activity)), "Pp")}
-          </p>
-          {activity_data && (
-            <div>
+      <div className="flex justify-between items-end">
+        {elbStatus ? (
+          <div className="text-xl text-neutral-500 dark:text-dark-200">
+            <p>
+              Última actividad:{" "}
+              {format(parseISO(String(elbStatus.last_activity)), "Pp")}
+            </p>
+            {activity_data && (
               <div>
-                <span>Cantidad de peticiones: </span>
-                <span>{activity_data["Cantidad de peticiones"]}</span>
+                <div>
+                  <span>Cantidad de peticiones: </span>
+                  <span>{activity_data["Cantidad de peticiones"]}</span>
+                </div>
+                <div className="sm:flex gap-4 items-center">
+                  <p>
+                    <span>Tiempo de respuesta: </span>
+                    {activity_data["Tiempo de respuesta"] ? (
+                      <span>
+                        {activity_data["Tiempo de respuesta"].toFixed(2) +
+                          " segundos"}
+                      </span>
+                    ) : (
+                      <span>{"0%"}</span>
+                    )}
+                  </p>
+                </div>
               </div>
-              <div className="sm:flex gap-4 items-center">
-                <p>
-                  <span>Tiempo de respuesta: </span>
-                  {activity_data["Tiempo de respuesta"] ? (
-                    <span>
-                      {activity_data["Tiempo de respuesta"].toFixed(2) +
-                        " segundos"}
-                    </span>
-                  ) : (
-                    <span>{"0%"}</span>
-                  )}
-                </p>
-              </div>
-            </div>
-          )}
-        </div>
-      ) : (
-        <div className="space-y-2">
-          <Skeleton h={20} w={300} />
-          <Skeleton h={20} w={300} />
-          <Skeleton h={20} w={300} />
-        </div>
-      )}
+            )}
+          </div>
+        ) : (
+          <div className="space-y-2">
+            <Skeleton h={20} w={300} />
+            <Skeleton h={20} w={300} />
+            <Skeleton h={20} w={300} />
+          </div>
+        )}
+        {thresholdsQuery.data && (
+          <Button
+            variant="outline"
+            color="green.6"
+            onClick={() => {
+              const currentValues: { [key: string]: any } = {};
+
+              thresholdsQuery.data.map((th) => {
+                currentValues[`${th.name}_value`] = th.value;
+                currentValues[`${th.name}_toExceed`] = th.to_exceed;
+                currentValues[`${th.name}_enabled`] = th.value !== null;
+              });
+              resetThresholds(currentValues);
+              thresholdsModalOpen();
+            }}
+          >
+            Modificar criterios
+          </Button>
+        )}
+      </div>
 
       <h2 className="text-3xl text-neutral-500 dark:text-dark-200 mb-2 mt-8">
         Gráfica de métricas

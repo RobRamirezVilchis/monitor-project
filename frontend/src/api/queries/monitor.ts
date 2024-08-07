@@ -412,6 +412,16 @@ export const useRDSTypesQuery = createQuery({
   queryClient: defaultQueryClient,
 });
 
+export const useRDSThresholdsQuery = createQuery({
+  queryPrimaryKey: "rds_thresholds",
+  queryFn: (ctx) => monitorService.getRDSMetricThresholds({ signal: ctx.signal }),
+  cacheTime: 1000 * 60 * 5,  // 5 minutes
+  staleTime: 1000 * 60 * 3,  // 3 minutes
+  keepPreviousData: true,
+  queryClient: defaultQueryClient,
+});
+
+
 // Load Balancer
 export const useAllLoadBalancersQuery = createQuery({
   queryPrimaryKey: "all-elb-query",
@@ -490,6 +500,15 @@ export const useLoadBalancerMetricsKeysQuery = createQuery({
 export const useLoadBalancerRegionsQuery = createQuery({
   queryPrimaryKey: "elb-regions",
   queryFn: (ctx) => monitorService.getLoadBalancerRegions({ signal: ctx.signal }),
+  cacheTime: 1000 * 60 * 5,  // 5 minutes
+  staleTime: 1000 * 60 * 3,  // 3 minutes
+  keepPreviousData: true,
+  queryClient: defaultQueryClient,
+});
+
+export const useLoadBalancerThresholdsQuery = createQuery({
+  queryPrimaryKey: "elb_thresholds",
+  queryFn: (ctx) => monitorService.getLoadBalancerMetricThresholds({ signal: ctx.signal }),
   cacheTime: 1000 * 60 * 5,  // 5 minutes
   staleTime: 1000 * 60 * 3,  // 3 minutes
   keepPreviousData: true,
@@ -625,6 +644,15 @@ export const useServerRegionsQuery = createQuery({
 export const useServerTypesQuery = createQuery({
   queryPrimaryKey: "server_types",
   queryFn: (ctx) => monitorService.getServerTypes({ signal: ctx.signal }),
+  cacheTime: 1000 * 60 * 5,  // 5 minutes
+  staleTime: 1000 * 60 * 3,  // 3 minutes
+  keepPreviousData: true,
+  queryClient: defaultQueryClient,
+});
+
+export const useServerThresholdsQuery = createQuery({
+  queryPrimaryKey: "server_thresholds",
+  queryFn: (ctx) => monitorService.getServerMetricThresholds({ signal: ctx.signal }),
   cacheTime: 1000 * 60 * 5,  // 5 minutes
   staleTime: 1000 * 60 * 3,  // 3 minutes
   keepPreviousData: true,

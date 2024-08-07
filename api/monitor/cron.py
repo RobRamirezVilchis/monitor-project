@@ -2074,6 +2074,7 @@ def update_romberg_status():
                 "status": status,
                 "log_counts": log_counts["hour"][device_name],
                 "records": current_metrics,
+                "active": True
             }
             device_status = update_or_create_romberg_device_status(
                 device=device, defaults=defaults)
@@ -2107,7 +2108,7 @@ def update_servers_status():
     for region in server_regions:
         utils = AWSUtils(region.name)
         instances = utils.list_instances()
-        metrics_to_get = get_servermetrics("ec2")
+        metrics_to_get = get_service_metrics("ec2")
 
         all_metrics_data = {}
         for metric in metrics_to_get:
@@ -2247,7 +2248,7 @@ def update_rds_status():
         if not instances:
             continue
 
-        metrics_to_get = get_servermetrics("rds")
+        metrics_to_get = get_service_metrics("rds")
 
         for metric in metrics_to_get:
             metric_data = utils.get_db_metrics(instances, metric.name)
@@ -2371,7 +2372,7 @@ def update_elb_status():
         if not instances:
             continue
 
-        metrics_to_get = get_servermetrics("elb")
+        metrics_to_get = get_service_metrics("elb")
 
         for metric in metrics_to_get:
             metric_data = utils.get_elb_metrics(

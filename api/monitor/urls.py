@@ -22,6 +22,8 @@ urlpatterns = [
                            name="records_list"),
                       path("thresholds/", apis.GxMetricThresholdsAPI.as_view(),
                            name="thresholds"),
+                      path("modify-thresholds/", apis.ModifyThresholdsAPI.as_view(),
+                           name="modify-thresholds"),
                   ], "device data")))
          ], "records")),
          ),
@@ -123,6 +125,8 @@ urlpatterns = [
                            name="device-logs"),
                       path("severity-history/", apis.RetailDeviceScatterPlotAPI.as_view(),
                            name="scatter-plot"),
+                      path("set-inactive/", apis.SetRetailDeviceAsInactiveAPI.as_view(),
+                           name="set-inactive"),
                   ], "device")
                   )),
          ], "retail"))
@@ -196,8 +200,8 @@ urlpatterns = [
                                name="device-logs"),
                            # path("check-wifi-connection/", apis.DeviceWifiProblemsAPI.as_view(),
                            #     name="device-connection"),
-                           # path("set-inactive/", apis.SetDeviceClientAsInactiveAPI.as_view(),
-                           #     name="set-inactive"),
+                           path("set-inactive/", apis.SetRombergDeviceAsInactiveAPI.as_view(),
+                                name="set-inactive"),
                        ], "device")
                        )),
 
@@ -223,6 +227,10 @@ urlpatterns = [
 
              path("regions/", apis.ServerRegionsAPI.as_view(), name="regions"),
              path("types/", apis.ServerTypesAPI.as_view(), name="types"),
+             path("thresholds/", apis.ServerMetricThresholdsAPI.as_view(),
+                  name="thresholds"),
+             path("modify-thresholds/", apis.ModifyServerThresholdsAPI.as_view(),
+                  name="thresholds"),
              path("server/<int:server_id>/",
                  include(([
 
@@ -236,6 +244,7 @@ urlpatterns = [
                           name="projects"),
                      path("modify-projects/", apis.ModifyServerProjectsAPI.as_view(),
                          name="modify-projects"),
+
                  ], "server")
                  )),
          ], "servers"))),
@@ -248,6 +257,10 @@ urlpatterns = [
              path("metric-keys/", apis.RDSMetricsAPI.as_view(), name="metrics"),
              path("regions/", apis.ServerRegionsAPI.as_view(), name="regions"),
              path("types/", apis.RDSTypesAPI.as_view(), name="types"),
+             path("thresholds/", apis.RDSMetricThresholdsAPI.as_view(),
+                  name="thresholds"),
+             path("modify-thresholds/", apis.ModifyRDSThresholdsAPI.as_view(),
+                  name="thresholds"),
              path("db/<int:rds_id>/",
                   include(([
                       path("", apis.RDSStatusAPI.as_view(),
@@ -269,6 +282,10 @@ urlpatterns = [
                   path("metric-keys/", apis.LoadBalancerMetricsAPI.as_view(),
                        name="metrics"),
                   path("regions/", apis.ServerRegionsAPI.as_view(), name="regions"),
+                  path("thresholds/", apis.LoadBalancerMetricThresholdsAPI.as_view(),
+                       name="thresholds"),
+                  path("modify-thresholds/", apis.ModifyLoadBalancerThresholdsAPI.as_view(),
+                       name="thresholds"),
                   path("elb/<int:elb_id>/",
                        include(([
                            path("", apis.LoadBalancerStatusAPI.as_view(),
@@ -277,6 +294,7 @@ urlpatterns = [
                                 name="scatterplot"),
                            path("history/", apis.LoadBalancerHistoryList.as_view(),
                                 name="history"),
+
                        ], "elb")
                        )),
                   ], "load_balancers")))

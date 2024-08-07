@@ -1784,6 +1784,19 @@ class RombergClientList(APIView):
         return Response(data)
 
 
+class SetRombergDeviceAsInactiveAPI(APIView):
+
+    def post(self, request, device_id, *args, **kwargs):
+        try:
+            device_status = get_romberg_device_status(device_id)
+            device_status.active = False
+            device_status.save()
+        except:
+            return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+        return Response(status=status.HTTP_200_OK)
+
+
 class GxRecordsAPI(APIView):
     class FiltersSerializer(serializers.Serializer):
         register_time_after = serializers.DateTimeField(required=False)
@@ -1830,12 +1843,135 @@ class GxMetricThresholdsAPI(APIView):
     class OutputSerializer(serializers.Serializer):
         metric_name = serializers.CharField()
         threshold = serializers.FloatField()
+        to_exceed = serializers.BooleanField()
 
     def get(self, request, device_id, *args, **kwargs):
         metrics = get_gx_metrics()
-        print(metrics)
         data = self.OutputSerializer(metrics, many=True).data
         return Response(data)
+
+
+class ModifyThresholdsAPI(APIView):
+    class InputSerializer(serializers.Serializer):
+        metric_name = serializers.CharField()
+        value = serializers.FloatField(allow_null=True)
+        to_exceed = serializers.BooleanField()
+
+    def post(self, request, device_id, *args, **kwargs):
+
+        serializer = self.InputSerializer(data=request.data, many=True)
+        serializer.is_valid(raise_exception=True)
+
+        gx = get_gx(device_id)
+
+        for metric in serializer.validated_data:
+            metric_obj = GxMetric.objects.get(
+                gx_model=gx.model, metric_name=metric["metric_name"])
+            metric_obj.threshold = metric["value"]
+            metric_obj.to_exceed = metric["to_exceed"]
+            metric_obj.save()
+
+        return Response(status=status.HTTP_200_OK)
+
+
+# AWS Metrics
+class ServerMetricThresholdsAPI(APIView):
+    class OutputSerializer(serializers.Serializer):
+        name = serializers.CharField()
+        value = serializers.FloatField(source="threshold")
+        to_exceed = serializers.BooleanField()
+
+    def get(self, request, *args, **kwargs):
+        metrics = get_service_metrics("ec2")
+        data = self.OutputSerializer(metrics, many=True).data
+        return Response(data)
+
+
+class ModifyServerThresholdsAPI(APIView):
+    class InputSerializer(serializers.Serializer):
+        name = serializers.CharField()
+        value = serializers.FloatField(allow_null=True)
+        to_exceed = serializers.BooleanField()
+
+    def post(self, request, *args, **kwargs):
+
+        serializer = self.InputSerializer(data=request.data, many=True)
+        serializer.is_valid(raise_exception=True)
+
+        for metric in serializer.validated_data:
+            metric_obj = ServerMetric.objects.get(
+                service="ec2", name=metric["name"])
+            metric_obj.threshold = metric["value"]
+            metric_obj.to_exceed = metric["to_exceed"]
+            metric_obj.save()
+
+        return Response(status=status.HTTP_200_OK)
+
+
+class RDSMetricThresholdsAPI(APIView):
+    class OutputSerializer(serializers.Serializer):
+        name = serializers.CharField()
+        value = serializers.FloatField(source="threshold")
+        to_exceed = serializers.BooleanField()
+
+    def get(self, request, *args, **kwargs):
+        metrics = get_service_metrics("rds")
+        data = self.OutputSerializer(metrics, many=True).data
+        return Response(data)
+
+
+class ModifyRDSThresholdsAPI(APIView):
+    class InputSerializer(serializers.Serializer):
+        name = serializers.CharField()
+        value = serializers.FloatField(allow_null=True)
+        to_exceed = serializers.BooleanField()
+
+    def post(self, request, *args, **kwargs):
+
+        serializer = self.InputSerializer(data=request.data, many=True)
+        serializer.is_valid(raise_exception=True)
+
+        for metric in serializer.validated_data:
+            metric_obj = ServerMetric.objects.get(
+                service="rds", name=metric["name"])
+            metric_obj.threshold = metric["value"]
+            metric_obj.to_exceed = metric["to_exceed"]
+            metric_obj.save()
+
+        return Response(status=status.HTTP_200_OK)
+
+
+class LoadBalancerMetricThresholdsAPI(APIView):
+    class OutputSerializer(serializers.Serializer):
+        name = serializers.CharField()
+        value = serializers.FloatField(source="threshold")
+        to_exceed = serializers.BooleanField()
+
+    def get(self, request, *args, **kwargs):
+        metrics = get_service_metrics("elb")
+        data = self.OutputSerializer(metrics, many=True).data
+        return Response(data)
+
+
+class ModifyLoadBalancerThresholdsAPI(APIView):
+    class InputSerializer(serializers.Serializer):
+        name = serializers.CharField()
+        value = serializers.FloatField(allow_null=True)
+        to_exceed = serializers.BooleanField()
+
+    def post(self, request, *args, **kwargs):
+
+        serializer = self.InputSerializer(data=request.data, many=True)
+        serializer.is_valid(raise_exception=True)
+
+        for metric in serializer.validated_data:
+            metric_obj = ServerMetric.objects.get(
+                service="elb", name=metric["name"])
+            metric_obj.threshold = metric["value"]
+            metric_obj.to_exceed = metric["to_exceed"]
+            metric_obj.save()
+
+        return Response(status=status.HTTP_200_OK)
 
 
 # Servers ----------------------------------------------------------------------
@@ -2119,7 +2255,7 @@ class ServerMetricsAPI(APIView):
         metrics = serializers.JSONField()
 
     def get(self, request, *args, **kwargs):
-        metrics = get_servermetrics("ec2")
+        metrics = get_service_metrics("ec2")
 
         metrics_dict = {metric.name: metric.key for metric in metrics}
         output = {"metrics": metrics_dict}
@@ -2296,7 +2432,7 @@ class RDSMetricsAPI(APIView):
         metrics = serializers.JSONField()
 
     def get(self, request, *args, **kwargs):
-        metrics = get_servermetrics("rds")
+        metrics = get_service_metrics("rds")
 
         metrics_dict = {metric.name: metric.key for metric in metrics}
         output = {"metrics": metrics_dict}
@@ -2451,7 +2587,7 @@ class LoadBalancerMetricsAPI(APIView):
         metrics = serializers.JSONField()
 
     def get(self, request, *args, **kwargs):
-        metrics = get_servermetrics("elb")
+        metrics = get_service_metrics("elb")
 
         metrics_dict = {metric.name: metric.key for metric in metrics}
         output = {"metrics": metrics_dict}
@@ -3011,6 +3147,8 @@ class ModifyServerProjectsAPI(APIView):
 '''
 Gx Models
 '''
+
+
 class GxModelAPI(APIView):
     class OutputSerializer(serializers.Serializer):
         name = serializers.CharField()

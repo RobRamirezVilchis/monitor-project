@@ -1,5 +1,5 @@
 import { createMutation } from "../helpers/createMutation";
-import { addIndustryClient, addNewProject, addSafeDrivingClient, addSmartBuildingsClient, addSmartRetailClient, deleteProject, editProject, getProjectData, modifyServerProjects, setDeviceAsInactive, setUnitAsInactive } from "../services/monitor";
+import { addIndustryClient, addNewProject, addSafeDrivingClient, addSmartBuildingsClient, addSmartRetailClient, deleteProject, editProject, getProjectData, modifyGxThresholds, modifyLoadBalancerMetricThresholds, modifyRDSMetricThresholds, modifyServerMetricThresholds, modifyServerProjects, setDeviceAsInactive, setRombergDeviceAsInactive, setUnitAsInactive } from "../services/monitor";
 
 
 export const useAddSDClientMutation = createMutation({
@@ -58,8 +58,38 @@ export const useModifyServerProjectsMutation = createMutation({
   mutationFn: (data: Parameters<typeof modifyServerProjects>[0]) => modifyServerProjects(data),
 })
 
+export const useModifyServerThresholdsMutation = createMutation({
+  mutationKey: ["modify-server-metrics"],
+  mutationFn: (data: Parameters<typeof modifyServerMetricThresholds>[0]) => modifyServerMetricThresholds(data),
+
+});
+export const useModifyRDSThresholdsMutation = createMutation({
+  mutationKey: ["modify-rds-metrics"],
+  mutationFn: (data: Parameters<typeof modifyRDSMetricThresholds>[0]) => modifyRDSMetricThresholds(data),
+
+});
+export const useModifyELBThresholdsMutation = createMutation({
+  mutationKey: ["modify-elb-metrics"],
+  mutationFn: (data: Parameters<typeof modifyLoadBalancerMetricThresholds>[0]) => modifyLoadBalancerMetricThresholds(data),
+
+});
+
 export const useAddSBClientMutation = createMutation({
   mutationKey: ["add-sb-client"],
   mutationFn: (data: Parameters<typeof addSmartBuildingsClient>[0]) => addSmartBuildingsClient(data),
+
+});
+
+// Romberg --------------------------------------------------------
+export const useSetRombergDeviceInactiveMutation = createMutation({
+  mutationKey: ["set-romberg-device-inactive"],
+  mutationFn: (data: Parameters<typeof setRombergDeviceAsInactive>[0]) => setRombergDeviceAsInactive(data),
+
+});
+
+// Gx Metrics -----------------------------------------------------
+export const useModifyThresholdsMutation = createMutation({
+  mutationKey: ["modify-metrics"],
+  mutationFn: (data: Parameters<typeof modifyGxThresholds>[0]) => modifyGxThresholds(data),
 
 });

@@ -674,7 +674,7 @@ def create_serverhistory(args):
     return server_history
 
 
-def get_servermetrics(service: str):
+def get_service_metrics(service: str):
     return ServerMetric.objects.filter(service=service)
 
 
@@ -780,7 +780,7 @@ def get_rdsstatus_list(filters=None):
     return RDSStatusFilter(filters, all_rds_status).qs
 
 
-def get_servermetrics(service: str):
+def get_service_metrics(service: str):
     return ServerMetric.objects.filter(service=service)
 
 

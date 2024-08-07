@@ -297,6 +297,12 @@ export interface MetricsKeys {
   metrics: {[metricName: string]: string}
 }
 
+export interface ServiceMetricThreshold {
+  name: string,
+  value: number,
+  to_exceed: boolean,
+}
+
 export interface ServerType {
   server_type: string
 }
@@ -510,6 +516,17 @@ export interface GxRecord {
 export interface GxMetricThreshold {
   metric_name: string,
   threshold: number,
+  to_exceed: boolean,
+}
+
+export interface NewGxThresholds {
+  gx_id: number,
+  thresholds: {
+
+    metric_name: string,
+    value: number,
+    to_exceed: boolean,
+  }[]
 }
 
 

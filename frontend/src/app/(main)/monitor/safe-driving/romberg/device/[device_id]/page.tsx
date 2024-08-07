@@ -13,6 +13,7 @@ import {
 import {
   DeviceFilters,
   GxRecord,
+  NewGxThresholds,
   RombergDeviceHistory,
 } from "@/api/services/monitor/types";
 
@@ -20,13 +21,17 @@ import { useDataGrid, useSsrDataGrid } from "@/hooks/data-grid";
 import DataGrid from "@/ui/data-grid/DataGrid";
 import { ColumnDef } from "@/ui/data-grid/types";
 
-import { useSetDeviceInactiveMutation } from "@/api/mutations/monitor";
+import {
+  useModifyThresholdsMutation,
+  useSetDeviceInactiveMutation,
+} from "@/api/mutations/monitor";
 import wifiError from "@/media/error-de-conexion.png";
 import {
   Button,
   Drawer,
   Modal,
   SegmentedControl,
+  Select,
   Skeleton,
 } from "@mantine/core";
 import { DatePickerInput } from "@mantine/dates";
@@ -67,6 +72,18 @@ import {
 } from "../../../../(components)/colors";
 import { ChartTooltipProps, LineChart } from "@mantine/charts";
 import { PaymentOutlined } from "@mui/icons-material";
+import { useForm } from "react-hook-form";
+import { Checkbox, NumberInput } from "@/ui/core";
+import { Vazirmatn } from "next/font/google";
+import { showSuccessNotification } from "@/ui/notifications";
+
+interface FormData {
+  [key: string]: {
+    value: number | null;
+    toExceed: boolean | null;
+    enabled: boolean;
+  };
+}
 
 const RombergDevicePage = ({ params }: { params: { device_id: string } }) => {
   const router = useRouter();
@@ -74,6 +91,11 @@ const RombergDevicePage = ({ params }: { params: { device_id: string } }) => {
   const [opened, { open, close }] = useDisclosure(false);
   const [drawerOpened, { open: drawerOpen, close: drawerClose }] =
     useDisclosure(false);
+  const [
+    thresholdsModalOpened,
+    { open: thresholdsModalOpen, close: thresholdsModalClose },
+  ] = useDisclosure(false);
+
   const [selectedMetric, setSelectedMetric] = useState("RAM");
 
   const currentDate = new Date();
@@ -299,13 +321,13 @@ const RombergDevicePage = ({ params }: { params: { device_id: string } }) => {
     (th) => th.metric_name == selectedMetric
   );
 
-  /* const gxModelQuery = useGxModelQuery({
+  const gxModelQuery = useGxModelQuery({
     variables: { gx_id: Number(params.device_id) },
-  }); */
+  });
 
-  const setUnitInactiveMutation = useSetDeviceInactiveMutation({
+  const useSetRombergDeviceInactiveMutation = useSetDeviceInactiveMutation({
     onSuccess: () => {
-      router.push("/monitor/smart-retail/");
+      router.push("/monitor/safe-driving/romberg/");
     },
     onError: (error: any, variables, context) => {
       setError(error.response.data["error"]);
@@ -313,7 +335,46 @@ const RombergDevicePage = ({ params }: { params: { device_id: string } }) => {
   });
 
   const onConfirmation = async (deviceFilters: DeviceFilters) => {
-    setUnitInactiveMutation.mutate(deviceFilters);
+    useSetRombergDeviceInactiveMutation.mutate(deviceFilters);
+  };
+
+  const {
+    register,
+    handleSubmit,
+    watch,
+    control,
+    formState: { errors },
+    reset,
+  } = useForm<{ [key: string]: any }>();
+
+  const thresholdsMutation = useModifyThresholdsMutation({
+    onSuccess: () => {
+      showSuccessNotification({
+        message: "Se guardaron los nuevos valores con éxito",
+      });
+    },
+    onError: () => {},
+  });
+
+  const submitNewThresholds = async (values: { [key: string]: any }) => {
+    let data: any = {};
+    data.gx_id = params.device_id;
+    data.thresholds = [];
+
+    thresholdsQuery.data?.forEach((th) => {
+      data.thresholds.push({
+        metric_name: th.metric_name,
+        to_exceed: values[`${th.metric_name}_toExceed`],
+        ...(values[`${th.metric_name}_enabled`]
+          ? {
+              value: values[`${th.metric_name}_value`],
+            }
+          : {
+              value: null,
+            }),
+      });
+    });
+    thresholdsMutation.mutate(data);
   };
 
   return (
@@ -327,14 +388,34 @@ const RombergDevicePage = ({ params }: { params: { device_id: string } }) => {
         classNames={{ title: "text-xl font-semibold" }}
       >
         <div className="flex flex-col gap-6 px-6">
-          <div className="sm:flex w-96 gap-2 items-center mt-1 sm:mt-0">
-            <p>Rango de tiempo:</p>
-            <DatePickerInput
-              type="range"
-              placeholder="Pick date"
-              value={recordsDateValue}
-              onChange={setRecordsDateValue}
-            />
+          <div className="flex justify-between">
+            <div className="sm:flex w-96 gap-2 items-center mt-1 sm:mt-0">
+              <p>Rango de tiempo:</p>
+              <DatePickerInput
+                type="range"
+                placeholder="Pick date"
+                value={recordsDateValue}
+                onChange={setRecordsDateValue}
+              />
+            </div>
+            {thresholdsQuery.data && (
+              <Button
+                onClick={() => {
+                  const currentValues: { [key: string]: any } = {};
+
+                  thresholdsQuery.data.map((th) => {
+                    currentValues[`${th.metric_name}_value`] = th.threshold;
+                    currentValues[`${th.metric_name}_toExceed`] = th.to_exceed;
+                    currentValues[`${th.metric_name}_enabled`] =
+                      th.threshold !== null;
+                  });
+                  reset(currentValues);
+                  thresholdsModalOpen();
+                }}
+              >
+                Modificar criterios
+              </Button>
+            )}
           </div>
           {thresholdsQuery.data && (
             <SegmentedControl
@@ -383,6 +464,58 @@ const RombergDevicePage = ({ params }: { params: { device_id: string } }) => {
           )}
         </div>
       </Drawer>
+      <Modal
+        opened={thresholdsModalOpened}
+        onClose={thresholdsModalClose}
+        title="Modificar criterios"
+        classNames={{ title: "text-xl font-semibold" }}
+      >
+        <form onSubmit={handleSubmit(submitNewThresholds)}>
+          <p className="opacity-80 mb-3">
+            Aquí puedes modificar los criterios para considerar una métrica como
+            crítica.
+          </p>
+          <div className="flex gap-3 pr-3 items-end justify-end w-full">
+            <p>Sobrepasar</p>
+            <p>Habilitado</p>
+          </div>
+          <div className="flex justify-center">
+            <div className="flex flex-col gap-3 items-center  mb-3">
+              <div className="flex flex-col gap-3 items-end">
+                {thresholdsQuery.data?.map((th) => (
+                  <div className="flex gap-2 items-center">
+                    <p>{th.metric_name}</p>
+                    <NumberInput
+                      name={`${th.metric_name}_value`}
+                      control={control}
+                      classNames={{ root: "w-20 mr-10" }}
+                      placeholder=""
+                      value={th.threshold}
+                      disabled={!watch(`${th.metric_name}_enabled`)}
+                    ></NumberInput>
+                    <Checkbox
+                      name={`${th.metric_name}_toExceed`}
+                      control={control}
+                      disabled={!watch(`${th.metric_name}_enabled`)}
+                      classNames={{ root: "mr-12" }}
+                    ></Checkbox>
+                    <Checkbox
+                      name={`${th.metric_name}_enabled`}
+                      control={control}
+                      color="green.6"
+                    ></Checkbox>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          <div className="flex justify-end">
+            <Button type="submit">Aceptar</Button>
+          </div>
+        </form>
+      </Modal>
+
       {/*  <BackArrow /> */}
       <div className="flex mb-4 justify-between items-center">
         <div className="xl:flex xl:gap-6">
@@ -430,27 +563,29 @@ const RombergDevicePage = ({ params }: { params: { device_id: string } }) => {
           </div>
         )}
       </div>
-      <div className="flex gap-3 mb-2">
-        {records.map((rec, i) => (
-          <div
-            key={i}
-            className={` border-1   py-1.5 px-2 rounded-lg
+      <div className="flex flex-wrap gap-3 mb-2">
+        <div className="hidden sm:flex sm:flex-wrap gap-3">
+          {records.map((rec, i) => (
+            <div
+              key={i}
+              className={` border-1   py-1.5 px-2 rounded-lg
               ${
                 rec.critical
                   ? `bg-red-200 text-red-700 border-red-400`
                   : `bg-gray-200 text-neutral-600 border-neutral-300`
               }
             `}
-          >
-            <span className="mr-1">{rec.name}</span>
-            <span>-</span>
-            {!rec.name.endsWith("TEMP") ? (
-              <span className="p-1">{(rec.value * 100).toFixed(2)}%</span>
-            ) : (
-              <span className="p-1">{rec.value.toFixed(2)}</span>
-            )}
-          </div>
-        ))}
+            >
+              <span className="mr-1">{rec.name}</span>
+              <span>-</span>
+              {!rec.name.endsWith("TEMP") ? (
+                <span className="p-1">{(rec.value * 100).toFixed(2)}%</span>
+              ) : (
+                <span className="p-1">{rec.value.toFixed(2)}</span>
+              )}
+            </div>
+          ))}
+        </div>
         <Button variant="outline" color="green.7" onClick={drawerOpen}>
           Ver métricas
         </Button>
@@ -591,8 +726,8 @@ const RombergDevicePage = ({ params }: { params: { device_id: string } }) => {
       </Button>
       <Modal opened={opened} onClose={close} title="¿Estás seguro?" centered>
         <p className="mb-4 text-lg">
-          Este dispositivo ya no aparecerá en la plataforma, ni se buscará
-          información de él.
+          Este dispositivo ya no aparecerá en la plataforma, a menos que se
+          reciba información de este.
         </p>
         <Button
           color="red.9"
@@ -741,7 +876,7 @@ const recordsGridCols: ColumnDef<GxRecord>[] = [
     accessorFn: (row) => format(parseISO(row.register_time), "Pp"),
     header: "Fecha de log",
     columnTitle: "Fecha de log",
-    minSize: 250,
+    minSize: 200,
     enableSorting: true,
     filterVariant: "datetime-range",
   },

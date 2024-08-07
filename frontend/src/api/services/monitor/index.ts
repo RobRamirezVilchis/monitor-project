@@ -1,4 +1,4 @@
-import { UnitStatus, SeverityCount, UnitHistory, DeviceStatus, UnitFilters, LastStatusChange, DeviceFilters, DeviceHistory, Client, CameraDisconnection, LastActiveStatus, StatusHistory, AreaPlotData, AreaPlotFilters, LastUpdate, DeviceLogsFilters, DeviceLog, DeviceWifiStatus, UnitLogsFilters, UnitLog, NewClientData, ServerStatus, ServerHistoryFilters, ServerHistory, MetricsKeys, ServerRegion, ServerType, ServerStatusFilters, RetailDeviceStatus, RetailDeviceHistory, UnitReportContent, RDSStatusFilters, RDSStatus, RDSHistoryFilters, RDSHistory, RDSType, RDSFilters, RDS, Server, Deployment, NewProjectData, ServerProjects, Project, LoadBalancer, LoadBalancerStatusFilters, LoadBalancerStatus, LoadBalancerFilters, LoadBalancerHistoryFilters, LoadBalancerHistory, ServerFilters, ModifyProjectsData, UnitFailedTrips, UnitTrip, UnitSeverityHistoryFilters, ProjectData, EditedProjectData, RDSProjects, ServiceSeverityHistory, RombergDeviceHistory, RombergDeviceStatus, GxRecordFilters, GxRecord, GxFilter, GxMetricThreshold, GxModel } from "./types";
+import { UnitStatus, SeverityCount, UnitHistory, DeviceStatus, UnitFilters, LastStatusChange, DeviceFilters, DeviceHistory, Client, CameraDisconnection, LastActiveStatus, StatusHistory, AreaPlotData, AreaPlotFilters, LastUpdate, DeviceLogsFilters, DeviceLog, DeviceWifiStatus, UnitLogsFilters, UnitLog, NewClientData, ServerStatus, ServerHistoryFilters, ServerHistory, MetricsKeys, ServerRegion, ServerType, ServerStatusFilters, RetailDeviceStatus, RetailDeviceHistory, UnitReportContent, RDSStatusFilters, RDSStatus, RDSHistoryFilters, RDSHistory, RDSType, RDSFilters, RDS, Server, Deployment, NewProjectData, ServerProjects, Project, LoadBalancer, LoadBalancerStatusFilters, LoadBalancerStatus, LoadBalancerFilters, LoadBalancerHistoryFilters, LoadBalancerHistory, ServerFilters, ModifyProjectsData, UnitFailedTrips, UnitTrip, UnitSeverityHistoryFilters, ProjectData, EditedProjectData, RDSProjects, ServiceSeverityHistory, RombergDeviceHistory, RombergDeviceStatus, GxRecordFilters, GxRecord, GxFilter, GxMetricThreshold, GxModel, NewGxThresholds, ServiceMetricThreshold } from "./types";
 import { Id, OptionallyPaginated, Paginated } from "@/api/types";
 import { Role, User } from "../auth/types";
 import api from "../..";
@@ -404,7 +404,7 @@ export async function setDeviceAsInactive(
 ) {
  
     const resp = await http.post(
-      api.endpoints.monitor.industry.setAsInactive(filters.device_id),
+      api.endpoints.monitor.romberg.setAsInactive(filters.device_id),
       {
         ...config,
       }
@@ -617,6 +617,32 @@ export async function getMetricsKeys(
     return resp.data;
 }
 
+export async function getServerMetricThresholds(
+  config?: Parameters<typeof http.get>[1]
+) {
+    const resp = await http.get<ServiceMetricThreshold[]>(
+      api.endpoints.monitor.servers.thresholds,
+      {
+        ...config,
+      }
+    );
+    return resp.data;
+}
+
+export async function modifyServerMetricThresholds(
+  data: ServiceMetricThreshold[],
+  config?: Parameters<typeof http.post>[2]
+  ) {
+  
+    const resp = await http.post<ServiceMetricThreshold[]>(
+      api.endpoints.monitor.servers.modifyThresholds,
+      data,
+      config
+    );
+    return resp.data;
+  
+  }
+
 // RDS
 export async function getAllRDS(
   config?: Parameters<typeof http.get>[1]
@@ -751,6 +777,32 @@ export async function getRDSMetricsKeys(
     return resp.data;
 }
 
+export async function getRDSMetricThresholds(
+  config?: Parameters<typeof http.get>[1]
+) {
+    const resp = await http.get<ServiceMetricThreshold[]>(
+      api.endpoints.monitor.rds.thresholds,
+      {
+        ...config,
+      }
+    );
+    return resp.data;
+}
+
+export async function modifyRDSMetricThresholds(
+  data: ServiceMetricThreshold[],
+  config?: Parameters<typeof http.post>[2]
+  ) {
+  
+    const resp = await http.post<ServiceMetricThreshold[]>(
+      api.endpoints.monitor.rds.modifyThresholds,
+      data,
+      config
+    );
+    return resp.data;
+  
+  }
+
 // Load Balancers
 export async function getAllLoadBalancers(
   config?: Parameters<typeof http.get>[1]
@@ -862,6 +914,32 @@ export async function getLoadBalancerMetricsKeys(
     );
     return resp.data;
 }
+
+export async function getLoadBalancerMetricThresholds(
+  config?: Parameters<typeof http.get>[1]
+) {
+    const resp = await http.get<ServiceMetricThreshold[]>(
+      api.endpoints.monitor.elb.thresholds,
+      {
+        ...config,
+      }
+    );
+    return resp.data;
+}
+
+export async function modifyLoadBalancerMetricThresholds(
+  data: ServiceMetricThreshold[],
+  config?: Parameters<typeof http.post>[2]
+  ) {
+  
+    const resp = await http.post<ServiceMetricThreshold[]>(
+      api.endpoints.monitor.elb.modifyThresholds,
+      data,
+      config
+    );
+    return resp.data;
+  
+  }
 
 // Smart Retail
 export async function getRetailStatus(config?: Parameters<typeof http.get>[1]) {
@@ -1339,6 +1417,22 @@ export async function getRombergDeviceLogs(
     return resp.data;
 }
 
+export async function setRombergDeviceAsInactive(
+  filters: DeviceFilters,
+  config?: Parameters<typeof http.post>[2]
+) {
+ 
+    const resp = await http.post(
+      api.endpoints.monitor.romberg.setAsInactive(filters.device_id),
+      {
+        ...config,
+      }
+    );
+    return resp.data;
+
+}
+
+
 
 // Server Projects API ----------------------------------------------------
 
@@ -1436,7 +1530,7 @@ export async function getGxMetricThresholds(
     return resp.data;
 }
 
-// Models -----------------------------------------------------
+// Gx Models -----------------------------------------------------
 export async function getGxModel( 
   filters: GxFilter,
   config?: Parameters<typeof http.get>[1]
@@ -1449,3 +1543,18 @@ export async function getGxModel(
     );
     return resp.data;
 }
+
+// Gx Metrics ----------------------------------------------------
+export async function modifyGxThresholds(
+  data: NewGxThresholds,
+  config?: Parameters<typeof http.post>[2]
+  ) {
+  
+    const resp = await http.post<NewGxThresholds>(
+      api.endpoints.monitor.records.modifyThresholds(data.gx_id),
+      data.thresholds,
+      config
+    );
+    return resp.data;
+  
+  }
