@@ -482,8 +482,8 @@ const RombergDevicePage = ({ params }: { params: { device_id: string } }) => {
           <div className="flex justify-center">
             <div className="flex flex-col gap-3 items-center  mb-3">
               <div className="flex flex-col gap-3 items-end">
-                {thresholdsQuery.data?.map((th) => (
-                  <div className="flex gap-2 items-center">
+                {thresholdsQuery.data?.map((th, i) => (
+                  <div key={i} className="flex gap-2 items-center">
                     <p>{th.metric_name}</p>
                     <NumberInput
                       name={`${th.metric_name}_value`}
@@ -571,8 +571,8 @@ const RombergDevicePage = ({ params }: { params: { device_id: string } }) => {
               className={` border-1   py-1.5 px-2 rounded-lg
               ${
                 rec.critical
-                  ? `bg-red-200 text-red-700 border-red-400`
-                  : `bg-gray-200 text-neutral-600 border-neutral-300`
+                  ? `bg-red-200 dark:bg-red-950 text-red-700 dark:text-red-500`
+                  : `bg-gray-200 dark:bg-dark-500 text-neutral-600 dark:text-neutral-400`
               }
             `}
             >
@@ -661,7 +661,7 @@ const RombergDevicePage = ({ params }: { params: { device_id: string } }) => {
         <p className="text-2xl text-neutral-500 dark:text-dark-200">
           Estatus cada diez minutos
         </p>
-        <div className="h-[65vh] ">
+        <div className="h-[60vh] ">
           <DataGrid instance={grid} />
         </div>
       </div>
