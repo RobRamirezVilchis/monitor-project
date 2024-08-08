@@ -1132,4 +1132,4 @@ def get_gxrecords(gx_id: int, filters=None):
 
 def get_gx_model_metrics(gx_id: int):
     gx = get_gx(gx_id)
-    return GxMetric.objects.filter(gx_model=gx.model)
+    return GxMetric.objects.filter(gx_model=gx.model).order_by("metric_name")

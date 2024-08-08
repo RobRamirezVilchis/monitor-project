@@ -439,35 +439,36 @@ const RombergDevicePage = ({ params }: { params: { device_id: string } }) => {
         classNames={{ title: "text-xl font-semibold" }}
       >
         <div className="flex flex-col gap-4 px-6">
-          <div className="flex gap-1 items-center text-neutral-800">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="28"
-              height="28"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              className="icon icon-tabler icons-tabler-outline icon-tabler-cpu"
-            >
-              <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-              <path d="M5 5m0 1a1 1 0 0 1 1 -1h12a1 1 0 0 1 1 1v12a1 1 0 0 1 -1 1h-12a1 1 0 0 1 -1 -1z" />
-              <path d="M9 9h6v6h-6z" />
-              <path d="M3 10h2" />
-              <path d="M3 14h2" />
-              <path d="M10 3v2" />
-              <path d="M14 3v2" />
-              <path d="M21 10h-2" />
-              <path d="M21 14h-2" />
-              <path d="M14 21v-2" />
-              <path d="M10 21v-2" />
-            </svg>
-            <p className="text-xl">{gxModelQuery.data?.name}</p>
+          <div className="flex gap-1 items-center text-neutral-800 dark:text-neutral-300">
+            <div className="flex gap-1 items-center  bg-neutral-300 dark:bg-neutral-800  p-2 rounded-md">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="28"
+                height="28"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="icon icon-tabler icons-tabler-outline icon-tabler-cpu"
+              >
+                <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                <path d="M5 5m0 1a1 1 0 0 1 1 -1h12a1 1 0 0 1 1 1v12a1 1 0 0 1 -1 1h-12a1 1 0 0 1 -1 -1z" />
+                <path d="M9 9h6v6h-6z" />
+                <path d="M3 10h2" />
+                <path d="M3 14h2" />
+                <path d="M10 3v2" />
+                <path d="M14 3v2" />
+                <path d="M21 10h-2" />
+                <path d="M21 14h-2" />
+                <path d="M14 21v-2" />
+                <path d="M10 21v-2" />
+              </svg>
+              <p className="text-xl">{gxModelQuery.data?.name}</p>
+            </div>
             <button
               onClick={() => {
-                resetModels({ name: gxModelQuery.data?.name });
                 editModelModalOpen();
               }}
             >

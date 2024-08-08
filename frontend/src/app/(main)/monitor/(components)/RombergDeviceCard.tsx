@@ -74,7 +74,7 @@ const RombergDeviceCard = ({ device: device_obj }: GxCardProps) => {
             strokeWidth="2"
             strokeLinecap="round"
             strokeLinejoin="round"
-            className="text-red-700 icon icon-tabler icons-tabler-outline icon-tabler-alert-triangle"
+            className="text-red-700 opacity-70 dark:text-red-400 icon icon-tabler icons-tabler-outline icon-tabler-alert-triangle"
           >
             <path stroke="none" d="M0 0h24v24H0z" fill="none" />
             <path d="M12 9v4" />
