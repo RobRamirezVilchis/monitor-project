@@ -1,5 +1,5 @@
 import { createMutation } from "../helpers/createMutation";
-import { addIndustryClient, addNewProject, addSafeDrivingClient, addSmartBuildingsClient, addSmartRetailClient, deleteProject, editProject, getProjectData, modifyGxThresholds, modifyLoadBalancerMetricThresholds, modifyRDSMetricThresholds, modifyServerMetricThresholds, modifyServerProjects, setDeviceAsInactive, setRombergDeviceAsInactive, setUnitAsInactive } from "../services/monitor";
+import { addIndustryClient, addNewProject, addSafeDrivingClient, addSmartBuildingsClient, addSmartRetailClient, createGxModel, deleteProject, editProject, getProjectData, modifyGxThresholds, modifyLoadBalancerMetricThresholds, modifyRDSMetricThresholds, modifyServerMetricThresholds, modifyServerProjects, setDeviceAsInactive, setRombergDeviceAsInactive, setUnitAsInactive, updateGxModel } from "../services/monitor";
 
 
 export const useAddSDClientMutation = createMutation({
@@ -84,6 +84,19 @@ export const useAddSBClientMutation = createMutation({
 export const useSetRombergDeviceInactiveMutation = createMutation({
   mutationKey: ["set-romberg-device-inactive"],
   mutationFn: (data: Parameters<typeof setRombergDeviceAsInactive>[0]) => setRombergDeviceAsInactive(data),
+
+});
+
+// Gx Models -----------------------------------------------------
+export const useUpdateGxModelMutation = createMutation({
+  mutationKey: ["modify-model"],
+  mutationFn: (data: Parameters<typeof updateGxModel>[0]) => updateGxModel(data),
+
+});
+
+export const useCreateGxModelMutation = createMutation({
+  mutationKey: ["create-model"],
+  mutationFn: (data: Parameters<typeof createGxModel>[0]) => createGxModel(data),
 
 });
 

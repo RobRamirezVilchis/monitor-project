@@ -1,6 +1,8 @@
 "use client";
 
 import {
+  useGxModelQuery,
+  useGxModelsQuery,
   useUnitFailedTripsQuery,
   useUnitHistoryQuery,
   useUnitLastActiveStatus,
@@ -47,6 +49,7 @@ import {
   statusNames,
   statusStyles,
 } from "../../../(components)/colors";
+import EditModelModal from "../../../(components)/EditModelModal";
 
 const DownloadFile = (unitData: { unitId: string; unitName: string }) => {
   const reportQuery = useUnitReportQuery({
@@ -82,6 +85,10 @@ const UnitPage = ({ params }: { params: { unit_id: string } }) => {
   const [opened, { open, close }] = useDisclosure(false);
   const [elementWidth, setElementWidth] = useState(1000);
   const elementRef = useRef<HTMLDivElement>(null);
+  const [
+    editModelModalOpened,
+    { open: editModelModalOpen, close: editModelModalClose },
+  ] = useDisclosure(false);
 
   const unit: Unit = {
     name: params.unit_id,
@@ -128,6 +135,11 @@ const UnitPage = ({ params }: { params: { unit_id: string } }) => {
       unit_id: params.unit_id,
     },
   });
+
+  const gxModelQuery = useGxModelQuery({
+    variables: { gx_id: Number(params.unit_id) },
+  });
+  const allGxModelsQuery = useGxModelsQuery({});
 
   const unitStatus = unitStatusQuery.data;
   const inactive =
@@ -265,9 +277,17 @@ const UnitPage = ({ params }: { params: { unit_id: string } }) => {
 
   return (
     <section className="relative mb-20">
-      {/*  <BackArrow /> */}
+      <EditModelModal
+        modalProps={{
+          opened: editModelModalOpened,
+          close: editModelModalClose,
+        }}
+        modelQuery={gxModelQuery}
+        gxId={Number(params.unit_id)}
+        gxModels={allGxModelsQuery.data}
+      ></EditModelModal>
 
-      <div className="relative flex mb-6 justify-between items-center">
+      <div className="relative flex flex-col sm:flex-row gap-3 sm:gap-0 mb-6  justify-between  sm:items-center">
         <div className="xl:flex xl:gap-6 xl:items-center">
           {/* <h1 className="text-5xl font-bold">
             {unitStatus?.client == "Transpais" ? "Unidad" : ""}{" "}
@@ -294,22 +314,79 @@ const UnitPage = ({ params }: { params: { unit_id: string } }) => {
             >
               {statusNames[severity as StatusKey]}
             </div>
-            <div className="flex gap-3 text-xl text-neutral-500 dark:text-dark-200 items-center">
-              <div className="shrink">{statusDescription}</div>
-              <div className="border-r-2 border-neutral-400 dark:border-neutral-500 h-8" />
-              <div>Desde {timeAgo}</div>
-            </div>
+            <p className=" space-x-2 text-xl text-neutral-500 dark:text-dark-200 items-center">
+              <span className="shrink">
+                {statusDescription} - Desde {timeAgo}
+              </span>
+            </p>
           </div>
         </div>
-        {unitStatus?.on_trip && (
-          <div className="absolute right-4 bottom-3 md:static flex items-center top-0">
-            <span className="relative h-3 w-3 mb-1">
-              <span className="animate-ping h-4 w-4 absolute inline-flex rounded-full bg-sky-400 opacity-75"></span>
-              <span className="absolute inline-flex rounded-full h-4 w-4 bg-sky-400"></span>
-            </span>
-            <div className="text-2xl font-semibold ml-6">En viaje</div>
+        <div className="flex gap-4 items-center">
+          {unitStatus?.on_trip && (
+            <>
+              <div className="flex items-center top-0">
+                <span className="relative h-3 w-3 mb-1">
+                  <span className="animate-ping h-4 w-4 absolute inline-flex rounded-full bg-sky-400 opacity-75"></span>
+                  <span className="absolute inline-flex rounded-full h-4 w-4 bg-sky-400"></span>
+                </span>
+                <div className="text-2xl font-semibold ml-4">En viaje</div>
+              </div>
+              <div className="border-r-2 border-neutral-400 dark:border-neutral-500 h-8" />
+            </>
+          )}
+          <div className="flex gap-1 items-center text-neutral-800 dark:text-neutral-300">
+            <div className="flex gap-1 items-center  bg-neutral-300 dark:bg-neutral-800  p-2 rounded-md">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="28"
+                height="28"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="icon icon-tabler icons-tabler-outline icon-tabler-cpu"
+              >
+                <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                <path d="M5 5m0 1a1 1 0 0 1 1 -1h12a1 1 0 0 1 1 1v12a1 1 0 0 1 -1 1h-12a1 1 0 0 1 -1 -1z" />
+                <path d="M9 9h6v6h-6z" />
+                <path d="M3 10h2" />
+                <path d="M3 14h2" />
+                <path d="M10 3v2" />
+                <path d="M14 3v2" />
+                <path d="M21 10h-2" />
+                <path d="M21 14h-2" />
+                <path d="M14 21v-2" />
+                <path d="M10 21v-2" />
+              </svg>
+              <p className="text-xl">{gxModelQuery.data?.name}</p>
+            </div>
+            <button
+              onClick={() => {
+                editModelModalOpen();
+              }}
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="20"
+                height="20  "
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="ml-2 text-neutral-400 hover:text-neutral-600 transition-colors icon icon-tabler icons-tabler-outline icon-tabler-edit"
+              >
+                <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                <path d="M7 7h-1a2 2 0 0 0 -2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2 -2v-1" />
+                <path d="M20.385 6.585a2.1 2.1 0 0 0 -2.97 -2.97l-8.415 8.385v3h3l8.385 -8.415z" />
+                <path d="M16 5l3 3" />
+              </svg>
+            </button>
           </div>
-        )}
+        </div>
       </div>
 
       <div className="sm:flex justify-between items-end">
@@ -332,7 +409,7 @@ const UnitPage = ({ params }: { params: { unit_id: string } }) => {
               </div>
             </div>
           )}
-          <div className="text-xl text-neutral-500 dark:text-dark-300">
+          <div className="text-xl text-neutral-500 dark:text-dark-200 ">
             {inactive && unitLastActiveStatus.data && (
               <p>
                 Último estatus activo:{" "}

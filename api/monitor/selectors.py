@@ -14,6 +14,18 @@ def get_gx(gx_id: int):
     return Gx.objects.get(id=gx_id)
 
 
+def get_gx_model(name: str):
+    return GxModel.objects.get(name=name)
+
+
+def get_gx_models():
+    return GxModel.objects.all()
+
+
+def create_gx_model(name: str):
+    return GxModel.objects.create(name=name)
+
+
 def get_unit(unit_id: int):
     return Unit.objects.get(id=unit_id)
 
@@ -65,7 +77,7 @@ class CameraDisconnectionsFilter(rf_filters.FilterSet):
 
 def get_cameradisconnections(device_id: int, filters=None):
     logs = CameraHistory.objects.filter(
-        device_id=device_id, disconnection_time__gt=timedelta(0)).order_by('register_datetime')
+        camera_id=device_id, disconnection_time__gt=timedelta(0)).order_by('register_datetime')
 
     return CameraDisconnectionsFilter(filters, logs).qs
 
@@ -1118,5 +1130,6 @@ def get_gxrecords(gx_id: int, filters=None):
     return GxRecordsFilter(filters, logs).qs
 
 
-def get_gx_metrics():
-    return GxMetric.objects.all()
+def get_gx_model_metrics(gx_id: int):
+    gx = get_gx(gx_id)
+    return GxMetric.objects.filter(gx_model=gx.model)

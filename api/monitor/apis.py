@@ -16,7 +16,7 @@ from rest_framework import status, filters
 import humanize.locale
 
 from .selectors import *
-from .services import assign_project_to_server, create_project, delete_project, edit_project, get_or_create_client
+from .services import assign_project_to_server, create_project, delete_project, edit_project, get_or_create_client, get_or_create_gx_metric
 from api.pagination import get_paginated_response, LimitOffsetPagination
 from .models import UnitStatus
 from .cron import api_login, make_request
@@ -1846,7 +1846,7 @@ class GxMetricThresholdsAPI(APIView):
         to_exceed = serializers.BooleanField()
 
     def get(self, request, device_id, *args, **kwargs):
-        metrics = get_gx_metrics()
+        metrics = get_gx_model_metrics(device_id)
         data = self.OutputSerializer(metrics, many=True).data
         return Response(data)
 
@@ -3147,6 +3147,58 @@ class ModifyServerProjectsAPI(APIView):
 '''
 Gx Models
 '''
+
+
+class GxModelCreateAPI(APIView):
+    class InputSerializer(serializers.Serializer):
+        name = serializers.CharField()
+
+    def post(self, request, *args, **kwargs):
+        data_serializer = self.InputSerializer(data=request.data)
+        data_serializer.is_valid(raise_exception=True)
+
+        model_name = data_serializer.validated_data["name"]
+
+        create_gx_model(model_name)
+        current_metrics = GxMetric.objects.filter(gx_model__name="Orin")
+
+        for metric in current_metrics:
+            get_or_create_gx_metric(
+                name=metric.metric_name, model_name=model_name)
+
+        return Response(status=status.HTTP_201_CREATED)
+
+
+class GxModelUpdateAPI(APIView):
+    class InputSerializer(serializers.Serializer):
+        name = serializers.CharField()
+
+    def post(self, request, gx_id, *args, **kwargs):
+
+        data_serializer = self.InputSerializer(data=request.data)
+        data_serializer.is_valid(raise_exception=True)
+
+        gx = get_gx(gx_id)
+
+        model_name = data_serializer.validated_data["name"]
+        model = get_gx_model(model_name)
+
+        gx.model = model
+        gx.save()
+
+        return Response(status=status.HTTP_200_OK)
+
+
+class GxModelList(APIView):
+    class OutputSerializer(serializers.Serializer):
+        name = serializers.CharField()
+
+    def get(self, request, *args, **kwargs):
+        models = get_gx_models()
+
+        data = self.OutputSerializer(models, many=True).data
+
+        return Response(data)
 
 
 class GxModelAPI(APIView):

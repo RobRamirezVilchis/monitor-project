@@ -1,4 +1,4 @@
-import { UnitStatus, SeverityCount, UnitHistory, DeviceStatus, UnitFilters, LastStatusChange, DeviceFilters, DeviceHistory, Client, CameraDisconnection, LastActiveStatus, StatusHistory, AreaPlotData, AreaPlotFilters, LastUpdate, DeviceLogsFilters, DeviceLog, DeviceWifiStatus, UnitLogsFilters, UnitLog, NewClientData, ServerStatus, ServerHistoryFilters, ServerHistory, MetricsKeys, ServerRegion, ServerType, ServerStatusFilters, RetailDeviceStatus, RetailDeviceHistory, UnitReportContent, RDSStatusFilters, RDSStatus, RDSHistoryFilters, RDSHistory, RDSType, RDSFilters, RDS, Server, Deployment, NewProjectData, ServerProjects, Project, LoadBalancer, LoadBalancerStatusFilters, LoadBalancerStatus, LoadBalancerFilters, LoadBalancerHistoryFilters, LoadBalancerHistory, ServerFilters, ModifyProjectsData, UnitFailedTrips, UnitTrip, UnitSeverityHistoryFilters, ProjectData, EditedProjectData, RDSProjects, ServiceSeverityHistory, RombergDeviceHistory, RombergDeviceStatus, GxRecordFilters, GxRecord, GxFilter, GxMetricThreshold, GxModel, NewGxThresholds, ServiceMetricThreshold } from "./types";
+import { UnitStatus, SeverityCount, UnitHistory, DeviceStatus, UnitFilters, LastStatusChange, DeviceFilters, DeviceHistory, Client, CameraDisconnection, LastActiveStatus, StatusHistory, AreaPlotData, AreaPlotFilters, LastUpdate, DeviceLogsFilters, DeviceLog, DeviceWifiStatus, UnitLogsFilters, UnitLog, NewClientData, ServerStatus, ServerHistoryFilters, ServerHistory, MetricsKeys, ServerRegion, ServerType, ServerStatusFilters, RetailDeviceStatus, RetailDeviceHistory, UnitReportContent, RDSStatusFilters, RDSStatus, RDSHistoryFilters, RDSHistory, RDSType, RDSFilters, RDS, Server, Deployment, NewProjectData, ServerProjects, Project, LoadBalancer, LoadBalancerStatusFilters, LoadBalancerStatus, LoadBalancerFilters, LoadBalancerHistoryFilters, LoadBalancerHistory, ServerFilters, ModifyProjectsData, UnitFailedTrips, UnitTrip, UnitSeverityHistoryFilters, ProjectData, EditedProjectData, RDSProjects, ServiceSeverityHistory, RombergDeviceHistory, RombergDeviceStatus, GxRecordFilters, GxRecord, GxFilter, GxMetricThreshold, GxModel, NewGxThresholds, ServiceMetricThreshold, GxModelUpdate } from "./types";
 import { Id, OptionallyPaginated, Paginated } from "@/api/types";
 import { Role, User } from "../auth/types";
 import api from "../..";
@@ -1531,12 +1531,52 @@ export async function getGxMetricThresholds(
 }
 
 // Gx Models -----------------------------------------------------
+export async function getGxModels( 
+  config?: Parameters<typeof http.get>[1]
+) {
+    const resp = await http.get<GxModel[]>(
+      api.endpoints.monitor.models.list,
+      {
+        ...config,
+      }
+    );
+    return resp.data;
+}
+
+export async function createGxModel( 
+  data: GxModel,
+  config?: Parameters<typeof http.post>[2]
+) {
+    const resp = await http.post<GxModel>(
+      api.endpoints.monitor.models.create,
+      data,
+      {
+        ...config,
+      }
+    );
+    return resp.data;
+}
+
 export async function getGxModel( 
   filters: GxFilter,
   config?: Parameters<typeof http.get>[1]
 ) {
     const resp = await http.get<GxModel>(
       api.endpoints.monitor.models.model(filters.gx_id),
+      {
+        ...config,
+      }
+    );
+    return resp.data;
+}
+
+export async function updateGxModel( 
+  filters: GxModelUpdate,
+  config?: Parameters<typeof http.get>[1]
+) {
+    const resp = await http.post<GxModelUpdate>(
+      api.endpoints.monitor.models.modelUpdate(filters.gx_id),
+      filters,
       {
         ...config,
       }

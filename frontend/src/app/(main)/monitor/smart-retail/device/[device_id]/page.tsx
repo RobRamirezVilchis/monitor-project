@@ -3,6 +3,8 @@
 import {
   useCameraDisconnectionsQuery,
   useCheckDeviceWifiQuery as useDeviceWifiQuery,
+  useGxModelQuery,
+  useGxModelsQuery,
   useRetailDeviceHistoryQuery,
   useRetailDeviceLastStatusChange,
   useRetailDeviceSeverityHistory,
@@ -58,11 +60,16 @@ import {
   statusStyles,
 } from "../../../(components)/colors";
 import Breadcrumbs from "../../../(components)/Breadcrumbs";
+import EditModelModal from "../../../(components)/EditModelModal";
 
 const RetailDevicePage = ({ params }: { params: { device_id: string } }) => {
   const router = useRouter();
   const [error, setError] = useState("");
   const [opened, { open, close }] = useDisclosure(false);
+  const [
+    editModelModalOpened,
+    { open: editModelModalOpen, close: editModelModalClose },
+  ] = useDisclosure(false);
 
   const currentDate = new Date();
   let yesterday = new Date();
@@ -104,6 +111,11 @@ const RetailDevicePage = ({ params }: { params: { device_id: string } }) => {
       device_id: params.device_id,
     },
   });
+
+  const gxModelQuery = useGxModelQuery({
+    variables: { gx_id: Number(params.device_id) },
+  });
+  const allGxModelsQuery = useGxModelsQuery({});
 
   const deviceStatus = deviceStatusQuery.data;
   const severity = deviceStatus?.severity;
@@ -224,7 +236,16 @@ const RetailDevicePage = ({ params }: { params: { device_id: string } }) => {
 
   return (
     <section className="relative mb-20">
-      {/*  <BackArrow /> */}
+      <EditModelModal
+        modalProps={{
+          opened: editModelModalOpened,
+          close: editModelModalClose,
+        }}
+        modelQuery={gxModelQuery}
+        gxId={Number(params.device_id)}
+        gxModels={allGxModelsQuery.data}
+      ></EditModelModal>
+
       <div className="flex mb-4 justify-between items-center">
         <div className="xl:flex xl:gap-6">
           <div className="md:flex gap-3 ">
@@ -261,15 +282,69 @@ const RetailDevicePage = ({ params }: { params: { device_id: string } }) => {
             </div>{" "}
           </div>
         </div>
-        {hasWifiProblems && (
-          <div
-            className="hidden md:flex items-center gap-2 opacity-70 text-lg 
+        <div className="flex items-center gap-6">
+          {hasWifiProblems && (
+            <div
+              className="hidden md:flex items-center gap-2 opacity-70 text-lg 
           px-2 py-1 bg-gray-300 rounded-md  dark:text-black"
-          >
-            <Image src={wifiError} width={30} alt={""}></Image>
-            <p>Problemas de conexión</p>
+            >
+              <Image src={wifiError} width={30} alt={""}></Image>
+              <p>Problemas de conexión</p>
+            </div>
+          )}
+          <div className="flex gap-1 items-center text-neutral-800 dark:text-neutral-300">
+            <div className="flex gap-1 items-center  bg-neutral-300 dark:bg-neutral-800  p-2 rounded-md">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="28"
+                height="28"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="icon icon-tabler icons-tabler-outline icon-tabler-cpu"
+              >
+                <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                <path d="M5 5m0 1a1 1 0 0 1 1 -1h12a1 1 0 0 1 1 1v12a1 1 0 0 1 -1 1h-12a1 1 0 0 1 -1 -1z" />
+                <path d="M9 9h6v6h-6z" />
+                <path d="M3 10h2" />
+                <path d="M3 14h2" />
+                <path d="M10 3v2" />
+                <path d="M14 3v2" />
+                <path d="M21 10h-2" />
+                <path d="M21 14h-2" />
+                <path d="M14 21v-2" />
+                <path d="M10 21v-2" />
+              </svg>
+              <p className="text-xl">{gxModelQuery.data?.name}</p>
+            </div>
+            <button
+              onClick={() => {
+                editModelModalOpen();
+              }}
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="20"
+                height="20  "
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="ml-2 text-neutral-400 hover:text-neutral-600 transition-colors icon icon-tabler icons-tabler-outline icon-tabler-edit"
+              >
+                <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                <path d="M7 7h-1a2 2 0 0 0 -2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2 -2v-1" />
+                <path d="M20.385 6.585a2.1 2.1 0 0 0 -2.97 -2.97l-8.415 8.385v3h3l8.385 -8.415z" />
+                <path d="M16 5l3 3" />
+              </svg>
+            </button>
           </div>
-        )}
+        </div>
       </div>
 
       <div className="sm:flex justify-between items-end text-xl">

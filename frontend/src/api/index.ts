@@ -50,7 +50,10 @@ const api = {
     monitor: {
       deployments: "api/v1/monitor/deployments/",
       models: {
-        model: (gx_id: number) => `api/v1/monitor/gx-models/${gx_id}/`,
+        create: `api/v1/monitor/gx-models/create/`,
+        list: `api/v1/monitor/gx-models/list/`,
+        model: (gx_id: number) => `api/v1/monitor/gx-models/gx/${gx_id}/`,
+        modelUpdate: (gx_id: number) => `api/v1/monitor/gx-models/gx/${gx_id}/update/`,
       },
       records: {
         list: (gx_id: number) => `api/v1/monitor/records/${gx_id}/`,

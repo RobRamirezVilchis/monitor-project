@@ -7,10 +7,16 @@ urlpatterns = [
     path("deployments/", apis.DeploymentList.as_view(), name="deployments"),
     path("gx-models/",
          include(([
-             path("<int:gx_id>/",
+             path("create/", apis.GxModelCreateAPI.as_view(),
+                  name="gx_model_create"),
+             path("list/", apis.GxModelList.as_view(),
+                  name="gx_model_list"),
+             path("gx/<int:gx_id>/",
                   include(([
                       path("", apis.GxModelAPI.as_view(),
                            name="gx_model"),
+                      path("update/", apis.GxModelUpdateAPI.as_view(),
+                           name="gx_model_update"),
                   ], "device_data")))
          ], "gx_models")),
          ),

@@ -1035,3 +1035,12 @@ export const useGxModelQuery = createQuery({
   keepPreviousData: true,
   queryClient: defaultQueryClient,
 });
+
+export const useGxModelsQuery = createQuery({
+  queryPrimaryKey: "gx-models-query",
+  queryFn: (ctx) => monitorService.getGxModels({ signal: ctx.signal }),
+  cacheTime: 1000 * 60 * 5,  // 5 minutes
+  staleTime: 1000 * 60 * 3,  // 3 minutes
+  keepPreviousData: true,
+  queryClient: defaultQueryClient,
+});

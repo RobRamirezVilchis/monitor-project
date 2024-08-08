@@ -39,7 +39,7 @@ class GxStatus(models.Model):
 
 
 class GxModel(models.Model):
-    name = models.CharField(max_length=50)
+    name = models.CharField(max_length=50, unique=True)
 
     @classmethod
     def get_default_pk(cls):

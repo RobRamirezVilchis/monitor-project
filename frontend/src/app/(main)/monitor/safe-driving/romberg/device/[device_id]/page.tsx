@@ -4,6 +4,7 @@ import {
   useCheckDeviceWifiQuery as useDeviceWifiQuery,
   useGxMetricThresholdsQuery,
   useGxModelQuery,
+  useGxModelsQuery,
   useGxRecordsQuery,
   useRombergDeviceHistoryQuery,
   useRombergDeviceLastStatusChange,
@@ -13,7 +14,6 @@ import {
 import {
   DeviceFilters,
   GxRecord,
-  NewGxThresholds,
   RombergDeviceHistory,
 } from "@/api/services/monitor/types";
 
@@ -22,16 +22,23 @@ import DataGrid from "@/ui/data-grid/DataGrid";
 import { ColumnDef } from "@/ui/data-grid/types";
 
 import {
+  useCreateGxModelMutation,
   useModifyThresholdsMutation,
   useSetDeviceInactiveMutation,
+  useUpdateGxModelMutation,
 } from "@/api/mutations/monitor";
 import wifiError from "@/media/error-de-conexion.png";
+import { Checkbox, NumberInput, Select, TextInput } from "@/ui/core";
+import {
+  showErrorNotification,
+  showSuccessNotification,
+} from "@/ui/notifications";
+import { ChartTooltipProps, LineChart } from "@mantine/charts";
 import {
   Button,
   Drawer,
   Modal,
   SegmentedControl,
-  Select,
   Skeleton,
 } from "@mantine/core";
 import { DatePickerInput } from "@mantine/dates";
@@ -47,6 +54,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { useForm } from "react-hook-form";
 import {
   CartesianGrid,
   Cell,
@@ -70,12 +78,7 @@ import {
   statusNames,
   statusStyles,
 } from "../../../../(components)/colors";
-import { ChartTooltipProps, LineChart } from "@mantine/charts";
-import { PaymentOutlined } from "@mui/icons-material";
-import { useForm } from "react-hook-form";
-import { Checkbox, NumberInput } from "@/ui/core";
-import { Vazirmatn } from "next/font/google";
-import { showSuccessNotification } from "@/ui/notifications";
+import EditModelModal from "@/app/(main)/monitor/(components)/EditModelModal";
 
 interface FormData {
   [key: string]: {
@@ -94,6 +97,10 @@ const RombergDevicePage = ({ params }: { params: { device_id: string } }) => {
   const [
     thresholdsModalOpened,
     { open: thresholdsModalOpen, close: thresholdsModalClose },
+  ] = useDisclosure(false);
+  const [
+    editModelModalOpened,
+    { open: editModelModalOpen, close: editModelModalClose },
   ] = useDisclosure(false);
 
   const [selectedMetric, setSelectedMetric] = useState("RAM");
@@ -324,6 +331,7 @@ const RombergDevicePage = ({ params }: { params: { device_id: string } }) => {
   const gxModelQuery = useGxModelQuery({
     variables: { gx_id: Number(params.device_id) },
   });
+  const allGxModelsQuery = useGxModelsQuery({});
 
   const useSetRombergDeviceInactiveMutation = useSetDeviceInactiveMutation({
     onSuccess: () => {
@@ -346,6 +354,19 @@ const RombergDevicePage = ({ params }: { params: { device_id: string } }) => {
     formState: { errors },
     reset,
   } = useForm<{ [key: string]: any }>();
+
+  const {
+    handleSubmit: handleSubmitModels,
+    watch: watchModels,
+    control: controlModels,
+    reset: resetModels,
+  } = useForm<{ name: string }>();
+  const {
+    handleSubmit: handleSubmitNewModel,
+    watch: watchNewModel,
+    control: controlNewModel,
+    reset: resetNewModel,
+  } = useForm<{ name: string }>();
 
   const thresholdsMutation = useModifyThresholdsMutation({
     onSuccess: () => {
@@ -377,6 +398,36 @@ const RombergDevicePage = ({ params }: { params: { device_id: string } }) => {
     thresholdsMutation.mutate(data);
   };
 
+  const updateModelMutation = useUpdateGxModelMutation({
+    onSuccess: () => {
+      showSuccessNotification({ message: "Modelo actualizado con éxito" });
+      thresholdsQuery.refetch();
+      gxModelQuery.refetch();
+    },
+  });
+  const createModelMutation = useCreateGxModelMutation({
+    onSuccess: () => {
+      showSuccessNotification({ message: "Modelo creado con éxito" });
+      allGxModelsQuery.refetch();
+      thresholdsQuery.refetch();
+      deviceStatusQuery.refetch();
+      resetNewModel({ name: "" });
+    },
+    onError: () => {
+      showErrorNotification({ message: "Ocurrió un error." });
+    },
+  });
+  const submitModelChange = async (values: { name: string }) => {
+    updateModelMutation.mutate({
+      gx_id: Number(params.device_id),
+      name: values.name,
+    });
+  };
+
+  const submitModelCreate = async (values: { name: string }) => {
+    createModelMutation.mutate({ name: values.name });
+  };
+
   return (
     <section className="relative mb-20">
       <Drawer
@@ -387,7 +438,58 @@ const RombergDevicePage = ({ params }: { params: { device_id: string } }) => {
         position="right"
         classNames={{ title: "text-xl font-semibold" }}
       >
-        <div className="flex flex-col gap-6 px-6">
+        <div className="flex flex-col gap-4 px-6">
+          <div className="flex gap-1 items-center text-neutral-800">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="28"
+              height="28"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="icon icon-tabler icons-tabler-outline icon-tabler-cpu"
+            >
+              <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+              <path d="M5 5m0 1a1 1 0 0 1 1 -1h12a1 1 0 0 1 1 1v12a1 1 0 0 1 -1 1h-12a1 1 0 0 1 -1 -1z" />
+              <path d="M9 9h6v6h-6z" />
+              <path d="M3 10h2" />
+              <path d="M3 14h2" />
+              <path d="M10 3v2" />
+              <path d="M14 3v2" />
+              <path d="M21 10h-2" />
+              <path d="M21 14h-2" />
+              <path d="M14 21v-2" />
+              <path d="M10 21v-2" />
+            </svg>
+            <p className="text-xl">{gxModelQuery.data?.name}</p>
+            <button
+              onClick={() => {
+                resetModels({ name: gxModelQuery.data?.name });
+                editModelModalOpen();
+              }}
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="20"
+                height="20  "
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="ml-2 text-neutral-400 hover:text-neutral-600 transition-colors icon icon-tabler icons-tabler-outline icon-tabler-edit"
+              >
+                <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                <path d="M7 7h-1a2 2 0 0 0 -2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2 -2v-1" />
+                <path d="M20.385 6.585a2.1 2.1 0 0 0 -2.97 -2.97l-8.415 8.385v3h3l8.385 -8.415z" />
+                <path d="M16 5l3 3" />
+              </svg>
+            </button>
+          </div>
           <div className="flex justify-between">
             <div className="sm:flex w-96 gap-2 items-center mt-1 sm:mt-0">
               <p>Rango de tiempo:</p>
@@ -515,7 +617,72 @@ const RombergDevicePage = ({ params }: { params: { device_id: string } }) => {
           </div>
         </form>
       </Modal>
+      <EditModelModal
+        modalProps={{
+          opened: editModelModalOpened,
+          close: editModelModalClose,
+        }}
+        modelQuery={gxModelQuery}
+        gxId={Number(params.device_id)}
+        gxModels={allGxModelsQuery.data}
+        onModelChange={() => {
+          thresholdsQuery.refetch();
+        }}
+      ></EditModelModal>
+      {/* <Modal
+        opened={editModelModalOpened}
+        onClose={editModelModalClose}
+        title="Cambiar modelo de GX"
+        classNames={{ title: "text-xl font-semibold" }}
+      >
+        <p className="text-neutral-600 mb-3">
+          El modelo de la GX determina qué criterios se utilizan para marcar
+          alguna métrica como crítica.
+        </p>
+        {allGxModelsQuery.data && (
+          <>
+            <form onSubmit={handleSubmitModels(submitModelChange)}>
+              <div className="flex gap-3 justify-between">
+                <Select
+                  name="name"
+                  control={controlModels}
+                  classNames={{ root: "w-full" }}
+                  data={allGxModelsQuery.data.map((m) => m.name)}
+                ></Select>
 
+                <Button className="w-36" type="submit">
+                  Aceptar
+                </Button>
+              </div>
+            </form>
+            <div className="py-3 flex justify-center items-center gap-2 text-neutral-500">
+              <div className=" w-14 h-0 border-b-2 border-neutral-300 dark:border-neutral-500" />
+              <p>O crea un modelo nuevo</p>
+              <div className=" w-14 h-0 border-b-2 border-neutral-300 dark:border-neutral-500" />
+            </div>
+            <form onSubmit={handleSubmitNewModel(submitModelCreate)}>
+              <div className="flex gap-3 justify-between">
+                <TextInput
+                  name="name"
+                  control={controlNewModel}
+                  classNames={{ root: "w-full" }}
+                ></TextInput>
+
+                <Button
+                  disabled={
+                    watchNewModel("name") == null || watchNewModel("name") == ""
+                  }
+                  variant="outline"
+                  className="w-36"
+                  type="submit"
+                >
+                  Crear
+                </Button>
+              </div>
+            </form>
+          </>
+        )}
+      </Modal> */}
       {/*  <BackArrow /> */}
       <div className="flex mb-4 justify-between items-center">
         <div className="xl:flex xl:gap-6">
@@ -592,64 +759,66 @@ const RombergDevicePage = ({ params }: { params: { device_id: string } }) => {
       </div>
 
       <div className="sm:flex justify-between items-end text-xl">
-        {deviceStatus && (
-          <div className="text-neutral-500 dark:text-dark-200">
-            {deviceStatus.delayed ? (
-              <div className="flex items-center">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 20 20"
-                  strokeWidth="1.5"
-                  stroke="currentColor"
-                  className="w-5 h-4"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z"
-                  />
-                </svg>
+        <div className="flex gap-2 items-end">
+          {deviceStatus && (
+            <div className="text-neutral-500 dark:text-dark-200">
+              {deviceStatus.delayed ? (
+                <div className="flex items-center">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 20 20"
+                    strokeWidth="1.5"
+                    stroke="currentColor"
+                    className="w-5 h-4"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z"
+                    />
+                  </svg>
 
-                <p className="ml-2 ">Retraso: {deviceStatus.delay_time}</p>
+                  <p className="ml-2 ">Retraso: {deviceStatus.delay_time}</p>
+                </div>
+              ) : (
+                <div className="flex items-center">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 20 20"
+                    strokeWidth="2.5"
+                    stroke="currentColor"
+                    className="w-4 h-4"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="m4.5 12.75 6 6 9-13.5"
+                    />
+                  </svg>
+
+                  <p className="ml-2 mt-1 ">Comunicación reciente</p>
+                </div>
+              )}
+
+              <div>
+                {daysRemaining != -1 && (
+                  <p>Licencia termina en {daysRemaining} días</p>
+                )}
+                {deviceStatus.last_activity && (
+                  <p>
+                    Última conexión:{" "}
+                    {format(parseISO(deviceStatus.last_activity), "Pp")}
+                  </p>
+                )}
+                {!deviceStatus.last_activity && (
+                  <p>Última conexión desconocida</p>
+                )}
               </div>
-            ) : (
-              <div className="flex items-center">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 20 20"
-                  strokeWidth="2.5"
-                  stroke="currentColor"
-                  className="w-4 h-4"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="m4.5 12.75 6 6 9-13.5"
-                  />
-                </svg>
-
-                <p className="ml-2 mt-1 ">Comunicación reciente</p>
-              </div>
-            )}
-
-            <div>
-              {daysRemaining != -1 && (
-                <p>Licencia termina en {daysRemaining} días</p>
-              )}
-              {deviceStatus.last_activity && (
-                <p>
-                  Última conexión:{" "}
-                  {format(parseISO(deviceStatus.last_activity), "Pp")}
-                </p>
-              )}
-              {!deviceStatus.last_activity && (
-                <p>Última conexión desconocida</p>
-              )}
             </div>
-          </div>
-        )}
+          )}
+        </div>
         <div className="mt-2 sm:mt-0">
           <Link href={`${params.device_id}/logs`}>
             <Button size="md">Consultar logs</Button>

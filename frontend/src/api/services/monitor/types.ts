@@ -534,3 +534,8 @@ export interface NewGxThresholds {
 export interface GxModel {
   name: string,
 }
+
+export interface GxModelUpdate {
+  gx_id: number,
+  name: string,
+}
