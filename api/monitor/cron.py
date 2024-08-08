@@ -797,10 +797,11 @@ def process_industry_data(response):
 
     output_cameras = {}
 
-    log_types = {"batch_dropping": "Batch dropping",
-                 "restart": "Restarting",
-                 "license": "[LICENSE]",
-                 "shift_change": "SRC"}
+    # TO DO: Add warn msg category instead of counting it as batch dropping by default
+    log_types = {"batch_dropping": ["Batch dropping", "[WARN MSG]"],
+                 "restart": ["Restarting", "[PIPELINE RESTART]"],
+                 "license": ["[LICENSE]"],
+                 "shift_change": ["SRC"]}
 
     license_ends = {}
 
@@ -809,6 +810,7 @@ def process_industry_data(response):
     hourly_log_counts = {}
     recent_log_counts = {}
     last_connections = {}
+
     # First log received within the threshold time window, for each device
     first_log_times = {}
     camera_disc_times = {}
@@ -864,9 +866,8 @@ def process_industry_data(response):
 
             if log_msg != "":
                 found_category = False
-                for log_type, start in log_types.items():
-                    if log_msg.startswith(start):
-
+                for log_type, starts in log_types.items():
+                    if any([log_msg.startswith(start) for start in starts]):
                         for interval_count in intervals:
                             if log_type not in interval_count:
                                 interval_count[log_type] = 1
@@ -874,7 +875,7 @@ def process_industry_data(response):
                                 interval_count[log_type] += 1
                         found_category = True
 
-                        if start == "[LICENSE]":
+                        if "[LICENSE]" in starts:
                             days_remaining = int(log_msg.split()[-2])
                             date, time = log_msg.split("until")[
                                 1].split()[:2]
@@ -908,7 +909,7 @@ def process_industry_data(response):
 
                 log_msg = log["log"]
 
-                if log["log"].startswith("Desconectada"):
+                if log["log"].startswith("Desconectada") or log["log"].startswith("[DISC CAM]"):
                     camera_disc_times[device_name][camera_name]["hour"] += timedelta(
                         minutes=2)
 
@@ -920,7 +921,7 @@ def process_industry_data(response):
                     first_log_time = register_time
                     first_log_times[device_name] = first_log_time
 
-                    if log["log"].startswith("Desconectada"):
+                    if log["log"].startswith("Desconectada") or log["log"].startswith("[DISC CAM]"):
                         camera_disc_times[device_name][camera_name]["recent"] += timedelta(
                             minutes=2)
                 else:
