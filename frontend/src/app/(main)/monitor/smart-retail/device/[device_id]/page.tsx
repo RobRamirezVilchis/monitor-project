@@ -244,6 +244,9 @@ const RetailDevicePage = ({ params }: { params: { device_id: string } }) => {
         modelQuery={gxModelQuery}
         gxId={Number(params.device_id)}
         gxModels={allGxModelsQuery.data}
+        onModelChange={() => {
+          allGxModelsQuery.refetch();
+        }}
       ></EditModelModal>
 
       <div className="flex mb-4 justify-between items-center">

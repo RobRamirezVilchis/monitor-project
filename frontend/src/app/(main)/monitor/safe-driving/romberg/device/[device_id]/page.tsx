@@ -540,57 +540,7 @@ const RombergDevicePage = ({ params }: { params: { device_id: string } }) => {
         gx_id={Number(params.device_id)}
         thresholds={thresholdsQuery.data}
       />
-      <Modal
-        opened={thresholdsModalOpened}
-        onClose={thresholdsModalClose}
-        title="Modificar criterios"
-        classNames={{ title: "text-xl font-semibold" }}
-      >
-        <form onSubmit={handleSubmit(submitNewThresholds)}>
-          <p className="opacity-80 mb-3">
-            Aquí puedes modificar los criterios para considerar una métrica como
-            crítica.
-          </p>
-          <div className="flex gap-3 pr-3 items-end justify-end w-full">
-            <p>Al exceder</p>
-            <p>Habilitado</p>
-          </div>
-          <div className="flex justify-center">
-            <div className="flex flex-col gap-3 items-center  mb-3">
-              <div className="flex flex-col gap-3 items-end">
-                {thresholdsQuery.data?.map((th, i) => (
-                  <div key={i} className="flex gap-2 items-center">
-                    <p>{th.metric_name}</p>
-                    <NumberInput
-                      name={`${th.metric_name}_value`}
-                      control={control}
-                      classNames={{ root: "w-20 mr-10" }}
-                      placeholder=""
-                      value={th.threshold}
-                      disabled={!watch(`${th.metric_name}_enabled`)}
-                    ></NumberInput>
-                    <Checkbox
-                      name={`${th.metric_name}_toExceed`}
-                      control={control}
-                      disabled={!watch(`${th.metric_name}_enabled`)}
-                      classNames={{ root: "mr-12" }}
-                    ></Checkbox>
-                    <Checkbox
-                      name={`${th.metric_name}_enabled`}
-                      control={control}
-                      color="green.6"
-                    ></Checkbox>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
 
-          <div className="flex justify-end">
-            <Button type="submit">Aceptar</Button>
-          </div>
-        </form>
-      </Modal>
       <EditModelModal
         modalProps={{
           opened: changeModelModalOpened,
@@ -600,8 +550,8 @@ const RombergDevicePage = ({ params }: { params: { device_id: string } }) => {
         gxId={Number(params.device_id)}
         gxModels={allGxModelsQuery.data}
         onModelChange={() => {
-          allGxModelsQuery.refetch();
           thresholdsQuery.refetch();
+          allGxModelsQuery.refetch();
         }}
       ></EditModelModal>
 

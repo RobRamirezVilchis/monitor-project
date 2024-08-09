@@ -3,6 +3,7 @@ import { GxMetricThreshold } from "@/api/services/monitor/types";
 import { Checkbox, NumberInput } from "@/ui/core";
 import { showSuccessNotification } from "@/ui/notifications";
 import { Button, Modal } from "@mantine/core";
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 
 const EditGxThresholds = (props: {
@@ -18,6 +19,18 @@ const EditGxThresholds = (props: {
     formState: { errors },
     reset,
   } = useForm<{ [key: string]: any }>();
+
+  useEffect(() => {
+    if (props.thresholds && props.modalProps.opened) {
+      const currentValues: { [key: string]: any } = {};
+      props.thresholds.map((th) => {
+        currentValues[`${th.metric_name}_value`] = th.threshold;
+        currentValues[`${th.metric_name}_toExceed`] = th.to_exceed;
+        currentValues[`${th.metric_name}_enabled`] = th.threshold !== null;
+      });
+      reset(currentValues);
+    }
+  }, [props.modalProps.opened]);
 
   const thresholdsMutation = useModifyThresholdsMutation({
     onSuccess: () => {

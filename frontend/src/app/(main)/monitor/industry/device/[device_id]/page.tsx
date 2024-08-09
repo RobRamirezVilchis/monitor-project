@@ -297,6 +297,9 @@ const DevicePage = ({ params }: { params: { device_id: string } }) => {
         modelQuery={gxModelQuery}
         gxId={Number(params.device_id)}
         gxModels={allGxModelsQuery.data}
+        onModelChange={() => {
+          allGxModelsQuery.refetch();
+        }}
       ></EditModelModal>
 
       <div className=" flex flex-col sm:flex-row gap-4  mb-3 justify-between items-start sm:items-end">

@@ -285,6 +285,9 @@ const UnitPage = ({ params }: { params: { unit_id: string } }) => {
         modelQuery={gxModelQuery}
         gxId={Number(params.unit_id)}
         gxModels={allGxModelsQuery.data}
+        onModelChange={() => {
+          allGxModelsQuery.refetch();
+        }}
       ></EditModelModal>
 
       <div className="relative flex flex-col sm:flex-row gap-3 sm:gap-0 mb-6  justify-between  sm:items-center">

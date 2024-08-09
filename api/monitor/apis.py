@@ -499,6 +499,8 @@ class CameraDisconnectionsList(APIView):
 
         logs = get_cameradisconnections(
             device_id, filters=filters_serializer.validated_data)[::-1]
+        
+        print(logs)
 
         return get_paginated_response(
             serializer_class=self.OutputSerializer,
