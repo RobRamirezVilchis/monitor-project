@@ -532,6 +532,7 @@ export interface NewGxThresholds {
 
 // Models ----------------------------------------------
 export interface GxModel {
+  id: number,
   name: string,
 }
 

@@ -232,12 +232,21 @@ const RDSPage = ({ params }: { params: { rds_id: string } }) => {
   let splitter = new RegExp("_|-", "g");
 
   const thresholdsQuery = useRDSThresholdsQuery({});
+  let threshold;
+  if (metricsKeys) {
+    threshold = thresholdsQuery?.data?.find(
+      (th) =>
+        th.name ==
+        Object.keys(metricsKeys).find((k) => metricsKeys[k] == plotMetric)
+    );
+  }
 
   const thresholdsMutation = useModifyRDSThresholdsMutation({
     onSuccess: () => {
       showSuccessNotification({
         message: "Se guardaron los nuevos valores con éxito",
       });
+      thresholdsQuery.refetch();
     },
     onError: () => {},
   });
@@ -277,14 +286,14 @@ const RDSPage = ({ params }: { params: { rds_id: string } }) => {
             considera una métrica como crítica.
           </p>
 
-          <div className="flex justify-center">
+          <div className="flex justify-center mb-6">
             <div className="flex flex-col gap-3 items-center  mb-3">
               <div className="ml-3 grid grid-cols-5 place-items-center gap-y-2 gap-x-2 items-end">
                 <div></div>
                 <div></div>
                 <div></div>
                 <div className="flex items-center">
-                  <p className="">Sobrepasar</p>
+                  <p className="">Al exceder</p>
                 </div>
                 <div className="flex items-center">
                   <p className="">Habilitado</p>
@@ -499,6 +508,17 @@ const RDSPage = ({ params }: { params: { rds_id: string } }) => {
           series={[{ name: "metric_value", color: "green.6" }]}
           curveType="linear"
           withDots={false}
+          referenceLines={
+            threshold
+              ? [
+                  {
+                    y: threshold.value,
+                    label: "Crítico",
+                    color: "red.6",
+                  },
+                ]
+              : []
+          }
         ></LineChart>
       </Skeleton>
 

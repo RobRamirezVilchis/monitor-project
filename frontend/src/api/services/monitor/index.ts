@@ -1544,11 +1544,39 @@ export async function getGxModels(
 }
 
 export async function createGxModel( 
+  data: Omit<GxModel, "id">,
+  config?: Parameters<typeof http.post>[2]
+) {
+    const resp = await http.post(
+      api.endpoints.monitor.models.create,
+      data,
+      {
+        ...config,
+      }
+    );
+    return resp.data;
+}
+
+export async function editGxModel( 
   data: GxModel,
   config?: Parameters<typeof http.post>[2]
 ) {
-    const resp = await http.post<GxModel>(
-      api.endpoints.monitor.models.create,
+    const resp = await http.post(
+      api.endpoints.monitor.models.modelEdit(data.id),
+      data,
+      {
+        ...config,
+      }
+    );
+    return resp.data;
+}
+
+export async function deleteGxModel( 
+  data: {id: number},
+  config?: Parameters<typeof http.post>[2]
+) {
+    const resp = await http.post(
+      api.endpoints.monitor.models.modelDelete(data.id),
       data,
       {
         ...config,
@@ -1562,7 +1590,7 @@ export async function getGxModel(
   config?: Parameters<typeof http.get>[1]
 ) {
     const resp = await http.get<GxModel>(
-      api.endpoints.monitor.models.model(filters.gx_id),
+      api.endpoints.monitor.models.gxModel(filters.gx_id),
       {
         ...config,
       }
@@ -1570,11 +1598,11 @@ export async function getGxModel(
     return resp.data;
 }
 
-export async function updateGxModel( 
+export async function changeGxModel( 
   filters: GxModelUpdate,
   config?: Parameters<typeof http.get>[1]
 ) {
-    const resp = await http.post<GxModelUpdate>(
+    const resp = await http.post(
       api.endpoints.monitor.models.modelUpdate(filters.gx_id),
       filters,
       {

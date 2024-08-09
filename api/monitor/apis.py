@@ -3169,7 +3169,30 @@ class GxModelCreateAPI(APIView):
         return Response(status=status.HTTP_201_CREATED)
 
 
-class GxModelUpdateAPI(APIView):
+class GxModelEditAPI(APIView):
+    class InputSerializer(serializers.Serializer):
+        name = serializers.CharField()
+
+    def post(self, request, model_id, *args, **kwargs):
+        data_serializer = self.InputSerializer(data=request.data)
+        data_serializer.is_valid(raise_exception=True)
+
+        model = get_gx_model_by_id(model_id)
+        model.name = data_serializer.validated_data["name"]
+        model.save()
+
+        return Response(status=status.HTTP_200_OK)
+
+
+class GxModelDeleteAPI(APIView):
+    def post(self, request, model_id, *args, **kwargs):
+
+        delete_gx_model(model_id)
+
+        return Response(status=status.HTTP_200_OK)
+
+
+class GxModelChangeAPI(APIView):
     class InputSerializer(serializers.Serializer):
         name = serializers.CharField()
 
@@ -3191,6 +3214,7 @@ class GxModelUpdateAPI(APIView):
 
 class GxModelList(APIView):
     class OutputSerializer(serializers.Serializer):
+        id = serializers.IntegerField()
         name = serializers.CharField()
 
     def get(self, request, *args, **kwargs):

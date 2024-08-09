@@ -14,6 +14,14 @@ def get_gx(gx_id: int):
     return Gx.objects.get(id=gx_id)
 
 
+def get_gx_model_by_id(id: int):
+    return GxModel.objects.get(id=id)
+
+
+def delete_gx_model(id: int):
+    return GxModel.objects.get(id=id).delete()
+
+
 def get_gx_model(name: str):
     return GxModel.objects.get(name=name)
 

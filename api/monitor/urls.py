@@ -11,11 +11,18 @@ urlpatterns = [
                   name="gx_model_create"),
              path("list/", apis.GxModelList.as_view(),
                   name="gx_model_list"),
+             path("model/<int:model_id>/",
+                  include(([
+                           path("edit/", apis.GxModelEditAPI.as_view(),
+                                name="model_edit"),
+                           path("delete/", apis.GxModelDeleteAPI.as_view(),
+                                name="model_delete"),
+                           ], "model"))),
              path("gx/<int:gx_id>/",
                   include(([
                       path("", apis.GxModelAPI.as_view(),
                            name="gx_model"),
-                      path("update/", apis.GxModelUpdateAPI.as_view(),
+                      path("update/", apis.GxModelChangeAPI.as_view(),
                            name="gx_model_update"),
                   ], "device_data")))
          ], "gx_models")),

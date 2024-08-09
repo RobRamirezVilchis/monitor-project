@@ -79,6 +79,7 @@ import {
   statusStyles,
 } from "../../../../(components)/colors";
 import EditModelModal from "@/app/(main)/monitor/(components)/EditModelModal";
+import EditGxThresholds from "@/app/(main)/monitor/(components)/EditGxThresholds";
 
 interface FormData {
   [key: string]: {
@@ -99,8 +100,8 @@ const RombergDevicePage = ({ params }: { params: { device_id: string } }) => {
     { open: thresholdsModalOpen, close: thresholdsModalClose },
   ] = useDisclosure(false);
   const [
-    editModelModalOpened,
-    { open: editModelModalOpen, close: editModelModalClose },
+    changeModelModalOpened,
+    { open: changeModelModalOpen, close: changeModelModalClose },
   ] = useDisclosure(false);
 
   const [selectedMetric, setSelectedMetric] = useState("RAM");
@@ -356,12 +357,6 @@ const RombergDevicePage = ({ params }: { params: { device_id: string } }) => {
   } = useForm<{ [key: string]: any }>();
 
   const {
-    handleSubmit: handleSubmitModels,
-    watch: watchModels,
-    control: controlModels,
-    reset: resetModels,
-  } = useForm<{ name: string }>();
-  const {
     handleSubmit: handleSubmitNewModel,
     watch: watchNewModel,
     control: controlNewModel,
@@ -398,36 +393,6 @@ const RombergDevicePage = ({ params }: { params: { device_id: string } }) => {
     thresholdsMutation.mutate(data);
   };
 
-  const updateModelMutation = useUpdateGxModelMutation({
-    onSuccess: () => {
-      showSuccessNotification({ message: "Modelo actualizado con éxito" });
-      thresholdsQuery.refetch();
-      gxModelQuery.refetch();
-    },
-  });
-  const createModelMutation = useCreateGxModelMutation({
-    onSuccess: () => {
-      showSuccessNotification({ message: "Modelo creado con éxito" });
-      allGxModelsQuery.refetch();
-      thresholdsQuery.refetch();
-      deviceStatusQuery.refetch();
-      resetNewModel({ name: "" });
-    },
-    onError: () => {
-      showErrorNotification({ message: "Ocurrió un error." });
-    },
-  });
-  const submitModelChange = async (values: { name: string }) => {
-    updateModelMutation.mutate({
-      gx_id: Number(params.device_id),
-      name: values.name,
-    });
-  };
-
-  const submitModelCreate = async (values: { name: string }) => {
-    createModelMutation.mutate({ name: values.name });
-  };
-
   return (
     <section className="relative mb-20">
       <Drawer
@@ -440,7 +405,7 @@ const RombergDevicePage = ({ params }: { params: { device_id: string } }) => {
       >
         <div className="flex flex-col gap-4 px-6">
           <div className="flex gap-1 items-center text-neutral-800 dark:text-neutral-300">
-            <div className="flex gap-1 items-center  bg-neutral-300 dark:bg-neutral-800  p-2 rounded-md">
+            <div className="flex gap-1 items-center  bg-neutral-200 dark:bg-neutral-800  p-2 rounded-md">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 width="28"
@@ -469,7 +434,7 @@ const RombergDevicePage = ({ params }: { params: { device_id: string } }) => {
             </div>
             <button
               onClick={() => {
-                editModelModalOpen();
+                changeModelModalOpen();
               }}
             >
               <svg
@@ -567,6 +532,14 @@ const RombergDevicePage = ({ params }: { params: { device_id: string } }) => {
           )}
         </div>
       </Drawer>
+      <EditGxThresholds
+        modalProps={{
+          opened: thresholdsModalOpened,
+          close: thresholdsModalClose,
+        }}
+        gx_id={Number(params.device_id)}
+        thresholds={thresholdsQuery.data}
+      />
       <Modal
         opened={thresholdsModalOpened}
         onClose={thresholdsModalClose}
@@ -579,7 +552,7 @@ const RombergDevicePage = ({ params }: { params: { device_id: string } }) => {
             crítica.
           </p>
           <div className="flex gap-3 pr-3 items-end justify-end w-full">
-            <p>Sobrepasar</p>
+            <p>Al exceder</p>
             <p>Habilitado</p>
           </div>
           <div className="flex justify-center">
@@ -620,70 +593,18 @@ const RombergDevicePage = ({ params }: { params: { device_id: string } }) => {
       </Modal>
       <EditModelModal
         modalProps={{
-          opened: editModelModalOpened,
-          close: editModelModalClose,
+          opened: changeModelModalOpened,
+          close: changeModelModalClose,
         }}
         modelQuery={gxModelQuery}
         gxId={Number(params.device_id)}
         gxModels={allGxModelsQuery.data}
         onModelChange={() => {
+          allGxModelsQuery.refetch();
           thresholdsQuery.refetch();
         }}
       ></EditModelModal>
-      {/* <Modal
-        opened={editModelModalOpened}
-        onClose={editModelModalClose}
-        title="Cambiar modelo de GX"
-        classNames={{ title: "text-xl font-semibold" }}
-      >
-        <p className="text-neutral-600 mb-3">
-          El modelo de la GX determina qué criterios se utilizan para marcar
-          alguna métrica como crítica.
-        </p>
-        {allGxModelsQuery.data && (
-          <>
-            <form onSubmit={handleSubmitModels(submitModelChange)}>
-              <div className="flex gap-3 justify-between">
-                <Select
-                  name="name"
-                  control={controlModels}
-                  classNames={{ root: "w-full" }}
-                  data={allGxModelsQuery.data.map((m) => m.name)}
-                ></Select>
 
-                <Button className="w-36" type="submit">
-                  Aceptar
-                </Button>
-              </div>
-            </form>
-            <div className="py-3 flex justify-center items-center gap-2 text-neutral-500">
-              <div className=" w-14 h-0 border-b-2 border-neutral-300 dark:border-neutral-500" />
-              <p>O crea un modelo nuevo</p>
-              <div className=" w-14 h-0 border-b-2 border-neutral-300 dark:border-neutral-500" />
-            </div>
-            <form onSubmit={handleSubmitNewModel(submitModelCreate)}>
-              <div className="flex gap-3 justify-between">
-                <TextInput
-                  name="name"
-                  control={controlNewModel}
-                  classNames={{ root: "w-full" }}
-                ></TextInput>
-
-                <Button
-                  disabled={
-                    watchNewModel("name") == null || watchNewModel("name") == ""
-                  }
-                  variant="outline"
-                  className="w-36"
-                  type="submit"
-                >
-                  Crear
-                </Button>
-              </div>
-            </form>
-          </>
-        )}
-      </Modal> */}
       {/*  <BackArrow /> */}
       <div className="flex mb-4 justify-between items-center">
         <div className="xl:flex xl:gap-6">

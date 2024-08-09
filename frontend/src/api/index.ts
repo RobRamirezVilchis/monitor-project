@@ -52,7 +52,10 @@ const api = {
       models: {
         create: `api/v1/monitor/gx-models/create/`,
         list: `api/v1/monitor/gx-models/list/`,
-        model: (gx_id: number) => `api/v1/monitor/gx-models/gx/${gx_id}/`,
+        modelEdit: (model_id: number) => `api/v1/monitor/gx-models/model/${model_id}/edit/`,
+        modelDelete: (model_id: number) => `api/v1/monitor/gx-models/model/${model_id}/delete/`,
+        gxModel: (gx_id: number) => `api/v1/monitor/gx-models/gx/${gx_id}/`,
+        
         modelUpdate: (gx_id: number) => `api/v1/monitor/gx-models/gx/${gx_id}/update/`,
       },
       records: {
